@@ -10,13 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
+import com.api.payglobal.entity.enums.EstadoOperacion;
+import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoLicencia;
+import com.api.payglobal.entity.enums.TipoMetodoPago;
 import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.UninivelHelper;
 import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
+import com.api.payglobal.service.transaccion.TransaccionService;
 
 @Service
 public class BonoServiceImpl implements BonoService {
@@ -39,6 +43,9 @@ public class BonoServiceImpl implements BonoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private TransaccionService transaccionService;
+
     @Override
     @Transactional
     public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception {
@@ -55,13 +62,22 @@ public class BonoServiceImpl implements BonoService {
 
             final Double bonoFinal = bono;
             if (bonoFinal > 0) {
-                walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
-                        .filter(wallet -> wallet.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                Wallet wallet = walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
+                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
                         .findFirst()
-                        .ifPresent(wallet -> {
-                            wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoFinal)));
-                            walletRepository.save(wallet);
-                        });
+                        .orElse(null);
+
+                if (wallet != null) {
+                    wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoFinal)));
+                    walletRepository.save(wallet);
+
+                    TipoConceptos concepto = usuarioEnRed.getNivel() == 1
+                            ? TipoConceptos.BONO_REGISTRO_DIRECTO
+                            : TipoConceptos.BONO_REGISTRO_INDIRECTO;
+
+                    registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, concepto,
+                            TipoMetodoPago.WALLET_COMISIONES, usernameReferido);
+                }
             }
         }
 
@@ -73,11 +89,18 @@ public class BonoServiceImpl implements BonoService {
 
         Double bono = tipoLicencia.getValor() * BONO_RENOVACION;
 
-        wallets.stream().filter(wallet -> wallet.getTipo().equals(TipoWallets.WALLET_COMISIONES)).findFirst()
-                .ifPresent(wallet -> {
-                    wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
-                    walletRepository.save(wallet);
-                });
+        Wallet wallet = wallets.stream()
+            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+            .findFirst()
+            .orElse(null);
+
+        if (wallet != null) {
+            wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
+            walletRepository.save(wallet);
+
+            registrarTransaccion(usernameReferido, bono, TipoConceptos.BONO_REONOVACION_LICENCIA,
+                TipoMetodoPago.WALLET_COMISIONES, null);
+        }
 
     }
 
@@ -111,12 +134,18 @@ public class BonoServiceImpl implements BonoService {
                     wallet.setSaldo(wallet.getSaldo().add(diferencia));
                     licenciaRepository.save(licencia);
                     walletRepository.save(wallet);
+
+                    registrarTransaccion(licencia.getUsuario().getUsername(), ingresoPasivo,
+                            TipoConceptos.INGRESO_PASIVO, TipoMetodoPago.WALLET_DIVIDENDOS, null);
                     return;
                 }
 
                 wallet.setSaldo(nuevoSaldo);
                 licenciaRepository.save(licencia);
                 walletRepository.save(wallet);
+
+                registrarTransaccion(licencia.getUsuario().getUsername(), ingresoPasivo, TipoConceptos.INGRESO_PASIVO,
+                    TipoMetodoPago.WALLET_DIVIDENDOS, null);
 
                 bonoUninivel(licencia.getUsuario().getUsername(), ingresoPasivo, licencia.getUsuario().getRango());
 
@@ -141,13 +170,18 @@ public class BonoServiceImpl implements BonoService {
                 final Double bonoFinal = bono;
                 if (bonoFinal > 0) {
                     // Actualizar wallet de comisiones
-                    walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
-                            .filter(wallet -> wallet.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                        Wallet wallet = walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
+                            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
                             .findFirst()
-                            .ifPresent(wallet -> {
-                                wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoFinal)));
-                                walletRepository.save(wallet);
-                            });
+                            .orElse(null);
+
+                        if (wallet != null) {
+                        wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoFinal)));
+                        walletRepository.save(wallet);
+
+                        registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, TipoConceptos.BONO_UNINIVEL,
+                            TipoMetodoPago.WALLET_COMISIONES, usernameReferido);
+                        }
                     
                     // Actualizar saldoAcumulado en la licencia del usuario que recibe el bono
                     usuarioRepository.findByUsername(usuarioEnRed.getUsername()).ifPresent(usuario -> {
@@ -194,5 +228,20 @@ public class BonoServiceImpl implements BonoService {
             }
         });
     }
+
+        private void registrarTransaccion(String username, Double monto, TipoConceptos concepto,
+            TipoMetodoPago metodoPago, String descripcion) throws Exception {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+            .orElseThrow(() -> new Exception("Usuario no encontrado con username: " + username));
+
+        transaccionService.procesarTransaccion(
+            usuario.getId(),
+            monto,
+            concepto,
+            metodoPago,
+            EstadoOperacion.COMPLETADA,
+            null,
+            descripcion);
+        }
 
 }

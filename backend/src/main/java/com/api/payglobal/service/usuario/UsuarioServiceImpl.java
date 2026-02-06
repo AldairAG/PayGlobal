@@ -29,6 +29,7 @@ import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.WalletAddress;
 import com.api.payglobal.entity.enums.EstadoOperacion;
+import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
@@ -39,6 +40,7 @@ import com.api.payglobal.helpers.UninivelHelper;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.service.bono.BonoService;
+import com.api.payglobal.service.transaccion.TransaccionService;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -63,6 +65,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private BonoService bonoService;
+
+    @Autowired
+    private TransaccionService transaccionService;
 
     @Transactional
     public JwtResponse registrar(RegistroResquestDTO registroRequest) {
@@ -287,41 +292,49 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void comprarLicenciaDelegada(TipoLicencia tipoLicencia, String destinatario, TipoMetodoPago tipoMetodoPago,
             Long idUsuario) throws Exception {
-        
-                Usuario usuario = usuarioRepository.findById(idUsuario)
-                        .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-                Usuario usuarioDestinatario = usuarioRepository.findByUsername(destinatario)
-                        .orElseThrow(() -> new Exception("Usuario destinatario no encontrado con username: " + destinatario));
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-                if(tipoMetodoPago == TipoMetodoPago.WALLET_COMISIONES) {
-                    Wallet walletComisiones = usuario.getWallets().stream()
-                            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
-                            .findFirst()
-                            .orElseThrow(() -> new Exception(
-                                    "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
-                    if (walletComisiones.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
-                        throw new Exception("Fondos insuficientes en la wallet de comisiones");
-                    }
-                }
+        Usuario usuarioDestinatario = usuarioRepository.findByUsername(destinatario)
+                .orElseThrow(() -> new Exception("Usuario destinatario no encontrado con username: " + destinatario));
 
-                if (tipoMetodoPago == TipoMetodoPago.WALLET_DIVIDENDOS) {
-                    Wallet walletDividendo = usuario.getWallets().stream()
-                            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
-                            .findFirst()
-                            .orElseThrow(() -> new Exception(
-                                    "Wallet de dividendos no encontrada para el usuario con id: " + idUsuario));
-                    if (walletDividendo.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
-                        throw new Exception("Fondos insuficientes en la wallet de dividendos");
-                    }
-                    
-                }
+        if (tipoMetodoPago == TipoMetodoPago.WALLET_COMISIONES) {
+            Wallet walletComisiones = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
+            if (walletComisiones.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de comisiones");
+            }
+        }
 
-                Licencia licencia = crearOActualizarLicencia(usuarioDestinatario, tipoLicencia);
-                usuarioDestinatario.setLicencia(licencia);
-                usuarioRepository.save(usuarioDestinatario);
+        if (tipoMetodoPago == TipoMetodoPago.WALLET_DIVIDENDOS) {
+            Wallet walletDividendo = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de dividendos no encontrada para el usuario con id: " + idUsuario));
+            if (walletDividendo.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de dividendos");
+            }
+        }
+
+        Licencia licencia = crearOActualizarLicencia(usuarioDestinatario, tipoLicencia);
+        usuarioDestinatario.setLicencia(licencia);
+        usuarioRepository.save(usuarioDestinatario);
+
+        transaccionService.procesarTransaccion(
+                usuario.getId(),
+                new BigDecimal(tipoLicencia.getValor()).doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA_DELEGADA,
+                tipoMetodoPago,
+                EstadoOperacion.APROBADA,
+                null,
+                destinatario);
     }
-    
+
     /**
      * Determina el tipo de licencia correspondiente según el precio total acumulado
      */
@@ -349,17 +362,17 @@ public class UsuarioServiceImpl implements UsuarioService {
             return TipoLicencia.LICENCIA1;
         }
     }
-    
+
     /**
      * Crea una nueva licencia o actualiza una existente para un usuario
      * Si el usuario no tiene licencia, crea una nueva con el tipo especificado
-     * Si ya tiene una, suma el valor y actualiza al tipo correspondiente según el precio total
+     * Si ya tiene una, suma el valor y actualiza al tipo correspondiente según el
+     * precio total
      */
-
     @Transactional
     private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia) {
         Licencia licencia = usuario.getLicencia();
-        
+
         if (licencia == null) {
             // Crear nueva licencia
             licencia = Licencia.builder()
@@ -375,17 +388,19 @@ public class UsuarioServiceImpl implements UsuarioService {
             // Actualizar licencia existente
             // Obtener el tipo de licencia actual
             TipoLicencia licenciaActual = determinarTipoLicenciaPorPrecio(licencia.getPrecio());
-            
+
             // Validar que la nueva licencia sea igual o superior a la actual
             if (tipoLicencia.getValor() < licenciaActual.getValor()) {
-                throw new RuntimeException("Para renovar la licencia, debe adquirir un paquete igual o superior al actual. " +
-                        "Licencia actual: " + licenciaActual.name() + " ($" + licenciaActual.getValor() + "), " +
-                        "Licencia nueva: " + tipoLicencia.name() + " ($" + tipoLicencia.getValor() + ")");
+                throw new RuntimeException(
+                        "Para renovar la licencia, debe adquirir un paquete igual o superior al actual. " +
+                                "Licencia actual: " + licenciaActual.name() + " ($" + licenciaActual.getValor() + "), "
+                                +
+                                "Licencia nueva: " + tipoLicencia.name() + " ($" + tipoLicencia.getValor() + ")");
             }
-            
+
             // Sumar el nuevo valor al precio existente
             int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
-            
+
             // Determinar la licencia correspondiente según el precio total
             TipoLicencia licenciaCorrespondiente = determinarTipoLicenciaPorPrecio(precioTotal);
 
@@ -397,7 +412,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                     throw new RuntimeException("Error al procesar bono de renovación: " + e.getMessage(), e);
                 }
             }
-        
+
             licencia.setNombre(licenciaCorrespondiente.name());
             licencia.setFechaCompra(LocalDate.now());
             licencia.setPrecio(precioTotal);
@@ -412,18 +427,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         } catch (Exception e) {
             throw new RuntimeException("Error al procesar bono de inscripción: " + e.getMessage(), e);
         }
-        
+
         return licencia;
     }
 
     @Override
-    public void TransferenciaEntreUsuarios(String usuarioDestinatario, BigDecimal monto,TipoWallets tipoWallet, Long idUsuario)
+    public void TransferenciaEntreUsuarios(String usuarioDestinatario, BigDecimal monto, TipoWallets tipoWallet,
+            Long idUsuario)
             throws Exception {
         Usuario usuarioOrigen = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
         Usuario usuarioDestino = usuarioRepository.findByUsername(usuarioDestinatario)
-                .orElseThrow(() -> new Exception("Usuario destinatario no encontrado con username: " + usuarioDestinatario));
+                .orElseThrow(
+                        () -> new Exception("Usuario destinatario no encontrado con username: " + usuarioDestinatario));
 
         if (usuarioOrigen.getWallets().get(0).getSaldo().compareTo(monto) < 0) {
             throw new Exception("Fondos insuficientes para la transferencia");
@@ -445,6 +462,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuarioRepository.save(usuarioOrigen);
         usuarioRepository.save(usuarioDestino);
+
+        transaccionService.procesarTransaccion(
+                usuarioOrigen.getId(),
+                monto.doubleValue(),
+                TipoConceptos.TRANSFERENCIA_ENTRE_USUARIOS,
+                null,
+                EstadoOperacion.APROBADA,
+                null,
+                usuarioDestinatario);
     }
 
     /*
@@ -479,12 +505,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
-        Licencia licencia= crearOActualizarLicencia(solicitud.getUsuario(), determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()));
+        Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
+                determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()));
 
         solicitud.getUsuario().setLicencia(licencia);
 
         usuarioRepository.save(solicitud.getUsuario());
-
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA,
+                null,
+                EstadoOperacion.APROBADA,
+                solicitud.getTipoCrypto(),
+                null);
     }
 
     @Override
@@ -496,5 +530,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Lógica para rechazar la solicitud
         solicitud.setEstado(EstadoOperacion.RECHAZADA);
         solicitudRepository.save(solicitud);
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA,
+                null,
+                EstadoOperacion.RECHAZADA,
+                solicitud.getTipoCrypto(),
+                null);
     }
 }

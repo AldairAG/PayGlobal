@@ -4,9 +4,13 @@ public enum TipoConceptos {
     BONO_REGISTRO_DIRECTO("Bono por registro directo", true),
     BONO_REGISTRO_INDIRECTO("Bono por registro indirecto", true),
     BONO_REONOVACION_LICENCIA("Bono por renovación de licencia", false),
+    BONO_UNINIVEL("Bono uninivel", true),
+    BONO_RANGO("Bono rango", false),
+    INGRESO_PASIVO("Ingreso pasivo", false),
     BONO_ANUAL("Bono anual", false),
     BONO_FUNDADOR("Bono fundador", false),
-    PAGO_LICENCIA_DELEGADA("Pago de licencia delegada", true),
+    COMPRA_LICENCIA_DELEGADA("Compra de licencia delegada", true),
+    COMPRA_LICENCIA("Compra de licencia", false),
     RETIRO_FONDOS("Retiro de fondos", false),
     TRANSFERENCIA_ENTRE_USUARIOS("Transferencia entre usuarios", true);
 
