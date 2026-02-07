@@ -1,7 +1,7 @@
 import { Provider } from 'react-redux'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
 import { ROUTES } from './routes/routes'
-import { LandingPage } from './pages/LandingPage'
+import LandingPage from './pages/LandingPage'
 import { UserLayout } from './layout/UserLayout'
 import { AdminLayout } from './layout/AdminLayout'
 import { HomePage } from './pages/user/HomePage'
@@ -17,6 +17,7 @@ import { GestionKycPage } from './pages/admin/GestionKycPage'
 import { EditarUsuarioPage } from './pages/admin/EditarUsuarioPage'
 import { ExploradorUsuarioPage } from './pages/admin/ExploradorUsuarioPage'
 import { store } from './store'
+import "./i18n";
 
 
 function App() {

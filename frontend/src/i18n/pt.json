@@ -1,0 +1,13 @@
+{
+    "landing": {
+        "login": "Entrar",
+        "register": "Registrar-se",
+        "welcome": "Bem-vindo à plataforma",
+        "username": "Nome de usuário",
+        "password": "Senha",   
+        "confirm_password": "Confirmar senha",
+        "email": "Email",
+        "close": "Fechar"
+
+    }
+}
