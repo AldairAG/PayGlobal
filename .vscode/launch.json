@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // 🚀 Backend Spring Boot
+      "type": "java",
+      "name": "Spring Boot-Application<payglobal>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/backend", 
+      "mainClass": "com.api.payglobal.PayglobalApplication",
+      "projectName": "payglobal",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      // 🌐 Frontend React con Vite
+      "name": "Debug Vite (React)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173", 
+      "webRoot": "${workspaceFolder}/frontend/web"
+    }
+  ]
+}

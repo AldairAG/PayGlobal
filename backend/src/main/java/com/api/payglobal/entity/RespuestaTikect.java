@@ -8,7 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -23,7 +24,8 @@ public class RespuestaTikect {
     private String respuesta;
     private LocalDateTime fechaRespuesta;
 
-    @OneToMany(mappedBy = "respuestaTikect")
+    @ManyToOne
+    @JoinColumn(name = "tiket_soporte_id")
     @JsonBackReference
     private TiketSoporte tiketSoporte;
 }

@@ -13,6 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
@@ -31,9 +33,11 @@ public abstract class Operacion {
 
     private LocalDateTime fecha;
 
+    @Enumerated(EnumType.STRING)
     private EstadoOperacion estado;
 
+    @Enumerated(EnumType.STRING)
     private TipoCrypto tipoCrypto;
 
-    private String patrocinador;
+    private String descripcion;
 }
