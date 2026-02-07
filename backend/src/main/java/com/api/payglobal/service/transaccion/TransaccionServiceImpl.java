@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
 import com.api.payglobal.entity.Transaccion;
 import com.api.payglobal.entity.Usuario;
@@ -18,6 +19,7 @@ import com.api.payglobal.entity.enums.TipoMetodoPago;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.TransaccionRepository;
 
+@Service
 public class TransaccionServiceImpl implements TransaccionService {
 
     @Autowired

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,6 +58,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private SolicitudRepository solicitudRepository;
 
+    @Lazy
     @Autowired
     private AuthenticationManager authenticationManager;
 

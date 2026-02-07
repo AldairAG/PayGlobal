@@ -62,7 +62,7 @@ public class BonoServiceImpl implements BonoService {
 
             final Double bonoFinal = bono;
             if (bonoFinal > 0) {
-                Wallet wallet = walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
+                Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
                         .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
                         .findFirst()
                         .orElse(null);
@@ -85,7 +85,7 @@ public class BonoServiceImpl implements BonoService {
 
     @Override
     public void bonoRenovacion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception {
-        List<Wallet> wallets = walletRepository.findByUserUsername(usernameReferido);
+        List<Wallet> wallets = walletRepository.findByUsuario_Username(usernameReferido);
 
         Double bono = tipoLicencia.getValor() * BONO_RENOVACION;
 
@@ -115,7 +115,7 @@ public class BonoServiceImpl implements BonoService {
     public void ingresoPasivo() throws Exception {
         licenciaRepository.findByActivoTrue().forEach(licencia -> {
             try {
-                Wallet wallet = walletRepository.findByUserUsername(licencia.getUsuario().getUsername()).stream()
+                Wallet wallet = walletRepository.findByUsuario_Username(licencia.getUsuario().getUsername()).stream()
                         .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
                         .findFirst()
                         .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
@@ -170,7 +170,7 @@ public class BonoServiceImpl implements BonoService {
                 final Double bonoFinal = bono;
                 if (bonoFinal > 0) {
                     // Actualizar wallet de comisiones
-                        Wallet wallet = walletRepository.findByUserUsername(usuarioEnRed.getUsername()).stream()
+                        Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
                             .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
                             .findFirst()
                             .orElse(null);
