@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useUsuario } from "../../hooks/usuarioHook";
 
 interface RegisterModalProps {
     open: boolean;
@@ -12,17 +13,39 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [referenced, setReferenced] = useState("");
+    const [localError, setLocalError] = useState<string | null>(null);
+
+    const { registrar, loadingRegistro, errorRegistro } = useUsuario();
 
     if (!open) return null;
 
     const isUsernameComplete = username.trim().length > 0;
     const isEmailComplete = email.trim().length > 0;
+    const isReferencedComplete = referenced.trim().length > 0;
     const isPasswordComplete = password.trim().length > 0;
     const isConfirmPasswordComplete = confirmPassword.trim().length > 0;
     const totalFields = 3;
     const completedFields =
         (isEmailComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0) + (isConfirmPasswordComplete ? 1 : 0);
     const progressPercentage = (completedFields / totalFields) * 100;
+
+    const handleRegister = async () => {
+        setLocalError(null);
+
+        if (password !== confirmPassword) {
+            setLocalError(t("landing.passwords_mismatch") || "Las contraseñas no coinciden");
+            return;
+        }
+
+        try {
+            await registrar({ username, password, email, referenciado: referenced });
+            onClose();
+        } catch (err) {
+            // el error se maneja a través de errorRegistro o aquí si es otra excepción
+            console.error('Registro fallido', err);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-15 flex justify-center items-center">
@@ -108,6 +131,23 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                     </div>
                 </div>
 
+                {/* Campo Referenciado */}
+                <div className="mb-4">
+                    <div className="flex items-center">
+                        <input
+                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            placeholder={t("landing.referenced")}
+                            value={referenced}
+                            onChange={(e) => setReferenced(e.target.value)}
+                        />
+                        {isReferencedComplete && (
+                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                                ✓
+                            </span>
+                        )}
+                    </div>
+                </div>
+
                 {/* Campo Password */}
                 <div className="mb-4">
                     <div className="flex items-center">
@@ -144,8 +184,16 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                     </div>
                 </div>
 
-                <button className="w-full text-white py-2 rounded mb-2 transition-colors" style={{ backgroundColor: "#69AC95" }}>
-                    {t("landing.register")}
+                {localError && <div className="text-sm text-red-600 mb-2">{localError}</div>}
+                {errorRegistro && <div className="text-sm text-red-600 mb-2">{errorRegistro}</div>}
+
+                <button
+                    className="w-full text-white py-2 rounded mb-2 transition-colors"
+                    style={{ backgroundColor: "#69AC95" }}
+                    onClick={handleRegister}
+                    disabled={loadingRegistro}
+                >
+                    {loadingRegistro ? t("landing.registering") ?? "Registrando..." : t("landing.register")}
                 </button>
                 <button
                     className="w-full py-2 rounded transition-colors"

@@ -3,7 +3,7 @@ import type { Usuario } from "../../type/entityTypes";
 import { removeFromSessionStorage, saveToSessionStorage } from "../../helpers/authHelpers";
 import { usuarioService, type JwtResponse, type UsuarioEnRedResponse } from "../../service/usuarioService";
 import type { EditarPerfilRequestDTO, LoginRequestDTO, RegistroRequestDTO } from "../../type/requestTypes";
-import type { ApiResponse } from "../../service/apiBase";
+import type { ApiResponse } from "../../type/apiTypes";
 import type { TipoCrypto, TipoWallets } from "../../type/enum";
 
 interface UserState {

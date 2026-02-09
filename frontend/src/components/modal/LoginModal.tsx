@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useUsuario } from "../../hooks/usuarioHook";
 
 interface LoginModalProps {
     open: boolean;
@@ -10,6 +11,9 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [localError, setLocalError] = useState<string | null>(null);
+
+    const { login, loadingLogin, errorLogin } = useUsuario();
 
     if (!open) return null;
 
@@ -18,6 +22,23 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     const totalFields = 2;
     const completedFields = (isEmailComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0);
     const progressPercentage = (completedFields / totalFields) * 100;
+
+    const handleLogin = async () => {
+        setLocalError(null);
+
+        if (!email || !password) {
+            setLocalError(t("landing.fill_fields") || "Complete los campos");
+            return;
+        }
+
+        try {
+            // el backend espera `username` en LoginRequestDTO; usamos el email como username aquí
+            await login({ username: email, password });
+            onClose();
+        } catch (err) {
+            console.error('Login fallido', err);
+        }
+    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-15 flex justify-center items-center">
@@ -105,8 +126,16 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                     </div>
                 </div>
 
-                <button className="w-full text-white py-2 rounded mb-2 transition-colors" style={{ backgroundColor: "#F0973C" }}>
-                    {t("landing.login")}
+                {localError && <div className="text-sm text-red-600 mb-2">{localError}</div>}
+                {errorLogin && <div className="text-sm text-red-600 mb-2">{errorLogin}</div>}
+
+                <button
+                    className="w-full text-white py-2 rounded mb-2 transition-colors"
+                    style={{ backgroundColor: "#F0973C" }}
+                    onClick={handleLogin}
+                    disabled={loadingLogin}
+                >
+                    {loadingLogin ? t("landing.logging_in") ?? "Iniciando..." : t("landing.login")}
                 </button>
                 <button
                     className="w-full py-2 rounded transition-colors"

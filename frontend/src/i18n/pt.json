@@ -7,7 +7,8 @@
         "password": "Senha",   
         "confirm_password": "Confirmar senha",
         "email": "Email",
-        "close": "Fechar"
+        "close": "Fechar",
+        "referenced": "Referenciado"
 
     }
 }

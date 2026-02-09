@@ -7,6 +7,7 @@
         "password": "Mot de passe",
         "confirm_password": "Confirmer le mot de passe",
         "email": "Email",
-        "close": "Fermer"
+        "close": "Fermer",
+        "referenced": "Référencé"
     }
 }

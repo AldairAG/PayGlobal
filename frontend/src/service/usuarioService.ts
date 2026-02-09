@@ -1,10 +1,9 @@
 import { apiBase } from './apiBase';
-import type { ApiResponse } from './apiBase';
-import type { AxiosInstance } from 'axios';
-import type { 
-    RegistroRequestDTO, 
-    LoginRequestDTO, 
-    EditarPerfilRequestDTO, 
+import type { ApiResponse } from '../type/apiTypes';
+import type {
+    RegistroRequestDTO,
+    LoginRequestDTO,
+    EditarPerfilRequestDTO,
 } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
 import { TipoCrypto, TipoWallets } from '../type/enum';
@@ -29,222 +28,141 @@ export interface UsuarioEnRedResponse {
     nivel: number;
 }
 
-class UsuarioService {
-    private readonly BASE_PATH = '/usuarios';
-    private readonly axios: AxiosInstance;
+const BASE_PATH = '/usuarios';
 
-    constructor() {
-        this.axios = apiBase.getAxiosInstance();
+// Registro de nuevo usuario
+// POST /api/usuarios/registro
+const registrar = async (registroRequest: RegistroRequestDTO): Promise<ApiResponse<JwtResponse>> => {
+    return apiBase.post<JwtResponse>(`${BASE_PATH}/registro`, registroRequest);
+};
+
+// Login de usuario
+// POST /api/usuarios/login
+const login = async (loginRequest: LoginRequestDTO): Promise<ApiResponse<JwtResponse>> => {
+    const response = await apiBase.post<JwtResponse>(`${BASE_PATH}/login`, loginRequest);
+    
+    // Guardar token automáticamente
+    if (response.success && response.data.token) {
+        await apiBase.setAuthToken(response.data.token);
     }
+    
+    return response;
+};
 
-    /**
-     * Registro de nuevo usuario
-     * POST /api/usuarios/registro
-     */
-    async registrar(registroRequest: RegistroRequestDTO): Promise<ApiResponse<JwtResponse>> {
-        const response = await this.axios.post<ApiResponse<JwtResponse>>(
-            `${this.BASE_PATH}/registro`,
-            registroRequest
-        );
-        return response.data;
-    }
+// Editar perfil del usuario autenticado
+// PUT /api/usuarios/perfil
+const editarPerfil = async (editarPerfilRequest: EditarPerfilRequestDTO): Promise<ApiResponse<Usuario>> => {
+    return apiBase.put<Usuario>(`${BASE_PATH}/perfil`, editarPerfilRequest);
+};
 
-    /**
-     * Login de usuario
-     * POST /api/usuarios/login
-     */
-    async login(loginRequest: LoginRequestDTO): Promise<ApiResponse<JwtResponse>> {
-        const response = await this.axios.post<ApiResponse<JwtResponse>>(
-            `${this.BASE_PATH}/login`,
-            loginRequest
-        );
-        
-        // Guardar token automáticamente
-        if (response.data.success && response.data.data.token) {
-            await apiBase.setAuthToken(response.data.data.token);
+// Verificación de dos pasos
+// POST /api/usuarios/verificacion-dos-pasos
+const verificacionDosPasos = async (codigoVerificacion: string): Promise<ApiResponse<string>> => {
+    return apiBase.post<string>(`${BASE_PATH}/verificacion-dos-pasos`, null, {
+        params: { codigoVerificacion }
+    });
+};
+
+// Obtener usuarios en red
+// GET /api/usuarios/red/{username}
+const obtenerUsuariosEnRed = async (username: string): Promise<ApiResponse<UsuarioEnRedResponse[]>> => {
+    return apiBase.get<UsuarioEnRedResponse[]>(`${BASE_PATH}/red/${username}`);
+};
+
+// Editar usuario (Admin)
+// PUT /api/usuarios/admin/editar
+const editarUsuarioAdmin = async (usuario: Usuario): Promise<ApiResponse<string>> => {
+    return apiBase.put<string>(`${BASE_PATH}/admin/editar`, usuario);
+};
+
+// Solicitar compra de licencia
+// POST /api/usuarios/solicitar-licencia
+const solicitarCompraLicencia = async (
+    tipoCrypto: TipoCrypto,
+    tipoLicencia: string,
+    tipoSolicitud: string
+): Promise<ApiResponse<string>> => {
+    return apiBase.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
+        params: {
+            tipoCrypto,
+            tipoLicencia,
+            tipoSolicitud
         }
-        
-        return response.data;
-    }
+    });
+};
 
-    /**
-     * Editar perfil del usuario autenticado
-     * PUT /api/usuarios/perfil
-     */
-    async editarPerfil(editarPerfilRequest: EditarPerfilRequestDTO): Promise<ApiResponse<Usuario>> {
-        const response = await this.axios.put<ApiResponse<Usuario>>(
-            `${this.BASE_PATH}/perfil`,
-            editarPerfilRequest
-        );
-        return response.data;
-    }
+// Solicitar retiro de fondos
+// POST /api/usuarios/solicitar-retiro
+const solicitarRetiroFondos = async (
+    walletAddressId: number,
+    monto: number,
+    tipoSolicitud: string
+): Promise<ApiResponse<string>> => {
+    return apiBase.post<string>(`${BASE_PATH}/solicitar-retiro`, null, {
+        params: {
+            walletAddressId,
+            monto,
+            tipoSolicitud
+        }
+    });
+};
 
-    /**
-     * Cambiar contraseña del usuario autenticado
-     * PATCH /api/usuarios/cambiar-password
-     */
-/*     async cambiarPassword(cambiarPasswordRequest: CambiarPasswordRequest): Promise<string> {
-        const response = await this.axios.patch<string>(
-            `${this.BASE_PATH}/cambiar-password`,
-            cambiarPasswordRequest
-        );
-        return response.data;
-    } */
+// Comprar licencia delegada (para otro usuario)
+// POST /api/usuarios/comprar-licencia-delegada
+const comprarLicenciaDelegada = async (
+    tipoLicencia: string,
+    destinatario: string,
+    tipoMetodoPago: string
+): Promise<ApiResponse<string>> => {
+    return apiBase.post<string>(`${BASE_PATH}/comprar-licencia-delegada`, null, {
+        params: {
+            tipoLicencia,
+            destinatario,
+            tipoMetodoPago
+        }
+    });
+};
 
-    /**
-     * Verificación de dos pasos
-     * POST /api/usuarios/verificacion-dos-pasos
-     */
-    async verificacionDosPasos(codigoVerificacion: string): Promise<string> {
-        const response = await this.axios.post<string>(
-            `${this.BASE_PATH}/verificacion-dos-pasos`,
-            null,
-            {
-                params: { codigoVerificacion }
-            }
-        );
-        return response.data;
-    }
+// Transferencia entre usuarios
+// POST /api/usuarios/transferencia
+const transferenciaEntreUsuarios = async (
+    usuarioDestinatario: string,
+    monto: number,
+    tipoWallet: TipoWallets
+): Promise<ApiResponse<string>> => {
+    return apiBase.post<string>(`${BASE_PATH}/transferencia`, null, {
+        params: {
+            usuarioDestinatario,
+            monto,
+            tipoWallet
+        }
+    });
+};
 
-    /**
-     * Obtener usuarios en red
-     * GET /api/usuarios/red/{username}
-     */
-    async obtenerUsuariosEnRed(username: string): Promise<ApiResponse<UsuarioEnRedResponse[]>> {
-        const response = await this.axios.get<ApiResponse<UsuarioEnRedResponse[]>>(
-            `${this.BASE_PATH}/red/${username}`
-        );
-        return response.data;
-    }
+// Aprobar compra de licencia (Admin)
+// PUT /api/usuarios/admin/aprobar-licencia/{idSolicitud}
+const aprobarCompraLicencia = async (idSolicitud: number): Promise<ApiResponse<string>> => {
+    return apiBase.put<string>(`${BASE_PATH}/admin/aprobar-licencia/${idSolicitud}`);
+};
 
-    /**
-     * Editar usuario (Admin)
-     * PUT /api/usuarios/admin/editar
-     */
-    async editarUsuarioAdmin(usuario: Usuario): Promise<ApiResponse<string>> {
-        const response = await this.axios.put<ApiResponse<string>>(
-            `${this.BASE_PATH}/admin/editar`,
-            usuario
-        );
-        return response.data;
-    }
+// Rechazar solicitud (Admin)
+// PUT /api/usuarios/admin/rechazar-solicitud/{idSolicitud}
+const rechazarSolicitud = async (idSolicitud: number): Promise<ApiResponse<string>> => {
+    return apiBase.put<string>(`${BASE_PATH}/admin/rechazar-solicitud/${idSolicitud}`);
+};
 
-    /**
-     * Solicitar compra de licencia
-     * POST /api/usuarios/solicitar-licencia
-     */
-    async solicitarCompraLicencia(
-        tipoCrypto: TipoCrypto,
-        tipoLicencia: string, // 'LICENCIA1', 'LICENCIA2', etc.
-        tipoSolicitud: string  // Enum TipoSolicitud del backend
-    ): Promise<ApiResponse<string>> {
-        const response = await this.axios.post<ApiResponse<string>>(
-            `${this.BASE_PATH}/solicitar-licencia`,
-            null,
-            {
-                params: {
-                    tipoCrypto,
-                    tipoLicencia,
-                    tipoSolicitud
-                }
-            }
-        );
-        return response.data;
-    }
-
-    /**
-     * Solicitar retiro de fondos
-     * POST /api/usuarios/solicitar-retiro
-     */
-    async solicitarRetiroFondos(
-        walletAddressId: number,
-        monto: number,
-        tipoSolicitud: string
-    ): Promise<ApiResponse<string>> {
-        const response = await this.axios.post<ApiResponse<string>>(
-            `${this.BASE_PATH}/solicitar-retiro`,
-            null,
-            {
-                params: {
-                    walletAddressId,
-                    monto,
-                    tipoSolicitud
-                }
-            }
-        );
-        return response.data;
-    }
-
-    /**
-     * Comprar licencia delegada (para otro usuario)
-     * POST /api/usuarios/comprar-licencia-delegada
-     */
-    async comprarLicenciaDelegada(
-        tipoLicencia: string,
-        destinatario: string,
-        tipoMetodoPago: string  // Enum TipoMetodoPago del backend
-    ): Promise<ApiResponse<string>> {
-        const response = await this.axios.post<ApiResponse<string>>(
-            `${this.BASE_PATH}/comprar-licencia-delegada`,
-            null,
-            {
-                params: {
-                    tipoLicencia,
-                    destinatario,
-                    tipoMetodoPago
-                }
-            }
-        );
-        return response.data;
-    }
-
-    /**
-     * Transferencia entre usuarios
-     * POST /api/usuarios/transferencia
-     */
-    async transferenciaEntreUsuarios(
-        usuarioDestinatario: string,
-        monto: number,
-        tipoWallet: TipoWallets
-    ): Promise<ApiResponse<string>> {
-        const response = await this.axios.post<ApiResponse<string>>(
-            `${this.BASE_PATH}/transferencia`,
-            null,
-            {
-                params: {
-                    usuarioDestinatario,
-                    monto,
-                    tipoWallet
-                }
-            }
-        );
-        return response.data;
-    }
-
-    /**
-     * Aprobar compra de licencia (Admin)
-     * PUT /api/usuarios/admin/aprobar-licencia/{idSolicitud}
-     */
-    async aprobarCompraLicencia(idSolicitud: number): Promise<ApiResponse<string>> {
-        const response = await this.axios.put<ApiResponse<string>>(
-            `${this.BASE_PATH}/admin/aprobar-licencia/${idSolicitud}`
-        );
-        return response.data;
-    }
-
-    /**
-     * Rechazar solicitud (Admin)
-     * PUT /api/usuarios/admin/rechazar-solicitud/{idSolicitud}
-     */
-    async rechazarSolicitud(idSolicitud: number): Promise<ApiResponse<string>> {
-        const response = await this.axios.put<ApiResponse<string>>(
-            `${this.BASE_PATH}/admin/rechazar-solicitud/${idSolicitud}`
-        );
-        return response.data;
-    }
-
-}
-
-// Exportar instancia única
-export const usuarioService = new UsuarioService();
-export default usuarioService;
+// Objeto con todas las funciones
+export const usuarioService = {
+    registrar,
+    login,
+    editarPerfil,
+    verificacionDosPasos,
+    obtenerUsuariosEnRed,
+    editarUsuarioAdmin,
+    solicitarCompraLicencia,
+    solicitarRetiroFondos,
+    comprarLicenciaDelegada,
+    transferenciaEntreUsuarios,
+    aprobarCompraLicencia,
+    rechazarSolicitud,
+};

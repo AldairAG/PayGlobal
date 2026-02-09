@@ -1,6 +1,7 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { store } from '../store'; // Importar tu store de Redux
 import { logout } from '../store/slice/usuarioSlice'; // Importar action de logout
+import type { ApiResponse, RequestData, UploadProgressEvent } from '../type/apiTypes';
 
 // Define __DEV__ for development mode checking
 const __DEV__ = import.meta.env.DEV;
@@ -75,31 +76,6 @@ class WebSessionStorageWrapper {
 }
 
 const storage = new WebSessionStorageWrapper();
-
-// Tipos para las respuestas de la API
-export interface ApiResponse<T> {
-    success: boolean;
-    message: string;
-    data: T;
-}
-
-// Tipos específicos para web
-export interface UploadProgressEvent {
-    loaded: number;
-    total?: number;
-    progress?: number;
-    lengthComputable?: boolean;
-}
-
-export interface ApiError {
-    message: string;
-    status?: number;
-    code?: string;
-    details?: Record<string, unknown>;
-}
-
-// Tipo para datos de request
-export type RequestData = Record<string, unknown> | FormData | string | null | unknown;
 
 // Configuración base de la API
 //const API_BASE_URL = 'http://localhost:8080/24bet';
@@ -339,6 +315,56 @@ class ApiBase {
         }
 
         return new Error(errorMessage);
+    }
+
+
+    // Métodos públicos para realizar requests
+
+    async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+        try {
+            const response = await this.axiosInstance.get<ApiResponse<T>>(url, config);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async post<T>(url: string, data?: RequestData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+        try {
+            console.log(import.meta.env.VITE_API_BASE_URL);
+
+            const response = await this.axiosInstance.post<ApiResponse<T>>(url, data, config);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async put<T>(url: string, data?: RequestData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+        try {
+            const response = await this.axiosInstance.put<ApiResponse<T>>(url, data, config);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async patch<T>(url: string, data?: RequestData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+        try {
+            const response = await this.axiosInstance.patch<ApiResponse<T>>(url, data, config);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
+    }
+
+    async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+        try {
+            const response = await this.axiosInstance.delete<ApiResponse<T>>(url, config);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error);
+        }
     }
 }
 
