@@ -4,10 +4,9 @@ import type { ApiResponse } from "../type/apiTypes";
 import type { LoginRequestDTO, RegistroRequestDTO } from "../type/requestTypes";
 import { api } from "./apiBase"
 import { apiBase } from "./apiBase";
-
 import type { JwtResponse } from "./usuarioService";
 
-const BASE_PATH = '/api/usuarios';
+const BASE_PATH = '/usuarios';
 
 // POST /api/usuarios/registro
 const registrar = async (registroRequest: RegistroRequestDTO): Promise<ApiResponse<JwtResponse>> => {

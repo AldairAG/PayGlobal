@@ -81,6 +81,17 @@ const storage = new WebSessionStorageWrapper();
 //const API_BASE_URL = 'https://24bet.mx/24bet';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
+// Rutas públicas que no requieren autenticación
+const PUBLIC_ROUTES = [
+    '/usuarios/registro',
+    '/usuarios/login',
+];
+
+// Función auxiliar para verificar si una ruta es pública
+const isPublicRoute = (url: string): boolean => {
+    return PUBLIC_ROUTES.some(route => url.includes(route));
+};
+
 class ApiBase {
     private axiosInstance: AxiosInstance;
     // Referencia opcional al store; se establece desde fuera para evitar ciclos de importación
@@ -111,22 +122,29 @@ class ApiBase {
         this.axiosInstance.interceptors.request.use(
             async (config) => {
                 try {
-                    // 1. Prioridad: obtener token desde Redux
-                    let token = this.getTokenFromRedux();
+                    // Verificar si la ruta es pública (no requiere autenticación)
+                    const routeIsPublic = isPublicRoute(config.url || '');
 
-                    // 2. Fallback: obtener desde storage si Redux no está disponible
-                    if (!token) {
-                        token = await storage.getItem('auth_token');
-                    }
+                    if (!routeIsPublic) {
+                        // 1. Prioridad: obtener token desde Redux
+                        let token = this.getTokenFromRedux();
 
-                    if (token) {
-                        config.headers.Authorization = `Bearer ${token}`;
+                        // 2. Fallback: obtener desde storage si Redux no está disponible
+                        if (!token) {
+                            token = await storage.getItem('auth_token');
+                        }
 
-                        if (__DEV__) {
-                            console.log(`🔐 Request with auth: ${config.method?.toUpperCase()} ${config.url}`);
+                        if (token) {
+                            config.headers.Authorization = `Bearer ${token}`;
+
+                            if (__DEV__) {
+                                console.log(`🔐 Request with auth: ${config.method?.toUpperCase()} ${config.url}`);
+                            }
+                        } else if (__DEV__) {
+                            console.log(`🔓 Request without auth: ${config.method?.toUpperCase()} ${config.url}`);
                         }
                     } else if (__DEV__) {
-                        console.log(`🔓 Request without auth: ${config.method?.toUpperCase()} ${config.url}`);
+                        console.log(`🌐 Request to public route (no auth): ${config.method?.toUpperCase()} ${config.url}`);
                     }
                 } catch (error) {
                     console.error('Error al obtener el token:', error);
