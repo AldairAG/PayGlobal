@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { useUsuario } from "../../hooks/usuarioHook";
 
 interface LoginModalProps {
@@ -9,36 +10,41 @@ interface LoginModalProps {
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
     const { t } = useTranslation();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [localError, setLocalError] = useState<string | null>(null);
-
     const { login, loadingLogin, errorLogin } = useUsuario();
+
+    const validationSchema = Yup.object({
+        email: Yup.string()
+            .required(t("landing.fill_fields") || "Complete este campo"),
+        password: Yup.string()
+            .required(t("landing.fill_fields") || "Complete este campo")
+            .min(6, t("landing.password_min_length") || "Mínimo 6 caracteres"),
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            email: "",
+            password: "",
+        },
+        validationSchema,
+        onSubmit: async (values) => {
+            try {
+                // el backend espera `username` en LoginRequestDTO; usamos el email como username aquí
+                await login({ username: values.email, password: values.password });
+                onClose();
+                formik.resetForm();
+            } catch (err) {
+                console.error('Login fallido', err);
+            }
+        },
+    });
 
     if (!open) return null;
 
-    const isEmailComplete = email.trim().length > 0;
-    const isPasswordComplete = password.trim().length > 0;
+    const isEmailComplete = formik.values.email.trim().length > 0;
+    const isPasswordComplete = formik.values.password.trim().length > 0;
     const totalFields = 2;
     const completedFields = (isEmailComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0);
     const progressPercentage = (completedFields / totalFields) * 100;
-
-    const handleLogin = async () => {
-        setLocalError(null);
-
-        if (!email || !password) {
-            setLocalError(t("landing.fill_fields") || "Complete los campos");
-            return;
-        }
-
-        try {
-            // el backend espera `username` en LoginRequestDTO; usamos el email como username aquí
-            await login({ username: email, password });
-            onClose();
-        } catch (err) {
-            console.error('Login fallido', err);
-        }
-    };
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-15 flex justify-center items-center">
@@ -97,8 +103,10 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                         <input
                             className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.email")}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            value={formik.values.email}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                         />
                         {isEmailComplete && (
                             <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
@@ -106,6 +114,9 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                             </span>
                         )}
                     </div>
+                    {formik.touched.email && formik.errors.email && (
+                        <div className="text-sm text-red-600 mt-1">{formik.errors.email}</div>
+                    )}
                 </div>
 
                 {/* Campo Password */}
@@ -115,8 +126,10 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                             className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.password")}
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
                         />
                         {isPasswordComplete && (
                             <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
@@ -124,16 +137,19 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                             </span>
                         )}
                     </div>
+                    {formik.touched.password && formik.errors.password && (
+                        <div className="text-sm text-red-600 mt-1">{formik.errors.password}</div>
+                    )}
                 </div>
 
-                {localError && <div className="text-sm text-red-600 mb-2">{localError}</div>}
                 {errorLogin && <div className="text-sm text-red-600 mb-2">{errorLogin}</div>}
 
                 <button
                     className="w-full text-white py-2 rounded mb-2 transition-colors"
                     style={{ backgroundColor: "#F0973C" }}
-                    onClick={handleLogin}
+                    onClick={() => formik.handleSubmit()}
                     disabled={loadingLogin}
+                    type="button"
                 >
                     {loadingLogin ? t("landing.logging_in") ?? "Iniciando..." : t("landing.login")}
                 </button>
