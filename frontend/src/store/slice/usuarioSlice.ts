@@ -1,47 +1,54 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Usuario } from "../../type/entityTypes";
-import { removeFromSessionStorage, saveToSessionStorage } from "../../helpers/authHelpers";
-import { usuarioService, type JwtResponse, type UsuarioEnRedResponse } from "../../service/usuarioService";
-import type { EditarPerfilRequestDTO, LoginRequestDTO, RegistroRequestDTO } from "../../type/requestTypes";
+import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuarioService";
+import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse } from "../../type/apiTypes";
 import type { TipoCrypto, TipoWallets } from "../../type/enum";
+import { saveToSessionStorage } from "../../helpers/authHelpers";
 
-interface UserState {
+interface UsuarioState {
     usuario: Usuario | null;
-    token: string | null;
+
     loadingRegistro: boolean;
     errorRegistro: string | null;
+
     loadingLogin: boolean;
     errorLogin: string | null;
-    isAuthenticated: boolean;
+    
     loadingEditarPerfil: boolean;
     errorEditarPerfil: string | null;
+
     loadingUsuariosEnRed: boolean;
     errorUsuariosEnRed: string | null;
+
     loadingEditarUsuarioAdmin: boolean;
     errorEditarUsuarioAdmin: string | null;
+
     loadingSolicitarCompraLicencia: boolean;
     errorSolicitarCompraLicencia: string | null;
+
     loadingSolicitarRetiroFondos: boolean;
     errorSolicitarRetiroFondos: string | null;
+
     loadingComprarLicenciaDelegada: boolean;
     errorComprarLicenciaDelegada: string | null;
+
     loadingTransferenciaEntreUsuarios: boolean;
     errorTransferenciaEntreUsuarios: string | null;
+
     loadingAprobarCompraLicencia: boolean;
     errorAprobarCompraLicencia: string | null;
+
     loadingRechazarSolicitud: boolean;
     errorRechazarSolicitud: string | null;
 }
 
-const initialState: UserState = {
+const initialState: UsuarioState = {
     usuario: null,
-    token: null,
     loadingRegistro: false,
     errorRegistro: null,
     loadingLogin: false,
     errorLogin: null,
-    isAuthenticated: false,
     loadingEditarPerfil: false,
     errorEditarPerfil: null,
     loadingUsuariosEnRed: false,
@@ -61,44 +68,6 @@ const initialState: UserState = {
     loadingRechazarSolicitud: false,
     errorRechazarSolicitud: null,
 };
-
-export const registrarThunk = createAsyncThunk<
-    ApiResponse<JwtResponse>,
-    RegistroRequestDTO,
-    { rejectValue: string }
->("usuario/registrar", async (registroRequest, { rejectWithValue }) => {
-    try {
-        const response = await usuarioService.registrar(registroRequest);
-
-        if (!response.success) {
-            return rejectWithValue(response.message || "Error al registrar usuario");
-        }
-
-        return response;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al registrar usuario";
-        return rejectWithValue(message);
-    }
-});
-
-export const loginThunk = createAsyncThunk<
-    ApiResponse<JwtResponse>,
-    LoginRequestDTO,
-    { rejectValue: string }
->("usuario/login", async (loginRequest, { rejectWithValue }) => {
-    try {
-        const response = await usuarioService.login(loginRequest);
-
-        if (!response.success) {
-            return rejectWithValue(response.message || "Error al iniciar sesión");
-        }
-
-        return response;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al iniciar sesión";
-        return rejectWithValue(message);
-    }
-});
 
 export const editarPerfilThunk = createAsyncThunk<
     ApiResponse<Usuario>,
@@ -273,77 +242,14 @@ const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
     reducers: {
-        logout(state) {
-            state.usuario = null;
-            state.token = null;
-            state.isAuthenticated = false;
-            state.errorRegistro = null;
-            state.errorLogin = null;
-            state.errorEditarPerfil = null;
-            state.errorUsuariosEnRed = null;
-            state.errorEditarUsuarioAdmin = null;
-            state.errorSolicitarCompraLicencia = null;
-            state.errorSolicitarRetiroFondos = null;
-            state.errorComprarLicenciaDelegada = null;
-            state.errorTransferenciaEntreUsuarios = null;
-            state.errorAprobarCompraLicencia = null;
-            state.errorRechazarSolicitud = null;
-            // Limpiar sessionStorage
-            removeFromSessionStorage('auth_user');
-            removeFromSessionStorage('auth_token');
-        },
         setUsuario(state, action: PayloadAction<Usuario>) {
             state.usuario = action.payload;
-            state.isAuthenticated = true;
             // Guardar en sessionStorage
             saveToSessionStorage('auth_user', action.payload);
-        },
-        setToken(state, action: PayloadAction<string>) {
-            state.token = action.payload;
-            // Guardar en sessionStorage
-            saveToSessionStorage('auth_token', action.payload);
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(registrarThunk.pending, (state) => {
-                state.loadingRegistro = true;
-                state.errorRegistro = null;
-            })
-            .addCase(registrarThunk.fulfilled, (state, action) => {
-                state.loadingRegistro = false;
-                state.errorRegistro = null;
-
-                const token = action.payload.data?.token;
-                if (token) {
-                    state.token = token;
-                    state.isAuthenticated = true;
-                    saveToSessionStorage('auth_token', token);
-                }
-            })
-            .addCase(registrarThunk.rejected, (state, action) => {
-                state.loadingRegistro = false;
-                state.errorRegistro = action.payload || "Error al registrar usuario";
-            })
-            .addCase(loginThunk.pending, (state) => {
-                state.loadingLogin = true;
-                state.errorLogin = null;
-            })
-            .addCase(loginThunk.fulfilled, (state, action) => {
-                state.loadingLogin = false;
-                state.errorLogin = null;
-
-                const token = action.payload.data?.token;
-                if (token) {
-                    state.token = token;
-                    state.isAuthenticated = true;
-                    saveToSessionStorage('auth_token', token);
-                }
-            })
-            .addCase(loginThunk.rejected, (state, action) => {
-                state.loadingLogin = false;
-                state.errorLogin = action.payload || "Error al iniciar sesión";
-            })
             .addCase(editarPerfilThunk.pending, (state) => {
                 state.loadingEditarPerfil = true;
                 state.errorEditarPerfil = null;
@@ -456,5 +362,5 @@ const usuarioSlice = createSlice({
     },
 });
 
-export const { logout, setToken, setUsuario } = usuarioSlice.actions;
+export const { setUsuario } = usuarioSlice.actions;
 export default usuarioSlice.reducer;

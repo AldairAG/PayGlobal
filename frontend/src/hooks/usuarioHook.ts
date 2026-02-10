@@ -1,12 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '../store';
-import {
-    registrarThunk,
-    loginThunk,
-    logout,
-} from '../store/slice/usuarioSlice';
 import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
+import { logout } from '../store/slice/authSlice';
+import { registro, login as loginThunk} from '../store/slice/authSlice';
 
 /**
  * Hook personalizado para manejo de autenticación (Login y Registro)
@@ -17,8 +14,8 @@ export const useUsuario = () => {
 
     // Seleccionar estados del usuario desde Redux
     const usuario = useSelector((state: RootState) => state.usuario.usuario);
-    const token = useSelector((state: RootState) => state.usuario.token);
-    const isAuthenticated = useSelector((state: RootState) => state.usuario.isAuthenticated);
+    const token = useSelector((state: RootState) => state.auth.token);
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
     // Estados de Registro
     const loadingRegistro = useSelector((state: RootState) => state.usuario.loadingRegistro);
@@ -35,7 +32,7 @@ export const useUsuario = () => {
      */
     const registrar = async (registroData: RegistroRequestDTO) => {
         try {
-            const result = await dispatch(registrarThunk(registroData));
+            const result = await dispatch(registro(registroData));
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al registrar usuario:', error);

@@ -1,6 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
-import { store } from '../store'; // Importar tu store de Redux
-import { logout } from '../store/slice/usuarioSlice'; // Importar action de logout
 import type { ApiResponse, RequestData, UploadProgressEvent } from '../type/apiTypes';
 
 // Define __DEV__ for development mode checking
@@ -84,6 +83,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 
 class ApiBase {
     private axiosInstance: AxiosInstance;
+    // Referencia opcional al store; se establece desde fuera para evitar ciclos de importación
+    private store: any | null = null;
 
     constructor() {
         // Crear instancia de Axios
@@ -98,6 +99,11 @@ class ApiBase {
 
         // Configurar interceptores
         this.setupInterceptors();
+    }
+
+    // Permitir que el store sea inyectado desde el exterior (por ejemplo desde `store/index.ts`)
+    public setStore(store: any) {
+        this.store = store;
     }
 
     private setupInterceptors() {
@@ -165,8 +171,9 @@ class ApiBase {
     // Obtener token desde Redux store
     private getTokenFromRedux(): string | null {
         try {
-            const state = store.getState();
-            return state.usuario.token || null;
+            if (!this.store) return null;
+            const state = this.store.getState();
+            return state?.auth?.token || null;
         } catch (error) {
             console.warn('No se pudo obtener token desde Redux:', error);
             return null;
@@ -183,8 +190,23 @@ class ApiBase {
             // 2. Limpiar headers de axios
             delete this.axiosInstance.defaults.headers.common['Authorization'];
 
-            // 3. Dispatch logout en Redux
-            store.dispatch(logout());
+            // 3. Dispatch logout en Redux (si el store fue inyectado)
+            if (this.store) {
+                try {
+                    const module = await import('../store/slice/authSlice');
+                    const logout = module.logout;
+                    this.store.dispatch(logout());
+                } catch (error) {
+                    console.log(error);
+                    
+                    // Fallback: si no se puede importar la acción, intentar dispatch por tipo
+                    try {
+                        this.store.dispatch({ type: 'auth/logout' });
+                    } catch (err) {
+                        console.error('No se pudo dispatch logout:', err);
+                    }
+                }
+            }
 
             console.log('✅ Sesión limpiada completamente');
         } catch (error) {
@@ -380,4 +402,9 @@ export const api = {
     uploadFile: <T>(url: string, file: FormData, onUploadProgress?: (progressEvent: UploadProgressEvent) => void) =>
         apiBase.uploadFile<T>(url, file, onUploadProgress),
     downloadFile: (url: string, filename?: string) => apiBase.downloadFile(url, filename),
+    get: <T>(url: string, config?: AxiosRequestConfig) => apiBase.get<T>(url, config),
+    post: <T>(url: string, data?: RequestData, config?: AxiosRequestConfig) => apiBase.post<T>(url, data, config),
+    put: <T>(url: string, data?: RequestData, config?: AxiosRequestConfig) => apiBase.put<T>(url, data, config),
+    patch: <T>(url: string, data?: RequestData, config?: AxiosRequestConfig) => apiBase.patch<T>(url, data, config),
+    delete: <T>(url: string, config?: AxiosRequestConfig) => apiBase.delete<T>(url, config),
 };

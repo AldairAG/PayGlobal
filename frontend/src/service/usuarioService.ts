@@ -1,8 +1,6 @@
-import { apiBase } from './apiBase';
+import { api } from './apiBase';
 import type { ApiResponse } from '../type/apiTypes';
 import type {
-    RegistroRequestDTO,
-    LoginRequestDTO,
     EditarPerfilRequestDTO,
 } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
@@ -30,35 +28,16 @@ export interface UsuarioEnRedResponse {
 
 const BASE_PATH = '/usuarios';
 
-// Registro de nuevo usuario
-// POST /api/usuarios/registro
-const registrar = async (registroRequest: RegistroRequestDTO): Promise<ApiResponse<JwtResponse>> => {
-    return apiBase.post<JwtResponse>(`${BASE_PATH}/registro`, registroRequest);
-};
-
-// Login de usuario
-// POST /api/usuarios/login
-const login = async (loginRequest: LoginRequestDTO): Promise<ApiResponse<JwtResponse>> => {
-    const response = await apiBase.post<JwtResponse>(`${BASE_PATH}/login`, loginRequest);
-    
-    // Guardar token automáticamente
-    if (response.success && response.data.token) {
-        await apiBase.setAuthToken(response.data.token);
-    }
-    
-    return response;
-};
-
 // Editar perfil del usuario autenticado
 // PUT /api/usuarios/perfil
 const editarPerfil = async (editarPerfilRequest: EditarPerfilRequestDTO): Promise<ApiResponse<Usuario>> => {
-    return apiBase.put<Usuario>(`${BASE_PATH}/perfil`, editarPerfilRequest);
+    return api.put<Usuario>(`${BASE_PATH}/perfil`, editarPerfilRequest);
 };
 
 // Verificación de dos pasos
 // POST /api/usuarios/verificacion-dos-pasos
 const verificacionDosPasos = async (codigoVerificacion: string): Promise<ApiResponse<string>> => {
-    return apiBase.post<string>(`${BASE_PATH}/verificacion-dos-pasos`, null, {
+    return api.post<string>(`${BASE_PATH}/verificacion-dos-pasos`, null, {
         params: { codigoVerificacion }
     });
 };
@@ -66,13 +45,13 @@ const verificacionDosPasos = async (codigoVerificacion: string): Promise<ApiResp
 // Obtener usuarios en red
 // GET /api/usuarios/red/{username}
 const obtenerUsuariosEnRed = async (username: string): Promise<ApiResponse<UsuarioEnRedResponse[]>> => {
-    return apiBase.get<UsuarioEnRedResponse[]>(`${BASE_PATH}/red/${username}`);
+    return api.get<UsuarioEnRedResponse[]>(`${BASE_PATH}/red/${username}`);
 };
 
 // Editar usuario (Admin)
 // PUT /api/usuarios/admin/editar
 const editarUsuarioAdmin = async (usuario: Usuario): Promise<ApiResponse<string>> => {
-    return apiBase.put<string>(`${BASE_PATH}/admin/editar`, usuario);
+    return api.put<string>(`${BASE_PATH}/admin/editar`, usuario);
 };
 
 // Solicitar compra de licencia
@@ -82,7 +61,7 @@ const solicitarCompraLicencia = async (
     tipoLicencia: string,
     tipoSolicitud: string
 ): Promise<ApiResponse<string>> => {
-    return apiBase.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
+    return api.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
         params: {
             tipoCrypto,
             tipoLicencia,
@@ -98,7 +77,7 @@ const solicitarRetiroFondos = async (
     monto: number,
     tipoSolicitud: string
 ): Promise<ApiResponse<string>> => {
-    return apiBase.post<string>(`${BASE_PATH}/solicitar-retiro`, null, {
+    return api.post<string>(`${BASE_PATH}/solicitar-retiro`, null, {
         params: {
             walletAddressId,
             monto,
@@ -114,7 +93,7 @@ const comprarLicenciaDelegada = async (
     destinatario: string,
     tipoMetodoPago: string
 ): Promise<ApiResponse<string>> => {
-    return apiBase.post<string>(`${BASE_PATH}/comprar-licencia-delegada`, null, {
+    return api.post<string>(`${BASE_PATH}/comprar-licencia-delegada`, null, {
         params: {
             tipoLicencia,
             destinatario,
@@ -130,7 +109,7 @@ const transferenciaEntreUsuarios = async (
     monto: number,
     tipoWallet: TipoWallets
 ): Promise<ApiResponse<string>> => {
-    return apiBase.post<string>(`${BASE_PATH}/transferencia`, null, {
+    return api.post<string>(`${BASE_PATH}/transferencia`, null, {
         params: {
             usuarioDestinatario,
             monto,
@@ -142,19 +121,17 @@ const transferenciaEntreUsuarios = async (
 // Aprobar compra de licencia (Admin)
 // PUT /api/usuarios/admin/aprobar-licencia/{idSolicitud}
 const aprobarCompraLicencia = async (idSolicitud: number): Promise<ApiResponse<string>> => {
-    return apiBase.put<string>(`${BASE_PATH}/admin/aprobar-licencia/${idSolicitud}`);
+    return api.put<string>(`${BASE_PATH}/admin/aprobar-licencia/${idSolicitud}`);
 };
 
 // Rechazar solicitud (Admin)
 // PUT /api/usuarios/admin/rechazar-solicitud/{idSolicitud}
 const rechazarSolicitud = async (idSolicitud: number): Promise<ApiResponse<string>> => {
-    return apiBase.put<string>(`${BASE_PATH}/admin/rechazar-solicitud/${idSolicitud}`);
+    return api.put<string>(`${BASE_PATH}/admin/rechazar-solicitud/${idSolicitud}`);
 };
 
 // Objeto con todas las funciones
 export const usuarioService = {
-    registrar,
-    login,
     editarPerfil,
     verificacionDosPasos,
     obtenerUsuariosEnRed,
