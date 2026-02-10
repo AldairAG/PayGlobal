@@ -30,10 +30,12 @@ import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.WalletAddress;
 import com.api.payglobal.entity.enums.EstadoOperacion;
+import com.api.payglobal.entity.enums.RolesUsuario;
 import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
+import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.JwtHelper;
@@ -93,9 +95,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public JwtResponse login(LoginRequest loginRequest) {
         try {
+            usuarioRepository.findByUsernameOrEmailForLogin(loginRequest.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username o email: " + loginRequest.getUsername()));
+
             // Autenticar usuario
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -118,7 +123,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                     usuario);
 
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Credenciales incorrectas");
+            throw new RuntimeException("Ocurrió un error durante la autenticación: " + e.getMessage(), e);
         }
     }
 
@@ -136,6 +141,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setEmail(dto.getEmail());
         usuario.setReferenciado(dto.getReferenciado());
         usuario.setFechaRegistro(new Date());
+        usuario.setActivo(true);
+        usuario.setRol(RolesUsuario.USUARIO);
+        usuario.setRango(TipoRango.RANGO_0);
         return usuario;
     }
 

@@ -1,7 +1,7 @@
 package com.api.payglobal.entity.enums;
 
 public enum RolesUsuario {
-    ADMINISTRADOR_USUARIO,
+    USUARIO,
     ADMINISTRADOR,
     SOPORTE,
     OPERADOR
