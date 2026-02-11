@@ -1,9 +1,21 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { jwtDecode } from 'jwt-decode';
 import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
+import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk} from '../store/slice/authSlice';
+import { setUsuario } from '../store/slice/usuarioSlice';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../routes/routes';
+
+interface JwtPayload {
+    sub: string;
+    rol?: string;
+    exp: number;
+    iat: number;
+}
 
 /**
  * Hook personalizado para manejo de autenticación (Login y Registro)
@@ -11,7 +23,7 @@ import { registro, login as loginThunk} from '../store/slice/authSlice';
  */
 export const useUsuario = () => {
     const dispatch = useDispatch<AppDispatch>();
-
+    const navigate = useNavigate();
     // Seleccionar estados del usuario desde Redux
     const usuario = useSelector((state: RootState) => state.usuario.usuario);
     const token = useSelector((state: RootState) => state.auth.token);
@@ -48,6 +60,14 @@ export const useUsuario = () => {
     const login = async (loginData: LoginRequestDTO) => {
         try {
             const result = await dispatch(loginThunk(loginData));
+
+            if (result.payload && typeof result.payload === 'object' && 'usuario' in result.payload) {
+                dispatch(setUsuario((result.payload as { usuario: Usuario }).usuario)); // Guardar datos del usuario en el estado
+            }
+
+            const ruta = obtenerRutaSegunRol(); 
+            navigate(ruta); // Redirigir según el rol del usuario
+
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
@@ -61,6 +81,39 @@ export const useUsuario = () => {
      */
     const cerrarSesion = () => {
         dispatch(logout());
+    };
+
+    /**
+     * Función para obtener el rol del usuario desde el token JWT
+     * @returns El rol del usuario o null si no hay token o es inválido
+     */
+    const obtenerRolDesdeToken = (): string | null => {
+        if (!token) return null;
+
+        try {
+            const decoded = jwtDecode<JwtPayload>(token);
+            return decoded.rol || null;
+        } catch (error) {
+            console.error('Error al decodificar el token:', error);
+            return null;
+        }
+    };
+
+    /**
+     * Función para obtener la ruta de redirección según el rol del usuario
+     * @returns La ruta correspondiente al rol del usuario
+     */
+    const obtenerRutaSegunRol = (): string => {
+        const rol = obtenerRolDesdeToken();
+
+        switch (rol) {
+            case 'ROLE_ADMIN':
+                return ROUTES.ADMIN.DASHBOARD;
+            case 'ROLE_USUARIO':
+                return ROUTES.USER.HOME;
+            default:
+                return ROUTES.LANDING;
+        }
     };
 
     // Retornar objeto con métodos y estados

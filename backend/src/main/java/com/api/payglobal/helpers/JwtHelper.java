@@ -35,7 +35,17 @@ public class JwtHelper {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        
+        // Extraer el rol del UserDetails
+        String rol = userDetails.getAuthorities().stream()
+                .findFirst()
+                .map(authority -> authority.getAuthority())
+                .orElse("USER");
+        
+        claims.put("rol", rol);
+        
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

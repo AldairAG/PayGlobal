@@ -16,6 +16,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.23.12",
     "i18next": "^25.8.4",
+    "jwt-decode": "^4.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-i18next": "^16.5.4",

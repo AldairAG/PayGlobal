@@ -119,7 +119,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                     usuario.getId(),
                     usuario.getUsername(),
                     usuario.getEmail(),
-                    usuario.getRol().name(),
                     usuario);
 
         } catch (AuthenticationException e) {
