@@ -13,7 +13,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     const { login, loadingLogin, errorLogin } = useUsuario();
 
     const validationSchema = Yup.object({
-        email: Yup.string()
+        username: Yup.string()
             .required(t("landing.fill_fields") || "Complete este campo"),
         password: Yup.string()
             .required(t("landing.fill_fields") || "Complete este campo")
@@ -22,14 +22,13 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
     const formik = useFormik({
         initialValues: {
-            email: "",
+            username: "",
             password: "",
         },
         validationSchema,
         onSubmit: async (values) => {
             try {
-                // el backend espera `username` en LoginRequestDTO; usamos el email como username aquí
-                await login({ username: values.email, password: values.password });
+                await login({ username: values.username, password: values.password });
                 onClose();
                 formik.resetForm();
             } catch (err) {
@@ -40,10 +39,10 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
     if (!open) return null;
 
-    const isEmailComplete = formik.values.email.trim().length > 0;
+    const isUsernameComplete = formik.values.username.trim().length > 0;
     const isPasswordComplete = formik.values.password.trim().length > 0;
     const totalFields = 2;
-    const completedFields = (isEmailComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0);
+    const completedFields = (isUsernameComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0);
     const progressPercentage = (completedFields / totalFields) * 100;
 
     return (
@@ -97,25 +96,25 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
                 <h2 className="text-xl mb-6 font-bold">{t("landing.login")}</h2>
 
-                {/* Campo Email */}
+                {/* Campo Username */}
                 <div className="mb-4">
                     <div className="flex items-center">
                         <input
                             className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
-                            placeholder={t("landing.email")}
-                            name="email"
-                            value={formik.values.email}
+                            placeholder={t("landing.username") || "Username"}
+                            name="username"
+                            value={formik.values.username}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                         />
-                        {isEmailComplete && (
+                        {isUsernameComplete && (
                             <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
                                 ✓
                             </span>
                         )}
                     </div>
-                    {formik.touched.email && formik.errors.email && (
-                        <div className="text-sm text-red-600 mt-1">{formik.errors.email}</div>
+                    {formik.touched.username && formik.errors.username && (
+                        <div className="text-sm text-red-600 mt-1">{formik.errors.username}</div>
                     )}
                 </div>
 
