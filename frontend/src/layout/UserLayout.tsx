@@ -23,18 +23,18 @@ export const UserLayout = () => {
     const currentPageName = routeNames[location.pathname] || 'Página';
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen ">
             {/* SideBar ocupa toda la altura */}
             <SideBar />
 
-            {/* Columna derecha: Header + Contenido + Footer */}
+            {/* Columna derecha: Header + Contenido*/}
             <div className="flex flex-col flex-1 overflow-hidden">
                 <Header />
 
                 {/* Breadcrumb */}
                 <div className="px-6 py-3 border-b" style={{ backgroundColor: '#f9fafb', borderColor: '#e5e7eb' }}>
                     <div className="flex items-center justify-center space-x-2 text-sm">
-                        <Link 
+                        <Link
                             to={ROUTES.USER.HOME}
                             className="flex items-center hover:opacity-70 transition"
                             style={{ color: '#69AC95' }}
@@ -54,10 +54,17 @@ export const UserLayout = () => {
 
                 <main className="flex-1 overflow-y-auto">
                     <Outlet />
+
+                    <div className="block">
+                        <Fotter />
+                    </div>
                 </main>
 
-                <Fotter />
+
+
+
             </div>
+
         </div>
     );
 }

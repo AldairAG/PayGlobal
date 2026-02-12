@@ -19,6 +19,5 @@ export interface ApiError {
     code?: string;
     details?: Record<string, unknown>;
 }
-
 // Tipo para datos de request
 export type RequestData = Record<string, unknown> | FormData | string | null | unknown;

@@ -44,3 +44,15 @@ export interface Licencia {
     saldoAcumulado: number;
 }
 
+export const LICENCIAS = {
+    LICENCIA1: { name: "Licencia 1", value: 100 },
+    LICENCIA2: { name: "Licencia 2", value: 200 },
+    LICENCIA3: { name: "Licencia 3", value: 500 },
+    LICENCIA4: { name: "Licencia 4", value: 1000 },
+    LICENCIA5: { name: "Licencia 5", value: 3000 },
+    LICENCIA6: { name: "Licencia 6", value: 5000 },
+    LICENCIA7: { name: "Licencia 7", value: 10000 },
+    LICENCIA8: { name: "Licencia 8", value: 15000 },
+    LICENCIA9: { name: "Licencia 9", value: 25000 },
+    LICENCIA10: { name: "Licencia 10", value: 50000 },
+};
