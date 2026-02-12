@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LICENCIAS } from "../../type/entityTypes";
 import PurchaseLicenseModal from "../../components/modal/PurchaseLicenseModal";
+import { TipoSolicitud } from "../../type/enum";
 
 export const LicenciasPage = () => {
     const { t } = useTranslation();
@@ -9,10 +10,10 @@ export const LicenciasPage = () => {
     const [selectedLicense, setSelectedLicense] = useState<{
         name: string;
         value: number;
-        type: 'self' | 'other';
+        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO;
     } | null>(null);
 
-    const handlePurchase = (name: string, value: number, type: 'self' | 'other') => {
+    const handlePurchase = (name: string, value: number, type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO) => {
         setSelectedLicense({ name, value, type });
         setModalOpen(true);
     };
@@ -54,7 +55,7 @@ export const LicenciasPage = () => {
                             <div className="space-y-3">
                                 {/* Botón Comprar para mí */}
                                 <button
-                                    onClick={() => handlePurchase(license.name, license.value, 'self')}
+                                    onClick={() => handlePurchase(license.name, license.value, TipoSolicitud.COMPRA_LICENCIA)}
                                     className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center"
                                 >
                                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +66,7 @@ export const LicenciasPage = () => {
 
                                 {/* Botón Comprar para alguien más */}
                                 <button
-                                    onClick={() => handlePurchase(license.name, license.value, 'other')}
+                                    onClick={() => handlePurchase(license.name, license.value, TipoSolicitud.PAGO_DELEGADO)}
                                     className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center justify-center"
                                 >
                                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

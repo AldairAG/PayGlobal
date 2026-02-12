@@ -82,7 +82,7 @@ const authSlice = createSlice({
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
             // Guardar en sessionStorage
-            saveToSessionStorage('auth_token', action.payload);
+            saveToSessionStorage('auth_token', action.payload.toString());
         },
     },
     extraReducers: (builder) => {

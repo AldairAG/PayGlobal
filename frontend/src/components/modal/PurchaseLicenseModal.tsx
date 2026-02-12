@@ -1,12 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { TipoCrypto, TipoSolicitud } from "../../type/enum";
+import { useUsuario } from "../../hooks/usuarioHook";
 
 interface PurchaseLicenseModalProps {
     open: boolean;
     onClose: () => void;
     licenseName: string;
     licenseValue: number;
-    purchaseType: 'self' | 'other';
+    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO;
 }
 
 export default function PurchaseLicenseModal({ 
@@ -18,18 +20,51 @@ export default function PurchaseLicenseModal({
 }: PurchaseLicenseModalProps) {
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
+    const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_TRC20);
+    const { solicitarCompraLicencia } = useUsuario(); 
+
+    const handleConfirmPurchase = async () => {
+        try {
+            await solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
+            onClose();
+        } catch (error) {
+            console.error('Error al solicitar compra de licencia:', error);
+        }
+    };
     
-    // Wallet address de ejemplo - esto debería venir del backend
-    const walletAddress = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb";
-    const cryptoType = "USDT (TRC20)";
+    // Wallets diferentes para cada tipo de criptomoneda - esto debería venir del backend
+    const cryptoWallets = {
+        [TipoCrypto.BITCOIN]: {
+            address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+            name: "Bitcoin (BTC)",
+            symbol: "BTC"
+        },
+        [TipoCrypto.USDT_ERC20]: {
+            address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
+            name: "USDT (ERC-20)",
+            symbol: "USDT"
+        },
+        [TipoCrypto.USDT_TRC20]: {
+            address: "TYASr5UV6HEcXatwdFQfmLVUqQQQMUxHLS",
+            name: "USDT (TRC-20)",
+            symbol: "USDT"
+        },
+        [TipoCrypto.SOLANA]: {
+            address: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
+            name: "Solana (SOL)",
+            symbol: "SOL"
+        }
+    };
+
+    const currentWallet = cryptoWallets[selectedCrypto];
     
     // Generar URL para código QR (usando un servicio de QR público)
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${walletAddress}`;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentWallet.address}`;
 
     if (!open) return null;
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText(walletAddress);
+        navigator.clipboard.writeText(currentWallet.address);
         alert(t("licenses.address_copied") || "Dirección copiada al portapapeles");
     };
 
@@ -53,16 +88,16 @@ export default function PurchaseLicenseModal({
                 {/* Información de la licencia */}
                 <div className="mb-6 bg-gray-50 p-4 rounded">
                     <p className="text-lg font-semibold">{licenseName}</p>
-                    <p className="text-2xl font-bold text-green-600">${licenseValue} USDT</p>
+                    <p className="text-2xl font-bold text-green-600">${licenseValue} {currentWallet.symbol}</p>
                     <p className="text-sm text-gray-600 mt-2">
-                        {purchaseType === 'self' 
+                        {purchaseType === TipoSolicitud.COMPRA_LICENCIA
                             ? (t("licenses.for_yourself") || "Compra para ti")
                             : (t("licenses.for_someone") || "Compra para alguien más")}
                     </p>
                 </div>
 
                 {/* Input para username si es compra para otro */}
-                {purchaseType === 'other' && (
+                {purchaseType === TipoSolicitud.PAGO_DELEGADO && (
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
                             {t("licenses.referred_username") || "Username del referido"}
@@ -77,12 +112,27 @@ export default function PurchaseLicenseModal({
                     </div>
                 )}
 
-                {/* Tipo de criptomoneda */}
-                <div className="mb-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">
-                        {t("licenses.crypto_type") || "Tipo de criptomoneda"}
-                    </p>
-                    <p className="text-lg font-semibold text-blue-600">{cryptoType}</p>
+                {/* Selector de criptomoneda */}
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t("licenses.crypto_type") || "Selecciona el tipo de criptomoneda"}
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                        {Object.entries(cryptoWallets).map(([key, wallet]) => (
+                            <button
+                                key={key}
+                                onClick={() => setSelectedCrypto(Number(key) as TipoCrypto)}
+                                className={`p-3 rounded-lg border-2 transition-all ${
+                                    selectedCrypto === Number(key)
+                                        ? 'border-blue-600 bg-blue-50 text-blue-700'
+                                        : 'border-gray-200 hover:border-blue-300'
+                                }`}
+                            >
+                                <div className="text-sm font-semibold">{wallet.symbol}</div>
+                                <div className="text-xs text-gray-600">{wallet.name}</div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Código QR */}
@@ -97,10 +147,10 @@ export default function PurchaseLicenseModal({
                 {/* Wallet Address */}
                 <div className="mb-6">
                     <p className="text-sm font-medium text-gray-700 mb-2">
-                        {t("licenses.wallet_address") || "Dirección de Wallet"}
+                        {t("licenses.wallet_address") || "Dirección de Wallet"} ({currentWallet.name})
                     </p>
                     <div className="flex items-center bg-gray-50 p-3 rounded">
-                        <p className="text-sm break-all flex-1 font-mono">{walletAddress}</p>
+                        <p className="text-sm break-all flex-1 font-mono">{currentWallet.address}</p>
                         <button
                             onClick={copyToClipboard}
                             className="ml-2 text-blue-600 hover:text-blue-800"
@@ -123,7 +173,7 @@ export default function PurchaseLicenseModal({
 
                 {/* Botón de confirmación */}
                 <button
-                    onClick={onClose}
+                    onClick={handleConfirmPurchase}
                     className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition-colors font-semibold"
                 >
                     {t("licenses.close") || "Cerrar"}

@@ -15,13 +15,17 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "operaciones")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public abstract class Operacion {
 

@@ -12,8 +12,11 @@ import com.api.payglobal.entity.enums.RolesUsuario;
 import com.api.payglobal.entity.enums.TipoRango;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,6 +53,7 @@ public class Usuario implements UserDetails{
     private boolean activo;
     private TipoRango rango;
 
+    @Enumerated(EnumType.STRING)
     private RolesUsuario rol;
     private Boolean verificado;
 
@@ -84,7 +88,7 @@ public class Usuario implements UserDetails{
     @JsonManagedReference
     private List<WalletAddress> walletAddresses;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Solicitud> solicitudes;
 
@@ -92,7 +96,6 @@ public class Usuario implements UserDetails{
     public void addSolicitud(Solicitud solicitud) {
         this.solicitudes.add(solicitud);
     }
-
 
     // UserDetails implementation
     @Override

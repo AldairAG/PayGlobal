@@ -21,16 +21,19 @@ export enum TipoCrypto {
 
 // Para enums con valores, usa objetos o un objeto const
 export const TipoLicencia = {
-    LICENCIA1: { valor: 100 },
-    LICENCIA2: { valor: 200 },
-    LICENCIA3: { valor: 500 },
-    LICENCIA4: { valor: 1000 },
-    LICENCIA5: { valor: 3000 },
-    LICENCIA6: { valor: 5000 },
-    LICENCIA7: { valor: 10000 },
-    LICENCIA8: { valor: 15000 },
-    LICENCIA9: { valor: 25000 },
-    LICENCIA10: { valor: 50000 }
+    P10: { valor: 10 },
+    P25: { valor: 25 },
+    P50: { valor: 50 },
+    P100: { valor: 100 },
+    P200: { valor: 200 },
+    P500: { valor: 500 },
+    P1000: { valor: 1000 },
+    P3000: { valor: 3000 },
+    P5000: { valor: 5000 },
+    P10000: { valor: 10000 },
+    P15000: { valor: 15000 },
+    P25000: { valor: 25000 },
+    P50000: { valor: 50000 }
 } as const;
 
 export enum CodigoTipoBono {
@@ -65,4 +68,12 @@ export const TipoRango = {
 export enum TipoWallets {
     WALLET_DIVIDENDOS,
     WALLET_COMISIONES
+}
+
+export enum TipoSolicitud {
+    COMPRA_LICENCIA,
+    SOLICITUD_RETIRO_WALLET_DIVIDENDOS,
+    SOLICITUD_RETIRO_WALLET_COMISIONES,
+    TRANFERENCIA_USUARIO,
+    PAGO_DELEGADO,
 }

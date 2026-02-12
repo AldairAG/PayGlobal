@@ -131,7 +131,7 @@ class ApiBase {
 
                         // 2. Fallback: obtener desde storage si Redux no está disponible
                         if (!token) {
-                            token = await storage.getItem('auth_token');
+                            token = JSON.parse(await storage.getItem('auth_token') || 'null');
                         }
 
                         if (token) {
@@ -216,7 +216,7 @@ class ApiBase {
                     this.store.dispatch(logout());
                 } catch (error) {
                     console.log(error);
-                    
+
                     // Fallback: si no se puede importar la acción, intentar dispatch por tipo
                     try {
                         this.store.dispatch({ type: 'auth/logout' });
@@ -234,6 +234,7 @@ class ApiBase {
 
     // Método para sincronizar token desde Redux
     public syncTokenFromRedux(): void {
+
         const token = this.getTokenFromRedux();
         if (token) {
             this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -245,7 +246,7 @@ class ApiBase {
     // Método para inicializar token desde storage al arranque
     public async initializeAuthFromStorage(): Promise<void> {
         try {
-            const token = await storage.getItem('auth_token');
+            const token = JSON.parse(localStorage.getItem("auth_token")!)
             if (token) {
                 this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 console.log('🔐 Token inicializado desde sessionStorage');

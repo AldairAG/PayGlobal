@@ -5,10 +5,12 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
-import { registro, login as loginThunk} from '../store/slice/authSlice';
-import { setUsuario } from '../store/slice/usuarioSlice';
+import { registro, login as loginThunk } from '../store/slice/authSlice';
+import { setUsuario, solicitarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
+import { usuarioService } from '../service/usuarioService';
+import { TipoCrypto, TipoSolicitud } from '../type/enum';
 
 interface JwtPayload {
     sub: string;
@@ -65,7 +67,7 @@ export const useUsuario = () => {
                 dispatch(setUsuario((result.payload as { usuario: Usuario }).usuario)); // Guardar datos del usuario en el estado
             }
 
-            const ruta = obtenerRutaSegunRol(); 
+            const ruta = obtenerRutaSegunRol();
             navigate(ruta); // Redirigir según el rol del usuario
 
             return unwrapResult(result);
@@ -116,6 +118,14 @@ export const useUsuario = () => {
         }
     };
 
+    const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud) => {
+        try {
+            const result = await dispatch(solicitarCompraLicenciaThunk({tipoCrypto, tipoLicencia, tipoSolicitud}));
+        } catch (error) {
+            console.error('Error al solicitar compra de licencia:', error);
+        }
+    }
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -135,5 +145,9 @@ export const useUsuario = () => {
         // Estados de Login
         loadingLogin,
         errorLogin,
+
+
+        //Metodos de usuario
+        solicitarCompraLicencia
     };
 };

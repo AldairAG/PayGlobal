@@ -4,7 +4,7 @@ import type {
     EditarPerfilRequestDTO,
 } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
-import { TipoCrypto, TipoWallets } from '../type/enum';
+import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 
 // Response types
 export interface JwtResponse {
@@ -56,16 +56,12 @@ const editarUsuarioAdmin = async (usuario: Usuario): Promise<ApiResponse<string>
 
 // Solicitar compra de licencia
 // POST /api/usuarios/solicitar-licencia
-const solicitarCompraLicencia = async (
-    tipoCrypto: TipoCrypto,
-    tipoLicencia: string,
-    tipoSolicitud: string
-): Promise<ApiResponse<string>> => {
+const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto,tipoLicencia: string,tipoSolicitud: TipoSolicitud): Promise<ApiResponse<string>> => {
     return api.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
         params: {
-            tipoCrypto,
+            tipoCrypto: TipoCrypto[tipoCrypto], // Convertir enum a string
             tipoLicencia,
-            tipoSolicitud
+            tipoSolicitud: TipoSolicitud[tipoSolicitud] // Convertir enum a string
         }
     });
 };

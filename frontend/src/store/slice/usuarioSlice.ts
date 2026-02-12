@@ -3,7 +3,7 @@ import type { Usuario } from "../../type/entityTypes";
 import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuarioService";
 import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse } from "../../type/apiTypes";
-import type { TipoCrypto, TipoWallets } from "../../type/enum";
+import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage } from "../../helpers/authHelpers";
 
 interface UsuarioState {
@@ -122,7 +122,7 @@ export const editarUsuarioAdminThunk = createAsyncThunk<
 
 export const solicitarCompraLicenciaThunk = createAsyncThunk<
     ApiResponse<string>,
-    { tipoCrypto: TipoCrypto; tipoLicencia: string; tipoSolicitud: string },
+    { tipoCrypto: TipoCrypto; tipoLicencia: string; tipoSolicitud: TipoSolicitud; },
     { rejectValue: string }
 >("usuario/solicitarCompraLicencia", async (payload, { rejectWithValue }) => {
     try {

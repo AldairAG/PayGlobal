@@ -244,6 +244,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .usuario(usuario)
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
+                .usuario(usuario)
+                .estado(EstadoOperacion.PENDIENTE)
                 .build();
 
         usuario.addSolicitud(solicitud);
@@ -349,26 +351,32 @@ public class UsuarioServiceImpl implements UsuarioService {
      */
     private TipoLicencia determinarTipoLicenciaPorPrecio(int precioTotal) {
         // Recorrer las licencias de mayor a menor para encontrar la que corresponde
-        if (precioTotal >= TipoLicencia.LICENCIA10.getValor()) {
-            return TipoLicencia.LICENCIA10;
-        } else if (precioTotal >= TipoLicencia.LICENCIA9.getValor()) {
-            return TipoLicencia.LICENCIA9;
-        } else if (precioTotal >= TipoLicencia.LICENCIA8.getValor()) {
-            return TipoLicencia.LICENCIA8;
-        } else if (precioTotal >= TipoLicencia.LICENCIA7.getValor()) {
-            return TipoLicencia.LICENCIA7;
-        } else if (precioTotal >= TipoLicencia.LICENCIA6.getValor()) {
-            return TipoLicencia.LICENCIA6;
-        } else if (precioTotal >= TipoLicencia.LICENCIA5.getValor()) {
-            return TipoLicencia.LICENCIA5;
-        } else if (precioTotal >= TipoLicencia.LICENCIA4.getValor()) {
-            return TipoLicencia.LICENCIA4;
-        } else if (precioTotal >= TipoLicencia.LICENCIA3.getValor()) {
-            return TipoLicencia.LICENCIA3;
-        } else if (precioTotal >= TipoLicencia.LICENCIA2.getValor()) {
-            return TipoLicencia.LICENCIA2;
+        if (precioTotal >= TipoLicencia.P10000.getValor()) {
+            return TipoLicencia.P10000;
+        } else if (precioTotal >= TipoLicencia.P50000.getValor()) {
+            return TipoLicencia.P50000;
+        } else if (precioTotal >= TipoLicencia.P25000.getValor()) {
+            return TipoLicencia.P25000;
+        } else if (precioTotal >= TipoLicencia.P10000.getValor()) {
+            return TipoLicencia.P10000;
+        } else if (precioTotal >= TipoLicencia.P5000.getValor()) {
+            return TipoLicencia.P5000;
+        } else if (precioTotal >= TipoLicencia.P2500.getValor()) {
+            return TipoLicencia.P2500;
+        } else if (precioTotal >= TipoLicencia.P1000.getValor()) {
+            return TipoLicencia.P1000;
+        } else if (precioTotal >= TipoLicencia.P500.getValor()) {
+            return TipoLicencia.P500;
+        } else if (precioTotal >= TipoLicencia.P250.getValor()) {
+            return TipoLicencia.P250;
+        } else if (precioTotal >= TipoLicencia.P100.getValor()) {
+            return TipoLicencia.P100;
+        } else if (precioTotal >= TipoLicencia.P50.getValor()) {
+            return TipoLicencia.P50;
+        } else if (precioTotal >= TipoLicencia.P25.getValor()) {
+            return TipoLicencia.P25;
         } else {
-            return TipoLicencia.LICENCIA1;
+            return TipoLicencia.P10; // Si el precio total es menor a la licencia más baja, asignar la licencia más básica (P10)
         }
     }
 

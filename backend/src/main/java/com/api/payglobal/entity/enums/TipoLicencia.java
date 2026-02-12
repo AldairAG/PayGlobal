@@ -1,16 +1,19 @@
 package com.api.payglobal.entity.enums;
 
 public enum TipoLicencia {
-    LICENCIA1(100),
-    LICENCIA2(200),
-    LICENCIA3(500),
-    LICENCIA4(1000),
-    LICENCIA5(3000),
-    LICENCIA6(5000),
-    LICENCIA7(10000),
-    LICENCIA8(15000),
-    LICENCIA9(25000),
-    LICENCIA10(50000);
+    P10(10),
+    P25(25),
+    P50(50),
+    P100(100),
+    P250(250),
+    P500(500),
+    P1000(1000),
+    P2500(2500),
+    P5000(5000),
+    P10000(10000),
+    P25000(25000),
+    P50000(50000),
+    P100000(100000);
 
     private final int valor;
 

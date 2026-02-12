@@ -144,7 +144,7 @@ public class UsuarioController {
      * Solicitar compra de licencia
      */
     @PostMapping("/solicitar-licencia")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<String>> solicitarCompraLicencia(
             @RequestParam TipoCrypto tipoCrypto,
             @RequestParam TipoLicencia tipoLicencia,
@@ -157,12 +157,24 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
+    /**
+     * Verificar rol del usuario autenticado
+     */
+    @GetMapping("/verificar-rol")
+    public ResponseEntity<ApiResponseWrapper<String>> verificarRol(@AuthenticationPrincipal Usuario usuario) {
+        try {
+            String rol = usuario.getRol().name();
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, rol, null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
 
     /**
      * Solicitar retiro de fondos
      */
     @PostMapping("/solicitar-retiro")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<String>> solicitarRetiroFondos(
             @RequestParam Long walletAddressId,
             @RequestParam BigDecimal monto,

@@ -45,14 +45,17 @@ export interface Licencia {
 }
 
 export const LICENCIAS = {
-    LICENCIA1: { name: "Licencia 1", value: 100 },
-    LICENCIA2: { name: "Licencia 2", value: 200 },
-    LICENCIA3: { name: "Licencia 3", value: 500 },
-    LICENCIA4: { name: "Licencia 4", value: 1000 },
-    LICENCIA5: { name: "Licencia 5", value: 3000 },
-    LICENCIA6: { name: "Licencia 6", value: 5000 },
-    LICENCIA7: { name: "Licencia 7", value: 10000 },
-    LICENCIA8: { name: "Licencia 8", value: 15000 },
-    LICENCIA9: { name: "Licencia 9", value: 25000 },
-    LICENCIA10: { name: "Licencia 10", value: 50000 },
+    P10: { name: "P10", value: 10 },
+    P25: { name: "P25", value: 25 },
+    P50: { name: "P50", value: 50 },
+    P100: { name: "P100", value: 100 },
+    P200: { name: "P200", value: 200 },
+    P500: { name: "P500", value: 500 },
+    P1000: { name: "P1000", value: 1000 },
+    P3000: { name: "P3000", value: 3000 },
+    P5000: { name: "P5000", value: 5000 },
+    P10000: { name: "P10000", value: 10000 },
+    P15000: { name: "P15000", value: 15000 },
+    P25000: { name: "P25000", value: 25000 },
+    P50000: { name: "P50000", value: 50000 },
 };
