@@ -12,13 +12,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "transacciones")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper=false)
 public class Transaccion extends Operacion {

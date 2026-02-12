@@ -40,6 +40,7 @@ import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.JwtHelper;
 import com.api.payglobal.helpers.UninivelHelper;
+import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.service.bono.BonoService;
@@ -72,6 +73,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private TransaccionService transaccionService;
+
+    @Autowired
+    private LicenciaRepository licenciaRepository;
 
     @Transactional
     public JwtResponse registrar(RegistroResquestDTO registroRequest) {
@@ -526,6 +530,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()));
 
         solicitud.getUsuario().setLicencia(licencia);
+        
 
         usuarioRepository.save(solicitud.getUsuario());
         transaccionService.procesarTransaccion(
@@ -556,5 +561,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                 EstadoOperacion.RECHAZADA,
                 solicitud.getTipoCrypto(),
                 null);
+    }
+
+    @Override
+    public List<Solicitud> obtenerSolicitudesPendientes() throws Exception {
+        return solicitudRepository.findByEstado(EstadoOperacion.PENDIENTE);
     }
 }

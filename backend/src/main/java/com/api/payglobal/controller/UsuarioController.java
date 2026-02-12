@@ -24,6 +24,7 @@ import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
@@ -49,7 +50,8 @@ public class UsuarioController {
             JwtResponse response = usuarioService.registrar(registroRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseWrapper<>(true, response, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -62,7 +64,8 @@ public class UsuarioController {
             JwtResponse response = usuarioService.login(loginRequest);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, response, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -78,7 +81,8 @@ public class UsuarioController {
             Usuario usuarioActualizado = usuarioService.editarPerfilUsuario(editarPerfilRequest, usuario.getId());
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuarioActualizado, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -117,12 +121,14 @@ public class UsuarioController {
      */
     @GetMapping("/red/{username}")
     @PreAuthorize("hasRole('USER') and #username == authentication.principal.username")
-    public ResponseEntity<ApiResponseWrapper<List<UsuarioEnRedResponse>>> obtenerUsuariosEnRed(@PathVariable String username) {
+    public ResponseEntity<ApiResponseWrapper<List<UsuarioEnRedResponse>>> obtenerUsuariosEnRed(
+            @PathVariable String username) {
         try {
             List<UsuarioEnRedResponse> usuariosEnRed = usuarioService.obtenerUsuariosEnRed(username);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuariosEnRed, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -136,7 +142,8 @@ public class UsuarioController {
             usuarioService.editarUsuario(usuario);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Usuario actualizado correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -152,11 +159,14 @@ public class UsuarioController {
             @AuthenticationPrincipal Usuario usuario) {
         try {
             usuarioService.solicitarCompraLicencia(tipoCrypto, tipoLicencia, tipoSolicitud, usuario.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseWrapper<>(true, "Solicitud de licencia creada correctamente", null));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponseWrapper<>(true, "Solicitud de licencia creada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
+
     /**
      * Verificar rol del usuario autenticado
      */
@@ -166,7 +176,8 @@ public class UsuarioController {
             String rol = usuario.getRol().name();
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, rol, null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -182,9 +193,11 @@ public class UsuarioController {
             @AuthenticationPrincipal Usuario usuario) {
         try {
             usuarioService.solicitarRetiroFondos(walletAddressId, monto, tipoSolicitud, usuario.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseWrapper<>(true, "Solicitud de retiro creada correctamente", null));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponseWrapper<>(true, "Solicitud de retiro creada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -202,7 +215,8 @@ public class UsuarioController {
             usuarioService.comprarLicenciaDelegada(tipoLicencia, destinatario, tipoMetodoPago, usuario.getId());
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Licencia delegada comprada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -220,7 +234,8 @@ public class UsuarioController {
             usuarioService.TransferenciaEntreUsuarios(usuarioDestinatario, monto, tipoWallet, usuario.getId());
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Transferencia realizada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -228,13 +243,15 @@ public class UsuarioController {
      * Aprobar compra de licencia (Admin)
      */
     @PutMapping("/admin/aprobar-licencia/{idSolicitud}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponseWrapper<String>> aprobarCompraLicencia(@PathVariable Long idSolicitud) {
         try {
             usuarioService.aprobarCompraLicencia(idSolicitud);
-            return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Solicitud de licencia aprobada correctamente", null));
+            return ResponseEntity
+                    .ok(new ApiResponseWrapper<>(true, "Solicitud de licencia aprobada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -242,13 +259,31 @@ public class UsuarioController {
      * Rechazar solicitud (Admin)
      */
     @PutMapping("/admin/rechazar-solicitud/{idSolicitud}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponseWrapper<String>> rechazarSolicitud(@PathVariable Long idSolicitud) {
         try {
             usuarioService.rechazarSolcitud(idSolicitud);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Solicitud rechazada correctamente", null));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
+
+    /*
+     * Obtener solicitudes pendientes (Admin)
+     */
+    @GetMapping("/admin/solicitudes-pendientes")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<List<Solicitud>>> obtenerSolicitudesPendientes() {
+        try {
+            List<Solicitud> solicitudesPendientes = usuarioService.obtenerSolicitudesPendientes();
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudesPendientes,
+                    "Solicitudes pendientes obtenidas correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
 }

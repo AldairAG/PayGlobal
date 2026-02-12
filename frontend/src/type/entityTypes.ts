@@ -1,4 +1,4 @@
-import type { CodigoTipoBono, CodigoTipoWallets, TipoBono, TipoRango, TipoWallets } from "./enum";
+import { TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoRango, type TipoWallets } from "./enum";
 
 export interface Usuario {
     id: number;
@@ -59,3 +59,18 @@ export const LICENCIAS = {
     P25000: { name: "P25000", value: 25000 },
     P50000: { name: "P50000", value: 50000 },
 };
+
+
+interface Operacion {
+    monto: number;
+    fecha: Date;
+    estado: EstadoOperacion;
+    tipoCrypto: TipoCrypto;
+    descripcion: string;
+}
+
+export interface Solicitud extends Operacion {
+    id: number;
+    walletAddress: string;
+    tipoSolicitud: TipoSolicitud;
+}

@@ -6,10 +6,9 @@ import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { setUsuario, solicitarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesPendientesThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
-import { usuarioService } from '../service/usuarioService';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
 
 interface JwtPayload {
@@ -38,6 +37,16 @@ export const useUsuario = () => {
     // Estados de Login
     const loadingLogin = useSelector((state: RootState) => state.usuario.loadingLogin);
     const errorLogin = useSelector((state: RootState) => state.usuario.errorLogin);
+
+    const solicitudesPendientes = useSelector((state: RootState) => state.usuario.SolcitudesPendientes);
+    const loadingSolicitudesPendientes = useSelector((state: RootState) => state.usuario.loadingSolicitudesPendientes);
+    const errorSolicitudesPendientes = useSelector((state: RootState) => state.usuario.errorSolicitudesPendientes);
+
+    const loadingAprobarSolicitud = useSelector((state: RootState) => state.usuario.loadingAprobarCompraLicencia);
+    const errorAprobarSolicitud = useSelector((state: RootState) => state.usuario.errorAprobarCompraLicencia);
+
+    const loadingRechazarSolicitud = useSelector((state: RootState) => state.usuario.loadingRechazarSolicitud);
+    const errorRechazarSolicitud = useSelector((state: RootState) => state.usuario.errorRechazarSolicitud);
 
     /**
      * Función para registrar un nuevo usuario
@@ -109,7 +118,7 @@ export const useUsuario = () => {
         const rol = obtenerRolDesdeToken();
 
         switch (rol) {
-            case 'ROLE_ADMIN':
+            case 'ROLE_ADMINISTRADOR':
                 return ROUTES.ADMIN.DASHBOARD;
             case 'ROLE_USUARIO':
                 return ROUTES.USER.HOME;
@@ -120,11 +129,41 @@ export const useUsuario = () => {
 
     const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud) => {
         try {
-            const result = await dispatch(solicitarCompraLicenciaThunk({tipoCrypto, tipoLicencia, tipoSolicitud}));
+            const result = await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud }));
         } catch (error) {
             console.error('Error al solicitar compra de licencia:', error);
         }
     }
+
+    const obtenerSolicitudesPendientes = async () => {
+        try {
+            const result = await dispatch(obtenerSolicitudesPendientesThunk());
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener solicitudes pendientes:', error);
+            throw error;
+        }
+    };
+
+    const aprobarSolicitud = async (id: number) => {
+        try {
+            const result = await dispatch(aprobarCompraLicenciaThunk({ idSolicitud: id }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al aprobar solicitud:', error);
+            throw error;
+        }
+    };
+
+    const rechazarSolicitud = async (id: number) => {
+        try {
+            const result = await dispatch(rechazarSolicitudThunk({ idSolicitud: id }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al rechazar solicitud:', error);
+            throw error;
+        }
+    };
 
     // Retornar objeto con métodos y estados
     return {
@@ -148,6 +187,23 @@ export const useUsuario = () => {
 
 
         //Metodos de usuario
-        solicitarCompraLicencia
+        solicitarCompraLicencia,
+
+        //Estados de solicitudes pendientes
+        solicitudesPendientes,
+        loadingSolicitudesPendientes,
+        errorSolicitudesPendientes,
+        obtenerSolicitudesPendientes,
+
+        // aprobarSolicitud
+        aprobarSolicitud,
+        loadingAprobarSolicitud,
+        errorAprobarSolicitud,
+
+        // rechazarSolicitud
+        rechazarSolicitud,
+        loadingRechazarSolicitud,
+        errorRechazarSolicitud
+
     };
 };

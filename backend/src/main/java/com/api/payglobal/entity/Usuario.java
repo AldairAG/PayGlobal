@@ -68,23 +68,23 @@ public class Usuario implements UserDetails{
     @JsonManagedReference
     private List<Bono> bonos;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Transaccion> transacciones;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Wallet> wallets;
 
-    @OneToOne(mappedBy = "usuario")
+    @OneToOne(mappedBy = "usuario",cascade = CascadeType.ALL)
     @JsonManagedReference
     private Licencia licencia;
     
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<TiketSoporte> tiketsSoporte;
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<WalletAddress> walletAddresses;
 

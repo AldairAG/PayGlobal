@@ -11,6 +11,7 @@ import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
@@ -44,4 +45,6 @@ public interface UsuarioService extends UserDetailsService {
     void aprobarCompraLicencia(Long idSolicitud) throws Exception;
 
     void rechazarSolcitud(Long idSolicitud) throws Exception;
+
+    List<Solicitud> obtenerSolicitudesPendientes() throws Exception;
 }

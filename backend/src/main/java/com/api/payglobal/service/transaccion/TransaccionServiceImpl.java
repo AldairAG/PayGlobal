@@ -22,33 +22,33 @@ import com.api.payglobal.repository.TransaccionRepository;
 @Service
 public class TransaccionServiceImpl implements TransaccionService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+        @Autowired
+        private UsuarioRepository usuarioRepository;
 
         @Autowired
         private TransaccionRepository transaccionRepository;
 
-    @Override
-    @Transactional
-    public void procesarTransaccion(Long usuarioId, Double monto, TipoConceptos concepto, TipoMetodoPago metodoPago,
-            EstadoOperacion estado, TipoCrypto tipoCrypto, String descripcion) {
+        @Override
+        @Transactional
+        public void procesarTransaccion(Long usuarioId, Double monto, TipoConceptos concepto, TipoMetodoPago metodoPago,
+                        EstadoOperacion estado, TipoCrypto tipoCrypto, String descripcion) {
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                Usuario usuario = usuarioRepository.findById(usuarioId)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Transaccion transaccion = Transaccion.builder()
-                .concepto(concepto)
-                .metodoPago(metodoPago)
-                .fecha(LocalDateTime.now())
-                .monto(new BigDecimal(monto))
-                .estado(estado)
-                .tipoCrypto(tipoCrypto)
-                .descripcion(descripcion)
-                .build();
+                Transaccion transaccion = Transaccion.builder()
+                                .concepto(concepto)
+                                .metodoPago(metodoPago)
+                                .fecha(LocalDateTime.now())
+                                .monto(new BigDecimal(monto))
+                                .estado(estado)
+                                .tipoCrypto(tipoCrypto)
+                                .descripcion(descripcion)
+                                .build();
 
-        usuario.getTransacciones().add(transaccion);
-        usuarioRepository.save(usuario);
-    }
+                usuario.getTransacciones().add(transaccion);
+                transaccionRepository.save(transaccion);
+        }
 
         @Override
         @Transactional(readOnly = true)

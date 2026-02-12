@@ -3,7 +3,7 @@ import type { ApiResponse } from '../type/apiTypes';
 import type {
     EditarPerfilRequestDTO,
 } from '../type/requestTypes';
-import type { Usuario } from '../type/entityTypes';
+import type { Solicitud, Usuario } from '../type/entityTypes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 
 // Response types
@@ -64,6 +64,12 @@ const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto,tipoLicencia: stri
             tipoSolicitud: TipoSolicitud[tipoSolicitud] // Convertir enum a string
         }
     });
+};
+
+//Obtener todas las solicitudes PENDIENTES (Admin)
+// GET /api/usuarios/admin/solicitudes-pendientes
+const obtenerSolicitudesPendientes = async (): Promise<ApiResponse<Solicitud[]>> => {
+    return api.get<Solicitud[]>(`${BASE_PATH}/admin/solicitudes-pendientes`);
 };
 
 // Solicitar retiro de fondos
@@ -133,6 +139,7 @@ export const usuarioService = {
     obtenerUsuariosEnRed,
     editarUsuarioAdmin,
     solicitarCompraLicencia,
+    obtenerSolicitudesPendientes,
     solicitarRetiroFondos,
     comprarLicenciaDelegada,
     transferenciaEntreUsuarios,

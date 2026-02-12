@@ -1,5 +1,7 @@
 import { Provider } from 'react-redux'
 import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { ROUTES } from './routes/routes'
 import LandingPage from './pages/LandingPage'
 import { UserLayout } from './layout/UserLayout'
@@ -51,6 +53,18 @@ function App() {
           </Routes>
 
         </BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </Provider>
     </>
   )

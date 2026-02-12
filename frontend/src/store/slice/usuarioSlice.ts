@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Usuario } from "../../type/entityTypes";
+import type { Solicitud, Usuario } from "../../type/entityTypes";
 import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuarioService";
 import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse } from "../../type/apiTypes";
@@ -14,7 +14,7 @@ interface UsuarioState {
 
     loadingLogin: boolean;
     errorLogin: string | null;
-    
+
     loadingEditarPerfil: boolean;
     errorEditarPerfil: string | null;
 
@@ -41,6 +41,10 @@ interface UsuarioState {
 
     loadingRechazarSolicitud: boolean;
     errorRechazarSolicitud: string | null;
+
+    SolcitudesPendientes: Solicitud[] | null;
+    loadingSolicitudesPendientes: boolean;
+    errorSolicitudesPendientes: string | null;
 }
 
 const initialState: UsuarioState = {
@@ -67,6 +71,10 @@ const initialState: UsuarioState = {
     errorAprobarCompraLicencia: null,
     loadingRechazarSolicitud: false,
     errorRechazarSolicitud: null,
+
+    SolcitudesPendientes: null,
+    loadingSolicitudesPendientes: false,
+    errorSolicitudesPendientes: null
 };
 
 export const editarPerfilThunk = createAsyncThunk<
@@ -238,6 +246,23 @@ export const rechazarSolicitudThunk = createAsyncThunk<
     }
 });
 
+export const obtenerSolicitudesPendientesThunk = createAsyncThunk<
+    ApiResponse<Solicitud[]>,
+    void,
+    { rejectValue: string }
+>("usuario/obtenerSolicitudesPendientes", async (_, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.obtenerSolicitudesPendientes();
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al obtener solicitudes pendientes");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener solicitudes pendientes";
+        return rejectWithValue(message);
+    }
+});
+
 const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
@@ -358,6 +383,19 @@ const usuarioSlice = createSlice({
             .addCase(rechazarSolicitudThunk.rejected, (state, action) => {
                 state.loadingRechazarSolicitud = false;
                 state.errorRechazarSolicitud = action.payload || "Error al rechazar solicitud";
+            })
+            .addCase(obtenerSolicitudesPendientesThunk.pending, (state) => {
+                state.loadingSolicitudesPendientes = true;
+                state.errorSolicitudesPendientes = null;
+            })
+            .addCase(obtenerSolicitudesPendientesThunk.fulfilled, (state, action) => {
+                state.loadingSolicitudesPendientes = false;
+                state.errorSolicitudesPendientes = null;
+                state.SolcitudesPendientes = action.payload.data || null;
+            })
+            .addCase(obtenerSolicitudesPendientesThunk.rejected, (state, action) => {
+                state.loadingSolicitudesPendientes = false;
+                state.errorSolicitudesPendientes = action.payload || "Error al obtener solicitudes pendientes";
             });
     },
 });

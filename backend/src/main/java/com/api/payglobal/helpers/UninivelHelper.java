@@ -54,7 +54,11 @@ public class UninivelHelper {
         List<UsuarioEnRedResponse> redInversa = new ArrayList<>();
         
         Usuario usuario = usuarioRepository.findByUsername(usernameReferenciador)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            .orElse(null);
+
+        if (usuario == null) {
+            return redInversa;
+        }
 
         UsuarioEnRedResponse usuarioResponse = UsuarioEnRedResponse.builder()
             .username(usuario.getUsername())
