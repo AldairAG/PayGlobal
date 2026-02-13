@@ -6,7 +6,7 @@ import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesPendientesThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -38,9 +38,13 @@ export const useUsuario = () => {
     const loadingLogin = useSelector((state: RootState) => state.usuario.loadingLogin);
     const errorLogin = useSelector((state: RootState) => state.usuario.errorLogin);
 
-    const solicitudesPendientes = useSelector((state: RootState) => state.usuario.SolcitudesPendientes);
-    const loadingSolicitudesPendientes = useSelector((state: RootState) => state.usuario.loadingSolicitudesPendientes);
-    const errorSolicitudesPendientes = useSelector((state: RootState) => state.usuario.errorSolicitudesPendientes);
+    const solicitudes = useSelector((state: RootState) => state.usuario.Solicitudes);
+    const loadingSolicitudes = useSelector((state: RootState) => state.usuario.loadingSolicitudes);
+    const errorSolicitudes = useSelector((state: RootState) => state.usuario.errorSolicitudes);
+
+    const usuarios = useSelector((state: RootState) => state.usuario.Usuarios);
+    const loadingUsuarios = useSelector((state: RootState) => state.usuario.loadingUsuarios);
+    const errorUsuarios = useSelector((state: RootState) => state.usuario.errorUsuarios);
 
     const loadingAprobarSolicitud = useSelector((state: RootState) => state.usuario.loadingAprobarCompraLicencia);
     const errorAprobarSolicitud = useSelector((state: RootState) => state.usuario.errorAprobarCompraLicencia);
@@ -135,12 +139,22 @@ export const useUsuario = () => {
         }
     }
 
-    const obtenerSolicitudesPendientes = async () => {
+    const obtenerSolicitudes = async (page: number = 0, size: number = 10, sort?: string) => {
         try {
-            const result = await dispatch(obtenerSolicitudesPendientesThunk());
+            const result = await dispatch(obtenerSolicitudesThunk({ page, size, sort }));
             return unwrapResult(result);
         } catch (error) {
-            console.error('Error al obtener solicitudes pendientes:', error);
+            console.error('Error al obtener solicitudes:', error);
+            throw error;
+        }
+    };
+
+    const obtenerTodosLosUsuarios = async (filtro?: string, page: number = 0, size: number = 10, sort?: string) => {
+        try {
+            const result = await dispatch(obtenerTodosLosUsuariosThunk({ filtro, page, size, sort }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener usuarios:', error);
             throw error;
         }
     };
@@ -185,15 +199,21 @@ export const useUsuario = () => {
         loadingLogin,
         errorLogin,
 
+        // Estados de usuarios
+        usuarios,
+        loadingUsuarios,
+        errorUsuarios,
+        obtenerTodosLosUsuarios,
 
+        //
         //Metodos de usuario
         solicitarCompraLicencia,
 
         //Estados de solicitudes pendientes
-        solicitudesPendientes,
-        loadingSolicitudesPendientes,
-        errorSolicitudesPendientes,
-        obtenerSolicitudesPendientes,
+        solicitudes,
+        loadingSolicitudes,
+        errorSolicitudes,
+        obtenerSolicitudes,
 
         // aprobarSolicitud
         aprobarSolicitud,

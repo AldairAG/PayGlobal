@@ -1,23 +1,25 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import SolicitudItem from "../../components/items/SolcitudItem";
 import { EstadoOperacion, TipoSolicitud } from "../../type/enum";
-import { Filter, Search, RefreshCw, FileText, Loader2, AlertTriangle } from "lucide-react";
+import { Filter, RefreshCw, FileText, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { toast } from "react-toastify";
 
 export const GestionPagosPage = () => {
     // Estado para las solicitudes (datos de ejemplo)
-    const { solicitudesPendientes, loadingSolicitudesPendientes, errorSolicitudesPendientes, obtenerSolicitudesPendientes,
+    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerSolicitudes,
         aprobarSolicitud, loadingAprobarSolicitud, errorAprobarSolicitud, rechazarSolicitud, loadingRechazarSolicitud,
         errorRechazarSolicitud } = useUsuario();
 
     const [filtroEstado, setFiltroEstado] = useState<EstadoOperacion | "TODOS">("TODOS");
     const [filtroTipo, setFiltroTipo] = useState<TipoSolicitud | "TODOS">("TODOS");
-    const [busqueda, setBusqueda] = useState("");
+    const [paginaActual, setPaginaActual] = useState(0);
+    const [tamanioPagina, setTamanioPagina] = useState(10);
 
     useEffect(() => {
-        obtenerSolicitudesPendientes();
-    }, []);
+        obtenerSolicitudes(paginaActual, tamanioPagina);
+    }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación
     useEffect(() => {
@@ -38,7 +40,7 @@ export const GestionPagosPage = () => {
         if (!loadingAprobarSolicitud && !errorAprobarSolicitud) {
             // Si ya no está cargando y no hay error, significa que fue exitoso
             const timer = setTimeout(() => {
-                obtenerSolicitudesPendientes();
+                obtenerSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -49,7 +51,7 @@ export const GestionPagosPage = () => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
             // Si ya no está cargando y no hay error, significa que fue exitoso
             const timer = setTimeout(() => {
-                obtenerSolicitudesPendientes();
+                obtenerSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -75,18 +77,15 @@ export const GestionPagosPage = () => {
     };
 
     // Filtrar solicitudes
-    const solicitudesFiltradas = (solicitudesPendientes ?? []).filter(sol => {
+    const solicitudesFiltradas = (solicitudes?.content ?? []).filter(sol => {
         const cumpleFiltroEstado = filtroEstado === "TODOS" || sol.estado === filtroEstado;
         const cumpleFiltroTipo = filtroTipo === "TODOS" || sol.tipoSolicitud === filtroTipo;
-        const cumpleBusqueda = busqueda === "" ||
-            sol.id.toString().includes(busqueda) ||
-            sol.walletAddress.toLowerCase().includes(busqueda.toLowerCase());
-        return cumpleFiltroEstado && cumpleFiltroTipo && cumpleBusqueda;
+        return cumpleFiltroEstado && cumpleFiltroTipo;
     });
 
     // Contar por estado
     const contarPorEstado = (estado: EstadoOperacion) => {
-        return (solicitudesPendientes ?? []).filter(sol => sol.estado === estado).length;
+        return (solicitudes?.content ?? []).filter(sol => sol.estado === estado).length;
     };
 
     return (
@@ -104,11 +103,11 @@ export const GestionPagosPage = () => {
                         </div>
                     </div>
                     <button
-                        onClick={obtenerSolicitudesPendientes}
-                        disabled={loadingSolicitudesPendientes}
+                        onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
+                        disabled={loadingSolicitudes}
                         className="flex items-center gap-2 px-4 py-2 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <RefreshCw size={18} className={loadingSolicitudesPendientes ? "animate-spin" : ""} />
+                        <RefreshCw size={18} className={loadingSolicitudes ? "animate-spin" : ""} />
                         <span>Actualizar</span>
                     </button>
                 </div>
@@ -132,7 +131,7 @@ export const GestionPagosPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                         <p className="text-sm text-gray-600 mb-1">Total</p>
-                        <p className="text-2xl font-bold text-gray-800">{solicitudesPendientes?.length ?? 0}</p>
+                        <p className="text-2xl font-bold text-gray-800">{solicitudes?.totalElements ?? 0}</p>
                     </div>
                     <div className="bg-yellow-50 rounded-lg shadow-sm border border-yellow-200 p-4">
                         <p className="text-sm text-yellow-700 mb-1">Pendientes</p>
@@ -154,7 +153,7 @@ export const GestionPagosPage = () => {
 
                 {/* Filtros y búsqueda */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Filtro por estado */}
                         <div>
                             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
@@ -193,41 +192,26 @@ export const GestionPagosPage = () => {
                                 <option value={TipoSolicitud.PAGO_DELEGADO}>Pago Delegado</option>
                             </select>
                         </div>
-
-                        {/* Búsqueda */}
-                        <div>
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                                <Search size={16} />
-                                Buscar
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Buscar por ID o dirección de wallet..."
-                                value={busqueda}
-                                onChange={(e) => setBusqueda(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#69AC95] focus:border-transparent outline-none"
-                            />
-                        </div>
                     </div>
                 </div>
 
                 {/* Lista de solicitudes */}
                 <div className="space-y-4">
-                    {loadingSolicitudesPendientes ? (
+                    {loadingSolicitudes ? (
                         // Estado de carga
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                             <Loader2 size={48} className="text-[#69AC95] mx-auto mb-4 animate-spin" />
                             <p className="text-gray-600 text-lg">Cargando solicitudes...</p>
                             <p className="text-gray-500 text-sm mt-2">Por favor espera un momento</p>
                         </div>
-                    ) : errorSolicitudesPendientes ? (
+                    ) : errorSolicitudes ? (
                         // Estado de error
                         <div className="bg-red-50 rounded-lg shadow-sm border border-red-200 p-12 text-center">
                             <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
                             <p className="text-red-700 text-lg font-semibold">Error al cargar las solicitudes</p>
-                            <p className="text-red-600 text-sm mt-2">{errorSolicitudesPendientes}</p>
+                            <p className="text-red-600 text-sm mt-2">{errorSolicitudes}</p>
                             <button
-                                onClick={obtenerSolicitudesPendientes}
+                                onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
                                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200 mx-auto"
                             >
                                 <RefreshCw size={16} />
@@ -255,6 +239,111 @@ export const GestionPagosPage = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Controles de paginación */}
+                {solicitudes && solicitudes.totalPages > 1 && (
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
+                        <div className="flex items-center justify-between">
+                            {/* Información de paginación */}
+                            <div className="text-sm text-gray-600">
+                                Mostrando <span className="font-semibold">{solicitudes.numberOfElements}</span> de{' '}
+                                <span className="font-semibold">{solicitudes.totalElements}</span> solicitudes
+                                {' '}(Página <span className="font-semibold">{paginaActual + 1}</span> de{' '}
+                                <span className="font-semibold">{solicitudes.totalPages}</span>)
+                            </div>
+
+                            {/* Controles de navegación */}
+                            <div className="flex items-center gap-2">
+                                {/* Botón Primera página */}
+                                <button
+                                    onClick={() => setPaginaActual(0)}
+                                    disabled={solicitudes.first || loadingSolicitudes}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title="Primera página"
+                                >
+                                    Primera
+                                </button>
+
+                                {/* Botón Anterior */}
+                                <button
+                                    onClick={() => setPaginaActual(prev => Math.max(0, prev - 1))}
+                                    disabled={solicitudes.first || loadingSolicitudes}
+                                    className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title="Página anterior"
+                                >
+                                    <ChevronLeft size={20} />
+                                </button>
+
+                                {/* Números de página */}
+                                <div className="flex items-center gap-1">
+                                    {Array.from({ length: Math.min(5, solicitudes.totalPages) }, (_, i) => {
+                                        let pageNum;
+                                        if (solicitudes.totalPages <= 5) {
+                                            pageNum = i;
+                                        } else if (paginaActual < 3) {
+                                            pageNum = i;
+                                        } else if (paginaActual > solicitudes.totalPages - 4) {
+                                            pageNum = solicitudes.totalPages - 5 + i;
+                                        } else {
+                                            pageNum = paginaActual - 2 + i;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => setPaginaActual(pageNum)}
+                                                disabled={loadingSolicitudes}
+                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                    paginaActual === pageNum
+                                                        ? 'bg-[#69AC95] text-white'
+                                                        : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                            >
+                                                {pageNum + 1}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Botón Siguiente */}
+                                <button
+                                    onClick={() => setPaginaActual(prev => Math.min(solicitudes.totalPages - 1, prev + 1))}
+                                    disabled={solicitudes.last || loadingSolicitudes}
+                                    className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title="Página siguiente"
+                                >
+                                    <ChevronRight size={20} />
+                                </button>
+
+                                {/* Botón Última página */}
+                                <button
+                                    onClick={() => setPaginaActual(solicitudes.totalPages - 1)}
+                                    disabled={solicitudes.last || loadingSolicitudes}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    title="Última página"
+                                >
+                                    Última
+                                </button>
+
+                                {/* Selector de tamaño de página */}
+                                <select
+                                    value={tamanioPagina}
+                                    onChange={(e) => {
+                                        setTamanioPagina(Number(e.target.value));
+                                        setPaginaActual(0);
+                                    }}
+                                    disabled={loadingSolicitudes}
+                                    className="ml-4 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <option value={5}>5 por página</option>
+                                    <option value={10}>10 por página</option>
+                                    <option value={20}>20 por página</option>
+                                    <option value={50}>50 por página</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
