@@ -2,11 +2,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode';
 import type { AppDispatch, RootState } from '../store';
-import type { RegistroRequestDTO, LoginRequestDTO } from '../type/requestTypes';
+import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesPendientesThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesPendientesThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -37,6 +37,10 @@ export const useUsuario = () => {
     // Estados de Login
     const loadingLogin = useSelector((state: RootState) => state.usuario.loadingLogin);
     const errorLogin = useSelector((state: RootState) => state.usuario.errorLogin);
+
+    // Estados de Editar Perfil
+    const loadingEditarPerfil = useSelector((state: RootState) => state.usuario.loadingEditarPerfil);
+    const errorEditarPerfil = useSelector((state: RootState) => state.usuario.errorEditarPerfil);
 
     const solicitudesPendientes = useSelector((state: RootState) => state.usuario.SolcitudesPendientes);
     const loadingSolicitudesPendientes = useSelector((state: RootState) => state.usuario.loadingSolicitudesPendientes);
@@ -127,9 +131,24 @@ export const useUsuario = () => {
         }
     };
 
+    /**
+     * Función para editar el perfil del usuario autenticado
+     * @param editarPerfilData - Datos del perfil (nombre, apellido, telefono, pais)
+     * @returns Promise con la respuesta del servidor
+     */
+    const editarPerfil = async (editarPerfilData: EditarPerfilRequestDTO) => {
+        try {
+            const result = await dispatch(editarPerfilThunk(editarPerfilData));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al editar perfil:', error);
+            throw error;
+        }
+    };
+
     const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud) => {
         try {
-            const result = await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud }));
+            await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud }));
         } catch (error) {
             console.error('Error al solicitar compra de licencia:', error);
         }
@@ -185,6 +204,10 @@ export const useUsuario = () => {
         loadingLogin,
         errorLogin,
 
+        // Método y estados de Editar Perfil
+        editarPerfil,
+        loadingEditarPerfil,
+        errorEditarPerfil,
 
         //Metodos de usuario
         solicitarCompraLicencia,
