@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +42,6 @@ import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.JwtHelper;
 import com.api.payglobal.helpers.UninivelHelper;
-import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.service.bono.BonoService;
@@ -74,9 +75,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private TransaccionService transaccionService;
 
-    @Autowired
-    private LicenciaRepository licenciaRepository;
-
     @Transactional
     public JwtResponse registrar(RegistroResquestDTO registroRequest) {
 
@@ -103,7 +101,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     public JwtResponse login(LoginRequest loginRequest) {
         try {
             usuarioRepository.findByUsernameOrEmailForLogin(loginRequest.getUsername())
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username o email: " + loginRequest.getUsername()));
+                    .orElseThrow(() -> new RuntimeException(
+                            "Usuario no encontrado con username o email: " + loginRequest.getUsername()));
 
             // Autenticar usuario
             Authentication authentication = authenticationManager.authenticate(
@@ -380,7 +379,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else if (precioTotal >= TipoLicencia.P25.getValor()) {
             return TipoLicencia.P25;
         } else {
-            return TipoLicencia.P10; // Si el precio total es menor a la licencia más baja, asignar la licencia más básica (P10)
+            return TipoLicencia.P10; // Si el precio total es menor a la licencia más baja, asignar la licencia más
+                                     // básica (P10)
         }
     }
 
@@ -530,7 +530,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()));
 
         solicitud.getUsuario().setLicencia(licencia);
-        
 
         usuarioRepository.save(solicitud.getUsuario());
         transaccionService.procesarTransaccion(
@@ -564,7 +563,16 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<Solicitud> obtenerSolicitudesPendientes() throws Exception {
-        return solicitudRepository.findByEstado(EstadoOperacion.PENDIENTE);
+    public Page<Solicitud> obtenerSolicitudes(Pageable pageable) throws Exception {
+        return solicitudRepository.findAll(pageable);
+    }
+
+    /**
+     * Obtener todos los usuarios con filtro de búsqueda (Admin)
+     * Permite filtrar por username, email, nombre o apellido
+     */
+    @Override
+    public Page<Usuario> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception {
+        return usuarioRepository.buscarUsuarios(filtro, pageable);
     }
 }

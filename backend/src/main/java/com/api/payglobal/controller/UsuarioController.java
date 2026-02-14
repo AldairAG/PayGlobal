@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -273,13 +275,32 @@ public class UsuarioController {
     /*
      * Obtener solicitudes pendientes (Admin)
      */
-    @GetMapping("/admin/solicitudes-pendientes")
+    @GetMapping("/admin/solicitudes")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<ApiResponseWrapper<List<Solicitud>>> obtenerSolicitudesPendientes() {
+    public ResponseEntity<ApiResponseWrapper<Page<Solicitud>>> obtenerSolicitudes(Pageable pageable) {
         try {
-            List<Solicitud> solicitudesPendientes = usuarioService.obtenerSolicitudesPendientes();
+            Page<Solicitud> solicitudesPendientes = usuarioService.obtenerSolicitudes(pageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudesPendientes,
                     "Solicitudes pendientes obtenidas correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener todos los usuarios con filtro de búsqueda (Admin)
+     * Permite buscar por username, email, nombre o apellido
+     */
+    @GetMapping("/admin/usuarios")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<Page<Usuario>>> obtenerTodosLosUsuarios(
+            @RequestParam(required = false) String filtro,
+            Pageable pageable) {
+        try {
+            Page<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, pageable);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuarios,
+                    "Usuarios obtenidos correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));

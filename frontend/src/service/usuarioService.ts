@@ -1,5 +1,5 @@
 import { api } from './apiBase';
-import type { ApiResponse } from '../type/apiTypes';
+import type { ApiResponse, Page } from '../type/apiTypes';
 import type {
     EditarPerfilRequestDTO,
 } from '../type/requestTypes';
@@ -56,7 +56,7 @@ const editarUsuarioAdmin = async (usuario: Usuario): Promise<ApiResponse<string>
 
 // Solicitar compra de licencia
 // POST /api/usuarios/solicitar-licencia
-const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto,tipoLicencia: string,tipoSolicitud: TipoSolicitud): Promise<ApiResponse<string>> => {
+const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud): Promise<ApiResponse<string>> => {
     return api.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
         params: {
             tipoCrypto: TipoCrypto[tipoCrypto], // Convertir enum a string
@@ -67,9 +67,28 @@ const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto,tipoLicencia: stri
 };
 
 //Obtener todas las solicitudes PENDIENTES (Admin)
-// GET /api/usuarios/admin/solicitudes-pendientes
-const obtenerSolicitudesPendientes = async (): Promise<ApiResponse<Solicitud[]>> => {
-    return api.get<Solicitud[]>(`${BASE_PATH}/admin/solicitudes-pendientes`);
+// GET /api/usuarios/admin/solicitudes
+const obtenerSolicitudes = async (page: number = 0, size: number = 10, sort?: string): Promise<ApiResponse<Page<Solicitud>>> => {
+    return api.get<Page<Solicitud>>(`${BASE_PATH}/admin/solicitudes`, {
+        params: {
+            page,
+            size,
+            ...(sort && { sort })
+        }
+    });
+};
+
+// Obtener todos los usuarios con filtro (Admin)
+// GET /api/usuarios/admin/usuarios
+const obtenerTodosLosUsuarios = async (filtro?: string, page: number = 0, size: number = 10, sort?: string): Promise<ApiResponse<Page<Usuario>>> => {
+    return api.get<Page<Usuario>>(`${BASE_PATH}/admin/usuarios`, {
+        params: {
+            ...(filtro && { filtro }),
+            page,
+            size,
+            ...(sort && { sort })
+        }
+    });
 };
 
 // Solicitar retiro de fondos
@@ -139,7 +158,8 @@ export const usuarioService = {
     obtenerUsuariosEnRed,
     editarUsuarioAdmin,
     solicitarCompraLicencia,
-    obtenerSolicitudesPendientes,
+    obtenerSolicitudes,
+    obtenerTodosLosUsuarios,
     solicitarRetiroFondos,
     comprarLicenciaDelegada,
     transferenciaEntreUsuarios,
