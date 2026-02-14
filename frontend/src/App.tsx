@@ -20,6 +20,7 @@ import { EditarUsuarioPage } from './pages/admin/EditarUsuarioPage'
 import { ExploradorUsuarioPage } from './pages/admin/ExploradorUsuarioPage'
 import { store } from './store'
 import "./i18n";
+import RedUsuarioPage from './pages/user/RedUsuarioPage'
 
 
 function App() {
@@ -40,6 +41,8 @@ function App() {
               <Route path={ROUTES.USER.PROFILE} element={<ProfilePage />} />
               <Route path={ROUTES.USER.SOPORTE} element={<SoportePage />} />
               <Route path={ROUTES.USER.TRANSFERENCIA_INTERNA} element={<TransferenciaInternaPage />} />
+              <Route path={ROUTES.USER.RED_USUARIOS} element={<RedUsuarioPage />} />
+
 
             </Route>
 
@@ -47,7 +50,7 @@ function App() {
               <Route path={ROUTES.ADMIN.DASHBOARD} element={<DashboardPage />} />
               <Route path={ROUTES.ADMIN.GESTION_PAGOS} element={<GestionPagosPage />} />
               <Route path={ROUTES.ADMIN.GESTION_KYC} element={<GestionKycPage />} />
-              <Route path={ROUTES.ADMIN.EDITAR_USUARIO} element={<EditarUsuarioPage />} />
+              <Route path={`${ROUTES.ADMIN.EDITAR_USUARIO}/:userId`} element={<EditarUsuarioPage />} />
               <Route path={ROUTES.ADMIN.USERS_EXPLORER} element={<ExploradorUsuarioPage />} />
             </Route>
           </Routes>

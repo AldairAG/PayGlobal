@@ -27,6 +27,7 @@ import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
@@ -138,7 +139,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private Usuario RegistroResquestDTOToUsuario(RegistroResquestDTO dto) {
-        Usuario usuario =  Usuario.builder()
+        Usuario usuario = Usuario.builder()
                 .referenciado(dto.getReferenciado())
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -165,7 +166,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .saldo(BigDecimal.ZERO)
                 .usuario(usuario)
                 .build();
-        
+
         Wallet walletDividendos = Wallet.builder()
                 .tipo(TipoWallets.WALLET_DIVIDENDOS)
                 .saldo(BigDecimal.ZERO)
@@ -603,7 +604,21 @@ public class UsuarioServiceImpl implements UsuarioService {
      * Permite filtrar por username, email, nombre o apellido
      */
     @Override
-    public Page<Usuario> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception {
-        return usuarioRepository.buscarUsuarios(filtro, pageable);
+    public Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception {
+        usuarioRepository.buscarUsuarios(filtro, pageable);
+        return usuarioRepository.buscarUsuarios(filtro, pageable)
+                .map(usuario -> UsuarioExplorerResponseDTO.builder()
+                        .id(usuario.getId())
+                        .username(usuario.getUsername())
+                        .email(usuario.getEmail())
+                        .fechaRegistro(usuario.getFechaRegistro())
+                        .build());
+
+    }
+
+    @Override
+    public Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception {
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
     }
 }

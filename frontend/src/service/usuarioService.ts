@@ -14,6 +14,7 @@ export interface JwtResponse {
     username: string;
     email: string;
     roles: string[];
+    user: Usuario;
 }
 
 export interface UsuarioEnRedResponse {
@@ -91,6 +92,10 @@ const obtenerTodosLosUsuarios = async (filtro?: string, page: number = 0, size: 
     });
 };
 
+const obtenerUsuarioPorId = async (id: number): Promise<ApiResponse<Usuario>> => {
+    return api.get<Usuario>(`${BASE_PATH}/admin/usuario/${id}`);
+}
+
 // Solicitar retiro de fondos
 // POST /api/usuarios/solicitar-retiro
 const solicitarRetiroFondos = async (
@@ -160,6 +165,7 @@ export const usuarioService = {
     solicitarCompraLicencia,
     obtenerSolicitudes,
     obtenerTodosLosUsuarios,
+    obtenerUsuarioPorId,
     solicitarRetiroFondos,
     comprarLicenciaDelegada,
     transferenciaEntreUsuarios,

@@ -6,7 +6,7 @@ import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -38,19 +38,36 @@ export const useUsuario = () => {
     const loadingLogin = useSelector((state: RootState) => state.usuario.loadingLogin);
     const errorLogin = useSelector((state: RootState) => state.usuario.errorLogin);
 
-    const solicitudes = useSelector((state: RootState) => state.usuario.Solicitudes);
+    // Estados de solicitudes pendientes
+    const solicitudes = useSelector((state: RootState) => state.usuario.solicitudes);
     const loadingSolicitudes = useSelector((state: RootState) => state.usuario.loadingSolicitudes);
     const errorSolicitudes = useSelector((state: RootState) => state.usuario.errorSolicitudes);
 
-    const usuarios = useSelector((state: RootState) => state.usuario.Usuarios);
+    // Estados de usuarios
+    const usuarios = useSelector((state: RootState) => state.usuario.usuarios);
     const loadingUsuarios = useSelector((state: RootState) => state.usuario.loadingUsuarios);
     const errorUsuarios = useSelector((state: RootState) => state.usuario.errorUsuarios);
 
+    // Estados de aprobar solicitud
     const loadingAprobarSolicitud = useSelector((state: RootState) => state.usuario.loadingAprobarCompraLicencia);
     const errorAprobarSolicitud = useSelector((state: RootState) => state.usuario.errorAprobarCompraLicencia);
 
+    // Estados de rechazar solicitud
     const loadingRechazarSolicitud = useSelector((state: RootState) => state.usuario.loadingRechazarSolicitud);
     const errorRechazarSolicitud = useSelector((state: RootState) => state.usuario.errorRechazarSolicitud);
+
+    // Estados de Editar Perfil
+    const loadingEditarPerfil = useSelector((state: RootState) => state.usuario.loadingEditarPerfil);
+    const errorEditarPerfil = useSelector((state: RootState) => state.usuario.errorEditarPerfil);
+
+    // Estado de usuario seleccionado (para admin)
+    const usuarioSeleccionado = useSelector((state: RootState) => state.usuario.usuarioSeleccionado);
+    const loadingUsuarioSeleccionado = useSelector((state: RootState) => state.usuario.loadingUsuarioSeleccionado);
+    const errorUsuarioSeleccionado = useSelector((state: RootState) => state.usuario.errorUsuarioSeleccionado);
+
+    const usuariosEnRed = useSelector((state: RootState) => state.usuario.usuariosEnRed);
+    const loadingUsuariosEnRed = useSelector((state: RootState) => state.usuario.loadingUsuariosEnRed);
+    const errorUsuariosEnRed = useSelector((state: RootState) => state.usuario.errorUsuariosEnRed);
 
     /**
      * Función para registrar un nuevo usuario
@@ -75,9 +92,9 @@ export const useUsuario = () => {
     const login = async (loginData: LoginRequestDTO) => {
         try {
             const result = await dispatch(loginThunk(loginData));
-
-            if (result.payload && typeof result.payload === 'object' && 'usuario' in result.payload) {
-                dispatch(setUsuario((result.payload as { usuario: Usuario }).usuario)); // Guardar datos del usuario en el estado
+            const data= unwrapResult(result).data;
+            if (data) {
+                dispatch(setUsuario(data.user)); // Guardar datos del usuario en el estado
             }
 
             const ruta = obtenerRutaSegunRol();
@@ -194,6 +211,26 @@ export const useUsuario = () => {
         }
     };
 
+    const obtenerUsuarioPorId = async (id: number) => {
+        try {
+            const result = await dispatch(obtenerUsuarioPorIdThunk({ idUsuario: id }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener usuario por ID:', error);
+            throw error;
+        }
+    };
+
+    const obtenerUsuariosEnRed = async (username: string) => {
+        try {
+            const result = await dispatch(obtenerUsuariosEnRedThunk({ username }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener usuarios en red:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -222,6 +259,8 @@ export const useUsuario = () => {
 
         // Método y estados de Editar Perfil
         editarPerfil,
+        loadingEditarPerfil,
+        errorEditarPerfil,
         //Metodos de usuario
         solicitarCompraLicencia,
 
@@ -239,7 +278,19 @@ export const useUsuario = () => {
         // rechazarSolicitud
         rechazarSolicitud,
         loadingRechazarSolicitud,
-        errorRechazarSolicitud
+        errorRechazarSolicitud,
+
+        // Obtener usuario por ID
+        obtenerUsuarioPorId,
+        usuarioSeleccionado,
+        loadingUsuarioSeleccionado,
+        errorUsuarioSeleccionado,
+
+        // Obtener usuarios en red
+        obtenerUsuariosEnRed,
+        usuariosEnRed,
+        loadingUsuariosEnRed,
+        errorUsuariosEnRed
 
     };
 };

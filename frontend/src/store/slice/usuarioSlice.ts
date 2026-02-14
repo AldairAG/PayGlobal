@@ -18,9 +18,6 @@ interface UsuarioState {
     loadingEditarPerfil: boolean;
     errorEditarPerfil: string | null;
 
-    loadingUsuariosEnRed: boolean;
-    errorUsuariosEnRed: string | null;
-
     loadingEditarUsuarioAdmin: boolean;
     errorEditarUsuarioAdmin: string | null;
 
@@ -42,13 +39,21 @@ interface UsuarioState {
     loadingRechazarSolicitud: boolean;
     errorRechazarSolicitud: string | null;
 
-    Solicitudes: Page<Solicitud> | null;
+    solicitudes: Page<Solicitud> | null;
     loadingSolicitudes: boolean;
     errorSolicitudes: string | null;
 
-    Usuarios: Page<Usuario> | null;
+    usuarios: Page<Usuario> | null;
     loadingUsuarios: boolean;
     errorUsuarios: string | null;
+
+    usuarioSeleccionado?: Usuario | null;
+    loadingUsuarioSeleccionado: boolean;
+    errorUsuarioSeleccionado: string | null;
+
+    usuariosEnRed?: UsuarioEnRedResponse[] | null;
+    loadingUsuariosEnRed: boolean;
+    errorUsuariosEnRed: string | null;
 }
 
 const initialState: UsuarioState = {
@@ -59,8 +64,6 @@ const initialState: UsuarioState = {
     errorLogin: null,
     loadingEditarPerfil: false,
     errorEditarPerfil: null,
-    loadingUsuariosEnRed: false,
-    errorUsuariosEnRed: null,
     loadingEditarUsuarioAdmin: false,
     errorEditarUsuarioAdmin: null,
     loadingSolicitarCompraLicencia: false,
@@ -76,13 +79,21 @@ const initialState: UsuarioState = {
     loadingRechazarSolicitud: false,
     errorRechazarSolicitud: null,
 
-    Solicitudes: null,
+    solicitudes: null,
     loadingSolicitudes: false,
     errorSolicitudes: null,
 
-    Usuarios: null,
+    usuarios: null,
     loadingUsuarios: false,
-    errorUsuarios: null
+    errorUsuarios: null,
+
+    usuarioSeleccionado: null,
+    loadingUsuarioSeleccionado: false,
+    errorUsuarioSeleccionado: null,
+
+    usuariosEnRed: null,
+    loadingUsuariosEnRed: false,
+    errorUsuariosEnRed: null,
 };
 
 export const editarPerfilThunk = createAsyncThunk<
@@ -98,23 +109,6 @@ export const editarPerfilThunk = createAsyncThunk<
         return response;
     } catch (error) {
         const message = error instanceof Error ? error.message : "Error al editar perfil";
-        return rejectWithValue(message);
-    }
-});
-
-export const obtenerUsuariosEnRedThunk = createAsyncThunk<
-    ApiResponse<UsuarioEnRedResponse[]>,
-    { username: string },
-    { rejectValue: string }
->("usuario/obtenerUsuariosEnRed", async ({ username }, { rejectWithValue }) => {
-    try {
-        const response = await usuarioService.obtenerUsuariosEnRed(username);
-        if (!response.success) {
-            return rejectWithValue(response.message || "Error al obtener usuarios en red");
-        }
-        return response;
-    } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener usuarios en red";
         return rejectWithValue(message);
     }
 });
@@ -289,6 +283,40 @@ export const obtenerTodosLosUsuariosThunk = createAsyncThunk<
     }
 });
 
+export const obtenerUsuarioPorIdThunk = createAsyncThunk<
+    ApiResponse<Usuario>,
+    { idUsuario: number },
+    { rejectValue: string }
+>("usuario/obtenerUsuarioPorId", async ({ idUsuario }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.obtenerUsuarioPorId(idUsuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al obtener usuario por ID");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener usuario por ID";
+        return rejectWithValue(message);
+    }
+});
+
+export const obtenerUsuariosEnRedThunk = createAsyncThunk<
+    ApiResponse<UsuarioEnRedResponse[]>,
+    { username: string },
+    { rejectValue: string }
+>("usuario/obtenerUsuariosEnRed", async ({ username }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.obtenerUsuariosEnRed(username);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al obtener usuarios en red");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener usuarios en red";
+        return rejectWithValue(message);
+    }
+});
+
 const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
@@ -417,7 +445,7 @@ const usuarioSlice = createSlice({
             .addCase(obtenerSolicitudesThunk.fulfilled, (state, action) => {
                 state.loadingSolicitudes = false;
                 state.errorSolicitudes = null;
-                state.Solicitudes = action.payload.data || null;
+                state.solicitudes = action.payload.data || null;
             })
             .addCase(obtenerSolicitudesThunk.rejected, (state, action) => {
                 state.loadingSolicitudes = false;
@@ -430,11 +458,24 @@ const usuarioSlice = createSlice({
             .addCase(obtenerTodosLosUsuariosThunk.fulfilled, (state, action) => {
                 state.loadingUsuarios = false;
                 state.errorUsuarios = null;
-                state.Usuarios = action.payload.data || null;
+                state.usuarios = action.payload.data || null;
             })
             .addCase(obtenerTodosLosUsuariosThunk.rejected, (state, action) => {
                 state.loadingUsuarios = false;
                 state.errorUsuarios = action.payload || "Error al obtener usuarios";
+            })
+            .addCase(obtenerUsuarioPorIdThunk.pending, (state) => {
+                state.loadingUsuarioSeleccionado = true;
+                state.errorUsuarioSeleccionado = null;
+            })
+            .addCase(obtenerUsuarioPorIdThunk.fulfilled, (state, action) => {
+                state.loadingUsuarioSeleccionado = false;
+                state.errorUsuarioSeleccionado = null;
+                state.usuarioSeleccionado = action.payload.data || null;
+            })
+            .addCase(obtenerUsuarioPorIdThunk.rejected, (state, action) => {
+                state.loadingUsuarioSeleccionado = false;
+                state.errorUsuarioSeleccionado = action.payload || "Error al obtener usuario por ID";
             });
     },
 });

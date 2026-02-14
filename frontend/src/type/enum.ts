@@ -21,19 +21,19 @@ export enum TipoCrypto {
 
 // Para enums con valores, usa objetos o un objeto const
 export const TipoLicencia = {
-    P10: { valor: 10 },
-    P25: { valor: 25 },
-    P50: { valor: 50 },
-    P100: { valor: 100 },
-    P200: { valor: 200 },
-    P500: { valor: 500 },
-    P1000: { valor: 1000 },
-    P3000: { valor: 3000 },
-    P5000: { valor: 5000 },
-    P10000: { valor: 10000 },
-    P15000: { valor: 15000 },
-    P25000: { valor: 25000 },
-    P50000: { valor: 50000 }
+    P10: { valor: 10 ,nombre: "P10"},
+    P25: { valor: 25 ,nombre: "P25"},
+    P50: { valor: 50 ,nombre: "P50"},
+    P100: { valor: 100 ,nombre: "P100"},
+    P200: { valor: 200 ,nombre: "P200"},
+    P500: { valor: 500 ,nombre: "P500"},
+    P1000: { valor: 1000 ,nombre: "P1000"},
+    P3000: { valor: 3000 ,nombre: "P3000"},
+    P5000: { valor: 5000 ,nombre: "P5000"},
+    P10000: { valor: 10000 ,nombre: "P10000"},
+    P15000: { valor: 15000 ,nombre: "P15000"},
+    P25000: { valor: 25000 ,nombre: "P25000"},
+    P50000: { valor: 50000 ,nombre: "P50000"}
 } as const;
 
 export enum CodigoTipoBono {

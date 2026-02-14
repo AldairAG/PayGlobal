@@ -26,6 +26,7 @@ import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.enums.TipoCrypto;
@@ -122,7 +123,7 @@ public class UsuarioController {
      * Obtener usuarios en red
      */
     @GetMapping("/red/{username}")
-    @PreAuthorize("hasRole('USER') and #username == authentication.principal.username")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<List<UsuarioEnRedResponse>>> obtenerUsuariosEnRed(
             @PathVariable String username) {
         try {
@@ -294,13 +295,28 @@ public class UsuarioController {
      */
     @GetMapping("/admin/usuarios")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<ApiResponseWrapper<Page<Usuario>>> obtenerTodosLosUsuarios(
+    public ResponseEntity<ApiResponseWrapper<Page<UsuarioExplorerResponseDTO>>> obtenerTodosLosUsuarios(
             @RequestParam(required = false) String filtro,
             Pageable pageable) {
         try {
-            Page<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, pageable);
+            Page<UsuarioExplorerResponseDTO> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, pageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuarios,
                     "Usuarios obtenidos correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener usuario por ID (Admin)
+     */
+    @GetMapping("/admin/usuario/{idUsuario}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<Usuario>> obtenerUsuarioPorId(@PathVariable Long idUsuario) {
+        try {
+            Usuario usuario = usuarioService.obtenerUsuarioPorId(idUsuario);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuario, "Usuario obtenido correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));

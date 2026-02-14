@@ -5,7 +5,7 @@ export const ROUTES = {
         USERS_EXPLORER: '/admin/users',
         GESTION_PAGOS: '/admin/gestion-pagos',
         GESTION_KYC: '/admin/gestion-kyc',
-        EDITAR_USUARIO: `/admin/editar-usuario/`
+        EDITAR_USUARIO: `/admin/editar-usuario`,
     },
 
     USER: {
@@ -17,7 +17,8 @@ export const ROUTES = {
         SOPORTE: '/c/support',
         RETIRO: '/c/withdrawal',
         CAMBIO_CONTRASENA: '/c/change-password',
-        TRANSFERENCIA_INTERNA: '/c/internal-transfer'
+        TRANSFERENCIA_INTERNA: '/c/internal-transfer',
+        RED_USUARIOS: '/c/red-usuarios'
     },
 
     LANDING: '/'

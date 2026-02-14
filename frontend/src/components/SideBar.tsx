@@ -18,6 +18,7 @@ const SideBar = () => {
         { name: "Transferencias internas", icon: <Repeat size={20} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },
         { name: "Perfil", icon: <User size={20} />, route: ROUTES.USER.PROFILE },
         { name: "Soporte", icon: <Headphones size={20} />, route: ROUTES.USER.SOPORTE },
+        { name: "Red de usuarios", icon: <User size={20} />, route: ROUTES.USER.RED_USUARIOS },
     ];
 
     return (
