@@ -3,6 +3,7 @@ package com.api.payglobal.service.usuario;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -140,13 +141,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario =  Usuario.builder()
                 .referenciado(dto.getReferenciado())
                 .username(dto.getUsername())
-                .password(dto.getPassword())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .email(dto.getEmail())
                 .fechaRegistro(new Date())
                 .activo(true)
                 .rol(RolesUsuario.USUARIO)
                 .rango(TipoRango.RANGO_0)
-                .wallets(List.of())
+                .wallets(new ArrayList<>())
                 .build();
 
         Licencia licencia = Licencia.builder()
