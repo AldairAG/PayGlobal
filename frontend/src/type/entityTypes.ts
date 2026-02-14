@@ -74,3 +74,42 @@ export interface Solicitud extends Operacion {
     walletAddress: string;
     tipoSolicitud: TipoSolicitud;
 }
+
+export enum EstadoTicket {
+    ABIERTO = "abierto",
+    CERRADO = "cerrado"
+}
+
+export interface RespuestaTicket {
+    id: number;
+    respuesta: string;
+    fechaRespuesta: Date;
+}
+
+export interface Ticket {
+    id: number;
+    asunto: string;
+    fechaCreacion: Date;
+    estado: EstadoTicket;
+    descripcion: string;
+    respuestas: RespuestaTicket[];
+}
+
+export interface WalletRetiro {
+    id: number;
+    address: string;
+    tipoCrypto: TipoCrypto;
+    nombre: string;
+    balanceRetirado: number;
+    usuario: string;
+}
+
+export interface SolicitudRetiro {
+    id: number;
+    walletId: number;
+    walletAddress: string;
+    monto: number;
+    fecha: Date;
+    estado: EstadoOperacion;
+    tipoCrypto: TipoCrypto;
+}
