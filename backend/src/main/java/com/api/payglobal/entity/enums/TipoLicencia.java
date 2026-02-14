@@ -1,6 +1,7 @@
 package com.api.payglobal.entity.enums;
 
 public enum TipoLicencia {
+    P0(0),
     P10(10),
     P25(25),
     P50(50),

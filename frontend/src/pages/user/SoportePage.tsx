@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Ticket, Plus, MessageSquare, X, Send, CheckCircle, Clock } from "lucide-react";
 import { toast } from "react-toastify";
-import type { Ticket as TicketType, RespuestaTicket, EstadoTicket } from "../../type/entityTypes";
+import type { Ticket as TicketType, RespuestaTicket } from "../../type/entityTypes";
 import { EstadoTicket as EstadoTicketEnum } from "../../type/entityTypes";
 
 export const SoportePage = () => {
@@ -150,7 +150,7 @@ export const SoportePage = () => {
                             </div>
 
                             {/* Lista de tickets */}
-                            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                            <div className="space-y-3 max-h-150 overflow-y-auto">
                                 {tickets.map((ticket) => (
                                     <div
                                         key={ticket.id}
@@ -194,7 +194,7 @@ export const SoportePage = () => {
 
                     {/* Panel derecho - Detalle del ticket o formulario */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg shadow-md p-6 min-h-[600px]">
+                        <div className="bg-white rounded-lg shadow-md p-6 min-h-150">
                             {showNewTicketForm ? (
                                 /* Formulario de nuevo ticket */
                                 <div>
@@ -204,11 +204,13 @@ export const SoportePage = () => {
                                             Nuevo Ticket
                                         </h2>
                                         <button
+
                                             onClick={() => {
                                                 setShowNewTicketForm(false);
                                                 formik.resetForm();
                                             }}
                                             className="p-2 rounded-lg hover:bg-gray-100 transition-all"
+                                            title="Cerrar formulario"
                                         >
                                             <X size={24} />
                                         </button>
@@ -379,6 +381,7 @@ export const SoportePage = () => {
                                                         className="flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none border-[#F0973C]"
                                                 />
                                                 <button
+                                                    title="subir"
                                                     onClick={handleAddResponse}
                                                     disabled={!newResponse.trim()}
                                                         className="px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"

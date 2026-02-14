@@ -137,15 +137,44 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     private Usuario RegistroResquestDTOToUsuario(RegistroResquestDTO dto) {
-        Usuario usuario = new Usuario();
-        usuario.setUsername(dto.getUsername());
-        usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
-        usuario.setEmail(dto.getEmail());
-        usuario.setReferenciado(dto.getReferenciado());
-        usuario.setFechaRegistro(new Date());
-        usuario.setActivo(true);
-        usuario.setRol(RolesUsuario.USUARIO);
-        usuario.setRango(TipoRango.RANGO_0);
+        Usuario usuario =  Usuario.builder()
+                .referenciado(dto.getReferenciado())
+                .username(dto.getUsername())
+                .password(dto.getPassword())
+                .email(dto.getEmail())
+                .fechaRegistro(new Date())
+                .activo(true)
+                .rol(RolesUsuario.USUARIO)
+                .rango(TipoRango.RANGO_0)
+                .wallets(List.of())
+                .build();
+
+        Licencia licencia = Licencia.builder()
+                .nombre(TipoLicencia.P0.name())
+                .fechaCompra(LocalDate.now())
+                .precio(TipoLicencia.P0.getValor())
+                .limite(TipoLicencia.P0.getValor() * 2)
+                .activo(false)
+                .saldoAcumulado(0)
+                .usuario(usuario)
+                .build();
+
+        Wallet walletComisiones = Wallet.builder()
+                .tipo(TipoWallets.WALLET_COMISIONES)
+                .saldo(BigDecimal.ZERO)
+                .usuario(usuario)
+                .build();
+        
+        Wallet walletDividendos = Wallet.builder()
+                .tipo(TipoWallets.WALLET_DIVIDENDOS)
+                .saldo(BigDecimal.ZERO)
+                .usuario(usuario)
+                .build();
+
+        usuario.getWallets().add(walletComisiones);
+        usuario.getWallets().add(walletDividendos);
+        usuario.setLicencia(licencia);
+
         return usuario;
     }
 
@@ -159,6 +188,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setApellido(editarPerfilRequest.getApellido());
         usuario.setTelefono(editarPerfilRequest.getTelefono());
         usuario.setPais(editarPerfilRequest.getPais());
+
         return usuarioRepository.save(usuario);
     }
 

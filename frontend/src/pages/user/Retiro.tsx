@@ -88,7 +88,6 @@ export const RetiroPage = () => {
     const [showWalletForm, setShowWalletForm] = useState(false);
     const [selectedWallet, setSelectedWallet] = useState<number | null>(null);
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
-    const [fechaFin, setFechaFin] = useState("");
     const [paginaActual, setPaginaActual] = useState(1);
     const solicitudesPorPagina = 5;
 
@@ -253,9 +252,8 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.nombre}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${
-                                                walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
-                                            }`}
+                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
+                                                }`}
                                             placeholder="Mi Wallet Principal"
                                         />
                                         {walletFormik.touched.nombre && walletFormik.errors.nombre && (
@@ -292,9 +290,8 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.address}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none font-mono text-sm ${
-                                                walletFormik.touched.address && walletFormik.errors.address ? "border-red-600" : "border-[#F0973C]"
-                                            }`}
+                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-600" : "border-[#F0973C]"
+                                                }`}
                                             placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
                                         />
                                         {walletFormik.touched.address && walletFormik.errors.address && (
@@ -327,7 +324,7 @@ export const RetiroPage = () => {
                         )}
 
                         {/* Lista de Wallets */}
-                        <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                        <div className="space-y-3 max-h-100 overflow-y-auto">
                             {walletsRetiro.map((wallet) => (
                                 <div
                                     key={wallet.id}
@@ -372,9 +369,8 @@ export const RetiroPage = () => {
                                         setSelectedWallet(Number(e.target.value));
                                     }}
                                     onBlur={retiroFormik.handleBlur}
-                                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${
-                                        retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-600" : "border-[#F0973C]"
-                                    }`}
+                                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-600" : "border-[#F0973C]"
+                                        }`}
                                 >
                                     <option value={0}>Selecciona una wallet</option>
                                     {walletsRetiro.map((wallet) => (
@@ -424,9 +420,8 @@ export const RetiroPage = () => {
                                         value={retiroFormik.values.monto || ""}
                                         onChange={retiroFormik.handleChange}
                                         onBlur={retiroFormik.handleBlur}
-                                        className={`w-full pl-8 pr-4 py-3 border-2 rounded-lg focus:outline-none ${
-                                            retiroFormik.touched.monto && retiroFormik.errors.monto ? "border-red-600" : "border-[#F0973C]"
-                                        }`}
+                                        className={`w-full pl-8 pr-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.monto && retiroFormik.errors.monto ? "border-red-600" : "border-[#F0973C]"
+                                            }`}
                                         placeholder="0.00"
                                         step="0.01"
                                     />
@@ -529,7 +524,7 @@ export const RetiroPage = () => {
                                         return (
                                             <tr key={solicitud.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                                 <td className="px-4 py-4 text-sm font-semibold">#{solicitud.id}</td>
-                                                <td className="px-4 py-4 text-xs font-mono text-gray-600 max-w-[200px] truncate">
+                                                <td className="px-4 py-4 text-xs font-mono text-gray-600 max-w-50 truncate">
                                                     {solicitud.walletAddress}
                                                 </td>
                                                 <td className="px-4 py-4 text-sm">
@@ -567,6 +562,7 @@ export const RetiroPage = () => {
                             </p>
                             <div className="flex gap-2">
                                 <button
+                                    title="Página anterior"
                                     onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
                                     disabled={paginaActual === 1}
                                     className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"
@@ -578,15 +574,15 @@ export const RetiroPage = () => {
                                         <button
                                             key={pagina}
                                             onClick={() => setPaginaActual(pagina)}
-                                            className={`px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 ${
-                                                paginaActual === pagina ? "bg-orange-500 text-white" : "bg-gray-200 text-black"
-                                            }`}
+                                            className={`px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 ${paginaActual === pagina ? "bg-orange-500 text-white" : "bg-gray-200 text-black"
+                                                }`}
                                         >
                                             {pagina}
                                         </button>
                                     ))}
                                 </div>
                                 <button
+                                    title="Página siguiente"
                                     onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
                                     disabled={paginaActual === totalPaginas}
                                     className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"

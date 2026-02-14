@@ -1,7 +1,9 @@
 import { TrendingUp, Coins, Wallet, Award } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useUsuario } from "../../hooks/usuarioHook";
 
 const HomePage = () => {
+    const {usuario} = useUsuario();
     // Datos para la gráfica
     const data = [
         { name: "Ene", ganancias: 120 },
@@ -146,7 +148,7 @@ const HomePage = () => {
                                     <div className="space-y-1">
                                         <div>
                                             <p className="text-xs text-gray-500">Monto máximo</p>
-                                            <p className="text-sm font-bold text-gray-900">$ 10,000.00</p>
+                                            <p className="text-sm font-bold text-gray-900">$ {usuario?.licencia.limite}</p>
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500">Total recaudado</p>

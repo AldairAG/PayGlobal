@@ -6,7 +6,7 @@ import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from
 import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -220,7 +220,8 @@ export const useUsuario = () => {
         errorUsuarios,
         obtenerTodosLosUsuarios,
 
-        //
+        // Método y estados de Editar Perfil
+        editarPerfil,
         //Metodos de usuario
         solicitarCompraLicencia,
 

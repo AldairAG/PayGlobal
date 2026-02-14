@@ -25,6 +25,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +38,7 @@ import lombok.NoArgsConstructor;
 })
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Usuario implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,6 +97,14 @@ public class Usuario implements UserDetails{
 
     public void addSolicitud(Solicitud solicitud) {
         this.solicitudes.add(solicitud);
+    }
+
+    public void addWalletAddress(WalletAddress walletAddress) {
+        this.walletAddresses.add(walletAddress);
+    }
+
+    public void addWallet(Wallet wallet) {
+        this.wallets.add(wallet);
     }
 
     // UserDetails implementation
