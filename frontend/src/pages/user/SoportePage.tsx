@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Ticket, Plus, MessageSquare, X, Send, CheckCircle, Clock } from "lucide-react";
 import { toast } from "react-toastify";
 import type { Ticket as TicketType, RespuestaTicket } from "../../type/entityTypes";
-import { EstadoTicket as EstadoTicketEnum } from "../../type/entityTypes";
+import { EstadoTicket as EstadoTicketEnum } from "../../type/enum";
 
 export const SoportePage = () => {
     // Estado para almacenar los tickets (mock data)

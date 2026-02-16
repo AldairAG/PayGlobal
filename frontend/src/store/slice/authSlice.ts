@@ -91,11 +91,14 @@ const authSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(registro.fulfilled, (state) => {
+            .addCase(registro.fulfilled, (state, action) => {
                 state.loading = false;
-                // Para el registro, guardamos el UsuarioResponse directament
+                state.token = action.payload.data.token;
                 state.isAuthenticated = true;
                 state.error = null;
+                // Guardar token y usuario en sessionStorage
+                saveToSessionStorage('auth_token', action.payload.data.token);
+                saveToSessionStorage('auth_user', action.payload.data.user);
             })
             .addCase(registro.rejected, (state, action) => {
                 state.loading = false;
@@ -110,8 +113,9 @@ const authSlice = createSlice({
                 state.token = action.payload.data.token;
                 state.isAuthenticated = true;
                 state.error = null;
-                // Guardar en sessionStorage
+                // Guardar token y usuario en sessionStorage
                 saveToSessionStorage('auth_token', action.payload.data.token);
+                saveToSessionStorage('auth_user', action.payload.data.user);
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;

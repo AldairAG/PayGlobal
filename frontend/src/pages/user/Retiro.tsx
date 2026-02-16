@@ -1,39 +1,31 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { use, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
-import type { WalletRetiro, SolicitudRetiro } from "../../type/entityTypes";
+import type { SolicitudRetiro } from "../../type/entityTypes";
 import { TipoCrypto, EstadoOperacion } from "../../type/enum";
+import { useWalletAddress } from "../../hooks/useWalletAddress";
+import type { CreateWalletAddress } from "../../type/requestTypes";
 
 export const RetiroPage = () => {
-    // Estado para wallets de retiro
-    const [walletsRetiro, setWalletsRetiro] = useState<WalletRetiro[]>([
-        {
-            id: 1,
-            address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-            tipoCrypto: TipoCrypto.USDT_ERC20,
-            nombre: "Mi Wallet Principal",
-            balanceRetirado: 1250.50,
-            usuario: "usuario@example.com"
-        },
-        {
-            id: 2,
-            address: "TKVx9RNEqXqZhZfJVqFrr8BhNWXXkNhzHb",
-            tipoCrypto: TipoCrypto.USDT_TRC20,
-            nombre: "Wallet Tron",
-            balanceRetirado: 750.00,
-            usuario: "usuario@example.com"
-        },
-        {
-            id: 3,
-            address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-            tipoCrypto: TipoCrypto.BITCOIN,
-            nombre: "BTC Principal",
-            balanceRetirado: 0.5,
-            usuario: "usuario@example.com"
-        }
-    ]);
+
+    const {
+        getMyWalletAddresses,
+        walletAddresses,
+        loadingMyWallets,
+        errorMyWallets,
+        createWalletAddress,
+        loadingCreate,
+        errorCreate,
+        deleteWalletAddress,
+        loadingDelete,
+        errorDelete,
+        updateWalletAddress,
+        loadingUpdate,
+        errorUpdate
+    } = useWalletAddress();
 
     // Estado para solicitudes de retiro
     const [solicitudesRetiro, setSolicitudesRetiro] = useState<SolicitudRetiro[]>([
@@ -83,13 +75,16 @@ export const RetiroPage = () => {
             tipoCrypto: TipoCrypto.USDT_TRC20
         }
     ]);
-
     // Estados de UI
     const [showWalletForm, setShowWalletForm] = useState(false);
     const [selectedWallet, setSelectedWallet] = useState<number | null>(null);
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
     const [paginaActual, setPaginaActual] = useState(1);
     const solicitudesPorPagina = 5;
+
+    useEffect(() => {
+        getMyWalletAddresses();
+    }, []);
 
     // Validación para nueva wallet
     const walletValidationSchema = Yup.object({
@@ -112,18 +107,19 @@ export const RetiroPage = () => {
         },
         validationSchema: walletValidationSchema,
         onSubmit: (values, { resetForm }) => {
-            const nuevaWallet: WalletRetiro = {
-                id: walletsRetiro.length + 1,
+            const nuevaWallet: CreateWalletAddress = {
                 address: values.address,
                 tipoCrypto: values.tipoCrypto as TipoCrypto,
-                nombre: values.nombre,
-                balanceRetirado: 0,
-                usuario: "usuario@example.com"
+                nombre: values.nombre
             };
-            setWalletsRetiro([...walletsRetiro, nuevaWallet]);
-            resetForm();
-            setShowWalletForm(false);
-            toast.success("Wallet creada exitosamente");
+
+            createWalletAddress(nuevaWallet).then(() => {
+                resetForm();
+                setShowWalletForm(false);
+                toast.success("Wallet creada exitosamente");
+            }).catch(() => {
+                toast.error("Error al crear la wallet: " + (errorCreate || "Error desconocido"));
+            });
         }
     });
 
@@ -145,7 +141,7 @@ export const RetiroPage = () => {
         },
         validationSchema: retiroValidationSchema,
         onSubmit: (values, { resetForm }) => {
-            const wallet = walletsRetiro.find(w => w.id === values.walletId);
+            const wallet = walletAddresses.find(w => w.id === values.walletId);
             if (!wallet) return;
 
             const nuevaSolicitud: SolicitudRetiro = {
@@ -303,6 +299,7 @@ export const RetiroPage = () => {
 
                                     <div className="flex gap-2">
                                         <button
+                                            disabled={loadingCreate}
                                             type="submit"
                                             className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
                                         >
@@ -325,7 +322,13 @@ export const RetiroPage = () => {
 
                         {/* Lista de Wallets */}
                         <div className="space-y-3 max-h-100 overflow-y-auto">
-                            {walletsRetiro.map((wallet) => (
+                            {loadingMyWallets ? (
+                                <p className="text-center text-gray-500">Cargando wallets...</p>
+                            ) : errorMyWallets ? (
+                                <p className="text-center text-red-600">Error al cargar wallets</p>
+                            ) : walletAddresses.length === 0 ? (
+                                <p className="text-center text-gray-500">No tienes wallets registradas</p>
+                            ) : (walletAddresses.map((wallet) => (
                                 <div
                                     key={wallet.id}
                                     className="p-4 rounded-lg border-2 transition-all hover:shadow-md border-gray-200 bg-white"
@@ -345,7 +348,7 @@ export const RetiroPage = () => {
                                         {wallet.address}
                                     </p>
                                 </div>
-                            ))}
+                            )))}
                         </div>
                     </div>
 
@@ -373,7 +376,7 @@ export const RetiroPage = () => {
                                         }`}
                                 >
                                     <option value={0}>Selecciona una wallet</option>
-                                    {walletsRetiro.map((wallet) => (
+                                    {walletAddresses.map((wallet) => (
                                         <option key={wallet.id} value={wallet.id}>
                                             {wallet.nombre} - {getCryptoSymbol(wallet.tipoCrypto)}
                                         </option>
@@ -390,7 +393,7 @@ export const RetiroPage = () => {
                             {selectedWallet && selectedWallet > 0 && (
                                 <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
                                     {(() => {
-                                        const wallet = walletsRetiro.find(w => w.id === selectedWallet);
+                                        const wallet = walletAddresses.find(w => w.id === selectedWallet);
                                         return wallet ? (
                                             <>
                                                 <p className="text-sm font-semibold mb-2">Wallet Seleccionada:</p>

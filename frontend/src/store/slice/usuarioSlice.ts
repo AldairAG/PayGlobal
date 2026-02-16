@@ -4,7 +4,8 @@ import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuario
 import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
-import { saveToSessionStorage } from "../../helpers/authHelpers";
+import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
+import { logout } from "./authSlice";
 
 interface UsuarioState {
     usuario: Usuario | null;
@@ -56,45 +57,48 @@ interface UsuarioState {
     errorUsuariosEnRed: string | null;
 }
 
-const initialState: UsuarioState = {
-    usuario: null,
-    loadingRegistro: false,
-    errorRegistro: null,
-    loadingLogin: false,
-    errorLogin: null,
-    loadingEditarPerfil: false,
-    errorEditarPerfil: null,
-    loadingEditarUsuarioAdmin: false,
-    errorEditarUsuarioAdmin: null,
-    loadingSolicitarCompraLicencia: false,
-    errorSolicitarCompraLicencia: null,
-    loadingSolicitarRetiroFondos: false,
-    errorSolicitarRetiroFondos: null,
-    loadingComprarLicenciaDelegada: false,
-    errorComprarLicenciaDelegada: null,
-    loadingTransferenciaEntreUsuarios: false,
-    errorTransferenciaEntreUsuarios: null,
-    loadingAprobarCompraLicencia: false,
-    errorAprobarCompraLicencia: null,
-    loadingRechazarSolicitud: false,
-    errorRechazarSolicitud: null,
+// Cargar estado inicial desde sessionStorage
+const loadInitialState = (): UsuarioState => {
+    const savedUser = loadFromSessionStorage('auth_user');
 
-    solicitudes: null,
-    loadingSolicitudes: false,
-    errorSolicitudes: null,
-
-    usuarios: null,
-    loadingUsuarios: false,
-    errorUsuarios: null,
-
-    usuarioSeleccionado: null,
-    loadingUsuarioSeleccionado: false,
-    errorUsuarioSeleccionado: null,
-
-    usuariosEnRed: null,
-    loadingUsuariosEnRed: false,
-    errorUsuariosEnRed: null,
+    return {
+        usuario: savedUser || null,
+        loadingRegistro: false,
+        errorRegistro: null,
+        loadingLogin: false,
+        errorLogin: null,
+        loadingEditarPerfil: false,
+        errorEditarPerfil: null,
+        loadingEditarUsuarioAdmin: false,
+        errorEditarUsuarioAdmin: null,
+        loadingSolicitarCompraLicencia: false,
+        errorSolicitarCompraLicencia: null,
+        loadingSolicitarRetiroFondos: false,
+        errorSolicitarRetiroFondos: null,
+        loadingComprarLicenciaDelegada: false,
+        errorComprarLicenciaDelegada: null,
+        loadingTransferenciaEntreUsuarios: false,
+        errorTransferenciaEntreUsuarios: null,
+        loadingAprobarCompraLicencia: false,
+        errorAprobarCompraLicencia: null,
+        loadingRechazarSolicitud: false,
+        errorRechazarSolicitud: null,
+        solicitudes: null,
+        loadingSolicitudes: false,
+        errorSolicitudes: null,
+        usuarios: null,
+        loadingUsuarios: false,
+        errorUsuarios: null,
+        usuarioSeleccionado: null,
+        loadingUsuarioSeleccionado: false,
+        errorUsuarioSeleccionado: null,
+        usuariosEnRed: null,
+        loadingUsuariosEnRed: false,
+        errorUsuariosEnRed: null,
+    };
 };
+
+const initialState: UsuarioState = loadInitialState();
 
 export const editarPerfilThunk = createAsyncThunk<
     ApiResponse<Usuario>,
@@ -326,6 +330,10 @@ const usuarioSlice = createSlice({
             // Guardar en sessionStorage
             saveToSessionStorage('auth_user', action.payload);
         },
+        clearUsuario(state) {
+            state.usuario = null;
+            // Limpiar del sessionStorage también se hace en el logout de authSlice
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -337,6 +345,10 @@ const usuarioSlice = createSlice({
                 state.loadingEditarPerfil = false;
                 state.errorEditarPerfil = null;
                 state.usuario = action.payload.data || state.usuario;
+                // Actualizar también en sessionStorage
+                if (action.payload.data) {
+                    saveToSessionStorage('auth_user', action.payload.data);
+                }
             })
             .addCase(editarPerfilThunk.rejected, (state, action) => {
                 state.loadingEditarPerfil = false;
@@ -476,9 +488,17 @@ const usuarioSlice = createSlice({
             .addCase(obtenerUsuarioPorIdThunk.rejected, (state, action) => {
                 state.loadingUsuarioSeleccionado = false;
                 state.errorUsuarioSeleccionado = action.payload || "Error al obtener usuario por ID";
+            })
+            // Escuchar la acción de logout del authSlice para limpiar el usuario
+            .addCase(logout, (state) => {
+                state.usuario = null;
+                state.solicitudes = null;
+                state.usuarios = null;
+                state.usuarioSeleccionado = null;
+                state.usuariosEnRed = null;
             });
     },
 });
 
-export const { setUsuario } = usuarioSlice.actions;
+export const { setUsuario, clearUsuario } = usuarioSlice.actions;
 export default usuarioSlice.reducer;

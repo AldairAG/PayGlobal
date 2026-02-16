@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import usuarioReducer from './slice/usuarioSlice';
 import authReducer from './slice/authSlice';
+import walletAddressReducer from './slice/walletAddressSlice';
 import { apiBase } from '../service/apiBase';
 
 export const store = configureStore({
     reducer: {
         auth:authReducer,
         usuario: usuarioReducer,
+        walletAddress: walletAddressReducer,
     },
 }); 
 // Inicializar el token de apiBase desde sessionStorage al cargar la aplicación

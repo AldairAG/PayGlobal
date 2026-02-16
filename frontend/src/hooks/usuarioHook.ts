@@ -3,7 +3,6 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode';
 import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
-import type { Usuario } from '../type/entityTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
 import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk } from '../store/slice/usuarioSlice';
@@ -77,6 +76,10 @@ export const useUsuario = () => {
     const registrar = async (registroData: RegistroRequestDTO) => {
         try {
             const result = await dispatch(registro(registroData));
+            const data = unwrapResult(result).data;
+            if (data) {
+                dispatch(setUsuario(data.user)); // Guardar datos del usuario en el estado
+            }
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al registrar usuario:', error);

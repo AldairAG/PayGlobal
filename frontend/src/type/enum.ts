@@ -85,3 +85,8 @@ export enum EstadoOperacion{
     APROBADA="APROBADA",
     RECHAZADA="RECHAZADA"
 }
+
+export enum EstadoTicket {
+    ABIERTO = "abierto",
+    CERRADO = "cerrado"
+}

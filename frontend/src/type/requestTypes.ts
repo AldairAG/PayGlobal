@@ -1,3 +1,5 @@
+import type { TipoCrypto } from "./enum";
+
 export interface RegistroRequestDTO {
     username: string;
     password: string;
@@ -15,4 +17,11 @@ export interface EditarPerfilRequestDTO {
     apellido: string;
     telefono: string;
     pais: string;   
+}
+
+export interface CreateWalletAddress {
+    address: string;
+    tipoCrypto: TipoCrypto;
+    nombre: string;
+
 }
