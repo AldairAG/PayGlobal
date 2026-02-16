@@ -18,3 +18,11 @@ export const formatearFecha = (fecha: string) => {
         day: 'numeric',
     });
 };
+
+export const formatearFechaDate = (fecha: Date) => {
+    return fecha.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+    });
+};

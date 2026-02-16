@@ -1,6 +1,8 @@
 import { TrendingUp, Coins, Wallet, Award } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { formatearFechaDate } from "../../helpers/formatHelpers";
+import { TipoWallets } from "../../type/enum";
 
 const HomePage = () => {
     const {usuario} = useUsuario();
@@ -152,7 +154,7 @@ const HomePage = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs text-gray-500">Total recaudado</p>
-                                            <p className="text-sm font-bold" style={{ color: '#69AC95' }}>$ 7,500.00</p>
+                                            <p className="text-sm font-bold" style={{ color: '#69AC95' }}>$ {usuario?.licencia.saldoAcumulado}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +168,7 @@ const HomePage = () => {
                                 <Award size={30} style={{ color: '#F0973C' }} />
                                 <h3 className="text-xl font-semibold">Licencia activa</h3>
                             </div>
-                            <p className="mt-2 text-gray-600">Ultima fecha de renovacion: 12/12/2026</p>
+                            <p className="mt-2 text-gray-600">Ultima fecha de renovacion: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
                         </div>
 
                         {/* Wallet Dividendos */}
@@ -176,7 +178,7 @@ const HomePage = () => {
                                 <Wallet size={30} style={{ color: '#69AC95' }} />
                                 <h3 className="text-xl font-semibold">Dividendos</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold">$ 1,250.00</p>
+                        <p className="mt-2 text-2xl font-bold">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_DIVIDENDOS)?.saldo}</p>
                         </div>
 
                         {/* Wallet Comisiones */}
@@ -186,7 +188,7 @@ const HomePage = () => {
                                 <Coins size={30} style={{ color: '#F0973C' }} />
                                 <h3 className="text-xl font-semibold">Comisiones</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold">$ 780.00</p>
+                            <p className="mt-2 text-2xl font-bold">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
                         </div>
 
                     </div>
@@ -202,7 +204,7 @@ const HomePage = () => {
 
                             <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
                                 <h3 className="font-semibold text-lg">Mi rango actual</h3>
-                                <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>Gold Partner</p>
+                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango?.nombre || "Sin Rango"}</p>
                             </div>
 
                             <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
