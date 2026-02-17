@@ -295,7 +295,7 @@ public class UsuarioController {
      * SOLICITUD_RETIRO_WALLET_COMISIONES, TRANFERENCIA_USUARIO, PAGO_DELEGADO
      */
     @GetMapping("/admin/solicitudes/por-tipos")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<Page<Solicitud>>> obtenerSolicitudesPorTipos(
             @RequestParam List<TipoSolicitud> tipos,
             Pageable pageable) {
