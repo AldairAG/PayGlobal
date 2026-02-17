@@ -43,11 +43,12 @@ public class TransaccionController {
 	}
 
 	/**
-	 * Filtrar transacciones por fecha, concepto y estado (paginado)
+	 * Filtrar transacciones por fecha, concepto, estado y usuario (paginado)
 	 */
 	@GetMapping("/filtrar")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 	public ResponseEntity<ApiResponseWrapper<Page<Transaccion>>> filtrarTransacciones(
+			@RequestParam(required = false) Long usuarioId,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta,
 			@RequestParam(required = false) TipoConceptos concepto,
@@ -55,7 +56,7 @@ public class TransaccionController {
 			Pageable pageable) {
 		try {
 			Page<Transaccion> transacciones = transaccionService.filtrarTransacciones(
-					desde, hasta, concepto, estado, pageable);
+					usuarioId, desde, hasta, concepto, estado, pageable);
 			return ResponseEntity.ok(new ApiResponseWrapper<>(true, transacciones, null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
