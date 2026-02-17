@@ -55,6 +55,8 @@ public interface UsuarioService extends UserDetailsService {
 
         Page<Solicitud> obtenerSolicitudes(Pageable pageable) throws Exception;
 
+        Page<Solicitud> obtenerSolicitudesPorTipos(List<TipoSolicitud> tipos, Pageable pageable) throws Exception;
+
         Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception;
 
         Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception;
