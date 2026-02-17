@@ -58,15 +58,19 @@ public class TransaccionServiceImpl implements TransaccionService {
 
         @Override
         @Transactional(readOnly = true)
-        public Page<Transaccion> filtrarTransacciones(LocalDateTime desde, LocalDateTime hasta, TipoConceptos concepto,
-                        EstadoOperacion estado, Pageable pageable) {
-                Specification<Transaccion> spec = (root, query, cb) -> cb.conjunction();
+	public Page<Transaccion> filtrarTransacciones(Long usuarioId, LocalDateTime desde, LocalDateTime hasta, TipoConceptos concepto,
+			EstadoOperacion estado, Pageable pageable) {
+		Specification<Transaccion> spec = (root, query, cb) -> cb.conjunction();
 
+                if (usuarioId != null) {
+                        spec = spec.and((root, query, cb) -> cb.equal(root.get("usuario").get("id"), usuarioId));
+                }
+        
                 if (desde != null) {
                         spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("fecha"), desde));
                 }
-
-                if (hasta != null) {
+        
+                        if (hasta != null) {
                         spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("fecha"), hasta));
                 }
 

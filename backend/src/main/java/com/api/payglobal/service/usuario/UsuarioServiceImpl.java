@@ -599,6 +599,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         return solicitudRepository.findAll(pageable);
     }
 
+    @Override
+    public Page<Solicitud> obtenerSolicitudesPorTipos(List<TipoSolicitud> tipos, Pageable pageable) throws Exception {
+        if (tipos == null || tipos.isEmpty()) {
+            throw new Exception("Debe proporcionar al menos un tipo de solicitud");
+        }
+        return solicitudRepository.findByTipoSolicitudIn(tipos, pageable);
+    }
+
     /**
      * Obtener todos los usuarios con filtro de búsqueda (Admin)
      * Permite filtrar por username, email, nombre o apellido

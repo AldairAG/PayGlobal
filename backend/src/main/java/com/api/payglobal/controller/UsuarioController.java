@@ -290,6 +290,28 @@ public class UsuarioController {
     }
 
     /**
+     * Obtener solicitudes filtradas por uno o más tipos (Admin)
+     * Permite filtrar solicitudes por COMPRA_LICENCIA, SOLICITUD_RETIRO_WALLET_DIVIDENDOS,
+     * SOLICITUD_RETIRO_WALLET_COMISIONES, TRANFERENCIA_USUARIO, PAGO_DELEGADO
+     */
+    @GetMapping("/admin/solicitudes/por-tipos")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<Page<Solicitud>>> obtenerSolicitudesPorTipos(
+            @RequestParam List<TipoSolicitud> tipos,
+            Pageable pageable) {
+        try {
+            Page<Solicitud> solicitudes = usuarioService.obtenerSolicitudesPorTipos(tipos, pageable);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudes,
+                    "Solicitudes obtenidas correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    
+
+    /**
      * Obtener todos los usuarios con filtro de búsqueda (Admin)
      * Permite buscar por username, email, nombre o apellido
      */

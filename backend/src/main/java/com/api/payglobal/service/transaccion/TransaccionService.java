@@ -17,6 +17,6 @@ public interface TransaccionService {
 
     Page<Transaccion> listarTransacciones(Pageable pageable);
 
-    Page<Transaccion> filtrarTransacciones(LocalDateTime desde, LocalDateTime hasta, TipoConceptos concepto,
+    Page<Transaccion> filtrarTransacciones(Long usuarioId, LocalDateTime desde, LocalDateTime hasta, TipoConceptos concepto,
             EstadoOperacion estado, Pageable pageable);
 }
