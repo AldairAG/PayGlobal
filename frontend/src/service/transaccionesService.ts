@@ -1,6 +1,7 @@
 import type { ApiResponse, Page } from "../type/apiTypes";
 import type { Transaccion } from "../type/entityTypes";
 import { TipoConceptos, EstadoOperacion } from "../type/enum";
+import type { GananciaMesDTO } from "../type/responseType";
 import { api } from "./apiBase";
 
 const BASE_PATH = '/transacciones';
@@ -56,7 +57,12 @@ const listarTransacciones = async (page: number = 0, size: number = 10): Promise
     return api.get<Page<Transaccion>>(`${BASE_PATH}?page=${page}&size=${size}`);
 }
 
+const obtenerGananciasPorMes = async (): Promise<ApiResponse<GananciaMesDTO[]>> => {
+    return await api.get<GananciaMesDTO[]>(`${BASE_PATH}/ganancias-por-mes`);
+}
+
 export const transaccionesService = {
     filtrarTransacciones,
     listarTransacciones,
-}
+    obtenerGananciasPorMes,
+};

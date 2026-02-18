@@ -118,13 +118,16 @@ public class UsuarioServiceImpl implements UsuarioService {
             // Generar token JWT
             String token = jwtHelper.generateToken(usuario);
 
+            Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
+
             // Crear respuesta
             return new JwtResponse(
                     token,
                     usuario.getId(),
                     usuario.getUsername(),
                     usuario.getEmail(),
-                    usuario);
+                    usuario,
+                    redDeUsuario);
 
         } catch (AuthenticationException e) {
             throw new RuntimeException("Ocurrió un error durante la autenticación: " + e.getMessage(), e);

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.entity.Usuario;
+import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.repository.UsuarioRepository;
 
 @Service
@@ -73,5 +74,14 @@ public class UninivelHelper {
         }
 
         return redInversa;
+    }
+
+    public List<Usuario> obtenerRedDeUsuariosPorRango(String usernameReferenciador, TipoRango tipoRango) {
+        Usuario usuario = usuarioRepository.findByUsername(usernameReferenciador)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Usuario> redPorRango = new ArrayList<>();
+        obtenerReferidosRecursivo(usuario.getUsername(), redPorRango, 0, tipoRango.getNumero());
+        return redPorRango;
     }
 }

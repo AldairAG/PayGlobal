@@ -8,7 +8,7 @@ const SideBar = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { usuario } = useUsuario();
+    const { usuario,cerrarSesion } = useUsuario();
 
     const menuItems = [
         { name: "Home", icon: <Home size={20} />, route: ROUTES.USER.HOME },
@@ -79,6 +79,7 @@ const SideBar = () => {
 
                 <li 
                     className="flex mt-10 items-center gap-4 p-3 rounded-lg cursor-pointer transition"
+                    onClick={cerrarSesion}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#BC2020'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >

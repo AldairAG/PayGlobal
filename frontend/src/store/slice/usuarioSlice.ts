@@ -10,6 +10,8 @@ import { logout } from "./authSlice";
 interface UsuarioState {
     usuario: Usuario | null;
 
+    usuarioEnRed: number | null;
+
     loadingRegistro: boolean;
     errorRegistro: string | null;
 
@@ -63,6 +65,7 @@ const loadInitialState = (): UsuarioState => {
 
     return {
         usuario: savedUser || null,
+        usuarioEnRed: 0,
         loadingRegistro: false,
         errorRegistro: null,
         loadingLogin: false,
@@ -334,6 +337,9 @@ const usuarioSlice = createSlice({
             state.usuario = null;
             // Limpiar del sessionStorage también se hace en el logout de authSlice
         },
+        setUsuarioEnRed(state, action: PayloadAction<number>) {
+            state.usuarioEnRed = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -500,5 +506,5 @@ const usuarioSlice = createSlice({
     },
 });
 
-export const { setUsuario, clearUsuario } = usuarioSlice.actions;
+export const { setUsuario, clearUsuario,setUsuarioEnRed } = usuarioSlice.actions;
 export default usuarioSlice.reducer;

@@ -1,6 +1,7 @@
 package com.api.payglobal.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,12 +10,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.payglobal.dto.response.GananciaMesDTO;
 import com.api.payglobal.entity.Transaccion;
+import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.enums.EstadoOperacion;
 import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.helpers.ApiResponseWrapper;
@@ -31,7 +36,7 @@ public class TransaccionController {
 	 * Listar transacciones (paginado)
 	 */
 	@GetMapping
-	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USUARIO')")
 	public ResponseEntity<ApiResponseWrapper<Page<Transaccion>>> listarTransacciones(Pageable pageable) {
 		try {
 			Page<Transaccion> transacciones = transaccionService.listarTransacciones(pageable);
@@ -46,7 +51,7 @@ public class TransaccionController {
 	 * Filtrar transacciones por fecha, concepto, estado y usuario (paginado)
 	 */
 	@GetMapping("/filtrar")
-	@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('USUARIO')")
 	public ResponseEntity<ApiResponseWrapper<Page<Transaccion>>> filtrarTransacciones(
 			@RequestParam(required = false) Long usuarioId,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
@@ -58,6 +63,23 @@ public class TransaccionController {
 			Page<Transaccion> transacciones = transaccionService.filtrarTransacciones(
 					usuarioId, desde, hasta, concepto, estado, pageable);
 			return ResponseEntity.ok(new ApiResponseWrapper<>(true, transacciones, null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+		}
+	}
+
+	/**
+	 * Obtener ganancias por mes para un usuario específico
+	 */
+	@GetMapping("/ganancias-por-mes")
+	@PreAuthorize("hasRole('USUARIO')")
+	public ResponseEntity<ApiResponseWrapper<List<GananciaMesDTO>>> obtenerGananciasPorMes() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Long usuarioId = ((Usuario) auth.getPrincipal()).getId();
+			List<GananciaMesDTO> ganancias = transaccionService.obtenerGananciasPorMes(usuarioId);
+			return ResponseEntity.ok(new ApiResponseWrapper<>(true, ganancias, null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(new ApiResponseWrapper<>(false, null, e.getMessage()));

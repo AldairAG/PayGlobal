@@ -3,6 +3,7 @@ import type { Transaccion } from "../../type/entityTypes";
 import { transaccionesService } from "../../service/transaccionesService";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { EstadoOperacion, TipoConceptos } from "../../type/enum";
+import type { GananciaMesDTO } from "../../type/responseType";
 
 interface TransaccionesState {
     transacciones: Transaccion[];
@@ -11,6 +12,10 @@ interface TransaccionesState {
     totalElementos: number;
     cargando: boolean;
     error: string | null;
+
+    gananciasPorMes: GananciaMesDTO[];
+    loadingGanancias: boolean;
+    errorGanancias: string | null;
 }
 
 const initialState: TransaccionesState = {
@@ -20,6 +25,10 @@ const initialState: TransaccionesState = {
     totalElementos: 0,
     cargando: false,
     error: null,
+
+    gananciasPorMes: [],
+    loadingGanancias: false,
+    errorGanancias: null,
 };
 
 
@@ -38,6 +47,26 @@ export const obtenerTransacciones = createAsyncThunk<
             return response;
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Error al obtener transacciones';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const obtenerGananciasPorMes = createAsyncThunk<
+    ApiResponse<GananciaMesDTO[]>,
+    void,
+    { rejectValue: string }
+>(
+    'transacciones/obtenerGananciasPorMes',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await transaccionesService.obtenerGananciasPorMes();
+            if (!response.success) {
+                return rejectWithValue(response.message);
+            }
+            return response;
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Error al obtener ganancias por mes';
             return rejectWithValue(message);
         }
     }
@@ -80,6 +109,18 @@ export const transaccionesSlice = createSlice({
             .addCase(obtenerTransacciones.rejected, (state, action) => {
                 state.cargando = false;
                 state.error = action.payload || 'Error al cargar transacciones';
+            })
+            .addCase(obtenerGananciasPorMes.pending, (state) => {
+                state.loadingGanancias = true;
+                state.errorGanancias = null;
+            })
+            .addCase(obtenerGananciasPorMes.fulfilled, (state, action) => {
+                state.loadingGanancias = false;
+                state.gananciasPorMes = action.payload.data;
+            })
+            .addCase(obtenerGananciasPorMes.rejected, (state, action) => {
+                state.loadingGanancias = false;
+                state.errorGanancias = action.payload || 'Error al cargar ganancias por mes';
             });
     }
 });

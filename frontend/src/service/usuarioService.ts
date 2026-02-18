@@ -15,6 +15,7 @@ export interface JwtResponse {
     email: string;
     roles: string[];
     user: Usuario;
+    usuarioEnRed: number;
 }
 
 export interface UsuarioEnRedResponse {

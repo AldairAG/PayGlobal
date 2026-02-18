@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, setUsuarioEnRed } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -28,6 +28,8 @@ export const useUsuario = () => {
     const usuario = useSelector((state: RootState) => state.usuario.usuario);
     const token = useSelector((state: RootState) => state.auth.token);
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+    const usuarioEnRed = useSelector((state: RootState) => state.usuario.usuarioEnRed);
 
     // Estados de Registro
     const loadingRegistro = useSelector((state: RootState) => state.usuario.loadingRegistro);
@@ -78,7 +80,7 @@ export const useUsuario = () => {
             const result = await dispatch(registro(registroData));
             const data = unwrapResult(result).data;
             if (data) {
-                dispatch(setUsuario(data.user)); // Guardar datos del usuario en el estado
+                dispatch(setUsuario(data.user));
             }
             return unwrapResult(result);
         } catch (error) {
@@ -97,7 +99,8 @@ export const useUsuario = () => {
             const result = await dispatch(loginThunk(loginData));
             const data= unwrapResult(result).data;
             if (data) {
-                dispatch(setUsuario(data.user)); // Guardar datos del usuario en el estado
+                dispatch(setUsuario(data.user)); 
+                dispatch(setUsuarioEnRed(data.usuarioEnRed)); // Guardar datos del usuario en el estado
             }
 
             const ruta = obtenerRutaSegunRol();
@@ -116,6 +119,7 @@ export const useUsuario = () => {
      */
     const cerrarSesion = () => {
         dispatch(logout());
+        navigate(ROUTES.LANDING); // Redirigir a la página de inicio después de cerrar sesión
     };
 
     /**
@@ -240,6 +244,8 @@ export const useUsuario = () => {
         usuario,
         token,
         isAuthenticated,
+
+        usuarioEnRed,
 
         // Métodos de autenticación
         registrar,

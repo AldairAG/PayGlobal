@@ -37,22 +37,26 @@ export default function PurchaseLicenseModal({
         [TipoCrypto.BITCOIN]: {
             address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
             name: "Bitcoin (BTC)",
-            symbol: "BTC"
+            symbol: "BTC",
+            tipo:TipoCrypto.BITCOIN 
         },
         [TipoCrypto.USDT_ERC20]: {
             address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
             name: "USDT (ERC-20)",
-            symbol: "USDT"
+            symbol: "USDT",
+            tipo:TipoCrypto.USDT_ERC20
         },
         [TipoCrypto.USDT_TRC20]: {
             address: "TYASr5UV6HEcXatwdFQfmLVUqQQQMUxHLS",
             name: "USDT (TRC-20)",
-            symbol: "USDT"
+            symbol: "USDT",
+            tipo:TipoCrypto.USDT_TRC20
         },
         [TipoCrypto.SOLANA]: {
             address: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
             name: "Solana (SOL)",
-            symbol: "SOL"
+            symbol: "SOL",
+            tipo:TipoCrypto.SOLANA
         }
     };
 
@@ -121,9 +125,9 @@ export default function PurchaseLicenseModal({
                         {Object.entries(cryptoWallets).map(([key, wallet]) => (
                             <button
                                 key={key}
-                                onClick={() => setSelectedCrypto(Number(key) as TipoCrypto)}
+                                onClick={() => setSelectedCrypto(wallet.tipo)}
                                 className={`p-3 rounded-lg border-2 transition-all ${
-                                    selectedCrypto === Number(key)
+                                    selectedCrypto === wallet.tipo
                                         ? 'border-blue-600 bg-blue-50 text-blue-700'
                                         : 'border-gray-200 hover:border-blue-300'
                                 }`}
