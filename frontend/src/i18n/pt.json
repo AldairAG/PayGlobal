@@ -8,7 +8,16 @@
         "confirm_password": "Confirmar senha",
         "email": "Email",
         "close": "Fechar",
-        "referenced": "Referenciado"
-
+        "referenced": "Referenciado",
+        "fill_fields": "Preencha este campo",
+        "fill_all_fields": "Por favor, preencha todos os campos corretamente",
+        "password_min_length": "A senha deve ter pelo menos 6 caracteres",
+        "passwords_mismatch": "As senhas não coincidem",
+        "logging_in": "Entrando...",
+        "registering": "Registrando...",
+        "login_success": "Login bem-sucedido!",
+        "login_error": "Não foi possível entrar. Verifique suas credenciais.",
+        "register_success": "Registro bem-sucedido! Você já pode fazer login.",
+        "register_error": "Não foi possível concluir o registro. Tente novamente."
     }
 }

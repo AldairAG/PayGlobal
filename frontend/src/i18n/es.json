@@ -8,7 +8,16 @@
         "confirm_password": "Confirmar contraseña",
         "email": "Correo electrónico",
         "close": "Cerrar",
-        "referenced": "Referenciado"
-
+        "referenced": "Referenciado",
+        "fill_fields": "Complete este campo",
+        "fill_all_fields": "Por favor, completa todos los campos correctamente",
+        "password_min_length": "La contraseña debe tener al menos 6 caracteres",
+        "passwords_mismatch": "Las contraseñas no coinciden",
+        "logging_in": "Iniciando sesión...",
+        "registering": "Registrando...",
+        "login_success": "¡Inicio de sesión exitoso!",
+        "login_error": "No se pudo iniciar sesión. Verifica tus credenciales.",
+        "register_success": "¡Registro exitoso! Ya puedes iniciar sesión.",
+        "register_error": "No se pudo completar el registro. Inténtalo de nuevo."
     }
 }

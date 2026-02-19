@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { useUsuario } from "../../hooks/usuarioHook";
+import Logo from "../../assets/Logo.png";
+
 
 interface RegisterModalProps {
     open: boolean;
@@ -33,25 +36,49 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
     const handleRegister = async () => {
         setLocalError(null);
 
+        // Validaciones básicas
+        if (!username.trim() || !email.trim() || !password.trim()) {
+            toast.error(t("landing.fill_all_fields") || "Por favor, completa todos los campos obligatorios.");
+            return;
+        }
+
         if (password !== confirmPassword) {
-            setLocalError(t("landing.passwords_mismatch") || "Las contraseñas no coinciden");
+            const errorMsg = t("landing.passwords_mismatch") || "Las contraseñas no coinciden";
+            setLocalError(errorMsg);
+            toast.error(errorMsg);
+            return;
+        }
+
+        if (password.length < 6) {
+            toast.error(t("landing.password_min_length") || "La contraseña debe tener al menos 6 caracteres.");
             return;
         }
 
         try {
             await registrar({ username, password, email, referenciado: referenced });
+            toast.success(t("landing.register_success") || "¡Registro exitoso! Ya puedes iniciar sesión.");
             onClose();
+            // Limpiar campos
+            setUsername("");
+            setEmail("");
+            setPassword("");
+            setConfirmPassword("");
+            setReferenced("");
         } catch (err) {
-            // el error se maneja a través de errorRegistro o aquí si es otra excepción
             console.error('Registro fallido', err);
+            if (errorRegistro) {
+                toast.error(errorRegistro);
+            } else {
+                toast.error(t("landing.register_error") || "No se pudo completar el registro. Inténtalo de nuevo.");
+            }
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-15 flex justify-center items-center">
+        <div className="z-50 fixed inset-0 bg-black bg-opacity-15 flex justify-center items-center">
             <div className="relative bg-white p-6 rounded shadow w-80">
                 {/* Barra de progreso - Top */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 rounded-t" style={{ overflow: "hidden" }}>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 rounded-t overflow-hidden">
                     <div
                         className="h-full transition-all duration-500"
                         style={{
@@ -62,7 +89,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 </div>
 
                 {/* Barra de progreso - Right */}
-                <div className="absolute top-0 right-0 bottom-0 w-1 bg-gray-200" style={{ overflow: "hidden" }}>
+                <div className="absolute top-0 right-0 bottom-0 w-1 bg-gray-200 overflow-hidden">
                     <div
                         className="w-full transition-all duration-500"
                         style={{
@@ -73,11 +100,10 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 </div>
 
                 {/* Barra de progreso - Bottom */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-b" style={{ overflow: "hidden" }}>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-b overflow-hidden">
                     <div
-                        className="h-full transition-all duration-500"
+                        className="h-full transition-all duration-500 ml-auto"
                         style={{
-                            marginLeft: "auto",
                             width: `${progressPercentage}%`,
                             backgroundColor: progressPercentage === 100 ? "#69AC95" : "#F0973C",
                         }}
@@ -85,29 +111,36 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 </div>
 
                 {/* Barra de progreso - Left */}
-                <div className="absolute top-0 left-0 bottom-0 w-1 bg-gray-200" style={{ overflow: "hidden" }}>
+                <div className="absolute top-0 left-0 bottom-0 w-1 bg-gray-200 overflow-hidden">
                     <div
-                        className="w-full transition-all duration-500"
+                        className="w-full transition-all duration-500 mt-auto"
                         style={{
-                            marginTop: "auto",
                             height: `${progressPercentage}%`,
                             backgroundColor: progressPercentage === 100 ? "#69AC95" : "#F0973C",
                         }}
                     />
                 </div>
 
-                <h2 className="text-xl mb-6 font-bold">{t("landing.register")}</h2>
+                <div className="flex items-center justify-center m-0 p-0">
+                    <img
+                        src={Logo}
+                        alt="PayGlobal Logo"
+                        className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                    />
+                </div>
+
+                <h2 className="text-xl text-zinc-950 mb-6 font-bold text-center">{t("landing.register")}</h2>
 
                 <div className="mb-4">
                     <div className="flex items-center">
                         <input
-                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.username")}
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                         />
                         {isUsernameComplete && (
-                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                            <span className="ml-2 text-2xl text-[#69AC95]">
                                 ✓
                             </span>
                         )}
@@ -118,13 +151,13 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 <div className="mb-4">
                     <div className="flex items-center">
                         <input
-                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.email")}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                         {isEmailComplete && (
-                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                            <span className="ml-2 text-2xl text-[#69AC95]">
                                 ✓
                             </span>
                         )}
@@ -135,13 +168,13 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 <div className="mb-4">
                     <div className="flex items-center">
                         <input
-                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.referenced")}
                             value={referenced}
                             onChange={(e) => setReferenced(e.target.value)}
                         />
                         {isReferencedComplete && (
-                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                            <span className="ml-2 text-2xl text-[#69AC95]">
                                 ✓
                             </span>
                         )}
@@ -152,14 +185,14 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 <div className="mb-4">
                     <div className="flex items-center">
                         <input
-                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.password")}
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                         {isPasswordComplete && (
-                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                            <span className="ml-2 text-2xl text-[#69AC95]">
                                 ✓
                             </span>
                         )}
@@ -170,14 +203,14 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 <div className="mb-6">
                     <div className="flex items-center">
                         <input
-                            className="flex-1 p-2 border rounded outline-none focus:border-orange-500"
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500"
                             placeholder={t("landing.confirm_password")}
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                         {isConfirmPasswordComplete && (
-                            <span className="ml-2 text-2xl" style={{ color: "#69AC95" }}>
+                            <span className="ml-2 text-2xl text-[#69AC95]">
                                 ✓
                             </span>
                         )}
@@ -188,16 +221,14 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 {errorRegistro && <div className="text-sm text-red-600 mb-2">{errorRegistro}</div>}
 
                 <button
-                    className="w-full text-white py-2 rounded mb-2 transition-colors"
-                    style={{ backgroundColor: "#69AC95" }}
+                    className="w-full text-white py-2 rounded mb-2 transition-colors bg-[#69AC95] hover:bg-[#5a9a82] disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleRegister}
                     disabled={loadingRegistro}
                 >
                     {loadingRegistro ? t("landing.registering") ?? "Registrando..." : t("landing.register")}
                 </button>
                 <button
-                    className="w-full py-2 rounded transition-colors"
-                    style={{ backgroundColor: "#E5E7EB", color: "#333" }}
+                    className="w-full py-2 rounded transition-colors bg-[#E5E7EB] text-[#333] hover:bg-gray-300"
                     onClick={onClose}
                 >
                     {t("landing.close")}

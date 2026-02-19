@@ -5,11 +5,14 @@ import * as Yup from "yup";
 import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import type { SolicitudRetiro } from "../../type/entityTypes";
-import { TipoCrypto, EstadoOperacion } from "../../type/enum";
+import { TipoCrypto, EstadoOperacion, TipoWallets, TipoSolicitud } from "../../type/enum";
 import { useWalletAddress } from "../../hooks/useWalletAddress";
 import type { CreateWalletAddress } from "../../type/requestTypes";
+import { useUsuario } from "../../hooks/usuarioHook";
 
 export const RetiroPage = () => {
+
+    const { usuario, solicitarRetiro, loadingSolicitarRetiroFondos, errorSolicitarRetiroFondos } = useUsuario();
 
     const {
         getMyWalletAddresses,
@@ -28,54 +31,8 @@ export const RetiroPage = () => {
     } = useWalletAddress();
 
     // Estado para solicitudes de retiro
-    const [solicitudesRetiro, setSolicitudesRetiro] = useState<SolicitudRetiro[]>([
-        {
-            id: 1,
-            walletId: 1,
-            walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-            monto: 500,
-            fecha: new Date("2026-02-12"),
-            estado: EstadoOperacion.PENDIENTE,
-            tipoCrypto: TipoCrypto.USDT_ERC20
-        },
-        {
-            id: 2,
-            walletId: 2,
-            walletAddress: "TKVx9RNEqXqZhZfJVqFrr8BhNWXXkNhzHb",
-            monto: 300,
-            fecha: new Date("2026-02-10"),
-            estado: EstadoOperacion.COMPLETADA,
-            tipoCrypto: TipoCrypto.USDT_TRC20
-        },
-        {
-            id: 3,
-            walletId: 1,
-            walletAddress: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-            monto: 150,
-            fecha: new Date("2026-02-08"),
-            estado: EstadoOperacion.RECHAZADA,
-            tipoCrypto: TipoCrypto.USDT_ERC20
-        },
-        {
-            id: 4,
-            walletId: 3,
-            walletAddress: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-            monto: 0.1,
-            fecha: new Date("2026-02-05"),
-            estado: EstadoOperacion.COMPLETADA,
-            tipoCrypto: TipoCrypto.BITCOIN
-        },
-        {
-            id: 5,
-            walletId: 2,
-            walletAddress: "TKVx9RNEqXqZhZfJVqFrr8BhNWXXkNhzHb",
-            monto: 450,
-            fecha: new Date("2026-02-01"),
-            estado: EstadoOperacion.COMPLETADA,
-            tipoCrypto: TipoCrypto.USDT_TRC20
-        }
-    ]);
     // Estados de UI
+    const [solicitarRetiroHard, setSolicitarRetiro] = useState<SolicitudRetiro[]>([]);
     const [showWalletForm, setShowWalletForm] = useState<string | null>(null);
     const [selectedWallet, setSelectedWallet] = useState<number | null>(null);
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
@@ -148,30 +105,28 @@ export const RetiroPage = () => {
     const retiroFormik = useFormik({
         initialValues: {
             walletId: 0,
-            monto: 0
+            monto: 0,
+            addresId: 0
         },
         validationSchema: retiroValidationSchema,
         onSubmit: (values, { resetForm }) => {
-            const wallet = walletAddresses.find(w => w.id === values.walletId);
-            if (!wallet) return;
+            const walletAddress = walletAddresses.find(w => w.id === Number(values.addresId));
+            if (!walletAddress) return;
 
-            const nuevaSolicitud: SolicitudRetiro = {
-                id: solicitudesRetiro.length + 1,
-                walletId: values.walletId,
-                walletAddress: wallet.address,
-                monto: values.monto,
-                fecha: new Date(),
-                estado: EstadoOperacion.PENDIENTE,
-                tipoCrypto: wallet.tipoCrypto
-            };
-            setSolicitudesRetiro([nuevaSolicitud, ...solicitudesRetiro]);
+            const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
+            const walletTipo=wallet?.tipo == TipoWallets.WALLET_DIVIDENDOS ? TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS : TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+
+            solicitarRetiro(values.addresId, values.monto, walletTipo).then(() => {
             resetForm();
             toast.success("Solicitud de retiro enviada");
-        }
-    });
+            }).catch(() => {
+                toast.error("Error al solicitar retiro: " + (errorSolicitarRetiroFondos || "Error desconocido"));
+            })
+
+    }});
 
     // Filtrar solicitudes por fecha
-    const solicitudesFiltradas = solicitudesRetiro.filter((sol) => {
+    const solicitudesFiltradas = solicitarRetiroHard.filter((sol) => {
         if (estadoFiltro && sol.estado !== estadoFiltro) return false;
         return true;
     });
@@ -479,25 +434,26 @@ export const RetiroPage = () => {
                         </h2>
 
                         <form onSubmit={retiroFormik.handleSubmit} className="space-y-6">
+
+                            {/* Selector 2 */}
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
-                                    Seleccionar Wallet *
+                                    Selecionar direccion de la wallet a la cual depositar *
                                 </label>
                                 <select
                                     name="walletId"
                                     value={retiroFormik.values.walletId}
                                     onChange={(e) => {
                                         retiroFormik.handleChange(e);
-                                        setSelectedWallet(Number(e.target.value));
                                     }}
                                     onBlur={retiroFormik.handleBlur}
                                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-600" : "border-[#F0973C]"
                                         }`}
                                 >
                                     <option value={0}>Selecciona una wallet</option>
-                                    {walletAddresses.map((wallet) => (
+                                    {usuario?.wallets.map((wallet) => (
                                         <option key={wallet.id} value={wallet.id}>
-                                            {wallet.nombre} - {getCryptoSymbol(wallet.tipoCrypto)}
+                                            {wallet.tipo} - ${wallet.saldo.toFixed(2)}
                                         </option>
                                     ))}
                                 </select>
@@ -508,8 +464,56 @@ export const RetiroPage = () => {
                                 )}
                             </div>
 
+                            {/* Información de la wallet seleccionada 2 */}
+                            {retiroFormik.values.walletId > 0 && (
+                                <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
+                                    {(() => {
+                                        const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
+                                        return wallet ? (
+                                            <>
+                                                <p className="text-sm font-semibold mb-2">Wallet Seleccionada:</p>
+                                                <p className="text-xs font-mono text-gray-600 break-all mb-2">{wallet.tipo}</p>
+                                                <p className="text-sm">
+                                                    Balance Retirado: <span className="font-bold text-[#69AC95]">
+                                                        ${wallet.saldo.toFixed(2)}
+                                                    </span>
+                                                </p>
+                                            </>
+                                        ) : null;
+                                    })()}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-semibold mb-2">
+                                    Seleccionar Wallet *
+                                </label>
+                                <select
+                                    name="addresId"
+                                    value={retiroFormik.values.addresId}
+                                    onChange={(e) => {
+                                        retiroFormik.handleChange(e);
+                                        setSelectedWallet(Number(e.target.value));
+                                    }}
+                                    onBlur={retiroFormik.handleBlur}
+                                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.addresId && retiroFormik.errors.addresId ? "border-red-600" : "border-[#F0973C]"
+                                        }`}
+                                >
+                                    <option value={0}>Selecciona una wallet</option>
+                                    {walletAddresses.map((wallet) => (
+                                        <option key={wallet.id} value={wallet.id}>
+                                            {wallet.nombre} - {getCryptoSymbol(wallet.tipoCrypto)}
+                                        </option>
+                                    ))}
+                                </select>
+                                {retiroFormik.touched.addresId && retiroFormik.errors.addresId && (
+                                    <p className="text-sm mt-1 text-red-600">
+                                        {retiroFormik.errors.addresId}
+                                    </p>
+                                )}
+                            </div>
                             {/* Información de la wallet seleccionada */}
-                            {selectedWallet && selectedWallet > 0 && (
+                            {retiroFormik && retiroFormik.values.addresId > 0 && (
                                 <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
                                     {(() => {
                                         const wallet = walletAddresses.find(w => w.id === selectedWallet);
@@ -527,6 +531,8 @@ export const RetiroPage = () => {
                                     })()}
                                 </div>
                             )}
+
+                            
 
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
@@ -557,7 +563,7 @@ export const RetiroPage = () => {
 
                             <button
                                 type="submit"
-                                disabled={!retiroFormik.isValid || retiroFormik.isSubmitting}
+                                disabled={ loadingSolicitarRetiroFondos}
                                 className="w-full py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
                             >
                                 Solicitar Retiro

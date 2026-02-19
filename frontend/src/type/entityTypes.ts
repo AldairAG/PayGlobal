@@ -102,7 +102,6 @@ export interface WalletRetiro {
 }
 
 export interface SolicitudRetiro {
-    id: number;
     walletId: number;
     walletAddress: string;
     monto: number;

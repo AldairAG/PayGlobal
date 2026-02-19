@@ -8,6 +8,16 @@
         "confirm_password": "Confirm Password",
         "email": "Email",
         "close": "Close",
-        "referenced": "Referenced"
+        "referenced": "Referenced",
+        "fill_fields": "Please fill this field",
+        "fill_all_fields": "Please fill all fields correctly",
+        "password_min_length": "Password must be at least 6 characters",
+        "passwords_mismatch": "Passwords do not match",
+        "logging_in": "Logging in...",
+        "registering": "Registering...",
+        "login_success": "Login successful!",
+        "login_error": "Could not login. Please check your credentials.",
+        "register_success": "Registration successful! You can now login.",
+        "register_error": "Could not complete registration. Please try again."
     }
 }
