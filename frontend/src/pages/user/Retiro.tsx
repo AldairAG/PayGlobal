@@ -2,7 +2,7 @@
 import { use, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from "lucide-react";
+import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import type { SolicitudRetiro } from "../../type/entityTypes";
 import { TipoCrypto, EstadoOperacion } from "../../type/enum";
@@ -76,7 +76,7 @@ export const RetiroPage = () => {
         }
     ]);
     // Estados de UI
-    const [showWalletForm, setShowWalletForm] = useState(false);
+    const [showWalletForm, setShowWalletForm] = useState<string | null>(null);
     const [selectedWallet, setSelectedWallet] = useState<number | null>(null);
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
     const [paginaActual, setPaginaActual] = useState(1);
@@ -113,13 +113,24 @@ export const RetiroPage = () => {
                 nombre: values.nombre
             };
 
-            createWalletAddress(nuevaWallet).then(() => {
-                resetForm();
-                setShowWalletForm(false);
-                toast.success("Wallet creada exitosamente");
-            }).catch(() => {
-                toast.error("Error al crear la wallet: " + (errorCreate || "Error desconocido"));
-            });
+            if (showWalletForm === "crear") {
+
+                createWalletAddress(nuevaWallet).then(() => {
+                    resetForm();
+                    setShowWalletForm(null);
+                    toast.success("Wallet creada exitosamente");
+                }).catch(() => {
+                    toast.error("Error al crear la wallet: " + (errorCreate || "Error desconocido"));
+                });
+            } else if (showWalletForm === "update" && selectedWallet) {
+                updateWalletAddress(selectedWallet || 0, nuevaWallet).then(() => {
+                    resetForm();
+                    setShowWalletForm(null);
+                    toast.success("Wallet actualizada exitosamente");
+                }).catch(() => {
+                    toast.error("Error al actualizar la wallet: " + (errorUpdate || "Error desconocido"));
+                });
+            }
         }
     });
 
@@ -225,7 +236,7 @@ export const RetiroPage = () => {
                                 Mis Wallets
                             </h2>
                             <button
-                                onClick={() => setShowWalletForm(!showWalletForm)}
+                                onClick={() => setShowWalletForm("crear")}
                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-[#F0973C]"
                                 title="Nueva Wallet"
                             >
@@ -234,7 +245,7 @@ export const RetiroPage = () => {
                         </div>
 
                         {/* Formulario Nueva Wallet */}
-                        {showWalletForm && (
+                        {showWalletForm === "crear" ? (
                             <div className="mb-6 p-4 rounded-lg border-2 border-[#F0973C] bg-[#FFF4E6]">
                                 <h3 className="font-semibold mb-4">Nueva Wallet</h3>
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
@@ -308,7 +319,91 @@ export const RetiroPage = () => {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                setShowWalletForm(false);
+                                                setShowWalletForm(null);
+                                                walletFormik.resetForm();
+                                            }}
+                                            className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
+                                        >
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        ) : showWalletForm == "update" && (
+                            <div className="mb-6 p-4 rounded-lg border-2 border-[#F0973C] bg-[#FFF4E6]">
+                                <h3 className="font-semibold mb-4">Actualizar Wallet</h3>
+                                <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold mb-2">
+                                            Nombre *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="nombre"
+                                            value={walletFormik.values.nombre}
+                                            onChange={walletFormik.handleChange}
+                                            onBlur={walletFormik.handleBlur}
+                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
+                                                }`}
+                                            placeholder="Mi Wallet Principal"
+                                        />
+                                        {walletFormik.touched.nombre && walletFormik.errors.nombre && (
+                                            <p className="text-sm mt-1 text-red-600">
+                                                {walletFormik.errors.nombre}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold mb-2">
+                                            Tipo de Cripto *
+                                        </label>
+                                        <select
+                                            name="tipoCrypto"
+                                            value={walletFormik.values.tipoCrypto}
+                                            onChange={walletFormik.handleChange}
+                                            className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none border-[#F0973C]"
+                                        >
+                                            <option value={TipoCrypto.USDT_ERC20}>USDT (ERC-20)</option>
+                                            <option value={TipoCrypto.USDT_TRC20}>USDT (TRC-20)</option>
+                                            <option value={TipoCrypto.BITCOIN}>Bitcoin</option>
+                                            <option value={TipoCrypto.SOLANA}>Solana</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold mb-2">
+                                            Dirección *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="address"
+                                            value={walletFormik.values.address}
+                                            onChange={walletFormik.handleChange}
+                                            onBlur={walletFormik.handleBlur}
+                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-600" : "border-[#F0973C]"
+                                                }`}
+                                            placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
+                                        />
+                                        {walletFormik.touched.address && walletFormik.errors.address && (
+                                            <p className="text-sm mt-1 text-red-600">
+                                                {walletFormik.errors.address}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <button
+                                            disabled={loadingUpdate}
+                                            type="submit"
+                                            className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
+                                        >
+                                            Actualizar Wallet
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setShowWalletForm(null);
                                                 walletFormik.resetForm();
                                             }}
                                             className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
@@ -340,9 +435,33 @@ export const RetiroPage = () => {
                                                 {getCryptoSymbol(wallet.tipoCrypto)}
                                             </p>
                                         </div>
-                                        <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#69AC95] text-white">
-                                            ${wallet.balanceRetirado.toFixed(2)}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#69AC95] text-white">
+                                                ${wallet.balanceRetirado.toFixed(2)}
+                                            </span>
+                                            <button
+                                                title="Editar wallet"
+                                                className="p-2 rounded-lg transition-all hover:scale-105 bg-blue-500 text-white"
+                                                onClick={() => {
+                                                    setSelectedWallet(wallet.id);
+                                                    walletFormik.setValues({
+                                                        nombre: wallet.nombre,
+                                                        tipoCrypto: wallet.tipoCrypto,
+                                                        address: wallet.address,
+                                                    });
+                                                    setShowWalletForm("update");
+                                                }}
+                                            >
+                                                <Pencil size={16} />
+                                            </button>
+                                            <button
+                                                title="Eliminar wallet"
+                                                className="p-2 rounded-lg transition-all hover:scale-105 bg-red-500 text-white"
+                                                onClick={() => deleteWalletAddress(wallet.id)}
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <p className="text-xs font-mono text-gray-500 break-all">
                                         {wallet.address}
