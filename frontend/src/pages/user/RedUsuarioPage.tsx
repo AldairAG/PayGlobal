@@ -4,7 +4,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import type { UsuarioEnRedResponse } from "../../service/usuarioService";
 
 // Interfaz para nodo de red con referidos anidados
-interface NodoRed extends UsuarioEnRedResponse {
+interface NodoRed {
     referidos: NodoRed[];
 }
 
@@ -20,7 +20,7 @@ const NodoUsuario = ({
 }) => {
     const [expandido, setExpandido] = useState(esRaiz);
     const tieneReferidos = nodo.referidos.length > 0;
-    const puedeVerMas = nodo.nivel < maxNivel;
+    const puedeVerMas = nodo.referidos < maxNivel;
 
     return (
         <div className="flex flex-col items-center">
@@ -126,14 +126,16 @@ const NodoUsuario = ({
 
 const RedUsuarioPage = () => {
     const { usuario, usuariosEnRed, loadingUsuariosEnRed, errorUsuariosEnRed, obtenerUsuariosEnRed } = useUsuario();
+    const maxNivel = usuario ? usuario.rango.numero + 1 : 1;
 
     // Función para convertir lista plana a árbol jerárquico
-    const construirArbolRed = (usuarios: UsuarioEnRedResponse[]): NodoRed | null => {
-        if (!usuarios || usuarios.length === 0) return null;
+    const construirArbolRed = (usuarios: UsuarioEnRedResponse[]): NodoRed => {
 
-        // Encontrar usuario nivel 0 (usuario actual)
-        const usuarioRaiz = usuarios.find(u => u.nivel === 0);
-        if (!usuarioRaiz) return null;
+        const usuarioRaiz = {
+            licencia: usuario?.licencia,
+            nivel: 0,
+            username: usuario?.username || '',
+        } as unknown as UsuarioEnRedResponse;
 
         // Agrupar usuarios por nivel
         const usuariosPorNivel: { [nivel: number]: UsuarioEnRedResponse[] } = {};
@@ -147,7 +149,7 @@ const RedUsuarioPage = () => {
         // Función recursiva para construir el árbol
         const construirNodo = (usuarioBase: UsuarioEnRedResponse, nivel: number): NodoRed => {
             const referidosDirectos = usuariosPorNivel[nivel + 1] || [];
-            
+
             return {
                 ...usuarioBase,
                 referidos: referidosDirectos.map(ref => construirNodo(ref, nivel + 1))
@@ -158,16 +160,19 @@ const RedUsuarioPage = () => {
     };
 
     useEffect(() => {
+        const cargarRedUsuarios = async () => {
+            if (usuario && usuario.username) {
+                await obtenerUsuariosEnRed(usuario.username);
+            }
+        };
+
         // Cargar red de usuarios cuando el componente se monte
         if (usuario && usuario.username) {
-            obtenerUsuariosEnRed(usuario.username);
+            cargarRedUsuarios();
         }
     }, [usuario]);
 
-    // Construir árbol a partir de la lista plana
-    const redUsuarios = usuariosEnRed ? construirArbolRed(usuariosEnRed) : null;
-    const maxNivel = usuario ? usuario.rango.numero + 1 : 1;
-
+    // Mostrar loading mientras se carga o si los datos aún no están disponibles
     if (loadingUsuariosEnRed) {
         return (
             <div className="min-h-screen bg-linear-to-br from-blue-50 to-purple-50 flex items-center justify-center">
@@ -197,7 +202,7 @@ const RedUsuarioPage = () => {
         );
     }
 
-    if (!usuario || !redUsuarios) {
+    if (usuariosEnRed?.length === 0) {
         return (
             <div className="min-h-screen bg-linear-to-br from-blue-50 to-purple-50 flex items-center justify-center">
                 <div className="text-center bg-white p-8 rounded-xl shadow-lg">
@@ -233,7 +238,7 @@ const RedUsuarioPage = () => {
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                             <span className="text-sm font-semibold text-gray-700">
-                                Usuario: {usuario.username}
+                                Usuario: {usuario?.username}
                             </span>
                         </div>
                     </div>
@@ -263,7 +268,7 @@ const RedUsuarioPage = () => {
                 <div className="bg-white rounded-2xl shadow-2xl p-8 overflow-x-auto">
                     <div className="min-w-max flex justify-center">
                         <NodoUsuario
-                            nodo={redUsuarios}
+                            nodo={construirArbolRed(usuariosEnRed || [])}
                             maxNivel={maxNivel}
                             esRaiz={true}
                         />
@@ -279,7 +284,7 @@ const RedUsuarioPage = () => {
                         <div>
                             <h3 className="font-semibold text-blue-900 mb-2">Información sobre niveles</h3>
                             <p className="text-blue-800 text-sm">
-                                El <strong>nivel 0</strong> siempre es tu usuario. Los niveles subsiguientes representan 
+                                El <strong>nivel 0</strong> siempre es tu usuario. Los niveles subsiguientes representan
                                 tus referidos directos e indirectos. A mayor rango, más niveles podrás visualizar de tu red.
                             </p>
                         </div>
