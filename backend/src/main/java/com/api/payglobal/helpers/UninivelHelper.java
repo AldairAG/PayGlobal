@@ -39,16 +39,40 @@ public class UninivelHelper {
         }
     }
 
-    public List<UsuarioEnRedResponse> mapearAUsuarioEnRedResponse(List<Usuario> usuarios) {
+    public List<UsuarioEnRedResponse> mapearAUsuarioEnRedResponse(List<Usuario> usuarios, String usernameRaiz) {
         List<UsuarioEnRedResponse> respuestas = new java.util.ArrayList<>();
         for (Usuario usuario : usuarios) {
             UsuarioEnRedResponse respuesta = UsuarioEnRedResponse.builder()
                 .username(usuario.getUsername())
                 .licencia(usuario.getLicencia())
+                .nivel(calcularNivelUsuario(usuario.getUsername(), usernameRaiz))
+                .referido(usuario.getReferenciado())
                 .build();
             respuestas.add(respuesta);
         }
         return respuestas;
+    }
+    public void asignarNivelesAUsuarios(List<UsuarioEnRedResponse> usuarios, String usernameRaiz) {
+        usuarios.forEach(u -> u.setNivel(calcularNivelUsuario(u.getUsername(), usernameRaiz)));
+    }
+
+    private Integer calcularNivelUsuario(String username, String usernameRaiz) {
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        if (usuario == null || username.equals(usernameRaiz)) {
+            return 0;
+        }
+        
+        int nivel = 0;
+        String referenciador = usuario.getReferenciado();
+        
+        while (referenciador != null && !referenciador.equals(usernameRaiz)) {
+            Usuario referenciadorUsuario = usuarioRepository.findByUsername(referenciador).orElse(null);
+            if (referenciadorUsuario == null) break;
+            referenciador = referenciadorUsuario.getReferenciado();
+            nivel++;
+        }
+        
+        return referenciador != null ? nivel + 1 : 0;
     }
 
     public List<UsuarioEnRedResponse> obtenerRedDeUsuariosInversaRecursiva(String usernameReferenciador,Integer nivelActual, Integer nivelMaximo) {

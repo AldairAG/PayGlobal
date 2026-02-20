@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Solicitud, Usuario } from "../../type/entityTypes";
-import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuarioService";
+import { usuarioService } from "../../service/usuarioService";
 import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
 import { logout } from "./authSlice";
+import type { UsuarioEnRedResponse } from "../../type/responseType";
 
 interface UsuarioState {
     usuario: Usuario | null;
@@ -364,13 +365,15 @@ const usuarioSlice = createSlice({
                 state.loadingUsuariosEnRed = true;
                 state.errorUsuariosEnRed = null;
             })
-            .addCase(obtenerUsuariosEnRedThunk.fulfilled, (state) => {
+            .addCase(obtenerUsuariosEnRedThunk.fulfilled, (state, action) => {
                 state.loadingUsuariosEnRed = false;
                 state.errorUsuariosEnRed = null;
+                state.usuariosEnRed = action.payload.data || [];
             })
             .addCase(obtenerUsuariosEnRedThunk.rejected, (state, action) => {
                 state.loadingUsuariosEnRed = false;
                 state.errorUsuariosEnRed = action.payload || "Error al obtener usuarios en red";
+                state.usuariosEnRed = [];
             })
             .addCase(editarUsuarioAdminThunk.pending, (state) => {
                 state.loadingEditarUsuarioAdmin = true;

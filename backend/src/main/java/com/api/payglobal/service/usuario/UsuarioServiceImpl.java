@@ -215,7 +215,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional(readOnly = true)
     public List<UsuarioEnRedResponse> obtenerUsuariosEnRed(String username) throws Exception {
         return uninivelHelper.mapearAUsuarioEnRedResponse(
-                uninivelHelper.obtenerRedDeUsuario(username));
+                uninivelHelper.obtenerRedDeUsuario(username), username);
     }
 
     /**

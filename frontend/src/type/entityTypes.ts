@@ -1,4 +1,4 @@
-import { EstadoTicket, TipoConceptos, TipoMetodoPago, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoRango, type TipoWallets } from "./enum";
+import { EstadoTicket, TipoConceptos, TipoMetodoPago, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
 
 export interface Usuario {
     id: number;
@@ -12,7 +12,7 @@ export interface Usuario {
     referenciado: string;
     fechaRegistro: Date;
     activo: boolean;
-    rango: TipoRango;
+    rango: string;
     verificado: boolean;
     bonos: Bono[];
     wallets: Wallet[];

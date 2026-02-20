@@ -11,4 +11,5 @@ public class UsuarioEnRedResponse {
     private String username;
     private Licencia licencia;
     private Integer nivel;
+    private String referido;
 }

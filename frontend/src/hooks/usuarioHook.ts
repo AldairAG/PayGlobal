@@ -230,7 +230,7 @@ export const useUsuario = () => {
 
     const obtenerUsuariosEnRed = async (username: string) => {
         try {
-            const result = await dispatch(obtenerUsuariosEnRedThunk({ username }));
+            const result =await dispatch(obtenerUsuariosEnRedThunk({ username }));
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al obtener usuarios en red:', error);
