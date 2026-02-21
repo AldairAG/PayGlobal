@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, setUsuarioEnRed } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -56,6 +56,10 @@ export const useUsuario = () => {
     // Estados de rechazar solicitud
     const loadingRechazarSolicitud = useSelector((state: RootState) => state.usuario.loadingRechazarSolicitud);
     const errorRechazarSolicitud = useSelector((state: RootState) => state.usuario.errorRechazarSolicitud);
+
+    // Estados de retiro de fondos
+    const loadingSolicitarRetiroFondos = useSelector((state: RootState) => state.usuario.loadingSolicitarRetiroFondos);
+    const errorSolicitarRetiroFondos = useSelector((state: RootState) => state.usuario.errorSolicitarRetiroFondos);
 
     // Estados de Editar Perfil
     const loadingEditarPerfil = useSelector((state: RootState) => state.usuario.loadingEditarPerfil);
@@ -238,6 +242,15 @@ export const useUsuario = () => {
         }
     };
 
+    const solicitarRetiro = async (walletAddressId: number, monto: number, tipoSolicitud: string) => {
+        try {
+            await dispatch(solicitarRetiroFondosThunk({ walletAddressId, monto, tipoSolicitud }));   
+        } catch (error) {
+            console.error('Error al solicitar retiro:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -299,7 +312,11 @@ export const useUsuario = () => {
         obtenerUsuariosEnRed,
         usuariosEnRed,
         loadingUsuariosEnRed,
-        errorUsuariosEnRed
+        errorUsuariosEnRed,
 
+        // Solicitar retiro
+        solicitarRetiro,
+        loadingSolicitarRetiroFondos,
+        errorSolicitarRetiroFondos
     };
 };

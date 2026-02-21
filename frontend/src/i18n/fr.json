@@ -8,6 +8,16 @@
         "confirm_password": "Confirmer le mot de passe",
         "email": "Email",
         "close": "Fermer",
-        "referenced": "Référencé"
+        "referenced": "Référencé",
+        "fill_fields": "Veuillez remplir ce champ",
+        "fill_all_fields": "Veuillez remplir tous les champs correctement",
+        "password_min_length": "Le mot de passe doit contenir au moins 6 caractères",
+        "passwords_mismatch": "Les mots de passe ne correspondent pas",
+        "logging_in": "Connexion en cours...",
+        "registering": "Inscription en cours...",
+        "login_success": "Connexion réussie!",
+        "login_error": "Connexion impossible. Veuillez vérifier vos identifiants.",
+        "register_success": "Inscription réussie! Vous pouvez maintenant vous connecter.",
+        "register_error": "Impossible de terminer l'inscription. Veuillez réessayer."
     }
 }
