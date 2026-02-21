@@ -1,56 +1,99 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Rocket, Gem, Zap, Lock, Crown, BarChart3, Globe, Sprout, Award, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
 import LangSelector from "../components/LangSelector";
 import LoginModal from "../components/modal/LoginModal";
 import RegisterModal from "../components/modal/RegisterModal";
 import LogoA from "../assets/LogoA.png";
 import LogoV from "../assets/LogoV.png";
 
-const Pyramid = () => (
-    <svg viewBox="0 0 300 260" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-            <linearGradient id="tier1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#F0973C" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#e8841f" stopOpacity="0.7" />
-            </linearGradient>
-            <linearGradient id="tier2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#F0973C" stopOpacity="0.6" />
-                <stop offset="100%" stopColor="#d4721a" stopOpacity="0.4" />
-            </linearGradient>
-            <linearGradient id="tier3" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#69AC95" stopOpacity="0.7" />
-                <stop offset="100%" stopColor="#4d9278" stopOpacity="0.5" />
-            </linearGradient>
-            <linearGradient id="tier4" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#69AC95" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#3a7a61" stopOpacity="0.3" />
-            </linearGradient>
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-            <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#F0973C" stopOpacity="0" />
-                <stop offset="50%" stopColor="#F0973C" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#F0973C" stopOpacity="0" />
-            </linearGradient>
-        </defs>
-        <polygon points="150,20 110,80 190,80" fill="url(#tier1)" filter="url(#glow)" />
-        <line x1="110" y1="80" x2="190" y2="80" stroke="#F0973C" strokeWidth="1" opacity="0.8" />
-        <polygon points="110,80 70,140 230,140" fill="url(#tier2)" />
-        <line x1="70" y1="140" x2="230" y2="140" stroke="#F0973C" strokeWidth="0.8" opacity="0.5" />
-        <polygon points="70,140 35,200 265,200" fill="url(#tier3)" />
-        <line x1="35" y1="200" x2="265" y2="200" stroke="#69AC95" strokeWidth="0.8" opacity="0.5" />
-        <polygon points="35,200 10,250 290,250" fill="url(#tier4)" />
-        <polygon points="150,20 10,250 290,250" fill="none" stroke="#F0973C" strokeWidth="1.5" opacity="0.4" />
-        <circle cx="150" cy="20" r="5" fill="#F0973C" filter="url(#glow)" opacity="0.9" />
-        <text x="150" y="58" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" opacity="0.9">ELITE</text>
-        <text x="150" y="117" textAnchor="middle" fill="white" fontSize="9" opacity="0.8">PREMIUM</text>
-        <text x="150" y="177" textAnchor="middle" fill="white" fontSize="9" opacity="0.7">GOLD</text>
-        <text x="150" y="230" textAnchor="middle" fill="white" fontSize="9" opacity="0.6">STARTER</text>
-        <rect x="10" y="0" width="280" height="260" fill="url(#shimmer)" opacity="0.4" />
-    </svg>
-);
+const ReturnsTable = () => {
+    const tableData = [
+        { licenses: 10, daily: 0.05, weekly: 0.25, monthly: 1.00 },
+        { licenses: 25, daily: 0.125, weekly: 0.625, monthly: 2.50 },
+        { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 5.00 },
+        { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 10.00 },
+        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 25.00, tier: 'starter' },
+        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 50.00, tier: 'gold' },
+        { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 100.00 },
+        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 250.00, tier: 'premium' },
+        { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 500.00 },
+        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 1000.00, tier: 'elite' },
+        { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 2500.00 },
+        { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 5000.00 },
+        { licenses: 100000, daily: 500.00, weekly: 2500.00, monthly: 10000.00 },
+    ];
+
+    return (
+        <div className="w-full">
+            <div className="text-center mb-6">
+                <h3 className="text-2xl font-black mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#F0973C" }}>
+                    RETORNO DE INVERSIÓN
+                </h3>
+                <p className="text-white/60 text-xs">
+                    La tabla representa el <span className="text-[#69AC95] font-bold">0.50% diario</span> de lunes a viernes
+                </p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
+                {/* Header */}
+                <div className="grid grid-cols-4 gap-2 p-4 bg-gradient-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
+                    <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Licencias</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Diario</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Semanal</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Mensual</p>
+                    </div>
+                </div>
+                
+                {/* Body */}
+                <div className="max-h-[400px] overflow-y-auto">
+                    {tableData.map((row, idx) => (
+                        <div
+                            key={idx}
+                            className={`grid grid-cols-4 gap-2 p-3 border-b border-white/5 hover:bg-white/5 transition-all ${
+                                row.tier === 'elite' ? 'bg-[#F0973C]/10' :
+                                row.tier === 'premium' ? 'bg-[#F0973C]/5' :
+                                row.tier === 'gold' ? 'bg-[#69AC95]/5' :
+                                row.tier === 'starter' ? 'bg-[#69AC95]/10' : ''
+                            }`}
+                        >
+                            <div className="text-center">
+                                <p className="text-sm font-bold text-white">
+                                    {row.licenses >= 1000 ? `${(row.licenses / 1000).toFixed(0)}K` : row.licenses}
+                                </p>
+                                {row.tier && (
+                                    <span className="text-[8px] uppercase font-semibold" style={{ 
+                                        color: row.tier === 'elite' || row.tier === 'premium' ? '#F0973C' : '#69AC95'
+                                    }}>
+                                        {row.tier}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm text-[#69AC95] font-semibold">${row.daily.toFixed(2)}</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm text-white/70">${row.weekly.toFixed(2)}</p>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm text-[#F0973C] font-semibold">
+                                    ${row.monthly >= 1000 ? `${(row.monthly / 1000).toFixed(1)}K` : row.monthly.toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const StatCard = ({ value, label, accent }) => (
     <div className="flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm" style={{ borderColor: accent + "33", background: "rgba(0,0,0,0.4)" }}>
@@ -59,10 +102,10 @@ const StatCard = ({ value, label, accent }) => (
     </div>
 );
 
-const FeatureRow = ({ icon, title, desc, accent }) => (
+const FeatureRow = ({ icon: Icon, title, desc, accent }) => (
     <div className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
         <div className="text-2xl w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: accent + "22" }}>
-            {icon}
+            <Icon size={24} style={{ color: accent }} />
         </div>
         <div>
             <h4 className="text-white font-semibold text-sm mb-0.5">{title}</h4>
@@ -123,6 +166,38 @@ export default function LandingPage() {
             linear-gradient(90deg, rgba(240,151,60,0.06) 1px, transparent 1px);
           background-size: 50px 50px;
         }
+        .landing-lang-selector select {
+          background: rgba(240, 151, 60, 0.1);
+          border: 1px solid rgba(240, 151, 60, 0.3);
+          color: #F0973C;
+          padding: 0.5rem 2rem 0.5rem 0.75rem;
+          border-radius: 0.5rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23F0973C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.5rem center;
+          background-size: 1rem;
+        }
+        .landing-lang-selector select:hover {
+          background: rgba(240, 151, 60, 0.15);
+          border-color: rgba(240, 151, 60, 0.5);
+          box-shadow: 0 0 0 3px rgba(240, 151, 60, 0.1);
+        }
+        .landing-lang-selector select:focus {
+          outline: none;
+          background: rgba(240, 151, 60, 0.15);
+          border-color: #F0973C;
+          box-shadow: 0 0 0 3px rgba(240, 151, 60, 0.2);
+        }
+        .landing-lang-selector select option {
+          background: #1a1a1a;
+          color: white;
+          padding: 0.5rem;
+        }
       `}</style>
 
             {/* Background effects */}
@@ -136,9 +211,11 @@ export default function LandingPage() {
                     <img src={LogoA} alt="CryptoPeak Logo" className="h-8" />
                 </div>
 
-                <LangSelector />
+                <div></div>
+                
 
                 <div className="flex items-center gap-3">
+                    <div className="landing-lang-selector"><LangSelector /></div>
                     <button
                         onClick={() => setLoginOpen(true)}
                         className="text-sm font-semibold px-5 py-2 rounded-lg border transition-all hover:bg-[#F0973C]/10"
@@ -205,7 +282,7 @@ export default function LandingPage() {
                                 className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30"
                                 style={{ background: "linear-gradient(135deg, #F0973C, #e8841f)" }}
                             >
-                                <span className="relative z-10">🚀 {t("landing.register")}</span>
+                                <span className="relative z-10 flex items-center justify-center gap-2"><Rocket size={18} /> {t("landing.register")}</span>
                                 <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
                             </button>
                             <button
@@ -224,10 +301,10 @@ export default function LandingPage() {
                     </div>
 
                     <div className="flex flex-col items-center float">
-                        <div className="w-full max-w-sm mx-auto">
-                            <Pyramid />
+                        <div className="w-full max-w-2xl mx-auto">
+                            <ReturnsTable />
                         </div>
-                        <p className="mt-4 text-white/30 text-xs uppercase tracking-widest">Sistema de 4 niveles de inversión</p>
+                        <p className="mt-4 text-white/30 text-xs uppercase tracking-widest">Retornos calculados con 0.50% diario (Lun-Vie)</p>
                     </div>
                 </div>
             </section>
@@ -242,12 +319,12 @@ export default function LandingPage() {
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
-                        { icon: "💎", title: "Niveles Exclusivos", desc: "Cuatro capas de inversión. Cuanto más alto subes, mayor es tu retorno diario garantizado.", accent: "#F0973C" },
-                        { icon: "⚡", title: "Ganancias Diarias", desc: "Recibe tu rendimiento cada 24 horas directamente en tu wallet de criptomonedas.", accent: "#69AC95" },
-                        { icon: "🔒", title: "Inversión Segura", desc: "Smart contracts auditados y tecnología blockchain de última generación protegen tu capital.", accent: "#F0973C" },
-                        { icon: "👑", title: "Red de Referidos", desc: "Gana comisiones por cada invitado a tu red. Construye tu propio nivel dentro de la pirámide.", accent: "#69AC95" },
-                        { icon: "📊", title: "Dashboard en Tiempo Real", desc: "Monitorea tus ganancias, tu equipo y el rendimiento del mercado desde un solo panel.", accent: "#F0973C" },
-                        { icon: "🌐", title: "Cripto Multi-asset", desc: "Invierte con BTC, ETH, USDT, BNB y más de 20 criptomonedas líderes del mercado.", accent: "#69AC95" },
+                        { icon: Gem, title: "Niveles Exclusivos", desc: "Cuatro capas de inversión. Cuanto más alto subes, mayor es tu retorno diario garantizado.", accent: "#F0973C" },
+                        { icon: Zap, title: "Ganancias Diarias", desc: "Recibe tu rendimiento cada 24 horas directamente en tu wallet de criptomonedas.", accent: "#69AC95" },
+                        { icon: Lock, title: "Inversión Segura", desc: "Smart contracts auditados y tecnología blockchain de última generación protegen tu capital.", accent: "#F0973C" },
+                        { icon: Crown, title: "Red de Referidos", desc: "Gana comisiones por cada invitado a tu red. Construye tu propio nivel dentro de la pirámide.", accent: "#69AC95" },
+                        { icon: BarChart3, title: "Dashboard en Tiempo Real", desc: "Monitorea tus ganancias, tu equipo y el rendimiento del mercado desde un solo panel.", accent: "#F0973C" },
+                        { icon: Globe, title: "Cripto Multi-asset", desc: "Invierte con BTC, USDT TRC20, USDT ERC20, SOLANA.", accent: "#69AC95" },
                     ].map((f) => (
                         <FeatureRow key={f.title} {...f} />
                     ))}
@@ -264,21 +341,23 @@ export default function LandingPage() {
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { tier: "STARTER", min: "$100", daily: "5%", desc: "Acceso base. Comienza tu camino hacia la cima.", color: "#69AC95", icon: "🌱" },
-                            { tier: "GOLD", min: "$500", daily: "8%", desc: "Mayor retorno. Acceso a mercados premium.", color: "#69AC95", icon: "🥇" },
-                            { tier: "PREMIUM", min: "$2,000", daily: "10%", desc: "Posición avanzada con beneficios ampliados.", color: "#F0973C", icon: "💫" },
-                            { tier: "ELITE", min: "$10,000", daily: "12%", desc: "Cumbre de la pirámide. Máximo rendimiento.", color: "#F0973C", icon: "👑" },
+                            { tier: "STARTER", licenses: "250", daily: "$1.25", weekly: "$6.25", monthly: "$25.00", desc: "Inversión inicial para comenzar a generar retornos diarios.", color: "#69AC95", icon: Sprout },
+                            { tier: "GOLD", licenses: "500", daily: "$2.50", weekly: "$12.50", monthly: "$50.00", desc: "Duplica tus ganancias diarias con acceso a mercados premium.", color: "#69AC95", icon: Award },
+                            { tier: "PREMIUM", licenses: "2,500", daily: "$12.50", weekly: "$62.50", monthly: "$250.00", desc: "Retornos significativos para inversores comprometidos.", color: "#F0973C", icon: Sparkles },
+                            { tier: "ELITE", licenses: "10,000", daily: "$50.00", weekly: "$250.00", monthly: "$1,000.00", desc: "Máximo rendimiento. Gana $50 diarios consistentemente.", color: "#F0973C", icon: Crown },
                         ].map((item) => (
                             <div key={item.tier} className="relative p-6 rounded-2xl border flex flex-col gap-3 hover:scale-[1.02] transition-transform" style={{ borderColor: item.color + "30", background: item.color + "08" }}>
-                                <div className="text-3xl">{item.icon}</div>
+                                <item.icon size={32} style={{ color: item.color }} />
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.tier}</p>
                                     <p className="text-white text-2xl font-black" style={{ fontFamily: "'Playfair Display', serif" }}>{item.daily}</p>
                                     <p className="text-white/30 text-xs">diario</p>
                                 </div>
                                 <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
-                                <div className="mt-auto pt-3 border-t border-white/5">
-                                    <p className="text-white/40 text-xs">Mínimo: <span className="text-white/70 font-semibold">{item.min}</span></p>
+                                <div className="mt-auto pt-3 border-t border-white/5 space-y-1">
+                                    <p className="text-white/40 text-xs">Licencias: <span className="text-white/70 font-semibold">{item.licenses}</span></p>
+                                    <p className="text-white/40 text-xs">Semanal: <span className="text-[#69AC95] font-semibold">{item.weekly}</span></p>
+                                    <p className="text-white/40 text-xs">Mensual: <span className="text-[#F0973C] font-semibold">{item.monthly}</span></p>
                                 </div>
                             </div>
                         ))}
@@ -314,13 +393,13 @@ export default function LandingPage() {
                         </button>
                     </div>
                     <div className="mt-12 flex items-center justify-center gap-6 text-xs text-white/30">
-                        <span>🔐 SSL seguro</span>
+                        <span className="flex items-center gap-1"><ShieldCheck size={14} /> SSL seguro</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span>✅ Auditado</span>
+                        <span className="flex items-center gap-1"><CheckCircle size={14} /> Auditado</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span>🌐 Global</span>
+                        <span className="flex items-center gap-1"><Globe size={14} /> Global</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span>⚡ 24/7 activo</span>
+                        <span className="flex items-center gap-1"><Zap size={14} /> 24/7 activo</span>
                     </div>
                 </div>
             </section>
