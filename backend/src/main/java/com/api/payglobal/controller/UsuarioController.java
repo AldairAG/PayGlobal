@@ -334,7 +334,7 @@ public class UsuarioController {
      * Obtener usuario por ID (Admin)
      */
     @GetMapping("/admin/usuario/{idUsuario}")
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or (hasRole('USUARIO') and #idUsuario == authentication.principal.id)")
     public ResponseEntity<ApiResponseWrapper<Usuario>> obtenerUsuarioPorId(@PathVariable Long idUsuario) {
         try {
             Usuario usuario = usuarioService.obtenerUsuarioPorId(idUsuario);

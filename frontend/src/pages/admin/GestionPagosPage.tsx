@@ -220,7 +220,7 @@ export const GestionPagosPage = () => {
                         </div>
                     ) : solicitudesFiltradas.length > 0 ? (
                         // Lista de solicitudes
-                        solicitudesFiltradas.map(solicitud => (
+                        solicitudesFiltradas.reverse().map(solicitud => (
                             <SolicitudItem
                                 key={solicitud.id}
                                 solicitud={solicitud}

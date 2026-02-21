@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud } from '../type/enum';
@@ -232,6 +232,17 @@ export const useUsuario = () => {
         }
     };
 
+    const recargarUsuarioPorId = async (id: number) => {
+        try {
+            const result = await dispatch(obtenerUsuarioPorIdThunk({ idUsuario: id }));
+            const usuarioActualizado = unwrapResult(result).data;
+            dispatch(setUsuario(usuarioActualizado)); // Actualizar el estado del usuario con los datos obtenidos
+        } catch (error) {
+            console.error('Error al recargar usuario por ID:', error);
+            throw error;
+        }
+    };
+
     const obtenerUsuariosEnRed = async (username: string) => {
         try {
             const result =await dispatch(obtenerUsuariosEnRedThunk({ username }));
@@ -257,6 +268,7 @@ export const useUsuario = () => {
         usuario,
         token,
         isAuthenticated,
+        recargarUsuarioPorId,
 
         usuarioEnRed,
 

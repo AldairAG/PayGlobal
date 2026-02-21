@@ -283,6 +283,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
                 .usuario(usuario)
+                .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: " + tipoLicencia.name())
                 .estado(EstadoOperacion.PENDIENTE)
                 .build();
 
