@@ -1,13 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Outlet, useLocation, Link } from "react-router-dom";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import Fotter from "../components/Fotter";
 import { ROUTES } from "../routes/routes";
 import { Home, ChevronRight } from "lucide-react";
+import { useUsuario } from "../hooks/usuarioHook";
+import { useEffect } from "react";
 
 
 export const UserLayout = () => {
     const location = useLocation();
+    const { recargarUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado, usuario } = useUsuario();
 
     // Mapeo de rutas a nombres legibles
     const routeNames: { [key: string]: string } = {
@@ -19,6 +23,20 @@ export const UserLayout = () => {
         [ROUTES.USER.PROFILE]: 'Perfil',
         [ROUTES.USER.SOPORTE]: 'Soporte',
     };
+
+    useEffect(() => {
+        if (usuario) {
+            recargarUsuarioPorId(usuario.id);
+        }
+    }, []);
+
+    if (loadingUsuarioSeleccionado) {
+        return <div>Cargando...</div>;
+    }
+
+    if (errorUsuarioSeleccionado) {
+        return <div>Error: {errorUsuarioSeleccionado}</div>;
+    }
 
     const currentPageName = routeNames[location.pathname] || 'Página';
 

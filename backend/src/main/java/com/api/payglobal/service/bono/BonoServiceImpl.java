@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.enums.EstadoOperacion;
@@ -141,13 +142,13 @@ public class BonoServiceImpl implements BonoService {
                 }
 
                 wallet.setSaldo(nuevoSaldo);
-                licenciaRepository.save(licencia);
+                Licencia nuevaLicencia=licenciaRepository.save(licencia);
                 walletRepository.save(wallet);
 
-                registrarTransaccion(licencia.getUsuario().getUsername(), ingresoPasivo, TipoConceptos.INGRESO_PASIVO,
+                registrarTransaccion(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo, TipoConceptos.INGRESO_PASIVO,
                         TipoMetodoPago.WALLET_DIVIDENDOS, null);
 
-                bonoUninivel(licencia.getUsuario().getUsername(), ingresoPasivo, licencia.getUsuario().getRango());
+                bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo, nuevaLicencia.getUsuario().getRango());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -164,7 +165,7 @@ public class BonoServiceImpl implements BonoService {
         for (UsuarioEnRedResponse usuarioEnRed : redInversa) {
             int nivel = usuarioEnRed.getNivel();
             if (nivel <= BONO_UNINIVEL.length) {
-                Double porcentajeBono = BONO_UNINIVEL[nivel - 1];
+                Double porcentajeBono = BONO_UNINIVEL[nivel];
                 Double bono = monto * porcentajeBono;
 
                 final Double bonoFinal = bono;

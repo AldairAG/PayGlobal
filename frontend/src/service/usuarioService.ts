@@ -5,6 +5,7 @@ import type {
 } from '../type/requestTypes';
 import type { Solicitud, Usuario } from '../type/entityTypes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
+import type { UsuarioEnRedResponse } from '../type/responseType';
 
 // Response types
 export interface JwtResponse {
@@ -15,17 +16,9 @@ export interface JwtResponse {
     email: string;
     roles: string[];
     user: Usuario;
+    usuarioEnRed: number;
 }
 
-export interface UsuarioEnRedResponse {
-    id: number;
-    username: string;
-    email: string;
-    nombre: string;
-    apellido: string;
-    fechaRegistro: string;
-    nivel: number;
-}
 
 const BASE_PATH = '/usuarios';
 

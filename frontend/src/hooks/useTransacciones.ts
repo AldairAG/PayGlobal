@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '../store';
-import { obtenerTransacciones } from '../store/slice/transaccionesSlice';
+import { obtenerGananciasPorMes, obtenerTransacciones } from '../store/slice/transaccionesSlice';
 import type { TipoConceptos, EstadoOperacion } from '../type/enum';
 
 /**
@@ -18,6 +18,10 @@ export const useTransacciones = () => {
     const totalElementos = useSelector((state: RootState) => state.transacciones.totalElementos);
     const cargando = useSelector((state: RootState) => state.transacciones.cargando);
     const error = useSelector((state: RootState) => state.transacciones.error);
+
+    const gananciasPorMes = useSelector((state: RootState) => state.transacciones.gananciasPorMes);
+    const loadingGanancias = useSelector((state: RootState) => state.transacciones.loadingGanancias);
+    const errorGanancias = useSelector((state: RootState) => state.transacciones.errorGanancias);
 
     /**
      * Función para obtener transacciones con filtros
@@ -103,6 +107,16 @@ export const useTransacciones = () => {
         return cargarTransacciones({ usuarioId, concepto, estado, page, size });
     };
 
+    const cargarGananciasPorMes = async () => {
+        try {
+            const result = await dispatch(obtenerGananciasPorMes());
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al cargar ganancias por mes:', error);
+            throw error;
+        }
+    };
+
     return {
         // Estados
         transacciones,
@@ -111,9 +125,12 @@ export const useTransacciones = () => {
         totalElementos,
         cargando,
         error,
-        
+        gananciasPorMes,
+        loadingGanancias,
+        errorGanancias,
         // Métodos
         cargarTransacciones,
+        cargarGananciasPorMes,
         cargarTransaccionesPorUsuario,
         filtrarPorFechas,
         filtrarPorConceptoYEstado,

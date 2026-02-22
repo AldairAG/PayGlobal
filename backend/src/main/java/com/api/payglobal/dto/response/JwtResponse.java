@@ -23,11 +23,14 @@ public class JwtResponse {
 
     private Usuario user;
 
-    public JwtResponse(String token, Long id, String username, String email, Usuario user) {
+    private Integer ususarioEnRed;
+
+    public JwtResponse(String token, Long id, String username, String email, Usuario user, Integer ususarioEnRed) {
         this.token = token;
         this.id = id;
         this.username = username;
         this.email = email;
         this.user = user;
+        this.ususarioEnRed = ususarioEnRed;
     }
 }

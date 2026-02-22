@@ -118,13 +118,16 @@ public class UsuarioServiceImpl implements UsuarioService {
             // Generar token JWT
             String token = jwtHelper.generateToken(usuario);
 
+            Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
+
             // Crear respuesta
             return new JwtResponse(
                     token,
                     usuario.getId(),
                     usuario.getUsername(),
                     usuario.getEmail(),
-                    usuario);
+                    usuario,
+                    redDeUsuario);
 
         } catch (AuthenticationException e) {
             throw new RuntimeException("Ocurrió un error durante la autenticación: " + e.getMessage(), e);
@@ -212,7 +215,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional(readOnly = true)
     public List<UsuarioEnRedResponse> obtenerUsuariosEnRed(String username) throws Exception {
         return uninivelHelper.mapearAUsuarioEnRedResponse(
-                uninivelHelper.obtenerRedDeUsuario(username));
+                uninivelHelper.obtenerRedDeUsuario(username), username);
     }
 
     /**
@@ -280,6 +283,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
                 .usuario(usuario)
+                .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: " + tipoLicencia.name())
                 .estado(EstadoOperacion.PENDIENTE)
                 .build();
 

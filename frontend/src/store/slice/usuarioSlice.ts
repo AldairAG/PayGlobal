@@ -1,14 +1,17 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Solicitud, Usuario } from "../../type/entityTypes";
-import { usuarioService, type UsuarioEnRedResponse } from "../../service/usuarioService";
+import { usuarioService } from "../../service/usuarioService";
 import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
 import { logout } from "./authSlice";
+import type { UsuarioEnRedResponse } from "../../type/responseType";
 
 interface UsuarioState {
     usuario: Usuario | null;
+
+    usuarioEnRed: number | null;
 
     loadingRegistro: boolean;
     errorRegistro: string | null;
@@ -63,6 +66,7 @@ const loadInitialState = (): UsuarioState => {
 
     return {
         usuario: savedUser || null,
+        usuarioEnRed: 0,
         loadingRegistro: false,
         errorRegistro: null,
         loadingLogin: false,
@@ -334,6 +338,9 @@ const usuarioSlice = createSlice({
             state.usuario = null;
             // Limpiar del sessionStorage también se hace en el logout de authSlice
         },
+        setUsuarioEnRed(state, action: PayloadAction<number>) {
+            state.usuarioEnRed = action.payload;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -358,13 +365,15 @@ const usuarioSlice = createSlice({
                 state.loadingUsuariosEnRed = true;
                 state.errorUsuariosEnRed = null;
             })
-            .addCase(obtenerUsuariosEnRedThunk.fulfilled, (state) => {
+            .addCase(obtenerUsuariosEnRedThunk.fulfilled, (state, action) => {
                 state.loadingUsuariosEnRed = false;
                 state.errorUsuariosEnRed = null;
+                state.usuariosEnRed = action.payload.data || [];
             })
             .addCase(obtenerUsuariosEnRedThunk.rejected, (state, action) => {
                 state.loadingUsuariosEnRed = false;
                 state.errorUsuariosEnRed = action.payload || "Error al obtener usuarios en red";
+                state.usuariosEnRed = [];
             })
             .addCase(editarUsuarioAdminThunk.pending, (state) => {
                 state.loadingEditarUsuarioAdmin = true;
@@ -500,5 +509,5 @@ const usuarioSlice = createSlice({
     },
 });
 
-export const { setUsuario, clearUsuario } = usuarioSlice.actions;
+export const { setUsuario, clearUsuario,setUsuarioEnRed } = usuarioSlice.actions;
 export default usuarioSlice.reducer;
