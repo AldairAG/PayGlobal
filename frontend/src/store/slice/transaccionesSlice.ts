@@ -84,9 +84,9 @@ export const transaccionesSlice = createSlice({
         cargarTransaccionesExito: (state, action) => {
             state.cargando = false;
             state.transacciones = action.payload.content;
-            state.paginaActual = action.payload.number;
-            state.totalPaginas = action.payload.totalPages;
-            state.totalElementos = action.payload.totalElements;
+            state.paginaActual = action.payload.page.number;
+            state.totalPaginas = action.payload.page.totalPages;
+            state.totalElementos = action.payload.page.totalElements;
         },
         cargarTransaccionesError: (state, action) => {
             state.cargando = false;
@@ -102,9 +102,9 @@ export const transaccionesSlice = createSlice({
             .addCase(obtenerTransacciones.fulfilled, (state, action) => {
                 state.cargando = false;
                 state.transacciones = action.payload.data.content;
-                state.paginaActual = action.payload.data.number;
-                state.totalPaginas = action.payload.data.totalPages;
-                state.totalElementos = action.payload.data.totalElements;
+                state.paginaActual = action.payload.data.page.number;
+                state.totalPaginas = action.payload.data.page.totalPages;
+                state.totalElementos = action.payload.data.page.totalElements;
             })
             .addCase(obtenerTransacciones.rejected, (state, action) => {
                 state.cargando = false;

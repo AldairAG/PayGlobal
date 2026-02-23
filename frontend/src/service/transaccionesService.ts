@@ -16,6 +16,7 @@ export interface FiltrosTransacciones {
     size?: number;
 }
 
+
 const filtrarTransacciones = async (filtros: FiltrosTransacciones): Promise<ApiResponse<Page<Transaccion>>> => {
     const params = new URLSearchParams();
     
@@ -39,18 +40,11 @@ const filtrarTransacciones = async (filtros: FiltrosTransacciones): Promise<ApiR
         params.append('estado', filtros.estado);
     }
     
-    if (filtros.page !== undefined) {
-        params.append('page', filtros.page.toString());
-    }
+    // Siempre enviar parámetros de paginación con valores por defecto
+    params.append('page', (filtros.page ?? 0).toString());
+    params.append('size', (filtros.size ?? 10).toString());
     
-    if (filtros.size !== undefined) {
-        params.append('size', filtros.size.toString());
-    }
-    
-    const queryString = params.toString();
-    const url = queryString ? `${BASE_PATH}/filtrar?${queryString}` : `${BASE_PATH}/filtrar`;
-    
-    return api.get<Page<Transaccion>>(url);
+    return api.get<Page<Transaccion>>(`${BASE_PATH}/filtrar?${params.toString()}`);
 }
 
 const listarTransacciones = async (page: number = 0, size: number = 10): Promise<ApiResponse<Page<Transaccion>>> => {
