@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +40,16 @@ public class TransaccionController {
 	 */
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN') or hasRole('USUARIO')")
-	public ResponseEntity<ApiResponseWrapper<Page<Transaccion>>> listarTransacciones(Pageable pageable) {
+	public ResponseEntity<ApiResponseWrapper<Page<Transaccion>>> listarTransacciones(
+			@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		try {
-			Page<Transaccion> transacciones = transaccionService.listarTransacciones(pageable);
+			// Crear Pageable con ordenamiento por fecha descendente
+			Pageable sortedPageable = PageRequest.of(
+					pageable.getPageNumber(),
+					pageable.getPageSize(),
+					Sort.by(Sort.Direction.DESC, "fecha")
+			);
+			Page<Transaccion> transacciones = transaccionService.listarTransacciones(sortedPageable);
 			return ResponseEntity.ok(new ApiResponseWrapper<>(true, transacciones, null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -58,10 +68,16 @@ public class TransaccionController {
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta,
 			@RequestParam(required = false) TipoConceptos concepto,
 			@RequestParam(required = false) EstadoOperacion estado,
-			Pageable pageable) {
+			@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		try {
+			// Crear Pageable con ordenamiento por fecha descendente
+			Pageable sortedPageable = PageRequest.of(
+					pageable.getPageNumber(),
+					pageable.getPageSize(),
+					Sort.by(Sort.Direction.DESC, "fecha")
+			);
 			Page<Transaccion> transacciones = transaccionService.filtrarTransacciones(
-					usuarioId, desde, hasta, concepto, estado, pageable);
+					usuarioId, desde, hasta, concepto, estado, sortedPageable);
 			return ResponseEntity.ok(new ApiResponseWrapper<>(true, transacciones, null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)

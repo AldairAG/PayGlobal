@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import type { Bono } from "../../type/entityTypes";
 import { TipoConceptos, EstadoOperacion } from "../../type/enum";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Filter, TrendingUp, DollarSign, Award, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Filter, TrendingUp, DollarSign, Award, Clock, CheckCircle2, XCircle, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTransacciones } from "../../hooks/useTransacciones";
 
@@ -394,7 +394,7 @@ export const HistorialPage = () => {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {transacciones.slice().reverse().map((transaccion) => (
+                                                {transacciones.map((transaccion) => (
                                                     <tr key={transaccion.id} className="hover:bg-gray-50 transition-colors">
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                             #{transaccion.id}
@@ -430,28 +430,122 @@ export const HistorialPage = () => {
 
                                 {/* Paginación */}
                                 {totalPaginas > 1 && (
-                                    <div className="mt-6 flex items-center justify-between border-t pt-4">
-                                        <div className="text-sm text-gray-700">
-                                            Mostrando {(paginaActualRedux * itemsPorPagina) + 1} a {Math.min((paginaActualRedux + 1) * itemsPorPagina, totalElementos)} de {totalElementos} resultados
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => cambiarPagina(Math.max(0, paginaActualRedux - 1))}
-                                                disabled={paginaActualRedux === 0}
-                                                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                                            >
-                                                Anterior
-                                            </button>
-                                            <span className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">
-                                                {paginaActualRedux + 1} / {totalPaginas}
-                                            </span>
-                                            <button
-                                                onClick={() => cambiarPagina(Math.min(totalPaginas - 1, paginaActualRedux + 1))}
-                                                disabled={paginaActualRedux >= totalPaginas - 1}
-                                                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-                                            >
-                                                Siguiente
-                                            </button>
+                                    <div className="mt-6 border-t pt-4">
+                                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            {/* Información de resultados */}
+                                            <div className="text-sm text-gray-700">
+                                                Mostrando <span className="font-semibold">{(paginaActualRedux * itemsPorPagina) + 1}</span> a{' '}
+                                                <span className="font-semibold">{Math.min((paginaActualRedux + 1) * itemsPorPagina, totalElementos)}</span> de{' '}
+                                                <span className="font-semibold">{totalElementos}</span> resultados
+                                            </div>
+                                            
+                                            {/* Botones de paginación */}
+                                            <div className="flex items-center gap-1">
+                                                {/* Botón Primera Página */}
+                                                <button
+                                                    onClick={() => cambiarPagina(0)}
+                                                    disabled={paginaActualRedux === 0}
+                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    title="Primera página"
+                                                >
+                                                    <ChevronLeft className="w-4 h-4" />
+                                                    <ChevronLeft className="w-4 h-4 -ml-3" />
+                                                </button>
+                                                
+                                                {/* Botón Anterior */}
+                                                <button
+                                                    onClick={() => cambiarPagina(Math.max(0, paginaActualRedux - 1))}
+                                                    disabled={paginaActualRedux === 0}
+                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    title="Página anterior"
+                                                >
+                                                    <ChevronLeft className="w-4 h-4" />
+                                                </button>
+
+                                                {/* Botones numéricos de página */}
+                                                {(() => {
+                                                    const maxBotones = 5;
+                                                    const mitad = Math.floor(maxBotones / 2);
+                                                    let inicio = Math.max(0, paginaActualRedux - mitad);
+                                                    const fin = Math.min(totalPaginas - 1, inicio + maxBotones - 1);
+                                                    
+                                                    if (fin - inicio < maxBotones - 1) {
+                                                        inicio = Math.max(0, fin - maxBotones + 1);
+                                                    }
+
+                                                    const paginas = [];
+                                                    for (let i = inicio; i <= fin; i++) {
+                                                        paginas.push(i);
+                                                    }
+
+                                                    return (
+                                                        <>
+                                                            {inicio > 0 && (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => cambiarPagina(0)}
+                                                                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                                                                    >
+                                                                        1
+                                                                    </button>
+                                                                    {inicio > 1 && (
+                                                                        <span className="px-2 text-gray-500">...</span>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                            
+                                                            {paginas.map((numPagina) => (
+                                                                <button
+                                                                    key={numPagina}
+                                                                    onClick={() => cambiarPagina(numPagina)}
+                                                                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                                                                        numPagina === paginaActualRedux
+                                                                            ? "bg-blue-600 text-white border-2 border-blue-600"
+                                                                            : "bg-white border border-gray-300 hover:bg-gray-50"
+                                                                    }`}
+                                                                >
+                                                                    {numPagina + 1}
+                                                                </button>
+                                                            ))}
+                                                            
+                                                            {fin < totalPaginas - 1 && (
+                                                                <>
+                                                                    {fin < totalPaginas - 2 && (
+                                                                        <span className="px-2 text-gray-500">...</span>
+                                                                    )}
+                                                                    <button
+                                                                        onClick={() => cambiarPagina(totalPaginas - 1)}
+                                                                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                                                                    >
+                                                                        {totalPaginas}
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
+
+                                                {/* Botón Siguiente */}
+                                                <button
+                                                    onClick={() => cambiarPagina(Math.min(totalPaginas - 1, paginaActualRedux + 1))}
+                                                    disabled={paginaActualRedux >= totalPaginas - 1}
+                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    title="Página siguiente"
+                                                >
+                                                    <ChevronRight className="w-4 h-4" />
+                                                </button>
+                                                
+                                                {/* Botón Última Página */}
+                                                <button
+                                                    onClick={() => cambiarPagina(totalPaginas - 1)}
+                                                    disabled={paginaActualRedux >= totalPaginas - 1}
+                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    title="Última página"
+                                                >
+                                                    <ChevronRight className="w-4 h-4" />
+                                                    <ChevronRight className="w-4 h-4 -ml-3" />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
