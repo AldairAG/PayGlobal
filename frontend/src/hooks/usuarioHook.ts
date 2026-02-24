@@ -182,7 +182,7 @@ export const useUsuario = () => {
         }
     }
 
-    const obtenerSolicitudes = async (page: number = 0, size: number = 10, sort?: string) => {
+    const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: string) => {
         try {
             const result = await dispatch(obtenerSolicitudesThunk({ page, size, sort }));
             return unwrapResult(result);

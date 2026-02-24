@@ -62,7 +62,7 @@ const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: str
 
 //Obtener todas las solicitudes PENDIENTES (Admin)
 // GET /api/usuarios/admin/solicitudes
-const obtenerSolicitudes = async (page: number = 0, size: number = 10, sort?: string): Promise<ApiResponse<Page<Solicitud>>> => {
+const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: string): Promise<ApiResponse<Page<Solicitud>>> => {
     return api.get<Page<Solicitud>>(`${BASE_PATH}/admin/solicitudes`, {
         params: {
             page,

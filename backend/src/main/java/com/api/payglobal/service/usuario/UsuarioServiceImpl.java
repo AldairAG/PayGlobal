@@ -283,7 +283,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
                 .usuario(usuario)
-                .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: " + tipoLicencia.name())
+                .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
+                        + tipoLicencia.name())
                 .estado(EstadoOperacion.PENDIENTE)
                 .build();
 
@@ -479,12 +480,6 @@ public class UsuarioServiceImpl implements UsuarioService {
             licencia.setSaldoAcumulado(0);
         }
 
-        try {
-            bonoService.bonoInscripcion(tipoLicencia, usuario.getReferenciado());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al procesar bono de inscripción: " + e.getMessage(), e);
-        }
-
         return licencia;
     }
 
@@ -530,28 +525,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuarioDestinatario);
     }
 
-    /*
-     * private UsuarioResponseDTO usuarioToUsuarioResponseDTO(Usuario usuario) {
-     * UsuarioResponseDTO dto = new UsuarioResponseDTO();
-     * dto.setId(usuario.getId());
-     * dto.setUsername(usuario.getUsername());
-     * dto.setCorreo(usuario.getEmail());
-     * dto.setFechaRegistro(usuario.getFechaRegistro());
-     * dto.setActivo(usuario.isActivo());
-     * dto.setRango(usuario.getRango());
-     * dto.setWalletAddress(usuario.getWalletAddress());
-     * dto.setNombre(usuario.getNombre());
-     * dto.setApellido(usuario.getApellido());
-     * dto.setTelefono(usuario.getTelefono());
-     * dto.setPais(usuario.getPais());
-     * dto.setReferenciado(usuario.getReferenciado());
-     * dto.setBonos(usuario.getBonos());
-     * dto.setWallets(usuario.getWallets());
-     * dto.setPaquete(usuario.getPaquete());
-     * return dto;
-     * }
-     */
-
     @Override
     @Transactional
     public void aprobarCompraLicencia(Long idSolicitud) throws Exception {
@@ -576,6 +549,9 @@ public class UsuarioServiceImpl implements UsuarioService {
                 EstadoOperacion.APROBADA,
                 solicitud.getTipoCrypto(),
                 null);
+
+        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()),
+                solicitud.getUsuario().getReferenciado());
     }
 
     @Override
