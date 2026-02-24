@@ -5,10 +5,10 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
-import { TipoCrypto, TipoSolicitud } from '../type/enum';
+import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 
 interface JwtPayload {
     sub: string;
@@ -73,6 +73,10 @@ export const useUsuario = () => {
     const usuariosEnRed = useSelector((state: RootState) => state.usuario.usuariosEnRed);
     const loadingUsuariosEnRed = useSelector((state: RootState) => state.usuario.loadingUsuariosEnRed);
     const errorUsuariosEnRed = useSelector((state: RootState) => state.usuario.errorUsuariosEnRed);
+
+    // Estados de transferencia entre usuarios
+    const loadingTransferenciaEntreUsuarios = useSelector((state: RootState) => state.usuario.loadingTransferenciaEntreUsuarios);
+    const errorTransferenciaEntreUsuarios = useSelector((state: RootState) => state.usuario.errorTransferenciaEntreUsuarios);
 
     /**
      * Función para registrar un nuevo usuario
@@ -262,6 +266,23 @@ export const useUsuario = () => {
         }
     };
 
+    /**
+     * Función para realizar transferencia entre usuarios
+     * @param usuarioDestinatario - Username del usuario destinatario
+     * @param monto - Monto a transferir
+     * @param tipoWallet - Tipo de wallet (DIVIDENDOS o COMISIONES)
+     * @returns Promise con la respuesta del servidor
+     */
+    const transferenciaEntreUsuarios = async (usuarioDestinatario: string, monto: number, tipoWallet: TipoWallets) => {
+        try {
+            const result = await dispatch(transferenciaEntreUsuariosThunk({ usuarioDestinatario, monto, tipoWallet }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al realizar transferencia entre usuarios:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -329,6 +350,11 @@ export const useUsuario = () => {
         // Solicitar retiro
         solicitarRetiro,
         loadingSolicitarRetiroFondos,
-        errorSolicitarRetiroFondos
+        errorSolicitarRetiroFondos,
+
+        // Transferencia entre usuarios
+        transferenciaEntreUsuarios,
+        loadingTransferenciaEntreUsuarios,
+        errorTransferenciaEntreUsuarios
     };
 };
