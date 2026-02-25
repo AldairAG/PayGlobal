@@ -27,17 +27,17 @@ const ReturnsTable = () => {
     return (
         <div className="w-full">
             <div className="text-center mb-6">
-                <h3 className="text-2xl font-black mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#F0973C" }}>
+                <h3 className="text-2xl font-black mb-2 font-['Playfair_Display'] text-[#F0973C]">
                     RETORNO DE INVERSIÓN
                 </h3>
                 <p className="text-white/60 text-xs">
                     La tabla representa el <span className="text-[#69AC95] font-bold">0.50% diario</span> de lunes a viernes
                 </p>
             </div>
-            
-            <div className="bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
+
+            <div className="bg-linear-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
                 {/* Header */}
-                <div className="grid grid-cols-4 gap-2 p-4 bg-gradient-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
+                <div className="grid grid-cols-4 gap-2 p-4 bg-linear-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
                     <div className="text-center">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Licencias</p>
                     </div>
@@ -51,27 +51,24 @@ const ReturnsTable = () => {
                         <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Mensual</p>
                     </div>
                 </div>
-                
+
                 {/* Body */}
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-100 overflow-y-auto">
                     {tableData.map((row, idx) => (
                         <div
                             key={idx}
-                            className={`grid grid-cols-4 gap-2 p-3 border-b border-white/5 hover:bg-white/5 transition-all ${
-                                row.tier === 'elite' ? 'bg-[#F0973C]/10' :
+                            className={`grid grid-cols-4 gap-2 p-3 border-b border-white/5 hover:bg-white/5 transition-all ${row.tier === 'elite' ? 'bg-[#F0973C]/10' :
                                 row.tier === 'premium' ? 'bg-[#F0973C]/5' :
-                                row.tier === 'gold' ? 'bg-[#69AC95]/5' :
-                                row.tier === 'starter' ? 'bg-[#69AC95]/10' : ''
-                            }`}
+                                    row.tier === 'gold' ? 'bg-[#69AC95]/5' :
+                                        row.tier === 'starter' ? 'bg-[#69AC95]/10' : ''
+                                }`}
                         >
                             <div className="text-center">
                                 <p className="text-sm font-bold text-white">
                                     {row.licenses >= 1000 ? `${(row.licenses / 1000).toFixed(0)}K` : row.licenses}
                                 </p>
                                 {row.tier && (
-                                    <span className="text-[8px] uppercase font-semibold" style={{ 
-                                        color: row.tier === 'elite' || row.tier === 'premium' ? '#F0973C' : '#69AC95'
-                                    }}>
+                                    <span className={`text-[8px] uppercase font-semibold ${row.tier === 'elite' || row.tier === 'premium' ? 'text-[#F0973C]' : 'text-[#69AC95]'}`}>
                                         {row.tier}
                                     </span>
                                 )}
@@ -95,24 +92,34 @@ const ReturnsTable = () => {
     );
 };
 
-const StatCard = ({ value, label, accent }) => (
-    <div className="flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm" style={{ borderColor: accent + "33", background: "rgba(0,0,0,0.4)" }}>
-        <span className="text-2xl font-black" style={{ color: accent, fontFamily: "'Playfair Display', serif" }}>{value}</span>
-        <span className="text-white/50 text-xs mt-1 uppercase tracking-widest">{label}</span>
-    </div>
-);
+const StatCard = ({ value, label, accent }: { value: string; label: string; accent: string }) => {
+    const borderColor = accent === '#F0973C' ? 'border-[#F0973C33]' : 'border-[#69AC9533]';
+    const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
+    
+    return (
+        <div className={`flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm bg-black/40 ${borderColor}`}>
+            <span className={`text-2xl font-black font-['Playfair_Display'] ${textColor}`}>{value}</span>
+            <span className="text-white/50 text-xs mt-1 uppercase tracking-widest">{label}</span>
+        </div>
+    );
+};
 
-const FeatureRow = ({ icon: Icon, title, desc, accent }) => (
-    <div className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-        <div className="text-2xl w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: accent + "22" }}>
-            <Icon size={24} style={{ color: accent }} />
+const FeatureRow = ({ icon: Icon, title, desc, accent }: { icon: React.ElementType; title: string; desc: string; accent: string }) => {
+    const bgColor = accent === '#F0973C' ? 'bg-[#F0973C22]' : 'bg-[#69AC9522]';
+    const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
+    
+    return (
+        <div className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/2 hover:bg-white/5 transition-colors">
+            <div className={`text-2xl w-10 h-10 flex items-center justify-center rounded-lg shrink-0 ${bgColor}`}>
+                <Icon size={24} className={textColor} />
+            </div>
+            <div>
+                <h4 className="text-white font-semibold text-sm mb-0.5">{title}</h4>
+                <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
+            </div>
         </div>
-        <div>
-            <h4 className="text-white font-semibold text-sm mb-0.5">{title}</h4>
-            <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
-        </div>
-    </div>
-);
+    );
+};
 
 export default function LandingPage() {
     const { t } = useTranslation();
@@ -120,7 +127,7 @@ export default function LandingPage() {
     const [regOpen, setRegOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative font-['DM_Sans']">
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -202,8 +209,8 @@ export default function LandingPage() {
 
             {/* Background effects */}
             <div className="fixed inset-0 grid-bg pointer-events-none" />
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none pulse-glow" style={{ background: "radial-gradient(ellipse, rgba(240,151,60,0.08) 0%, transparent 70%)" }} />
-            <div className="fixed bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(105,172,149,0.05) 0%, transparent 70%)" }} />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-200 h-125 rounded-full pointer-events-none pulse-glow bg-[radial-gradient(ellipse,rgba(240,151,60,0.08)_0%,transparent_70%)]" />
+            <div className="fixed bottom-0 left-0 w-100 h-100 rounded-full pointer-events-none bg-[radial-gradient(ellipse,rgba(105,172,149,0.05)_0%,transparent_70%)]" />
 
             {/* NAV */}
             <nav className="relative z-40 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 backdrop-blur-md bg-black/40">
@@ -212,21 +219,19 @@ export default function LandingPage() {
                 </div>
 
                 <div></div>
-                
+
 
                 <div className="flex items-center gap-3">
                     <div className="landing-lang-selector"><LangSelector /></div>
                     <button
                         onClick={() => setLoginOpen(true)}
-                        className="text-sm font-semibold px-5 py-2 rounded-lg border transition-all hover:bg-[#F0973C]/10"
-                        style={{ borderColor: "#F0973C44", color: "#F0973C" }}
+                        className="text-sm font-semibold px-5 py-2 rounded-lg border border-[#F0973C44] text-[#F0973C] transition-all hover:bg-[#F0973C]/10"
                     >
                         {t("landing.login")}
                     </button>
                     <button
                         onClick={() => setRegOpen(true)}
-                        className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105"
-                        style={{ background: "linear-gradient(135deg,#F0973C,#e8841f)" }}
+                        className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                     >
                         {t("landing.register")}
                     </button>
@@ -235,7 +240,7 @@ export default function LandingPage() {
 
             {/* TICKER */}
             <div className="overflow-hidden bg-[#F0973C]/10 border-y border-[#F0973C]/10 py-2">
-                <div className="ticker-wrap flex gap-16 whitespace-nowrap" style={{ width: "200%" }}>
+                <div className="ticker-wrap flex gap-16 whitespace-nowrap w-[200%]">
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="flex gap-16">
                             {[
@@ -246,12 +251,15 @@ export default function LandingPage() {
                                 ["ADA/USD", "-0.32%", "#BC2020"],
                                 ["DOGE/USD", "+8.73%", "#F0973C"],
                                 ["XRP/USD", "+4.15%", "#69AC95"],
-                            ].map(([coin, chg, clr]) => (
-                                <span key={coin} className="text-xs font-mono">
-                                    <span className="text-white/60">{coin}</span>{" "}
-                                    <span style={{ color: clr }}>{chg}</span>
-                                </span>
-                            ))}
+                            ].map(([coin, chg, clr]) => {
+                                const color = clr === '#F0973C' ? 'text-[#F0973C]' : clr === '#69AC95' ? 'text-[#69AC95]' : 'text-[#BC2020]';
+                                return (
+                                    <span key={coin} className="text-xs font-mono">
+                                        <span className="text-white/60">{coin}</span>{" "}
+                                        <span className={color}>{chg}</span>
+                                    </span>
+                                );
+                            })}
                         </div>
                     ))}
                 </div>
@@ -266,7 +274,7 @@ export default function LandingPage() {
                             <span className="text-[#F0973C] text-xs font-semibold uppercase tracking-widest">Plazas Exclusivas Disponibles</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-6xl font-black leading-[1.05] mb-4 fade-up delay-100" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <h1 className="text-5xl md:text-6xl font-black leading-[1.05] mb-4 fade-up delay-100 font-['Playfair_Display']">
                             {t("landing.welcome")}
                             <br />
                             <span className="shimmer-text">Capital Diario</span>
@@ -279,8 +287,7 @@ export default function LandingPage() {
                         <div className="flex flex-col sm:flex-row gap-4 mb-10 fade-up delay-300">
                             <button
                                 onClick={() => setRegOpen(true)}
-                                className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30"
-                                style={{ background: "linear-gradient(135deg, #F0973C, #e8841f)" }}
+                                className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2"><Rocket size={18} /> {t("landing.register")}</span>
                                 <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
@@ -312,8 +319,8 @@ export default function LandingPage() {
             {/* FEATURES */}
             <section className="relative z-10 px-6 md:px-12 py-20 max-w-7xl mx-auto">
                 <div className="text-center mb-14">
-                    <h2 className="text-3xl md:text-4xl font-black mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        ¿Por qué <span style={{ color: "#F0973C" }}>PAYGLOBAL</span>?
+                    <h2 className="text-3xl md:text-4xl font-black mb-3 font-['Playfair_Display']">
+                        ¿Por qué <span className="text-[#F0973C]">PAYGLOBAL</span>?
                     </h2>
                     <p className="text-white/40 text-sm max-w-md mx-auto">Un ecosistema diseñado para multiplicar tu inversión en cada nivel</p>
                 </div>
@@ -335,8 +342,8 @@ export default function LandingPage() {
             <section className="relative z-10 px-6 md:px-12 py-20 border-t border-white/5">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14">
-                        <h2 className="text-3xl md:text-4xl font-black mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Niveles de <span style={{ color: "#69AC95" }}>Inversión</span>
+                        <h2 className="text-3xl md:text-4xl font-black mb-3 font-['Playfair_Display']">
+                            Niveles de <span className="text-[#69AC95]">Inversión</span>
                         </h2>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -345,12 +352,17 @@ export default function LandingPage() {
                             { tier: "GOLD", licenses: "500", daily: "$2.50", weekly: "$12.50", monthly: "$50.00", desc: "Duplica tus ganancias diarias con acceso a mercados premium.", color: "#69AC95", icon: Award },
                             { tier: "PREMIUM", licenses: "2,500", daily: "$12.50", weekly: "$62.50", monthly: "$250.00", desc: "Retornos significativos para inversores comprometidos.", color: "#F0973C", icon: Sparkles },
                             { tier: "ELITE", licenses: "10,000", daily: "$50.00", weekly: "$250.00", monthly: "$1,000.00", desc: "Máximo rendimiento. Gana $50 diarios consistentemente.", color: "#F0973C", icon: Crown },
-                        ].map((item) => (
-                            <div key={item.tier} className="relative p-6 rounded-2xl border flex flex-col gap-3 hover:scale-[1.02] transition-transform" style={{ borderColor: item.color + "30", background: item.color + "08" }}>
-                                <item.icon size={32} style={{ color: item.color }} />
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.tier}</p>
-                                    <p className="text-white text-2xl font-black" style={{ fontFamily: "'Playfair Display', serif" }}>{item.daily}</p>
+                        ].map((item) => {
+                            const borderColor = item.color === '#F0973C' ? 'border-[#F0973C30]' : 'border-[#69AC9530]';
+                            const bgColor = item.color === '#F0973C' ? 'bg-[#F0973C08]' : 'bg-[#69AC9508]';
+                            const textColor = item.color === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
+                            
+                            return (
+                                <div key={item.tier} className={`relative p-6 rounded-2xl border flex flex-col gap-3 hover:scale-[1.02] transition-transform ${borderColor} ${bgColor}`}>
+                                    <item.icon size={32} className={textColor} />
+                                    <div>
+                                        <p className={`text-xs font-bold uppercase tracking-widest ${textColor}`}>{item.tier}</p>
+                                        <p className="text-white text-2xl font-black font-['Playfair_Display']">{item.daily}</p>
                                     <p className="text-white/30 text-xs">diario</p>
                                 </div>
                                 <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
@@ -360,7 +372,8 @@ export default function LandingPage() {
                                     <p className="text-white/40 text-xs">Mensual: <span className="text-[#F0973C] font-semibold">{item.monthly}</span></p>
                                 </div>
                             </div>
-                        ))}
+                        );
+                        })}
                     </div>
                 </div>
             </section>
@@ -368,9 +381,9 @@ export default function LandingPage() {
             {/* CTA FINAL */}
             <section className="relative z-10 px-6 md:px-12 py-24 overflow-hidden">
                 <div className="max-w-2xl mx-auto text-center relative">
-                    <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(240,151,60,0.12) 0%, transparent 70%)" }} />
+                    <div className="absolute inset-0 rounded-3xl pointer-events-none bg-[radial-gradient(ellipse,rgba(240,151,60,0.12)_0%,transparent_70%)]" />
                     <p className="text-[#F0973C] text-xs uppercase tracking-[0.3em] mb-4 font-semibold">Acceso limitado</p>
-                    <h2 className="text-4xl md:text-5xl font-black mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h2 className="text-4xl md:text-5xl font-black mb-5 font-['Playfair_Display']">
                         El momento de<br />
                         <span className="shimmer-text">invertir es ahora</span>
                     </h2>
@@ -380,8 +393,7 @@ export default function LandingPage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                             onClick={() => setRegOpen(true)}
-                            className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30"
-                            style={{ background: "linear-gradient(135deg, #F0973C, #e8841f)" }}
+                            className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                         >
                             {t("landing.register")} →
                         </button>

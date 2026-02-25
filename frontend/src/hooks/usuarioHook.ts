@@ -111,7 +111,7 @@ export const useUsuario = () => {
                 dispatch(setUsuarioEnRed(data.usuarioEnRed)); // Guardar datos del usuario en el estado
             }
 
-            const ruta = obtenerRutaSegunRol();
+            const ruta = obtenerRutaSegunRol(data.token);
             navigate(ruta); // Redirigir según el rol del usuario
 
             return unwrapResult(result);
@@ -134,7 +134,7 @@ export const useUsuario = () => {
      * Función para obtener el rol del usuario desde el token JWT
      * @returns El rol del usuario o null si no hay token o es inválido
      */
-    const obtenerRolDesdeToken = (): string | null => {
+    const obtenerRolDesdeToken = (token: string): string | null => {
         if (!token) return null;
 
         try {
@@ -150,8 +150,8 @@ export const useUsuario = () => {
      * Función para obtener la ruta de redirección según el rol del usuario
      * @returns La ruta correspondiente al rol del usuario
      */
-    const obtenerRutaSegunRol = (): string => {
-        const rol = obtenerRolDesdeToken();
+    const obtenerRutaSegunRol = (token: string): string => {
+        const rol = obtenerRolDesdeToken(token);
 
         switch (rol) {
             case 'ROLE_ADMINISTRADOR':

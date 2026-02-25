@@ -94,6 +94,10 @@ public class Usuario implements UserDetails{
     @JsonManagedReference
     private List<Solicitud> solicitudes;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<KycFile> kycFiles;
+
 
     public void addSolicitud(Solicitud solicitud) {
         this.solicitudes.add(solicitud);

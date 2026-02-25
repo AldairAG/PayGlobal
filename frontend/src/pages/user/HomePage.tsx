@@ -5,13 +5,13 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { formatearFechaDate } from "../../helpers/formatHelpers";
 import { TipoWallets } from "../../type/enum";
 import { useEffect, useMemo } from 'react';
-import {getLicenseImage } from "../../helpers/imgHelpers";
+import { getLicenseImage } from "../../helpers/imgHelpers";
 import { useTransacciones } from "../../hooks/useTransacciones";
 
 const HomePage = () => {
     const { usuario, usuarioEnRed } = useUsuario();
-    const { cargarGananciasPorMes, gananciasPorMes,loadingGanancias, errorGanancias } = useTransacciones();
-    
+    const { cargarGananciasPorMes, gananciasPorMes, loadingGanancias, errorGanancias } = useTransacciones();
+
     useEffect(() => {
         cargarGananciasPorMes();
     }, []);
@@ -173,9 +173,9 @@ const HomePage = () => {
                     <div className="p-5 rounded-2xl shadow border"
                         style={{ backgroundColor: '#FFFFFF', borderColor: '#e5e7eb' }}>
                         <div className="flex items-center gap-4">
-                            <img 
-                                src={getLicenseImage(usuario?.licencia.nombre || '')} 
-                                alt="Licencia" 
+                            <img
+                                src={getLicenseImage(usuario?.licencia.nombre || '')}
+                                alt="Licencia"
                                 className="w-20 h-20 object-contain shrink-0"
                             />
                             <div className="flex-1">
@@ -219,7 +219,7 @@ const HomePage = () => {
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
                             <h3 className="font-semibold text-lg">Mi rango actual</h3>
-                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango?.nombre || "Sin Rango"}</p>
+                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango || "Sin Rango"}</p>
                         </div>
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
@@ -247,15 +247,15 @@ const HomePage = () => {
                         ) : gananciasPorMes.length === 0 ? (
                             <p className="text-center text-gray-500">No hay datos de ganancias disponibles.</p>
                         ) : (
-                        <ResponsiveContainer>
-                            <LineChart data={gananciasPorMes}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="ganancias" stroke="#69AC95" strokeWidth={3} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                            <ResponsiveContainer>
+                                <LineChart data={gananciasPorMes}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="mes" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Line type="monotone" dataKey="ganancia" stroke="#69AC95" strokeWidth={3} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         )}
                     </div>
                 </div>

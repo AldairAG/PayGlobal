@@ -6,6 +6,7 @@ export const ROUTES = {
         GESTION_PAGOS: '/admin/gestion-pagos',
         GESTION_KYC: '/admin/gestion-kyc',
         EDITAR_USUARIO: `/admin/editar-usuario`,
+        GESTION_SOPORTE: '/admin/gestion-soporte'
     },
 
     USER: {

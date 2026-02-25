@@ -1,4 +1,4 @@
-import type { TipoCrypto } from "./enum";
+import type { EstadoTicket, TipoCrypto } from "./enum";
 
 export interface RegistroRequestDTO {
     username: string;
@@ -24,4 +24,11 @@ export interface CreateWalletAddress {
     tipoCrypto: TipoCrypto;
     nombre: string;
 
+}
+
+export interface CrearTiketRequest {
+    asunto?: string;
+    descripcion?: string;
+    estado?: EstadoTicket;
+    comentario?: string;
 }

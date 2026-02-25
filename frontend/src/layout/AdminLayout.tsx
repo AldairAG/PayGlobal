@@ -10,6 +10,7 @@ const menuOptions = {
     users: {name: 'Explorador de usuarios', ruta: ROUTES.ADMIN.USERS_EXPLORER, Icon: Users},
     kyc: {name: 'KYC', ruta: ROUTES.ADMIN.GESTION_KYC, Icon: ShieldCheck},
     pagos: {name: 'Gestión de Pagos', ruta: ROUTES.ADMIN.GESTION_PAGOS, Icon: CreditCard},  
+    soporte: {name: 'Gestión de Soporte', ruta: ROUTES.ADMIN.GESTION_SOPORTE, Icon: ShieldCheck},
 }
 
 export const AdminLayout = () => {
@@ -25,10 +26,10 @@ export const AdminLayout = () => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar */}
-            <aside className="w-[280px] bg-gray-800 text-white flex flex-col shadow-lg">
+            <aside className="w-70 bg-gray-800 text-white flex flex-col shadow-lg">
                 {/* Logo Section */}
                 <div className="px-5 py-6 border-b border-white/10 flex items-center justify-center">
-                    <img src={logo} alt="PayGlobal Logo" className="h-[50px]" />
+                    <img src={logo} alt="PayGlobal Logo" className="h-12.5" />
                 </div>
 
                 {/* Menu Options */}

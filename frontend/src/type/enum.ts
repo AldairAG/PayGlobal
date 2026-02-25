@@ -87,8 +87,13 @@ export enum EstadoOperacion {
 }
 
 export enum EstadoTicket {
-    ABIERTO = "abierto",
-    CERRADO = "cerrado"
+    ABIERTO = "ABIERTO",
+    CERRADO = "CERRADO"
+}
+
+export enum TipoAutorTiket {
+    SOLICITANTE = "SOLICITANTE",
+    SOPORTE = "SOPORTE"
 }
 
 export enum TipoConceptos {
