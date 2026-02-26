@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.payglobal.dto.request.EvaluarKycFileRequest;
 import com.api.payglobal.dto.request.GuardarKycFile;
 import com.api.payglobal.entity.KycFile;
+import com.api.payglobal.helpers.ApiResponseWrapper;
 import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.kycFile.KycServicio;
 
@@ -44,18 +45,18 @@ public class KycController {
      */
     @PostMapping("/upload/{idUsuario}")
     @PreAuthorize("hasRole('USUARIO')")
-    public ResponseEntity<?> uploadKycFile(
+    public ResponseEntity<ApiResponseWrapper<KycFile>> uploadKycFile(
             @ModelAttribute GuardarKycFile guardarKycFile,
             @PathVariable Long idUsuario) {
         try {
             KycFile kycFile = kycServicio.guardarKycFile(guardarKycFile, idUsuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(kycFile);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseWrapper<>(true, kycFile, "Archivo KYC subido exitosamente"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al guardar el archivo: " + e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, "Error al guardar el archivo: " + e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -66,16 +67,16 @@ public class KycController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('USUARIO')")
-    public ResponseEntity<?> deleteKycFile(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseWrapper<Void>> deleteKycFile(@PathVariable Long id) {
         try {
             kycServicio.eliminarKycFile(id);
-            return ResponseEntity.ok("Archivo KYC eliminado exitosamente");
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, null, "Archivo KYC eliminado exitosamente"));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al eliminar el archivo: " + e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, "Error al eliminar el archivo: " + e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -86,13 +87,13 @@ public class KycController {
      */
     @GetMapping("/usuario/{idUsuario}")
     @PreAuthorize("hasRole('USUARIO') or hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> getKycFilesByUsuario(@PathVariable Long idUsuario) {
+    public ResponseEntity<ApiResponseWrapper<List<KycFile>>> getKycFilesByUsuario(@PathVariable Long idUsuario) {
         try {
             List<KycFile> kycFiles = kycServicio.obtenerKycFilePorIdUsuario(idUsuario);
-            return ResponseEntity.ok(kycFiles);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, kycFiles, "Archivos KYC obtenidos exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -102,9 +103,9 @@ public class KycController {
      */
     @GetMapping("/pendientes")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<List<KycFile>> getKycFilesPendientes() {
+    public ResponseEntity<ApiResponseWrapper<List<KycFile>>> getKycFilesPendientes() {
         List<KycFile> kycFiles = kycServicio.obtenerKycFilesPorEstado();
-        return ResponseEntity.ok(kycFiles);
+        return ResponseEntity.ok(new ApiResponseWrapper<>(true, kycFiles, "Archivos KYC pendientes obtenidos exitosamente"));
     }
 
     /**
@@ -115,15 +116,15 @@ public class KycController {
      */
     @PutMapping("/{id}/evaluar")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<?> evaluarKycFile(
+    public ResponseEntity<ApiResponseWrapper<KycFile>> evaluarKycFile(
             @PathVariable Long id,
             @RequestBody EvaluarKycFileRequest evaluarKycFileRequest) {
         try {
             KycFile kycFile = kycServicio.actualizarEstadoKycFile(id, evaluarKycFileRequest);
-            return ResponseEntity.ok(kycFile);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, kycFile, "Archivo KYC evaluado exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
 
@@ -138,15 +139,46 @@ public class KycController {
         try {
             Resource resource = fileStorageService.loadFileAsResource(fileName);
             
-            String contentType = "application/octet-stream";
+            // Detectar el tipo de contenido basándose en la extensión del archivo
+            String contentType = determineContentType(fileName);
+            
+            // Para archivos visualizables (imágenes y PDFs), usar "inline" en lugar de "attachment"
+            String disposition = contentType.startsWith("image/") || contentType.equals("application/pdf")
+                    ? "inline; filename=\"" + resource.getFilename() + "\""
+                    : "attachment; filename=\"" + resource.getFilename() + "\"";
             
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, 
-                            "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=3600")
                     .body(resource);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
+     * Determina el tipo MIME basándose en la extensión del archivo
+     * @param fileName Nombre del archivo
+     * @return Tipo MIME del archivo
+     */
+    private String determineContentType(String fileName) {
+        String lowerCaseFileName = fileName.toLowerCase();
+        
+        if (lowerCaseFileName.endsWith(".pdf")) {
+            return "application/pdf";
+        } else if (lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (lowerCaseFileName.endsWith(".png")) {
+            return "image/png";
+        } else if (lowerCaseFileName.endsWith(".gif")) {
+            return "image/gif";
+        } else if (lowerCaseFileName.endsWith(".bmp")) {
+            return "image/bmp";
+        } else if (lowerCaseFileName.endsWith(".webp")) {
+            return "image/webp";
+        } else {
+            return "application/octet-stream";
         }
     }
 }

@@ -15,7 +15,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService() {
-        this.fileStorageLocation = Paths.get("uploads/kyc")
+        this.fileStorageLocation = Paths.get("../../uploads/kyc")
                 .toAbsolutePath().normalize();
 
         try {
@@ -26,8 +26,15 @@ public class FileStorageService {
     }
 
     public String storeFile(MultipartFile file, String username, String fileType) throws IOException {
-        String fileName = String.format("%d_%s_%s", username, System.currentTimeMillis(),
-                fileType);
+        // Extraer la extensión del archivo original
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFileName != null && originalFileName.contains(".")) {
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
+        
+        String fileName = String.format("%s_%s_%s%s", username, System.currentTimeMillis(),
+                fileType, fileExtension);
         Path targetLocation = this.fileStorageLocation.resolve(fileName);
         Files.copy(file.getInputStream(), targetLocation);
         return fileName;

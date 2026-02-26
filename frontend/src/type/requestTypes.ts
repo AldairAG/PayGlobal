@@ -1,4 +1,4 @@
-import type { EstadoTicket, TipoCrypto } from "./enum";
+import type { EstadoOperacion, EstadoTicket, TipoCrypto, TipoKycFile, TipoRechazos } from "./enum";
 
 export interface RegistroRequestDTO {
     username: string;
@@ -31,4 +31,15 @@ export interface CrearTiketRequest {
     descripcion?: string;
     estado?: EstadoTicket;
     comentario?: string;
+}
+
+export interface GuardarKycFileRequest {
+    fileType: TipoKycFile;
+    file: File;
+}
+
+export interface EvaluarKycFileRequest {
+    nuevoEstado: EstadoOperacion;
+    comentario?: string;
+    razonRechazo?: TipoRechazos;
 }

@@ -1,4 +1,4 @@
-import { EstadoTicket, TipoAutorTiket, TipoConceptos, TipoMetodoPago, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
+import { EstadoTicket, TipoAutorTiket, TipoConceptos, TipoKycFile, TipoMetodoPago, TipoRechazos, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
 
 export interface Usuario {
     id: number;
@@ -127,4 +127,18 @@ export interface Transaccion extends Operacion {
     concepto: TipoConceptos;
     metodoPago: TipoMetodoPago;
     usuario: Usuario;
+}
+
+export interface KycFile {
+    id: number;
+    fileName: string;
+    fileType: TipoKycFile;
+    filePath: string;
+    fileSize: number;
+    uploadDate: Date;
+    verificationDate?: Date;
+    estado: EstadoOperacion;
+    razonRechazo?: TipoRechazos;
+    comentarioRechazo?: string;
+    usuario?: Usuario;
 }

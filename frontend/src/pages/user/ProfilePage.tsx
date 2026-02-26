@@ -1,6 +1,7 @@
 import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { KycDocuments } from "../../components/KycDocuments";
 
 export const ProfilePage = () => {
     const { usuario, editarPerfil, loadingEditarPerfil, errorEditarPerfil } = useUsuario();
@@ -391,6 +392,9 @@ export const ProfilePage = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Documentos KYC */}
+                    {usuario?.id && <KycDocuments usuarioId={usuario.id} />}
                 </div>
             </div>
         </div>
