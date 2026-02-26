@@ -7,8 +7,10 @@ import { TipoWallets } from "../../type/enum";
 import { useEffect, useMemo } from 'react';
 import {getLicenseImage } from "../../helpers/imgHelpers";
 import { useTransacciones } from "../../hooks/useTransacciones";
+import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
+    const { t } = useTranslation();
     const { usuario, usuarioEnRed } = useUsuario();
     const { cargarGananciasPorMes, gananciasPorMes,loadingGanancias, errorGanancias } = useTransacciones();
     
@@ -154,14 +156,14 @@ const HomePage = () => {
 
                             {/* Información de montos */}
                             <div className="flex-1 text-left">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-2">Reloj de progreso</h3>
+                                <h3 className="text-sm font-semibold text-gray-700 mb-2">{t('home.progress_clock')}</h3>
                                 <div className="space-y-1">
                                     <div>
-                                        <p className="text-xs text-gray-500">Monto máximo</p>
+                                        <p className="text-xs text-gray-500">{t('home.maximum_amount')}</p>
                                         <p className="text-sm font-bold text-gray-900">$ {usuario?.licencia.limite}</p>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500">Total recaudado</p>
+                                        <p className="text-xs text-gray-500">{t('home.total_collected')}</p>
                                         <p className="text-sm font-bold" style={{ color: '#69AC95' }}>$ {usuario?.licencia.saldoAcumulado}</p>
                                     </div>
                                 </div>
@@ -175,13 +177,13 @@ const HomePage = () => {
                         <div className="flex items-center gap-4">
                             <img 
                                 src={getLicenseImage(usuario?.licencia.nombre || '')} 
-                                alt="Licencia" 
+                                alt={t('home.license')}
                                 className="w-20 h-20 object-contain shrink-0"
                             />
                             <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-gray-900">Licencia activa</h3>
-                                <p className="text-sm text-gray-600 mt-1">{usuario?.licencia.nombre || 'Sin licencia'}</p>
-                                <p className="text-xs text-gray-500 mt-2">Renovada: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
+                                <h3 className="text-lg font-semibold text-gray-900">{t('home.active_license')}</h3>
+                                <p className="text-sm text-gray-600 mt-1">{usuario?.licencia.nombre || t('home.without_license')}</p>
+                                <p className="text-xs text-gray-500 mt-2">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
                             </div>
                         </div>
                     </div>
@@ -191,7 +193,7 @@ const HomePage = () => {
                         style={{ backgroundColor: '#FFFFFF', borderColor: '#e5e7eb' }}>
                         <div className="flex items-center gap-3">
                             <Wallet size={30} style={{ color: '#69AC95' }} />
-                            <h3 className="text-xl font-semibold">Dividendos</h3>
+                            <h3 className="text-xl font-semibold">{t('home.dividends')}</h3>
                         </div>
                         <p className="mt-2 text-2xl font-bold">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_DIVIDENDOS)?.saldo}</p>
                     </div>
@@ -201,7 +203,7 @@ const HomePage = () => {
                         style={{ backgroundColor: '#FFFFFF', borderColor: '#e5e7eb' }}>
                         <div className="flex items-center gap-3">
                             <Coins size={30} style={{ color: '#F0973C' }} />
-                            <h3 className="text-xl font-semibold">Comisiones</h3>
+                            <h3 className="text-xl font-semibold">{t('home.commissions')}</h3>
                         </div>
                         <p className="mt-2 text-2xl font-bold">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
                     </div>
@@ -212,19 +214,19 @@ const HomePage = () => {
                 <div className="p-6 rounded-2xl shadow border"
                     style={{ backgroundColor: '#FFFFFF', borderColor: '#e5e7eb' }}>
                     <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                        <Award style={{ color: '#F0973C' }} /> Datos de red & Detalles de rango
+                        <Award style={{ color: '#F0973C' }} /> {t('home.network_data_and_range_details')}
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
-                            <h3 className="font-semibold text-lg">Mi rango actual</h3>
-                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango?.nombre || "Sin Rango"}</p>
+                            <h3 className="font-semibold text-lg">{t('home.my_current_rank')}</h3>
+                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango?.nombre || t('home.no_range')}</p>
                         </div>
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
-                            <h3 className="font-semibold text-lg">Usuarios en mi red</h3>
-                            <p className="mt-2 text-2xl font-bold" style={{ color: '#F0973C' }}>{usuarioEnRed || 0} afiliados</p>
+                            <h3 className="font-semibold text-lg">{t('home.users_on_my_network')}</h3>
+                            <p className="mt-2 text-2xl font-bold" style={{ color: '#F0973C' }}>{usuarioEnRed || 0} {t('home.affiliates')}</p>
                         </div>
 
                     </div>
@@ -236,16 +238,16 @@ const HomePage = () => {
                 <div className="p-6 rounded-2xl shadow border"
                     style={{ backgroundColor: '#FFFFFF', borderColor: '#e5e7eb' }}>
                     <h2 className="text-2xl font-bold flex items-center gap-2 mb-4">
-                        <TrendingUp style={{ color: '#69AC95' }} /> Aumento de Ganancias
+                        <TrendingUp style={{ color: '#69AC95' }} /> {t("home.profit_increase")}
                     </h2>
 
                     <div className="w-full h-64">
                         {loadingGanancias ? (
-                            <p className="text-center text-gray-500">Cargando ganancias por mes...</p>
+                            <p className="text-center text-gray-500">{t("home.loading_monthly_earnings...")}</p>
                         ) : errorGanancias ? (
                             <p className="text-center text-red-500">Error: {errorGanancias}</p>
                         ) : gananciasPorMes.length === 0 ? (
-                            <p className="text-center text-gray-500">No hay datos de ganancias disponibles.</p>
+                            <p className="text-center text-gray-500">{t("home.no_earnings_data_available.")}</p>
                         ) : (
                         <ResponsiveContainer>
                             <LineChart data={gananciasPorMes}>

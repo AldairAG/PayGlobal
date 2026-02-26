@@ -5,8 +5,11 @@ import { Ticket, Plus, MessageSquare, X, Send, CheckCircle, Clock } from "lucide
 import { toast } from "react-toastify";
 import type { Ticket as TicketType, RespuestaTicket } from "../../type/entityTypes";
 import { EstadoTicket as EstadoTicketEnum } from "../../type/enum";
+import { useTranslation } from 'react-i18next';
+
 
 export const SoportePage = () => {
+    const { t } = useTranslation();
     // Estado para almacenar los tickets (mock data)
     const [tickets, setTickets] = useState<TicketType[]>([
         {
@@ -51,11 +54,11 @@ export const SoportePage = () => {
     // Validación para nuevo ticket
     const validationSchema = Yup.object({
         asunto: Yup.string()
-            .required("El asunto es requerido")
-            .min(5, "El asunto debe tener al menos 5 caracteres"),
+            .required(t("support.subject_required"))
+            .min(5, t("support.subject_min_length")),
         descripcion: Yup.string()
-            .required("La descripción es requerida")
-            .min(20, "La descripción debe tener al menos 20 caracteres")
+            .required(t("support.description_required"))
+            .min(20, t("support.description_min_length"))
     });
 
     // Formik para nuevo ticket
@@ -77,7 +80,7 @@ export const SoportePage = () => {
             setTickets([nuevoTicket, ...tickets]);
             resetForm();
             setShowNewTicketForm(false);
-            toast.success("Ticket creado exitosamente");
+            toast.success(t("support.ticket_created_successfully"));
         }
     });
 
@@ -100,7 +103,7 @@ export const SoportePage = () => {
         setTickets(ticketsActualizados);
         setSelectedTicket({ ...selectedTicket, respuestas: [...selectedTicket.respuestas, nuevaRespuesta] });
         setNewResponse("");
-        toast.success("Respuesta agregada exitosamente");
+        toast.success(t("support.response_added_successfully"));
     };
 
     // Cerrar ticket
@@ -115,7 +118,7 @@ export const SoportePage = () => {
 
         setTickets(ticketsActualizados);
         setSelectedTicket({ ...selectedTicket, estado: EstadoTicketEnum.CERRADO });
-        toast.info("Ticket cerrado");
+        toast.info(t("support.ticket_closed_successfully"));
     };
 
     return (
@@ -124,10 +127,10 @@ export const SoportePage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold mb-2 text-black">
-                        Centro de Soporte
+                        {t("support.support_center")}
                     </h1>
                     <p className="text-gray-600">
-                        Gestiona tus tickets y obtén ayuda de nuestro equipo
+                        {t("support.manage_your_tickets_and_get_help_from_our_team")}
                     </p>
                 </div>
 
@@ -138,12 +141,12 @@ export const SoportePage = () => {
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-xl font-bold flex items-center gap-2">
                                     <Ticket size={24} className="text-[#F0973C]" />
-                                    Mis Tickets
+                                    {t("support.my_tickets")}
                                 </h2>
                                 <button
                                     onClick={() => setShowNewTicketForm(true)}
                                     className="p-2 rounded-lg transition-all hover:scale-105 bg-[#F0973C]"
-                                    title="Nuevo Ticket"
+                                    title={t("support.new_ticket")}
                                 >
                                     <Plus size={20} className="text-white" />
                                 </button>
@@ -170,7 +173,7 @@ export const SoportePage = () => {
                                                     ticket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
                                                 }`}
                                             >
-                                                {ticket.estado === EstadoTicketEnum.ABIERTO ? "Abierto" : "Cerrado"}
+                                                {ticket.estado === EstadoTicketEnum.ABIERTO ? t("support.open") : t("support.closed")}
                                             </span>
                                         </div>
                                         <p className="text-xs text-gray-500 mb-2 line-clamp-2">
@@ -201,7 +204,7 @@ export const SoportePage = () => {
                                     <div className="flex justify-between items-center mb-6">
                                         <h2 className="text-2xl font-bold flex items-center gap-2">
                                             <Plus size={28} className="text-[#F0973C]" />
-                                            Nuevo Ticket
+                                            {t("support.new_ticket")}
                                         </h2>
                                         <button
 
@@ -210,7 +213,7 @@ export const SoportePage = () => {
                                                 formik.resetForm();
                                             }}
                                             className="p-2 rounded-lg hover:bg-gray-100 transition-all"
-                                            title="Cerrar formulario"
+                                            title={t("support.close_form")}
                                         >
                                             <X size={24} />
                                         </button>
@@ -220,7 +223,7 @@ export const SoportePage = () => {
                                         {/* Campo Asunto */}
                                         <div>
                                             <label className="block text-sm font-semibold mb-2">
-                                                Asunto *
+                                                {t("support.subject")} *
                                             </label>
                                             <input
                                                 type="text"
@@ -231,7 +234,7 @@ export const SoportePage = () => {
                                                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all ${
                                                     formik.touched.asunto && formik.errors.asunto ? "border-red-600" : "border-[#F0973C]"
                                                 }`}
-                                                placeholder="Describe brevemente el problema"
+                                                placeholder={t("support.describe_briefly_the_problem")}
                                             />
                                             {formik.touched.asunto && formik.errors.asunto && (
                                                 <p className="text-sm mt-1 text-red-600">
@@ -243,7 +246,7 @@ export const SoportePage = () => {
                                         {/* Campo Descripción */}
                                         <div>
                                             <label className="block text-sm font-semibold mb-2">
-                                                Descripción *
+                                                {t("support.description")} *
                                             </label>
                                             <textarea
                                                 name="descripcion"
@@ -254,7 +257,7 @@ export const SoportePage = () => {
                                                 className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none ${
                                                     formik.touched.descripcion && formik.errors.descripcion ? "border-red-600" : "border-[#F0973C]"
                                                 }`}
-                                                placeholder="Describe detalladamente tu problema o consulta"
+                                                placeholder={t("support.describe_your_problem_in_detail")}
                                             />
                                             {formik.touched.descripcion && formik.errors.descripcion && (
                                                 <p className="text-sm mt-1 text-red-600">
@@ -270,7 +273,7 @@ export const SoportePage = () => {
                                                 disabled={!formik.isValid || formik.isSubmitting}
                                                 className="flex-1 py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
                                             >
-                                                Crear Ticket
+                                                {t("support.create_ticket")}
                                             </button>
                                             <button
                                                 type="button"
@@ -280,7 +283,7 @@ export const SoportePage = () => {
                                                 }}
                                                 className="flex-1 py-3 rounded-lg font-semibold border-2 transition-all hover:bg-gray-50 border-black text-black"
                                             >
-                                                Cancelar
+                                                {t("support.cancel")}
                                             </button>
                                         </div>
                                     </form>
@@ -308,23 +311,24 @@ export const SoportePage = () => {
                                                         {selectedTicket.estado === EstadoTicketEnum.ABIERTO ? (
                                                             <>
                                                                 <Clock size={14} />
-                                                                Abierto
+                                                                {t("support.open")}
                                                             </>
                                                         ) : (
                                                             <>
                                                                 <CheckCircle size={14} />
-                                                                Cerrado
+                                                                {t("support.closed")}
                                                             </>
                                                         )}
                                                     </span>
                                                 </div>
                                             </div>
+                                            {/* NO SE TRADUCE */}
                                             {selectedTicket.estado === EstadoTicketEnum.ABIERTO && (
                                                 <button
                                                     onClick={handleCloseTicket}
                                                     className="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-red-600 text-white"
                                                 >
-                                                    Cerrar Ticket
+                                                        {t("support.close_ticket")}
                                                 </button>
                                             )}
                                         </div>
@@ -332,7 +336,7 @@ export const SoportePage = () => {
                                         {/* Descripción original */}
                                         <div className="bg-gray-50 p-4 rounded-lg">
                                             <h3 className="font-semibold mb-2 text-sm text-[#F0973C]">
-                                                Descripción Original:
+                                                {t("support.original_description")}
                                             </h3>
                                             <p className="text-gray-700 whitespace-pre-wrap">
                                                 {selectedTicket.descripcion}
@@ -344,13 +348,13 @@ export const SoportePage = () => {
                                     <div className="flex-1 overflow-y-auto mb-6 space-y-4">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <MessageSquare size={20} className="text-[#69AC95]" />
-                                            Respuestas ({selectedTicket.respuestas.length})
+                                            {t("support.responses")} ({selectedTicket.respuestas.length})
                                         </h3>
                                         
                                         {selectedTicket.respuestas.length === 0 ? (
                                             <div className="text-center py-8 text-gray-400">
                                                 <MessageSquare size={48} className="mx-auto mb-2 opacity-30" />
-                                                <p>No hay respuestas aún</p>
+                                                <p>{t("support.no_responses_yet")}</p>
                                             </div>
                                         ) : (
                                             selectedTicket.respuestas.map((respuesta) => (
@@ -376,7 +380,7 @@ export const SoportePage = () => {
                                                 <textarea
                                                     value={newResponse}
                                                     onChange={(e) => setNewResponse(e.target.value)}
-                                                    placeholder="Escribe un comentario..."
+                                                        placeholder={t("support.write_a_comment")}
                                                     rows={3}
                                                         className="flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none border-[#F0973C]"
                                                 />
@@ -394,7 +398,7 @@ export const SoportePage = () => {
                                         <div className="border-t-2 border-gray-200 pt-4">
                                             <div className="bg-gray-100 p-4 rounded-lg text-center">
                                                 <p className="text-gray-600 font-semibold">
-                                                    Este ticket está cerrado. No se pueden agregar más comentarios.
+                                                    {t("support.ticket_is_closed")}
                                                 </p>
                                             </div>
                                         </div>
@@ -405,10 +409,10 @@ export const SoportePage = () => {
                                 <div className="flex flex-col items-center justify-center h-full text-gray-400">
                                     <Ticket size={64} className="mb-4 opacity-30" />
                                     <p className="text-lg font-semibold mb-2">
-                                        Selecciona un ticket para ver los detalles
+                                                {t("support.select_ticket_to_view_details")}
                                     </p>
                                     <p className="text-sm">
-                                        o crea uno nuevo para obtener ayuda
+                                        {t("support.or_create_a_new_one_for_help")}
                                     </p>
                                 </div>
                             )}

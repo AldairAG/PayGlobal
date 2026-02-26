@@ -9,8 +9,11 @@ import { TipoCrypto, EstadoOperacion, TipoWallets, TipoSolicitud } from "../../t
 import { useWalletAddress } from "../../hooks/useWalletAddress";
 import type { CreateWalletAddress } from "../../type/requestTypes";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { useTranslation } from 'react-i18next';
+
 
 export const RetiroPage = () => {
+    const { t } = useTranslation();
 
     const { usuario, solicitarRetiro, loadingSolicitarRetiroFondos, errorSolicitarRetiroFondos } = useUsuario();
 
@@ -46,13 +49,13 @@ export const RetiroPage = () => {
     // Validación para nueva wallet
     const walletValidationSchema = Yup.object({
         address: Yup.string()
-            .required("La dirección es requerida")
-            .min(26, "Dirección inválida"),
+            .required(t("withdrawal.address_required"))
+            .min(26, t("withdrawal.invalid")),
         tipoCrypto: Yup.string()
-            .required("El tipo de cripto es requerido"),
+            .required(t("withdrawal.crypto_required")),
         nombre: Yup.string()
-            .required("El nombre es requerido")
-            .min(3, "El nombre debe tener al menos 3 caracteres")
+            .required(t("withdrawal.wallet_name_required"))
+            .min(3, t("withdrawal.wallet_name_min"))
     });
 
     // Formik para nueva wallet
@@ -75,17 +78,17 @@ export const RetiroPage = () => {
                 createWalletAddress(nuevaWallet).then(() => {
                     resetForm();
                     setShowWalletForm(null);
-                    toast.success("Wallet creada exitosamente");
+                    toast.success(t("withdrawal.wallet_created_successfully"));
                 }).catch(() => {
-                    toast.error("Error al crear la wallet: " + (errorCreate || "Error desconocido"));
+                    toast.error(t("withdrawal.error_creating_wallet") + (errorCreate || t("withdrawal.error_unknown")));
                 });
             } else if (showWalletForm === "update" && selectedWallet) {
                 updateWalletAddress(selectedWallet || 0, nuevaWallet).then(() => {
                     resetForm();
                     setShowWalletForm(null);
-                    toast.success("Wallet actualizada exitosamente");
+                    toast.success(t("withdrawal.wallet_updated_successfully"));
                 }).catch(() => {
-                    toast.error("Error al actualizar la wallet: " + (errorUpdate || "Error desconocido"));
+                    toast.error(t("withdrawal.error_updating_wallet") + (errorUpdate || t("withdrawal.error_unknown")));
                 });
             }
         }
@@ -94,11 +97,11 @@ export const RetiroPage = () => {
     // Validación para retiro
     const retiroValidationSchema = Yup.object({
         walletId: Yup.number()
-            .required("Selecciona una wallet")
-            .min(1, "Selecciona una wallet"),
+            .required(t("withdrawal.select_a_wallet"))
+            .min(1, t("withdrawal.select_a_wallet")),
         monto: Yup.number()
-            .required("El monto es requerido")
-            .min(1, "El monto mínimo es 1")
+            .required(t("withdrawal.amount_required"))
+            .min(1, t("withdrawal.amount_min"))
     });
 
     // Formik para retiro
@@ -118,9 +121,9 @@ export const RetiroPage = () => {
 
             solicitarRetiro(values.addresId, values.monto, walletTipo).then(() => {
             resetForm();
-            toast.success("Solicitud de retiro enviada");
+            toast.success(t("withdrawal.withdrawal_request_sent"));
             }).catch(() => {
-                toast.error("Error al solicitar retiro: " + (errorSolicitarRetiroFondos || "Error desconocido"));
+                toast.error(t("withdrawal.error_requesting_withdrawal") + (errorSolicitarRetiroFondos || t("withdrawal.error_unknown")));
             })
 
     }});
@@ -175,10 +178,10 @@ export const RetiroPage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold mb-2 text-black">
-                        Gestión de Retiros
+                        {t("withdrawal.withdrawal_management")}
                     </h1>
                     <p className="text-gray-600">
-                        Administra tus wallets y solicitudes de retiro
+                        {t("withdrawal.manage_your_wallets_and_withdrawal_requests")}
                     </p>
                 </div>
 
@@ -188,12 +191,12 @@ export const RetiroPage = () => {
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <Wallet size={24} className="text-[#F0973C]" />
-                                Mis Wallets
+                                {t("withdrawal.my_wallets")}
                             </h2>
                             <button
                                 onClick={() => setShowWalletForm("crear")}
                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-[#F0973C]"
-                                title="Nueva Wallet"
+                                title={t("withdrawal.new_wallet")}
                             >
                                 <Plus size={20} className="text-white" />
                             </button>
@@ -206,7 +209,7 @@ export const RetiroPage = () => {
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Nombre *
+                                            {t("withdrawal.wallet_name")}
                                         </label>
                                         <input
                                             type="text"
@@ -216,7 +219,7 @@ export const RetiroPage = () => {
                                             onBlur={walletFormik.handleBlur}
                                             className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
                                                 }`}
-                                            placeholder="Mi Wallet Principal"
+                                            placeholder={t("withdrawal.main_wallet")}
                                         />
                                         {walletFormik.touched.nombre && walletFormik.errors.nombre && (
                                             <p className="text-sm mt-1 text-red-600">
@@ -227,7 +230,7 @@ export const RetiroPage = () => {
 
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Tipo de Cripto *
+                                            {t("withdrawal.crypto_type")}
                                         </label>
                                         <select
                                             name="tipoCrypto"
@@ -244,7 +247,7 @@ export const RetiroPage = () => {
 
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Dirección *
+                                            {t("withdrawal.wallet_address")}
                                         </label>
                                         <input
                                             type="text"
@@ -269,7 +272,7 @@ export const RetiroPage = () => {
                                             type="submit"
                                             className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
                                         >
-                                            Crear Wallet
+                                            {t("withdrawal.create_wallet")}
                                         </button>
                                         <button
                                             type="button"
@@ -279,18 +282,18 @@ export const RetiroPage = () => {
                                             }}
                                             className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
                                         >
-                                            Cancelar
+                                            {t("withdrawal.cancel")}
                                         </button>
                                     </div>
                                 </form>
                             </div>
                         ) : showWalletForm == "update" && (
                             <div className="mb-6 p-4 rounded-lg border-2 border-[#F0973C] bg-[#FFF4E6]">
-                                <h3 className="font-semibold mb-4">Actualizar Wallet</h3>
+                                <h3 className="font-semibold mb-4">{t("withdrawal.update_wallet")}</h3>
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Nombre *
+                                            {t("withdrawal.wallet_name")}
                                         </label>
                                         <input
                                             type="text"
@@ -300,7 +303,7 @@ export const RetiroPage = () => {
                                             onBlur={walletFormik.handleBlur}
                                             className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
                                                 }`}
-                                            placeholder="Mi Wallet Principal"
+                                            placeholder={t("withdrawal.main_wallet")}
                                         />
                                         {walletFormik.touched.nombre && walletFormik.errors.nombre && (
                                             <p className="text-sm mt-1 text-red-600">
@@ -311,7 +314,7 @@ export const RetiroPage = () => {
 
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Tipo de Cripto *
+                                            {t("withdrawal.crypto_type")}
                                         </label>
                                         <select
                                             name="tipoCrypto"
@@ -328,7 +331,7 @@ export const RetiroPage = () => {
 
                                     <div>
                                         <label className="block text-sm font-semibold mb-2">
-                                            Dirección *
+                                            {t("withdrawal.wallet_address")}
                                         </label>
                                         <input
                                             type="text"
@@ -353,7 +356,7 @@ export const RetiroPage = () => {
                                             type="submit"
                                             className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
                                         >
-                                            Actualizar Wallet
+                                            {t("withdrawal.update_wallet")}
                                         </button>
                                         <button
                                             type="button"
@@ -363,7 +366,7 @@ export const RetiroPage = () => {
                                             }}
                                             className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
                                         >
-                                            Cancelar
+                                            {t("withdrawal.cancel")}
                                         </button>
                                     </div>
                                 </form>
@@ -373,11 +376,11 @@ export const RetiroPage = () => {
                         {/* Lista de Wallets */}
                         <div className="space-y-3 max-h-100 overflow-y-auto">
                             {loadingMyWallets ? (
-                                <p className="text-center text-gray-500">Cargando wallets...</p>
+                                <p className="text-center text-gray-500">{t("withdrawal.loading_wallets")}</p>
                             ) : errorMyWallets ? (
-                                <p className="text-center text-red-600">Error al cargar wallets</p>
+                                <p className="text-center text-red-600">{t("withdrawal.error_loading_wallets")}</p>
                             ) : walletAddresses.length === 0 ? (
-                                <p className="text-center text-gray-500">No tienes wallets registradas</p>
+                                <p className="text-center text-gray-500">{t("withdrawal.no_wallets_found")}</p>
                             ) : (walletAddresses.map((wallet) => (
                                 <div
                                     key={wallet.id}
@@ -395,7 +398,7 @@ export const RetiroPage = () => {
                                                 ${wallet.balanceRetirado.toFixed(2)}
                                             </span>
                                             <button
-                                                title="Editar wallet"
+                                                title={t("withdrawal.edit_wallet")}
                                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-blue-500 text-white"
                                                 onClick={() => {
                                                     setSelectedWallet(wallet.id);
@@ -410,7 +413,7 @@ export const RetiroPage = () => {
                                                 <Pencil size={16} />
                                             </button>
                                             <button
-                                                title="Eliminar wallet"
+                                                title={t("withdrawal.delete_wallet")}
                                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-red-500 text-white"
                                                 onClick={() => deleteWalletAddress(wallet.id)}
                                             >
@@ -430,7 +433,7 @@ export const RetiroPage = () => {
                     <div className="bg-white rounded-lg shadow-md p-6">
                         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                             <ArrowDownToLine size={24} className="text-[#69AC95]" />
-                            Solicitar Retiro
+                            {t("withdrawal.request_withdrawal")}
                         </h2>
 
                         <form onSubmit={retiroFormik.handleSubmit} className="space-y-6">
@@ -438,7 +441,7 @@ export const RetiroPage = () => {
                             {/* Selector 2 */}
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
-                                    Selecionar direccion de la wallet a la cual depositar *
+                                    {t("withdrawal.**select_the_wallet_address_for_deposit ***")}
                                 </label>
                                 <select
                                     name="walletId"
@@ -450,7 +453,7 @@ export const RetiroPage = () => {
                                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-600" : "border-[#F0973C]"
                                         }`}
                                 >
-                                    <option value={0}>Selecciona una wallet</option>
+                                    <option value={0}>{t("withdrawal.select_a_wallet")}</option>
                                     {usuario?.wallets.map((wallet) => (
                                         <option key={wallet.id} value={wallet.id}>
                                             {wallet.tipo} - ${wallet.saldo.toFixed(2)}
@@ -463,7 +466,7 @@ export const RetiroPage = () => {
                                     </p>
                                 )}
                             </div>
-
+                            {/* PROBLEMA CON LA TRADUCCION AQUI */}   
                             {/* Información de la wallet seleccionada 2 */}
                             {retiroFormik.values.walletId > 0 && (
                                 <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
@@ -471,10 +474,10 @@ export const RetiroPage = () => {
                                         const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
                                         return wallet ? (
                                             <>
-                                                <p className="text-sm font-semibold mb-2">Wallet Seleccionada:</p>
+                                                <p className="text-sm font-semibold mb-2">{t("withdrawal.selected_wallet:")}</p>
                                                 <p className="text-xs font-mono text-gray-600 break-all mb-2">{wallet.tipo}</p>
                                                 <p className="text-sm">
-                                                    Balance Retirado: <span className="font-bold text-[#69AC95]">
+                                                    {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.saldo.toFixed(2)}
                                                     </span>
                                                 </p>
@@ -486,7 +489,7 @@ export const RetiroPage = () => {
 
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
-                                    Seleccionar Wallet *
+                                    {t("withdrawal.**select_wallet ***")}
                                 </label>
                                 <select
                                     name="addresId"
@@ -499,7 +502,7 @@ export const RetiroPage = () => {
                                     className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.addresId && retiroFormik.errors.addresId ? "border-red-600" : "border-[#F0973C]"
                                         }`}
                                 >
-                                    <option value={0}>Selecciona una wallet</option>
+                                    <option value={0}>{t("withdrawal.select_a_wallet")}</option>
                                     {walletAddresses.map((wallet) => (
                                         <option key={wallet.id} value={wallet.id}>
                                             {wallet.nombre} - {getCryptoSymbol(wallet.tipoCrypto)}
@@ -519,10 +522,10 @@ export const RetiroPage = () => {
                                         const wallet = walletAddresses.find(w => w.id === selectedWallet);
                                         return wallet ? (
                                             <>
-                                                <p className="text-sm font-semibold mb-2">Wallet Seleccionada:</p>
+                                                <p className="text-sm font-semibold mb-2">{t("withdrawal.selected_wallet:")}</p>
                                                 <p className="text-xs font-mono text-gray-600 break-all mb-2">{wallet.address}</p>
                                                 <p className="text-sm">
-                                                    Balance Retirado: <span className="font-bold text-[#69AC95]">
+                                                    {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.balanceRetirado.toFixed(2)}
                                                     </span>
                                                 </p>
@@ -536,7 +539,7 @@ export const RetiroPage = () => {
 
                             <div>
                                 <label className="block text-sm font-semibold mb-2">
-                                    Monto a Retirar *
+                                    {t("withdrawal.**amount_to_withdraw ***")}
                                 </label>
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">
@@ -566,19 +569,20 @@ export const RetiroPage = () => {
                                 disabled={ loadingSolicitarRetiroFondos}
                                 className="w-full py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
                             >
-                                Solicitar Retiro
+                                {t("withdrawal.request_withdrawal")}
                             </button>
                         </form>
 
+                        {/* ERROR AL TRADUCIR */}     
                         {/* Información adicional */}
                         <div className="mt-6 p-4 rounded-lg bg-[#FFF4E5] border border-[#F0973C]">
                             <h3 className="font-semibold text-sm mb-2 text-[#F0973C]">
-                                ℹ️ Información Importante
+                                ℹ️ {t("withdrawal.important_information")}
                             </h3>
                             <ul className="text-xs text-gray-600 space-y-1">
-                                <li>• Las solicitudes son procesadas en 24-48 horas</li>
-                                <li>• Monto mínimo de retiro: $10 USD</li>
-                                <li>• Se aplicarán comisiones según la red</li>
+                                <li>• {t("withdrawal.requests_processed_within_24_48_hours")}</li>
+                                <li>• {t("withdrawal.minimum_withdrawal_amount:")} $10 USD</li>
+                                <li>• {t("withdrawal.network_fees_will_apply")}</li>
                             </ul>
                         </div>
                     </div>
@@ -589,7 +593,7 @@ export const RetiroPage = () => {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             <Calendar size={24} className="text-[#F0973C]" />
-                            Historial de Solicitudes
+                            {t("withdrawal.request_history")}
                         </h2>
 
                         {/* Filtro por estado */}
@@ -604,10 +608,10 @@ export const RetiroPage = () => {
                                 }}
                                 className="px-3 py-2 border-2 rounded-lg text-sm focus:outline-none border-[#F0973C]"
                             >
-                                <option value="">Todos los estados</option>
-                                <option value={EstadoOperacion.PENDIENTE}>Pendiente</option>
-                                <option value={EstadoOperacion.COMPLETADA}>Completada</option>
-                                <option value={EstadoOperacion.RECHAZADA}>Rechazada</option>
+                                <option value="">{t("withdrawal.all_statuses")}</option>
+                                <option value={EstadoOperacion.PENDIENTE}>{t("withdrawal.pending")}</option>
+                                <option value={EstadoOperacion.COMPLETADA}>{t("withdrawal.completed")}</option>
+                                <option value={EstadoOperacion.RECHAZADA}>{t("withdrawal.rejected")}</option>
                             </select>
 
                             {estadoFiltro && (
@@ -618,7 +622,7 @@ export const RetiroPage = () => {
                                     }}
                                     className="px-3 py-2 rounded-lg text-sm font-semibold transition-all hover:scale-105 bg-red-600 text-white"
                                 >
-                                    Limpiar
+                                    {t("withdrawal.clear")}
                                 </button>
                             )}
                         </div>
@@ -630,19 +634,19 @@ export const RetiroPage = () => {
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50 border-b-2 border-gray-200">
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">ID</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">Wallet</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">Cripto</th>
-                                    <th className="px-4 py-3 text-right text-sm font-semibold">Monto</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">Fecha</th>
-                                    <th className="px-4 py-3 text-center text-sm font-semibold">Estado</th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.id")}</th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.wallet")}</th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.crypto")}</th>
+                                    <th className="px-4 py-3 text-right text-sm font-semibold">{t("withdrawal.amount")}</th>
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.date")}</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold">{t("withdrawal.status")}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {solicitudesPaginadas.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                                            No hay solicitudes que mostrar
+                                            {t("withdrawal.no_requests_to_display")}
                                         </td>
                                     </tr>
                                 ) : (
@@ -686,11 +690,11 @@ export const RetiroPage = () => {
                     {totalPaginas > 1 && (
                         <div className="flex justify-between items-center mt-6 pt-4 border-t-2 border-gray-200">
                             <p className="text-sm text-gray-600">
-                                Mostrando {indexPrimeraSolicitud + 1} - {Math.min(indexUltimaSolicitud, solicitudesFiltradas.length)} de {solicitudesFiltradas.length} solicitudes
+                                {t("withdrawal.Showing")} {indexPrimeraSolicitud + 1} - {Math.min(indexUltimaSolicitud, solicitudesFiltradas.length)} {t("withdrawal.of")} {solicitudesFiltradas.length} {t("withdrawal.requests")}
                             </p>
                             <div className="flex gap-2">
                                 <button
-                                    title="Página anterior"
+                                    title={t("withdrawal.previous_page")}
                                     onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
                                     disabled={paginaActual === 1}
                                     className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"
@@ -710,7 +714,7 @@ export const RetiroPage = () => {
                                     ))}
                                 </div>
                                 <button
-                                    title="Página siguiente"
+                                    title={t("withdrawal.next_page")}
                                     onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
                                     disabled={paginaActual === totalPaginas}
                                     className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"

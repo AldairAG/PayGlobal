@@ -1,8 +1,10 @@
 import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { useTranslation } from 'react-i18next';
 
 export const ProfilePage = () => {
+    const { t } = useTranslation();
     const { usuario, editarPerfil, loadingEditarPerfil, errorEditarPerfil } = useUsuario();
     
     const [formData, setFormData] = useState({
@@ -42,11 +44,11 @@ export const ProfilePage = () => {
         
         try {
             await editarPerfil(formData);
-            setSuccessMessage("Perfil actualizado exitosamente");
+            setSuccessMessage(t("profile.profile_updated_successfully"));
             // Limpiar mensaje después de 5 segundos
             setTimeout(() => setSuccessMessage(null), 5000);
         } catch (error) {
-            console.error('Error al editar perfil:', error);
+            console.error(t("profile.error_editing_profile") + ':', error);
         }
     };
 
@@ -65,8 +67,8 @@ export const ProfilePage = () => {
             {/* Encabezado */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Mi Perfil</h1>
-                    <p className="text-gray-500 mt-1">Gestiona tu información personal</p>
+                    <h1 className="text-3xl font-bold text-gray-800">{t("profile.my_profile")}</h1>
+                    <p className="text-gray-500 mt-1">{t("profile.manage_your_personal_information")}</p>
                 </div>
             </div>
 
@@ -107,13 +109,13 @@ export const ProfilePage = () => {
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <Award size={24} style={{ color: '#F0973C' }} />
-                            <h3 className="text-lg font-bold text-gray-800">Rango Actual</h3>
+                            <h3 className="text-lg font-bold text-gray-800">{t("profile.current_rank")}</h3>
                         </div>
                         <p className="text-2xl font-bold" style={{ color: '#69AC95' }}>
-                            {usuario?.rango?.nombre || "Sin Rango"}
+                            {usuario?.rango?.nombre || t("profile.no_rank")}
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
-                            Rango {usuario?.rango?.numero || 0} • Capital: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"}
+                            {t("profile.rank")} {usuario?.rango?.numero || 0} • {t("profile.capital")}: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"}
                         </p>
                     </div>
 
@@ -121,25 +123,25 @@ export const ProfilePage = () => {
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <CreditCard size={24} style={{ color: '#69AC95' }} />
-                            <h3 className="text-lg font-bold text-gray-800">Licencia</h3>
+                            <h3 className="text-lg font-bold text-gray-800">{t("profile.license")}</h3>
                         </div>
                         <p className="text-2xl font-bold text-gray-900">
-                            {usuario?.licencia?.nombre || "Sin Licencia"}
+                            {usuario?.licencia?.nombre || t("profile.no_license")}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                            Valor: ${usuario?.licencia?.precio?.toFixed(2) || "0.00"} USDT
+                            {t("profile.value")}: ${usuario?.licencia?.precio?.toFixed(2) || "0.00"} USDT
                         </p>
                         <div className="mt-3 pt-3 border-t border-gray-200">
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Estado:</span>
+                                <span className="text-gray-600">{t("profile.status")}:</span>
                                 <span className={`font-semibold ${
                                     usuario?.licencia?.activo ? "text-green-600" : "text-red-600"
                                 }`}>
-                                    {usuario?.licencia?.activo ? "Activo" : "Inactivo"}
+                                    {usuario?.licencia?.activo ? t("profile.active") : t("profile.inactive")}
                                 </span>
                             </div>
                             <div className="flex justify-between text-sm mt-1">
-                                <span className="text-gray-600">Acumulado:</span>
+                                <span className="text-gray-600">{t("profile.accumulated")}:</span>
                                 <span className="font-semibold text-gray-900">
                                     ${usuario?.licencia?.saldoAcumulado?.toFixed(2) || "0.00"}
                                 </span>
@@ -152,7 +154,7 @@ export const ProfilePage = () => {
                 <div className="lg:col-span-2 space-y-6">
                     {/* Información Personal (Editable) */}
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">Información Personal</h3>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.personal_information")}</h3>
                         
                         {/* Mensajes de éxito o error */}
                         {successMessage && (
@@ -174,7 +176,7 @@ export const ProfilePage = () => {
                                 {/* Nombre - Editable */}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Nombre
+                                        {t("profile.name")}
                                     </label>
                                     <input
                                         type="text"
@@ -182,14 +184,14 @@ export const ProfilePage = () => {
                                         value={formData.nombre}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
-                                        placeholder="Ingresa tu nombre"
+                                        placeholder={t("profile.enter_name")}
                                     />
                                 </div>
 
                                 {/* Apellido - Editable */}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                        Apellido
+                                        {t("profile.last_name")}
                                     </label>
                                     <input
                                         type="text"
@@ -197,7 +199,7 @@ export const ProfilePage = () => {
                                         value={formData.apellido}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
-                                        placeholder="Ingresa tu apellido"
+                                        placeholder={t("profile.enter_last_name")}
                                     />
                                 </div>
 
@@ -205,7 +207,7 @@ export const ProfilePage = () => {
                                 <div>
                                     <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                         <Phone size={16} />
-                                        Teléfono
+                                        {t("profile.phone")}
                                     </label>
                                     <input
                                         type="tel"
@@ -221,7 +223,7 @@ export const ProfilePage = () => {
                                 <div>
                                     <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                         <Globe size={16} />
-                                        País
+                                        {t("profile.country")}
                                     </label>
                                     <input
                                         type="text"
@@ -229,7 +231,7 @@ export const ProfilePage = () => {
                                         value={formData.pais}
                                         onChange={handleInputChange}
                                         className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
-                                        placeholder="País de residencia"
+                                        placeholder={t("profile.enter_country")}
                                     />
                                 </div>
                             </div>
@@ -241,7 +243,7 @@ export const ProfilePage = () => {
                                     disabled={loadingEditarPerfil}
                                     className="px-8 py-3 rounded-lg font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                                     style={{ backgroundColor: '#69AC95' }}>
-                                    {loadingEditarPerfil ? "Guardando..." : "Guardar Cambios"}
+                                    {loadingEditarPerfil ? t("profile.saving") : t("profile.save_changes")}
                                 </button>
                             </div>
                         </form>
@@ -249,13 +251,13 @@ export const ProfilePage = () => {
 
                     {/* Información de Cuenta (No editable) */}
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">Información de Cuenta</h3>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.account_information")}</h3>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* ID */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    ID de Usuario
+                                    {t("profile.user_id")}
                                 </label>
                                 <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
                                     #{usuario?.id || "N/A"}
@@ -266,7 +268,7 @@ export const ProfilePage = () => {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                     <User size={16} />
-                                    Username
+                                    {t("profile.username")}
                                 </label>
                                 <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
                                     {usuario?.username || "N/A"}
@@ -277,7 +279,7 @@ export const ProfilePage = () => {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                     <Mail size={16} />
-                                    Email
+                                    {t("profile.email")}
                                 </label>
                                 <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
                                     {usuario?.email || "N/A"}
@@ -287,7 +289,7 @@ export const ProfilePage = () => {
                             {/* Referenciado por */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Referenciado por
+                                    {t("profile.referred_by")}
                                 </label>
                                 <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
                                     @{usuario?.referenciado || "N/A"}
@@ -298,7 +300,7 @@ export const ProfilePage = () => {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                                     <Calendar size={16} />
-                                    Fecha de Registro
+                                    {t("profile.registration_date")}
                                 </label>
                                 <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
                                     {formatearFecha(usuario?.fechaRegistro)}
@@ -308,7 +310,7 @@ export const ProfilePage = () => {
                             {/* Estado de cuenta */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Estado de Cuenta
+                                    {t("profile.account_status")}
                                 </label>
                                 <div className={`px-4 py-3 border-2 rounded-lg ${
                                     usuario?.activo 
@@ -318,7 +320,7 @@ export const ProfilePage = () => {
                                     <span className={`font-semibold ${
                                         usuario?.activo ? 'text-green-700' : 'text-red-700'
                                     }`}>
-                                        {usuario?.activo ? "Activo" : "Inactivo"}
+                                        {usuario?.activo ? t("profile.active") : t("profile.inactive")}
                                     </span>
                                 </div>
                             </div>
@@ -327,7 +329,7 @@ export const ProfilePage = () => {
 
                     {/* Resumen de Wallets */}
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">Mis Wallets</h3>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.my_wallets")}</h3>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {usuario?.wallets && usuario.wallets.length > 0 ? (
@@ -353,7 +355,7 @@ export const ProfilePage = () => {
                                                 )}
                                             </div>
                                             <h4 className="font-bold text-gray-800">
-                                                {wallet.codigo === 0 ? 'Wallet Dividendos' : 'Wallet Comisiones'}
+                                                {wallet.codigo === 0 ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
                                             </h4>
                                         </div>
                                         <p 
@@ -372,7 +374,7 @@ export const ProfilePage = () => {
 
                     {/* Resumen de Bonos */}
                     <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">Mis Bonos</h3>
+                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.my_bonuses")}</h3>
                         
                         <div className="space-y-3">
                             {usuario?.bonos && usuario.bonos.length > 0 ? (
@@ -387,7 +389,7 @@ export const ProfilePage = () => {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center text-gray-500 py-4">No hay bonos disponibles</p>
+                                <p className="text-center text-gray-500 py-4">{t("profile.no_bonuses_available")}</p>
                             )}
                         </div>
                     </div>
