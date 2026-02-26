@@ -5,8 +5,14 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { Filter, TrendingUp, DollarSign, Award, Clock, CheckCircle2, XCircle, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTransacciones } from "../../hooks/useTransacciones";
+import { useTranslation } from 'react-i18next';
+import i18n from "../../i18n";
+import { TraducirEstadoOperacion, TraducirConcepto } from "../../helpers/idiomaHelpers";
+
 
 export const HistorialPage = () => {
+    const { t } = useTranslation();
+    const idiomaActual = i18n.language;
     const { usuario } = useUsuario();
     const { 
         transacciones, 
@@ -41,7 +47,7 @@ export const HistorialPage = () => {
             page: paginaActualRedux,
             size: itemsPorPagina,
         }).catch(err => {
-            console.error("Error cargando transacciones:", err);
+            console.error(t("reports.error_loading_transactions"), err);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usuario?.id, filtroConcepto, filtroEstado, fechaInicio, fechaFin, paginaActualRedux]);
@@ -59,7 +65,7 @@ export const HistorialPage = () => {
             page: nuevaPagina,
             size: itemsPorPagina,
         }).catch(err => {
-            console.error("Error cargando transacciones:", err);
+            console.error(t("reports.error_loading_transactions"), err);
         });
     };
 
@@ -146,10 +152,10 @@ export const HistorialPage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        Historial y Reportes
+                        {t("reports.history_and_reports")}
                     </h1>
                     <p className="text-gray-600 text-lg">
-                        Visualiza tus transacciones, bonos y estadísticas de ganancias
+                        {t("reports.view_your_transaction_history_and_generate_reports")}
                     </p>
                 </div>
 
@@ -158,11 +164,11 @@ export const HistorialPage = () => {
                     <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">Total Ganancias</p>
+                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_earnings")}</p>
                                 <p className="text-3xl font-bold text-gray-800">${totalGanancias.toFixed(2)}</p>
                                 <p className="text-green-600 text-xs mt-1 flex items-center">
                                     <TrendingUp className="w-3 h-3 mr-1" />
-                                    Completadas
+                                    {t("reports.completed")}
                                 </p>
                             </div>
                             <div className="bg-green-100 p-3 rounded-full">
@@ -174,9 +180,9 @@ export const HistorialPage = () => {
                     <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">Total Bonos</p>
+                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_bonuses")}</p>
                                 <p className="text-3xl font-bold text-gray-800">${totalBonos.toFixed(2)}</p>
-                                <p className="text-purple-600 text-xs mt-1">{bonosUsuario.length} tipos de bonos</p>
+                                <p className="text-purple-600 text-xs mt-1">{bonosUsuario.length} {t("reports.bonus_types")}</p>
                             </div>
                             <div className="bg-purple-100 p-3 rounded-full">
                                 <Award className="w-8 h-8 text-purple-600" />
@@ -187,9 +193,9 @@ export const HistorialPage = () => {
                     <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">Total Retiros</p>
+                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_withdrawals")}</p>
                                 <p className="text-3xl font-bold text-gray-800">${totalRetiros.toFixed(2)}</p>
-                                <p className="text-blue-600 text-xs mt-1">Procesados</p>
+                                <p className="text-blue-600 text-xs mt-1">{t("reports.processed")}</p>
                             </div>
                             <div className="bg-blue-100 p-3 rounded-full">
                                 <DollarSign className="w-8 h-8 text-blue-600" />
@@ -204,16 +210,16 @@ export const HistorialPage = () => {
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                            Ganancias Mensuales
+                            {t("reports.monthly_earnings")}
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={datosGanancias}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="mes" />
+                                <XAxis dataKey={t("reports.month")} />
                                 <YAxis />
                                 <Tooltip />
                                 <Legend />
-                                <Line type="monotone" dataKey="ganancias" stroke="#3B82F6" strokeWidth={3} />
+                                <Line type="monotone" dataKey={t("reports.earnings")} stroke="#3B82F6" strokeWidth={3} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
@@ -222,7 +228,7 @@ export const HistorialPage = () => {
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
                             <Award className="w-5 h-5 mr-2 text-purple-600" />
-                            Distribución de Bonos
+                            {t("reports.bonus_distribution")}
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
@@ -232,7 +238,7 @@ export const HistorialPage = () => {
                                     cy="50%"
                                     outerRadius={80}
                                     fill="#8884d8"
-                                    dataKey="acumulado"
+                                    dataKey={t("reports.accumulated")}
                                     label
                                 >
                                     {datosBonosChart.map((_entry, index) => (
@@ -259,7 +265,7 @@ export const HistorialPage = () => {
                         >
                             <div className="flex items-center justify-center">
                                 <DollarSign className="w-5 h-5 mr-2" />
-                                Transacciones
+                                {t("reports.transactions")}
                             </div>
                         </button>
                         <button
@@ -272,7 +278,7 @@ export const HistorialPage = () => {
                         >
                             <div className="flex items-center justify-center">
                                 <Award className="w-5 h-5 mr-2" />
-                                Bonos
+                                {t("reports.bonuses")}
                             </div>
                         </button>
                     </div>
@@ -285,23 +291,23 @@ export const HistorialPage = () => {
                                 <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                                     <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-700">
                                         <Filter className="w-5 h-5 mr-2" />
-                                        Filtros
+                                        {t("reports.filters")}
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {/* Filtro de Concepto */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Concepto
+                                                {t("reports.concept")}
                                             </label>
                                             <select
                                                 value={filtroConcepto}
                                                 onChange={(e) => setFiltroConcepto(e.target.value as TipoConceptos | "TODOS")}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             >
-                                                <option value="TODOS">Todos</option>
+                                                <option value="TODOS">{t("reports.all")}</option>
                                                 {Object.values(TipoConceptos).map((concepto) => (
                                                     <option key={concepto} value={concepto}>
-                                                        {concepto.replace(/_/g, ' ')}
+                                                        {TraducirConcepto(concepto, idiomaActual)}
                                                     </option>
                                                 ))}
                                             </select>
@@ -310,17 +316,17 @@ export const HistorialPage = () => {
                                         {/* Filtro de Estado */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Estado
+                                                {t("reports.status")}
                                             </label>
                                             <select
                                                 value={filtroEstado}
                                                 onChange={(e) => setFiltroEstado(e.target.value as EstadoOperacion | "TODOS")}
                                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                             >
-                                                <option value="TODOS">Todos</option>
+                                                <option value="TODOS">{t("reports.all")}</option>
                                                 {Object.values(EstadoOperacion).map((estado) => (
                                                     <option key={estado} value={estado}>
-                                                        {estado}
+                                                        {TraducirEstadoOperacion(estado, idiomaActual)}
                                                     </option>
                                                 ))}
                                             </select>
@@ -329,7 +335,7 @@ export const HistorialPage = () => {
                                         {/* Fecha Inicio */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Fecha Inicio
+                                                {t("reports.start_date")}
                                             </label>
                                             <input
                                                 type="date"
@@ -342,7 +348,7 @@ export const HistorialPage = () => {
                                         {/* Fecha Fin */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Fecha Fin
+                                                {t("reports.end_date")}
                                             </label>
                                             <input
                                                 type="date"
@@ -358,7 +364,7 @@ export const HistorialPage = () => {
                                 {cargando ? (
                                     <div className="text-center py-8">
                                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                        <p className="mt-2 text-gray-600">Cargando transacciones...</p>
+                                        <p className="mt-2 text-gray-600">{t("reports.loading_transactions")}</p>
                                     </div>
                                 ) : error ? (
                                     <div className="text-center py-8 text-red-600">
@@ -366,7 +372,7 @@ export const HistorialPage = () => {
                                     </div>
                                 ) : !transacciones || transacciones.length === 0 ? (
                                     <div className="text-center py-8 text-gray-500">
-                                        <p>No se encontraron transacciones</p>
+                                        <p>{t("reports.no_transactions_found")}</p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
@@ -434,9 +440,9 @@ export const HistorialPage = () => {
                                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                                             {/* Información de resultados */}
                                             <div className="text-sm text-gray-700">
-                                                Mostrando <span className="font-semibold">{(paginaActualRedux * itemsPorPagina) + 1}</span> a{' '}
-                                                <span className="font-semibold">{Math.min((paginaActualRedux + 1) * itemsPorPagina, totalElementos)}</span> de{' '}
-                                                <span className="font-semibold">{totalElementos}</span> resultados
+                                                {t("reports.showing")} <span className="font-semibold">{(paginaActualRedux * itemsPorPagina) + 1}</span> {t("reports.to")}{' '}
+                                                <span className="font-semibold">{Math.min((paginaActualRedux + 1) * itemsPorPagina, totalElementos)}</span> {t("reports.of")}{' '}
+                                                <span className="font-semibold">{totalElementos}</span> {t("reports.results")}
                                             </div>
                                             
                                             {/* Botones de paginación */}
@@ -446,7 +452,7 @@ export const HistorialPage = () => {
                                                     onClick={() => cambiarPagina(0)}
                                                     disabled={paginaActualRedux === 0}
                                                     className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                                                    title="Primera página"
+                                                    title={t("reports.first_page")}
                                                 >
                                                     <ChevronLeft className="w-4 h-4" />
                                                     <ChevronLeft className="w-4 h-4 -ml-3" />
@@ -457,7 +463,7 @@ export const HistorialPage = () => {
                                                     onClick={() => cambiarPagina(Math.max(0, paginaActualRedux - 1))}
                                                     disabled={paginaActualRedux === 0}
                                                     className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                                                    title="Página anterior"
+                                                    title={t("reports.previous_page")}
                                                 >
                                                     <ChevronLeft className="w-4 h-4" />
                                                 </button>
@@ -530,7 +536,7 @@ export const HistorialPage = () => {
                                                     onClick={() => cambiarPagina(Math.min(totalPaginas - 1, paginaActualRedux + 1))}
                                                     disabled={paginaActualRedux >= totalPaginas - 1}
                                                     className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                                                    title="Página siguiente"
+                                                    title={t("reports.next_page")}
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
                                                 </button>
@@ -540,7 +546,7 @@ export const HistorialPage = () => {
                                                     onClick={() => cambiarPagina(totalPaginas - 1)}
                                                     disabled={paginaActualRedux >= totalPaginas - 1}
                                                     className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
-                                                    title="Última página"
+                                                    title={t("reports.last_page")}
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
                                                     <ChevronRight className="w-4 h-4 -ml-3" />
@@ -557,7 +563,7 @@ export const HistorialPage = () => {
                             <div>
                                 {bonosUsuario.length === 0 ? (
                                     <div className="text-center py-8 text-gray-500">
-                                        <p>No tienes bonos registrados</p>
+                                        <p>{t("reports.no_bonuses_found")}</p>
                                     </div>
                                 ) : (
                                     <>
@@ -579,7 +585,7 @@ export const HistorialPage = () => {
                                                         {bono.nombre.toString().replace('BONO_', '').replace(/_/g, ' ')}
                                                     </h3>
                                                     <div className="mt-4">
-                                                        <p className="text-sm text-gray-600 mb-1">Acumulado Total</p>
+                                                        <p className="text-sm text-gray-600 mb-1">{t("reports.total_accumulated")}</p>
                                                         <p className="text-3xl font-bold text-blue-600">
                                                             ${bono.acumulado.toFixed(2)}
                                                         </p>
@@ -591,16 +597,16 @@ export const HistorialPage = () => {
                                         {/* Gráfica de Barras de Bonos */}
                                         <div className="mt-8 bg-white rounded-xl shadow-lg p-6 border">
                                             <h3 className="text-xl font-bold text-gray-800 mb-4">
-                                                Comparativa de Bonos
+                                                {t("reports.bonus_comparison")}
                                             </h3>
                                             <ResponsiveContainer width="100%" height={400}>
                                                 <BarChart data={datosBonosChart}>
                                                     <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis dataKey="nombre" />
+                                                    <XAxis dataKey={t("reports.name")} />
                                                     <YAxis />
                                                     <Tooltip />
                                                     <Legend />
-                                                    <Bar dataKey="acumulado" fill="#3B82F6" />
+                                                    <Bar dataKey={t("reports.accumulated")} fill="#3B82F6" />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>

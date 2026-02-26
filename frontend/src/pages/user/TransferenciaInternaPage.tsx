@@ -3,8 +3,10 @@ import { useUsuario } from '../../hooks/usuarioHook';
 import { useTransacciones } from '../../hooks/useTransacciones';
 import { TipoWallets, TipoConceptos } from '../../type/enum';
 import type { Transaccion } from '../../type/entityTypes';
+import { useTranslation } from 'react-i18next';
 
 export const TransferenciaInternaPage = () => {
+    const { t } = useTranslation();
     const { 
         usuario, 
         transferenciaEntreUsuarios, 
@@ -50,23 +52,23 @@ export const TransferenciaInternaPage = () => {
         
         // Validaciones
         if (!usernameDestino.trim()) {
-            setMensaje({ tipo: 'error', texto: 'Debe ingresar el username del destinatario' });
+            setMensaje({ tipo: 'error', texto: t("transfers.username_required") });
             return;
         }
 
         const montoNumerico = parseFloat(cantidad);
         if (isNaN(montoNumerico) || montoNumerico <= 0) {
-            setMensaje({ tipo: 'error', texto: 'Debe ingresar una cantidad válida' });
+            setMensaje({ tipo: 'error', texto: t("transfers.amount_required") });
             return;
         }
 
         if (montoNumerico > getSaldoActual()) {
-            setMensaje({ tipo: 'error', texto: 'Saldo insuficiente' });
+            setMensaje({ tipo: 'error', texto: t("transfers.insufficient_balance") });
             return;
         }
 
         if (usernameDestino.toLowerCase() === usuario?.username.toLowerCase()) {
-            setMensaje({ tipo: 'error', texto: 'No puede transferir a su propia cuenta' });
+            setMensaje({ tipo: 'error', texto: t("transfers.self_transfer") });
             return;
         }
 
@@ -82,7 +84,7 @@ export const TransferenciaInternaPage = () => {
                 tipoWallet
             );
             
-            setMensaje({ tipo: 'success', texto: 'Transferencia realizada exitosamente' });
+            setMensaje({ tipo: 'success', texto: t("transfers.success") });
             setShowModal(false);
             
             // Limpiar formulario
@@ -101,7 +103,7 @@ export const TransferenciaInternaPage = () => {
         } catch {
             setMensaje({ 
                 tipo: 'error', 
-                texto: errorTransferenciaEntreUsuarios || 'Error al realizar la transferencia' 
+                texto: errorTransferenciaEntreUsuarios || t("transfers.error") 
             });
             setShowModal(false);
         }
@@ -122,10 +124,10 @@ export const TransferenciaInternaPage = () => {
             {/* Header */}
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-black mb-2">
-                    Transferencia Interna
+                    {t("transfers.title")}
                 </h1>
                 <p className="text-gray-600">
-                    Transfiere fondos a otros usuarios de la plataforma
+                    {t("transfers.description")}
                 </p>
             </div>
 
@@ -144,14 +146,14 @@ export const TransferenciaInternaPage = () => {
                 {/* Formulario de transferencia */}
                 <div className="bg-white border-2 border-[#69AC95] rounded-lg p-6 shadow-lg">
                     <h2 className="text-2xl font-bold text-black mb-6">
-                        Nueva Transferencia
+                        {t("transfers.new_transfer")}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Selector de Wallet */}
                         <div>
                             <label className="block text-sm font-semibold text-black mb-2">
-                                Wallet a Retirar
+                                {t("transfers.wallet_to_withdraw")}
                             </label>
                             <select
                                 value={tipoWallet}
@@ -159,14 +161,14 @@ export const TransferenciaInternaPage = () => {
                                 className="w-full p-3 border-2 border-[#F0973C] rounded-lg focus:outline-none focus:border-[#69AC95] transition-colors"
                             >
                                 <option value={TipoWallets.WALLET_DIVIDENDOS}>
-                                    Dividendos (${getSaldoActual().toFixed(2)})
+                                    {t("transfers.dividends")} (${getSaldoActual().toFixed(2)})
                                 </option>
                                 <option value={TipoWallets.WALLET_COMISIONES}>
-                                    Comisiones (${getSaldoActual().toFixed(2)})
+                                    {t("transfers.commissions")} (${getSaldoActual().toFixed(2)})
                                 </option>
                             </select>
                             <p className="mt-2 text-sm text-gray-600">
-                                Saldo disponible: <span className="font-bold text-[#69AC95]">
+                                {t("transfers.available_balance")}: <span className="font-bold text-[#69AC95]">
                                     ${getSaldoActual().toFixed(2)}
                                 </span>
                             </p>
@@ -175,13 +177,13 @@ export const TransferenciaInternaPage = () => {
                         {/* Username destinatario */}
                         <div>
                             <label className="block text-sm font-semibold text-black mb-2">
-                                Username del Destinatario
+                                {t("transfers.destination_username")}
                             </label>
                             <input
                                 type="text"
                                 value={usernameDestino}
                                 onChange={(e) => setUsernameDestino(e.target.value)}
-                                placeholder="Ingrese el username"
+                                placeholder={t("transfers.enter_username")}
                                 className="w-full p-3 border-2 border-[#F0973C] rounded-lg focus:outline-none focus:border-[#69AC95] transition-colors"
                                 required
                             />
@@ -190,7 +192,7 @@ export const TransferenciaInternaPage = () => {
                         {/* Cantidad */}
                         <div>
                             <label className="block text-sm font-semibold text-black mb-2">
-                                Cantidad a Transferir
+                                {t("transfers.amount_to_transfer")}
                             </label>
                             <input
                                 type="number"
@@ -211,7 +213,7 @@ export const TransferenciaInternaPage = () => {
                             disabled={loadingTransferenciaEntreUsuarios}
                             className="w-full bg-[#F0973C] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#69AC95] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loadingTransferenciaEntreUsuarios ? 'Procesando...' : 'Continuar'}
+                            {loadingTransferenciaEntreUsuarios ? t("transfers.processing") : t("transfers.continue")}
                         </button>
                     </form>
                 </div>
@@ -219,7 +221,7 @@ export const TransferenciaInternaPage = () => {
                 {/* Información de la cuenta */}
                 <div className="bg-white border-2 border-[#F0973C] rounded-lg p-6 shadow-lg">
                     <h2 className="text-2xl font-bold text-black mb-6">
-                        Información de Wallets
+                        {t("transfers.wallets_information")}
                     </h2>
 
                     <div className="space-y-4">
@@ -231,8 +233,8 @@ export const TransferenciaInternaPage = () => {
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-sm font-medium opacity-90">
                                         {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS 
-                                            ? 'Wallet Dividendos' 
-                                            : 'Wallet Comisiones'}
+                                            ? t("transfers.dividends_wallet") 
+                                            : t("transfers.commissions_wallet")}
                                     </span>
                                     <span className="text-xs opacity-75">
                                         {wallet.codigo}
@@ -251,13 +253,13 @@ export const TransferenciaInternaPage = () => {
                             <svg className="w-5 h-5 mr-2 text-[#F0973C]" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
-                            Información Importante
+                            {t("transfers.important_information")}
                         </h3>
                         <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
-                            <li>Las transferencias son instantáneas</li>
-                            <li>No hay comisión por transferencias internas</li>
-                            <li>Verifica el username del destinatario</li>
-                            <li>Las transacciones no son reversibles</li>
+                            <li>{t("transfers.instant_transfers")}</li>
+                            <li>{t("transfers.no_fee_internal_transfers")}</li>
+                            <li>{t("transfers.verify_destination_username")}</li>
+                            <li>{t("transfers.transactions_not_reversible")}</li>
                         </ul>
                     </div>
                 </div>
@@ -266,13 +268,13 @@ export const TransferenciaInternaPage = () => {
             {/* Historial de Transferencias */}
             <div className="mt-8 bg-white border-2 border-[#69AC95] rounded-lg p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-black mb-6">
-                    Historial de Transferencias
+                    {t("transfers.transfer_history")}
                 </h2>
 
                 {cargandoTransacciones ? (
                     <div className="text-center py-8">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#F0973C] border-t-transparent"></div>
-                        <p className="mt-2 text-gray-600">Cargando...</p>
+                        <p className="mt-2 text-gray-600">{t("transfers.loading")}</p>
                     </div>
                 ) : transacciones && transacciones.length > 0 ? (
                     <div className="overflow-x-auto">
@@ -280,19 +282,19 @@ export const TransferenciaInternaPage = () => {
                             <thead className="bg-[#F0973C] text-white">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                        Fecha
+                                        {t("transfers.date")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                        Usuario
+                                        {t("transfers.user")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                        Monto
+                                        {t("transfers.amount")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                        Método
+                                        {t("transfers.method")}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">
-                                        Estado
+                                        {t("transfers.status")}
                                     </th>
                                 </tr>
                             </thead>
@@ -310,8 +312,8 @@ export const TransferenciaInternaPage = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {transaccion.metodoPago === 'WALLET_DIVIDENDOS' 
-                                                ? 'Dividendos' 
-                                                : 'Comisiones'}
+                                                ? t("transfers.dividends") 
+                                                : t("transfers.commissions")}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -334,46 +336,47 @@ export const TransferenciaInternaPage = () => {
                         <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p>No hay transferencias registradas</p>
+                        <p>{t("transfers.no_transfers_registered")}</p>
                     </div>
                 )}
             </div>
 
             {/* Modal de Confirmación */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl">
+                <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="absolute inset-0 bg-black opacity-50"></div>
+                    <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl z-52">
                         <h3 className="text-2xl font-bold text-black mb-6 flex items-center">
                             <svg className="w-8 h-8 mr-3 text-[#F0973C]" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
-                            Confirmar Transferencia
+                            {t("transfers.confirm_transfer")}
                         </h3>
                         
                         <div className="space-y-4 mb-6">
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">Destinatario</p>
+                                <p className="text-sm text-gray-600 mb-1">{t("transfers.destination")}</p>
                                 <p className="text-lg font-semibold text-black">{usernameDestino}</p>
                             </div>
                             
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">Monto</p>
+                                <p className="text-sm text-gray-600 mb-1">{t("transfers.amount")}</p>
                                 <p className="text-lg font-semibold text-[#69AC95]">
                                     ${parseFloat(cantidad).toFixed(2)}
                                 </p>
                             </div>
                             
                             <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">Desde Wallet</p>
+                                <p className="text-sm text-gray-600 mb-1">{t("transfers.from_wallet")}</p>
                                 <p className="text-lg font-semibold text-black">
-                                    {tipoWallet === TipoWallets.WALLET_DIVIDENDOS ? 'Dividendos' : 'Comisiones'}
+                                    {tipoWallet === TipoWallets.WALLET_DIVIDENDOS ? t("transfers.dividends") : t("transfers.commissions")}
                                 </p>
                             </div>
                         </div>
 
                         <div className="bg-yellow-50 border-l-4 border-[#F0973C] p-4 mb-6">
                             <p className="text-sm text-gray-700">
-                                ⚠️ Esta acción no se puede deshacer. Verifica los datos antes de continuar.
+                                ⚠️ {t("transfers.irreversible_action")}
                             </p>
                         </div>
 
@@ -382,14 +385,14 @@ export const TransferenciaInternaPage = () => {
                                 onClick={() => setShowModal(false)}
                                 className="flex-1 bg-gray-300 text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-400 transition-colors"
                             >
-                                Cancelar
+                                {t("transfers.cancel")}
                             </button>
                             <button
                                 onClick={confirmarTransferencia}
                                 disabled={loadingTransferenciaEntreUsuarios}
                                 className="flex-1 bg-[#69AC95] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#F0973C] transition-colors disabled:opacity-50"
                             >
-                                {loadingTransferenciaEntreUsuarios ? 'Procesando...' : 'Confirmar'}
+                                {loadingTransferenciaEntreUsuarios ? t("transfers.processing") : t("transfers.confirm")}
                             </button>
                         </div>
                     </div>

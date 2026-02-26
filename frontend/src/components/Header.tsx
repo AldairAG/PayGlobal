@@ -25,7 +25,7 @@ export default function Header() {
                 {usuario?.licencia && (
                     <div className="flex flex-col items-center px-4 py-2 rounded-lg border" 
                          style={{ backgroundColor: '#e8f5f1', borderColor: '#69AC95' }}>
-                        <span className="font-medium" style={{ color: '#4a5568' }}>Licencia</span>
+                        <span className="font-medium" style={{ color: '#4a5568' }}>{t("header.license")}</span>
                         <span className="font-bold" style={{ color: '#69AC95' }}>{usuario.licencia.nombre}</span>
                     </div>
                 )}
@@ -33,14 +33,14 @@ export default function Header() {
                 {/* Último dividendo */}
                 <div className="flex flex-col items-center px-4 py-2 rounded-lg border" 
                      style={{ backgroundColor: '#e8f5f1', borderColor: '#69AC95' }}>
-                    <span className="font-medium" style={{ color: '#4a5568' }}>Último Dividendo</span>
+                    <span className="font-medium" style={{ color: '#4a5568' }}>{t("header.last_dividend")}</span>
                     <span className="font-bold" style={{ color: '#69AC95' }}>${ultimoDividendo.toFixed(2)}</span>
                 </div>
 
                 {/* Último bono */}
                 <div className="flex flex-col items-center px-4 py-2 rounded-lg border" 
                      style={{ backgroundColor: '#fef3e8', borderColor: '#F0973C' }}>
-                    <span className="font-medium" style={{ color: '#4a5568' }}>Último Bono</span>
+                    <span className="font-medium" style={{ color: '#4a5568' }}>{t("header.last_bonus")}</span>
                     <span className="font-bold" style={{ color: '#F0973C' }}>${ultimoBono.toFixed(2)}</span>
                 </div>
 

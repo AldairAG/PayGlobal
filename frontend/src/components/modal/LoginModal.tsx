@@ -55,7 +55,8 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     const progressPercentage = (completedFields / totalFields) * 100;
 
     return (
-        <div className="fixed z-50 inset-0 bg-black bg-opacity-15 flex justify-center items-center">
+        <div className="fixed z-50 inset-0 bg-opacity-15 flex justify-center items-center">
+            <div className="absolute inset-0 bg-black opacity-50"></div>
             <div className="relative bg-white p-6 rounded shadow w-80">
                 {/* Barra de progreso - Top */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 rounded-t overflow-hidden">

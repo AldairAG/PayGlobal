@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TipoCrypto, TipoSolicitud } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
 
+
 interface PurchaseLicenseModalProps {
     open: boolean;
     onClose: () => void;
@@ -28,7 +29,7 @@ export default function PurchaseLicenseModal({
             await solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
             onClose();
         } catch (error) {
-            console.error('Error al solicitar compra de licencia:', error);
+            console.error(t("licenses.error_requesting_license_purchase"), error);
         }
     };
     
@@ -69,25 +70,28 @@ export default function PurchaseLicenseModal({
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(currentWallet.address);
-        alert(t("licenses.address_copied") || "Dirección copiada al portapapeles");
+        alert(t("licenses.address_copied"));
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="relative bg-white p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-                {/* Botón de cerrar */}
+        <div className="fixed inset-0 flex justify-center items-center z-50 p-4">
+            <div className="absolute inset-0 bg-black opacity-50 z-51"></div>
+            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full z-52 max-h-[90vh] flex flex-col">
+                {/* Botón de cerrar - fijo en la parte superior */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
 
-                <h2 className="text-2xl mb-6 font-bold text-center">
-                    {t("licenses.purchase_title") || "Comprar Licencia"}
-                </h2>
+                {/* Contenedor con scroll */}
+                <div className="overflow-y-auto p-8">
+                    <h2 className="text-2xl mb-6 font-bold text-center pr-8">
+                        {t("licenses.purchase_license")}
+                    </h2>
 
                 {/* Información de la licencia */}
                 <div className="mb-6 bg-gray-50 p-4 rounded">
@@ -95,8 +99,8 @@ export default function PurchaseLicenseModal({
                     <p className="text-2xl font-bold text-green-600">${licenseValue} {currentWallet.symbol}</p>
                     <p className="text-sm text-gray-600 mt-2">
                         {purchaseType === TipoSolicitud.COMPRA_LICENCIA
-                            ? (t("licenses.for_yourself") || "Compra para ti")
-                            : (t("licenses.for_someone") || "Compra para alguien más")}
+                            ? (t("licenses.purchase_for_myself") )
+                            : (t("licenses.purchase_for_others") )}
                     </p>
                 </div>
 
@@ -104,14 +108,14 @@ export default function PurchaseLicenseModal({
                 {purchaseType === TipoSolicitud.PAGO_DELEGADO && (
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">
-                            {t("licenses.referred_username") || "Username del referido"}
+                                {t("licenses.referred_username") }
                         </label>
                         <input
                             type="text"
                             value={referredUsername}
                             onChange={(e) => setReferredUsername(e.target.value)}
                             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder={t("licenses.enter_username") || "Ingrese el username"}
+                                placeholder={t("licenses.enter_username")}
                         />
                     </div>
                 )}
@@ -119,7 +123,7 @@ export default function PurchaseLicenseModal({
                 {/* Selector de criptomoneda */}
                 <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("licenses.crypto_type") || "Selecciona el tipo de criptomoneda"}
+                        {t("licenses.select_crypto_type")}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                         {Object.entries(cryptoWallets).map(([key, wallet]) => (
@@ -151,14 +155,14 @@ export default function PurchaseLicenseModal({
                 {/* Wallet Address */}
                 <div className="mb-6">
                     <p className="text-sm font-medium text-gray-700 mb-2">
-                        {t("licenses.wallet_address") || "Dirección de Wallet"} ({currentWallet.name})
+                            {t("licenses.wallet_address")} ({currentWallet.name})
                     </p>
                     <div className="flex items-center bg-gray-50 p-3 rounded">
                         <p className="text-sm break-all flex-1 font-mono">{currentWallet.address}</p>
                         <button
                             onClick={copyToClipboard}
                             className="ml-2 text-blue-600 hover:text-blue-800"
-                            title={t("licenses.copy") || "Copiar"}
+                            title={t("licenses.copy")}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -170,18 +174,18 @@ export default function PurchaseLicenseModal({
                 {/* Instrucciones */}
                 <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
                     <p className="text-sm text-yellow-800">
-                        {t("licenses.payment_instructions") || 
-                        "Realice la transferencia al wallet address mostrado. Una vez confirmada la transacción, su licencia será activada."}
+                        {t("licenses.transfer_instructions")}
                     </p>
                 </div>
 
-                {/* Botón de confirmación */}
-                <button
-                    onClick={handleConfirmPurchase}
-                    className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition-colors font-semibold"
-                >
-                    {t("licenses.close") || "Cerrar"}
-                </button>
+                    {/* Botón de confirmación */}
+                    <button
+                        onClick={handleConfirmPurchase}
+                        className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition-colors font-semibold"
+                    >
+                        {t("licenses.close")}
+                    </button>
+                </div>
             </div>
         </div>
     );

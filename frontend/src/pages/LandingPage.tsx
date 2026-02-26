@@ -13,12 +13,12 @@ const ReturnsTable = () => {
         { licenses: 25, daily: 0.125, weekly: 0.625, monthly: 2.50 },
         { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 5.00 },
         { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 10.00 },
-        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 25.00, tier: 'starter' },
-        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 50.00, tier: 'gold' },
+        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 25.00 },
+        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 50.00 },
         { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 100.00 },
-        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 250.00, tier: 'premium' },
+        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 250.00 },
         { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 500.00 },
-        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 1000.00, tier: 'elite' },
+        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 1000.00 },
         { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 2500.00 },
         { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 5000.00 },
         { licenses: 100000, daily: 500.00, weekly: 2500.00, monthly: 10000.00 },
@@ -57,24 +57,13 @@ const ReturnsTable = () => {
                     {tableData.map((row, idx) => (
                         <div
                             key={idx}
-                            className={`grid grid-cols-4 gap-2 p-3 border-b border-white/5 hover:bg-white/5 transition-all ${
-                                row.tier === 'elite' ? 'bg-[#F0973C]/10' :
-                                row.tier === 'premium' ? 'bg-[#F0973C]/5' :
-                                row.tier === 'gold' ? 'bg-[#69AC95]/5' :
-                                row.tier === 'starter' ? 'bg-[#69AC95]/10' : ''
-                            }`}
+                            className={`grid grid-cols-4 gap-2 p-4 ${idx % 2 === 0 ? "bg-white/5" : "bg-transparent"}`}
                         >
                             <div className="text-center">
                                 <p className="text-sm font-bold text-white">
                                     {row.licenses >= 1000 ? `${(row.licenses / 1000).toFixed(0)}K` : row.licenses}
                                 </p>
-                                {row.tier && (
-                                    <span className="text-[8px] uppercase font-semibold" style={{ 
-                                        color: row.tier === 'elite' || row.tier === 'premium' ? '#F0973C' : '#69AC95'
-                                    }}>
-                                        {row.tier}
-                                    </span>
-                                )}
+          
                             </div>
                             <div className="text-center">
                                 <p className="text-sm text-[#69AC95] font-semibold">${row.daily.toFixed(2)}</p>
@@ -263,17 +252,17 @@ export default function LandingPage() {
                     <div>
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#F0973C]/30 bg-[#F0973C]/10 mb-6 fade-up">
                             <span className="w-2 h-2 rounded-full bg-[#F0973C] pulse-glow" />
-                            <span className="text-[#F0973C] text-xs font-semibold uppercase tracking-widest">Plazas Exclusivas Disponibles</span>
+                            <span className="text-[#F0973C] text-xs font-semibold uppercase tracking-widest">{t("landing.exclusive_places")}</span>
                         </div>
 
                         <h1 className="text-5xl md:text-6xl font-black leading-[1.05] mb-4 fade-up delay-100" style={{ fontFamily: "'Playfair Display', serif" }}>
                             {t("landing.welcome")}
                             <br />
-                            <span className="shimmer-text">Capital Diario</span>
+                            <span className="shimmer-text">{t("landing.daily_capital")}</span>
                         </h1>
 
                         <p className="text-white/50 text-lg leading-relaxed mb-8 max-w-md fade-up delay-200">
-                            Accede a la red de inversión piramidal más exclusiva en cripto. Rendimientos comprobados, comunidad verificada y ganancias que no paran.
+                            {t("landing.access_the_network")}
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-10 fade-up delay-300">
@@ -294,9 +283,9 @@ export default function LandingPage() {
                         </div>
 
                         <div className="flex flex-wrap gap-3 fade-up delay-500">
-                            <StatCard value="$2.4M+" label="Capital gestionado" accent="#F0973C" />
-                            <StatCard value="12%" label="Ganancia diaria" accent="#69AC95" />
-                            <StatCard value="18K+" label="Inversores activos" accent="#F0973C" />
+                            <StatCard value="$2.4M+" label={t("landing.managed_capital")} accent="#F0973C" />
+                            <StatCard value="0.5%" label={t("landing.daily_profit")} accent="#69AC95" />
+                            <StatCard value="18K+" label={t("landing.active_investors")} accent="#F0973C" />
                         </div>
                     </div>
 
@@ -304,7 +293,7 @@ export default function LandingPage() {
                         <div className="w-full max-w-2xl mx-auto">
                             <ReturnsTable />
                         </div>
-                        <p className="mt-4 text-white/30 text-xs uppercase tracking-widest">Retornos calculados con 0.50% diario (Lun-Vie)</p>
+                        <p className="mt-4 text-white/30 text-xs uppercase tracking-widest">{t("landing.returns_calculated_with")}</p>
                     </div>
                 </div>
             </section>
@@ -313,18 +302,18 @@ export default function LandingPage() {
             <section className="relative z-10 px-6 md:px-12 py-20 max-w-7xl mx-auto">
                 <div className="text-center mb-14">
                     <h2 className="text-3xl md:text-4xl font-black mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        ¿Por qué <span style={{ color: "#F0973C" }}>PAYGLOBAL</span>?
+                        {t("landing.because")} <span style={{ color: "#F0973C" }}>{t("landing.PAYGLOBAL")}</span>{t("landing.?")}
                     </h2>
-                    <p className="text-white/40 text-sm max-w-md mx-auto">Un ecosistema diseñado para multiplicar tu inversión en cada nivel</p>
+                    <p className="text-white/40 text-sm max-w-md mx-auto">{t("landing.an_ecosystem_designed")}</p>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[
-                        { icon: Gem, title: "Niveles Exclusivos", desc: "Cuatro capas de inversión. Cuanto más alto subes, mayor es tu retorno diario garantizado.", accent: "#F0973C" },
-                        { icon: Zap, title: "Ganancias Diarias", desc: "Recibe tu rendimiento cada 24 horas directamente en tu wallet de criptomonedas.", accent: "#69AC95" },
-                        { icon: Lock, title: "Inversión Segura", desc: "Smart contracts auditados y tecnología blockchain de última generación protegen tu capital.", accent: "#F0973C" },
-                        { icon: Crown, title: "Red de Referidos", desc: "Gana comisiones por cada invitado a tu red. Construye tu propio nivel dentro de la pirámide.", accent: "#69AC95" },
-                        { icon: BarChart3, title: "Dashboard en Tiempo Real", desc: "Monitorea tus ganancias, tu equipo y el rendimiento del mercado desde un solo panel.", accent: "#F0973C" },
-                        { icon: Globe, title: "Cripto Multi-asset", desc: "Invierte con BTC, USDT TRC20, USDT ERC20, SOLANA.", accent: "#69AC95" },
+                        { icon: Gem, title: t("landing.exclusive_levels"), desc: t("landing.the_higher_you_climb"), accent: "#F0973C" },
+                        { icon: Zap, title: t("landing.daily_earnings"), desc: t("landing.receive_your_return"), accent: "#69AC95" },
+                        { icon: Lock, title: t("landing.secure_investment"), desc: t("landing.audited_smart_contracts"), accent: "#F0973C" },
+                        { icon: Crown, title: t("landing.referral_network"), desc: t("landing.earn_commissions"), accent: "#69AC95" },
+                        { icon: BarChart3, title: t("landing.real-time_dashboard"), desc: t("landing.track_your_investments"), accent: "#F0973C" },
+                        { icon: Globe, title: t("landing.cripto_multi-asset"), desc: t("landing.invest_with_BTC_USDT_TRC20_USDT_ERC20_SOLANA"), accent: "#69AC95" },
                     ].map((f) => (
                         <FeatureRow key={f.title} {...f} />
                     ))}
@@ -336,28 +325,28 @@ export default function LandingPage() {
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-14">
                         <h2 className="text-3xl md:text-4xl font-black mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            Niveles de <span style={{ color: "#69AC95" }}>Inversión</span>
+                            {t("landing.levels_of")} <span style={{ color: "#69AC95" }}>{t("landing.investment")}</span>
                         </h2>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
-                            { tier: "STARTER", licenses: "250", daily: "$1.25", weekly: "$6.25", monthly: "$25.00", desc: "Inversión inicial para comenzar a generar retornos diarios.", color: "#69AC95", icon: Sprout },
-                            { tier: "GOLD", licenses: "500", daily: "$2.50", weekly: "$12.50", monthly: "$50.00", desc: "Duplica tus ganancias diarias con acceso a mercados premium.", color: "#69AC95", icon: Award },
-                            { tier: "PREMIUM", licenses: "2,500", daily: "$12.50", weekly: "$62.50", monthly: "$250.00", desc: "Retornos significativos para inversores comprometidos.", color: "#F0973C", icon: Sparkles },
-                            { tier: "ELITE", licenses: "10,000", daily: "$50.00", weekly: "$250.00", monthly: "$1,000.00", desc: "Máximo rendimiento. Gana $50 diarios consistentemente.", color: "#F0973C", icon: Crown },
+                            { tier: "P200", licenses: "250", daily: "$1.25", weekly: "$6.25", monthly: "$25.00", desc: t("landing.initial_investment"), color: "#69AC95", icon: Sprout },
+                            { tier: "P500", licenses: "500", daily: "$2.50", weekly: "$12.50", monthly: "$50.00", desc: t("landing.double_your_daily_earnings"), color: "#69AC95", icon: Award },
+                            { tier: "P2000", licenses: "2,500", daily: "$12.50", weekly: "$62.50", monthly: "$250.00", desc: t("landing.significant_returns"), color: "#F0973C", icon: Sparkles },
+                            { tier: "P10000", licenses: "10,000", daily: "$50.00", weekly: "$250.00", monthly: "$1,000.00", desc: t("landing.maximum_performance"), color: "#F0973C", icon: Crown },
                         ].map((item) => (
                             <div key={item.tier} className="relative p-6 rounded-2xl border flex flex-col gap-3 hover:scale-[1.02] transition-transform" style={{ borderColor: item.color + "30", background: item.color + "08" }}>
                                 <item.icon size={32} style={{ color: item.color }} />
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.tier}</p>
                                     <p className="text-white text-2xl font-black" style={{ fontFamily: "'Playfair Display', serif" }}>{item.daily}</p>
-                                    <p className="text-white/30 text-xs">diario</p>
+                                    <p className="text-white/30 text-xs">{t("landing.daily")}</p>
                                 </div>
                                 <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
                                 <div className="mt-auto pt-3 border-t border-white/5 space-y-1">
-                                    <p className="text-white/40 text-xs">Licencias: <span className="text-white/70 font-semibold">{item.licenses}</span></p>
-                                    <p className="text-white/40 text-xs">Semanal: <span className="text-[#69AC95] font-semibold">{item.weekly}</span></p>
-                                    <p className="text-white/40 text-xs">Mensual: <span className="text-[#F0973C] font-semibold">{item.monthly}</span></p>
+                                    <p className="text-white/40 text-xs">{t("landing.licenses")}: <span className="text-white/70 font-semibold">{item.licenses}</span></p>
+                                    <p className="text-white/40 text-xs">{t("landing.weekly")}: <span className="text-[#69AC95] font-semibold">{item.weekly}</span></p>
+                                    <p className="text-white/40 text-xs">{t("landing.monthly")}: <span className="text-[#F0973C] font-semibold">{item.monthly}</span></p>
                                 </div>
                             </div>
                         ))}
@@ -369,13 +358,13 @@ export default function LandingPage() {
             <section className="relative z-10 px-6 md:px-12 py-24 overflow-hidden">
                 <div className="max-w-2xl mx-auto text-center relative">
                     <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(240,151,60,0.12) 0%, transparent 70%)" }} />
-                    <p className="text-[#F0973C] text-xs uppercase tracking-[0.3em] mb-4 font-semibold">Acceso limitado</p>
+                    <p className="text-[#F0973C] text-xs uppercase tracking-[0.3em] mb-4 font-semibold">{t("landing.limited_access")}</p>
                     <h2 className="text-4xl md:text-5xl font-black mb-5" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        El momento de<br />
-                        <span className="shimmer-text">invertir es ahora</span>
+                        {t("landing.the_moment_of")}<br />
+                        <span className="shimmer-text">{t("landing.investing_is_now")}</span>
                     </h2>
                     <p className="text-white/40 mb-10 max-w-lg mx-auto text-sm leading-relaxed">
-                        Solo aceptamos 50 nuevos miembros por semana para garantizar la exclusividad y la rentabilidad de nuestra red.
+                        {t("landing.join_payglobal")}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
@@ -393,13 +382,13 @@ export default function LandingPage() {
                         </button>
                     </div>
                     <div className="mt-12 flex items-center justify-center gap-6 text-xs text-white/30">
-                        <span className="flex items-center gap-1"><ShieldCheck size={14} /> SSL seguro</span>
+                        <span className="flex items-center gap-1"><ShieldCheck size={14} /> {t("landing.secure_SSL")}</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span className="flex items-center gap-1"><CheckCircle size={14} /> Auditado</span>
+                        <span className="flex items-center gap-1"><CheckCircle size={14} /> {t("landing.audited")}</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span className="flex items-center gap-1"><Globe size={14} /> Global</span>
+                        <span className="flex items-center gap-1"><Globe size={14} /> {t("landing.global")}</span>
                         <span className="w-px h-4 bg-white/10" />
-                        <span className="flex items-center gap-1"><Zap size={14} /> 24/7 activo</span>
+                        <span className="flex items-center gap-1"><Zap size={14} /> {t("landing.24_7_Support")}</span>
                     </div>
                 </div>
             </section>
@@ -410,12 +399,12 @@ export default function LandingPage() {
                     <img src={LogoV} alt="PAYGLOBAL Logo" className="h-5" />
                 </div>
                 <p className="text-white/20 text-xs text-center">
-                    © 2025 PAYGLOBAL. Inversiones sujetas a riesgo de mercado. Solo para inversores calificados.
+                    {t("landing.2025_PAYGLOBAL")}
                 </p>
                 <div className="flex gap-4 text-white/30 text-xs">
-                    <a href="#" className="hover:text-white/60 transition-colors">Términos</a>
-                    <a href="#" className="hover:text-white/60 transition-colors">Privacidad</a>
-                    <a href="#" className="hover:text-white/60 transition-colors">Contacto</a>
+                    <a href="#" className="hover:text-white/60 transition-colors">{t("landing.terms")}</a>
+                    <a href="#" className="hover:text-white/60 transition-colors">{t("landing.privacy")}</a>
+                    <a href="#" className="hover:text-white/60 transition-colors">{t("landing.contact")}</a>
                 </div>
             </footer>
 

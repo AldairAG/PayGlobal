@@ -30,10 +30,10 @@ export const LicenciasPage = () => {
                 {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        {t("licenses.title") || "Licencias Disponibles"}
+                        {t("licenses.available_licenses")}
                     </h1>
                     <p className="text-gray-600 text-lg">
-                        {t("licenses.subtitle") || "Selecciona la licencia que mejor se adapte a tus necesidades"}
+                        {t("licenses.choose_the_license_that_best_suits_your_needs") }
                     </p>
                 </div>
                 
@@ -66,7 +66,7 @@ export const LicenciasPage = () => {
                                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                     </svg>
-                                    <span className="text-sm">{t("licenses.buy_for_me") || "Comprar"}</span>
+                                    <span className="text-sm">{t("licenses.purchase_for_myself") }</span>
                                 </button>
 
                                 {/* Botón Comprar para alguien más */}
@@ -77,7 +77,7 @@ export const LicenciasPage = () => {
                                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                     </svg>
-                                    <span className="text-sm">{t("licenses.buy_for_other") || "Para alguien más"}</span>
+                                    <span className="text-sm">{t("licenses.purchase_for_others") }</span>
                                 </button>
                             </div>
                         </div>
@@ -91,11 +91,11 @@ export const LicenciasPage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <h3 className="text-lg font-semibold text-blue-900">
-                            {t("licenses.info_title") || "Información Importante"}
+                            {t("licenses.important_information") }
                         </h3>
                     </div>
                     <p className="text-blue-800 text-sm">
-                        {t("licenses.info_text") || "Todas las licencias son pagadas en USDT. Al comprar para alguien más, asegúrate de ingresar correctamente el usuario destino."}
+                        {t("licenses.info_text") }
                     </p>
                 </div>
             </div>
