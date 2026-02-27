@@ -2,8 +2,10 @@ import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useUsuario } from "../../hooks/usuarioHook";
 import Logo from "../../assets/Logo.png";
+import { ROUTES } from "../../routes/routes";
 
 
 interface LoginModalProps {
@@ -13,6 +15,7 @@ interface LoginModalProps {
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { login, loadingLogin, errorLogin } = useUsuario();
 
     const validationSchema = Yup.object({
@@ -178,6 +181,19 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
                 >
                     {t("landing.close")}
                 </button>
+
+                <div className="mt-4 text-center">
+                    <button
+                        type="button"
+                        className="text-sm text-[#F0973C] hover:text-[#d9863a] hover:underline transition-colors"
+                        onClick={() => {
+                            onClose();
+                            navigate(ROUTES.RECUPERAR_PASSWORD);
+                        }}
+                    >
+                        {t("landing.forgot_password")}
+                    </button>
+                </div>
             </div>
         </div>
     );

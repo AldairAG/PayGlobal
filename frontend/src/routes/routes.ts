@@ -22,5 +22,7 @@ export const ROUTES = {
         RED_USUARIOS: '/c/red-usuarios'
     },
 
+    RECUPERAR_PASSWORD: '/recuperar-password',
+
     LANDING: '/'
 }

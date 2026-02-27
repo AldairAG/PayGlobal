@@ -8,6 +8,7 @@ import LogoA from "../assets/LogoA.png";
 import LogoV from "../assets/LogoV.png";
 
 const ReturnsTable = () => {
+    const { t } = useTranslation();
     const tableData = [
         { licenses: 10, daily: 0.05, weekly: 0.25, monthly: 1.00 },
         { licenses: 25, daily: 0.125, weekly: 0.625, monthly: 2.50 },
@@ -28,10 +29,10 @@ const ReturnsTable = () => {
         <div className="w-full">
             <div className="text-center mb-6">
                 <h3 className="text-2xl font-black mb-2" style={{ fontFamily: "'Playfair Display', serif", color: "#F0973C" }}>
-                    RETORNO DE INVERSIÓN
+                    {t("landing.roi_title")}
                 </h3>
                 <p className="text-white/60 text-xs">
-                    La tabla representa el <span className="text-[#69AC95] font-bold">0.50% diario</span> de lunes a viernes
+                    {t("landing.roi_description")} <span className="text-[#69AC95] font-bold">0.50% {t("landing.roi_daily")}</span> {t("landing.roi_weekdays")}
                 </p>
             </div>
 
@@ -39,16 +40,16 @@ const ReturnsTable = () => {
                 {/* Header */}
                 <div className="grid grid-cols-4 gap-2 p-4 bg-gradient-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
                     <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Licencias</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">{t("landing.roi_licenses")}</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Diario</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">{t("landing.roi_daily_label")}</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Semanal</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">{t("landing.roi_weekly_label")}</p>
                     </div>
                     <div className="text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Mensual</p>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">{t("landing.roi_monthly_label")}</p>
                     </div>
                 </div>
 

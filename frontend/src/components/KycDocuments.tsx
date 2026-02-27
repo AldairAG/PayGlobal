@@ -4,12 +4,15 @@ import { useKyc } from "../hooks/useKyc";
 import { TipoKycFile, EstadoOperacion } from "../type/enum";
 import type { KycFile } from "../type/entityTypes";
 import { FileViewerModal } from "./modal/FileViewerModal";
+import { useTranslation } from 'react-i18next';
+
 
 interface KycDocumentsProps {
     usuarioId: number;
 }
 
 export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
+    const { t } = useTranslation();
     const {
         misArchivosKyc,
         loadingMisArchivosKyc,
@@ -57,14 +60,14 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
 
         // Validar tamaño (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert("El archivo es demasiado grande. Máximo 5MB.");
+            alert(t("profile.file_too_large"));
             return;
         }
 
         // Validar tipo de archivo
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         if (!allowedTypes.includes(file.type)) {
-            alert("Tipo de archivo no permitido. Solo se permiten imágenes (JPG, PNG) y PDF.");
+            alert(t("profile.file_type_not_allowed"));
             return;
         }
 
@@ -74,12 +77,12 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
 
         try {
             await subirArchivoKyc({ fileType: tipo, file }, usuarioId);
-            setSuccessMessage(`${getTipoDocumentoLabel(tipo)} subido exitosamente`);
+            setSuccessMessage(`${getTipoDocumentoLabel(tipo)} ${t("profile.upload_success")}`);
             // Recargar archivos
             await obtenerArchivosKycPorUsuario(usuarioId);
             setTimeout(() => setSuccessMessage(null), 5000);
         } catch (error) {
-            console.error('Error al subir archivo:', error);
+            console.error(t("profile.upload_error"), error);
         } finally {
             setUploadingType(null);
             // Limpiar el input
@@ -89,18 +92,18 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
 
     // Manejar eliminación de archivo
     const handleDeleteFile = async (archivo: KycFile) => {
-        if (!confirm(`¿Estás seguro de eliminar ${getTipoDocumentoLabel(archivo.fileType)}?`)) {
+        if (!confirm(`${t("profile.confirm_delete")} ${getTipoDocumentoLabel(archivo.fileType)}${t("profile.?")}`)) {
             return;
         }
 
         try {
             await eliminarArchivoKyc(archivo.id);
-            setSuccessMessage("Archivo eliminado exitosamente");
+            setSuccessMessage(t("profile.file_deleted_successfully"));
             // Recargar archivos
             await obtenerArchivosKycPorUsuario(usuarioId);
             setTimeout(() => setSuccessMessage(null), 5000);
         } catch (error) {
-            console.error('Error al eliminar archivo:', error);
+            console.error(t("profile.file_delete_error"), error);
         }
     };
 
@@ -116,7 +119,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                 setIsModalOpen(true);
             }
         } catch (error) {
-            console.error('Error al obtener archivo:', error);
+            console.error(t("profile.file_get_error"), error);
         }
     };
 
@@ -129,28 +132,28 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
     // Obtener label del tipo de documento
     const getTipoDocumentoLabel = (tipo: TipoKycFile): string => {
         return tipo === TipoKycFile.DOCUMENTO_IDENTIDAD
-            ? "Documento de Identidad"
-            : "Comprobante de Domicilio";
+            ? t("profile.document_identity")
+            : t("profile.proof_of_address");
     };
 
     // Obtener descripción del tipo de documento
     const getTipoDocumentoDescripcion = (tipo: TipoKycFile): string => {
         return tipo === TipoKycFile.DOCUMENTO_IDENTIDAD
-            ? "INE, Pasaporte, Licencia de Conducir"
-            : "Recibo de luz, agua, teléfono o estado de cuenta";
+            ? t("profile.identity_document_description")
+            : t("profile.proof_of_address_description");
     };
 
     // Obtener icono y color según estado
     const getEstadoInfo = (estado: EstadoOperacion) => {
         switch (estado) {
             case EstadoOperacion.APROBADA:
-                return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', text: 'Aprobado' };
+                return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', text: t("profile.approved") };
             case EstadoOperacion.RECHAZADA:
-                return { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', text: 'Rechazado' };
+                return { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', text: t("profile.rejected") };
             case EstadoOperacion.PENDIENTE:
-                return { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'En Revisión' };
+                return { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', text: t("profile.in_review") };
             default:
-                return { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', text: 'Pendiente' };
+                return { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', text: t("profile.pending") };
         }
     };
 
@@ -190,24 +193,24 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                         {/* Información del archivo */}
                         <div className="p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-gray-700">Archivo subido:</span>
+                                <span className="text-sm font-medium text-gray-700">{t("profile.file_uploaded")}</span>
                                 <span className="text-xs text-gray-500">
                                     {new Date(archivo.uploadDate).toLocaleDateString('es-ES')}
                                 </span>
                             </div>
                             <p className="text-sm text-gray-600 truncate">{archivo.fileName}</p>
                             <p className="text-xs text-gray-500 mt-1">
-                                Tamaño: {(archivo.fileSize / 1024).toFixed(2)} KB
+                                {t("profile.file_size")} {(archivo.fileSize / 1024).toFixed(2)} KB
                             </p>
                         </div>
 
                         {/* Comentario de rechazo */}
                         {archivo.estado === EstadoOperacion.RECHAZADA && archivo.comentarioRechazo && (
                             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="text-xs font-semibold text-red-700 mb-1">Motivo de rechazo:</p>
+                                <p className="text-xs font-semibold text-red-700 mb-1">{t("profile.rejection_reason")}:</p>
                                 <p className="text-sm text-red-600">{archivo.comentarioRechazo}</p>
                                 {archivo.razonRechazo && (
-                                    <p className="text-xs text-red-500 mt-1">Razón: {archivo.razonRechazo}</p>
+                                    <p className="text-xs text-red-500 mt-1">{t("profile.reason")}: {archivo.razonRechazo}</p>
                                 )}
                             </div>
                         )}
@@ -219,7 +222,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                                 className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium"
                             >
                                 <Eye size={16} />
-                                Ver
+                                {t("profile.view")}
                             </button>
                             <button
                                 onClick={() => handleDeleteFile(archivo)}
@@ -227,7 +230,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                                 className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Trash2 size={16} />
-                                Eliminar
+                                {t("profile.delete")}
                             </button>
                         </div>
 
@@ -246,7 +249,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                                     style={{ backgroundColor: '#F0973C' }}
                                 >
                                     <Upload size={18} />
-                                    {isUploading ? "Subiendo..." : "Resubir Documento"}
+                                    {isUploading ? t("profile.uploading") : t("profile.resubmit_document")}
                                 </div>
                             </label>
                         )}
@@ -268,10 +271,10 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                                 <Upload size={32} className="text-gray-400" />
                                 <div className="text-center">
                                     <p className="text-sm font-semibold text-gray-700">
-                                        {isUploading ? "Subiendo documento..." : "Subir documento"}
+                                        {isUploading ? t("profile.uploading_document") : t("profile.upload_document")}
                                     </p>
                                     <p className="text-xs text-gray-500 mt-1">
-                                        JPG, PNG o PDF (máx. 5MB)
+                                            {t("profile.file_format")}
                                     </p>
                                 </div>
                             </div>
@@ -285,9 +288,9 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
     return (
         <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
             <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Verificación KYC</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{t("profile.kyc_verification")}</h3>
                 <p className="text-sm text-gray-500">
-                    Sube los documentos requeridos para verificar tu identidad
+                    {t("profile.kyc_verification_description")}
                 </p>
             </div>
 
@@ -325,12 +328,12 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                 <div className="flex items-start gap-3">
                     <AlertCircle size={20} className="text-blue-600 shrink-0 mt-0.5" />
                     <div className="text-sm text-blue-700">
-                        <p className="font-semibold mb-1">Información importante:</p>
+                        <p className="font-semibold mb-1">{t("profile.kyc_verification_info")}</p>
                         <ul className="list-disc list-inside space-y-1 text-xs">
-                            <li>Los documentos deben ser legibles y estar vigentes</li>
-                            <li>Las imágenes deben mostrar claramente toda la información</li>
-                            <li>El proceso de verificación puede tomar hasta 48 horas</li>
-                            <li>Recibirás una notificación cuando tus documentos sean revisados</li>
+                            <li>{t("profile.kyc_verification_documents")}</li>
+                            <li>{t("profile.kyc_verification_images")}</li>
+                            <li>{t("profile.kyc_verification_process")}</li>
+                            <li>{t("profile.kyc_verification_notification")}</li>
                         </ul>
                     </div>
                 </div>

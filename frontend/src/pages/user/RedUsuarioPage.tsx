@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import type { UsuarioEnRedResponse } from "../../type/responseType";
 import { TipoRango } from "../../type/enum";
+import { useTranslation } from "react-i18next";
+
 
 // Interfaz para nodo de red con referidos anidados
 interface NodoRed {
@@ -23,6 +25,7 @@ const NodoUsuario = ({
     const [expandido, setExpandido] = useState(esRaiz);
     const tieneReferidos = nodo.referidos.length > 0;
     const puedeVerMas = nodo.usuarioRaiz.nivel < maxNivel;
+    const { t } = useTranslation();
 
     return (
         <div className="flex flex-col items-center">
@@ -51,7 +54,7 @@ const NodoUsuario = ({
                     {/* Badge de nivel */}
                     <div className="absolute -top-3 -right-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"
                         style={{ backgroundColor: '#F0973C' }}>
-                        Nivel {nodo.usuarioRaiz.nivel}
+                        {t("network.level")} {nodo.usuarioRaiz.nivel}
                     </div>
 
                     {/* Avatar */}
@@ -78,7 +81,7 @@ const NodoUsuario = ({
                         {/* Estadísticas */}
                         <div className="mt-3 text-xs">
                             <div className="rounded-lg p-2" style={{ backgroundColor: '#f9fafb' }}>
-                                <p className="text-gray-500">Referidos</p>
+                                <p className="text-gray-500">{t("network.referrals")}</p>
                                 <p className="font-bold" style={{ color: '#69AC95' }}>{nodo.referidos.length}</p>
                             </div>
                         </div>
@@ -133,6 +136,7 @@ const NodoUsuario = ({
 };
 
 const RedUsuarioPage = () => {
+    const { t } = useTranslation();
     const { usuario, usuariosEnRed, loadingUsuariosEnRed, errorUsuariosEnRed, obtenerUsuariosEnRed } = useUsuario();
 
     useEffect(() => {
@@ -188,7 +192,7 @@ const RedUsuarioPage = () => {
             <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-4 mx-auto mb-4" style={{ borderColor: '#69AC95' }}></div>
-                    <p className="text-lg text-gray-600">Cargando red de usuarios...</p>
+                    <p className="text-lg text-gray-600">{t("network.loading_user_network")}</p>
                 </div>
             </div>
         );
@@ -199,14 +203,14 @@ const RedUsuarioPage = () => {
             <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                 <div className="text-center bg-white p-8 rounded-xl shadow-lg border" style={{ borderColor: '#e5e7eb' }}>
                     <div className="text-red-500 text-5xl mb-4">⚠️</div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Error al cargar la red</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("network.error_loading_network")}</h2>
                     <p className="text-gray-600 mb-4">{errorUsuariosEnRed}</p>
                     <button
                         onClick={() => usuario && obtenerUsuariosEnRed(usuario.username)}
                         className="px-4 py-2 text-white rounded-lg transition hover:opacity-90"
                         style={{ backgroundColor: '#69AC95' }}
                     >
-                        Reintentar
+                        {t("network.retry")}
                     </button>
                 </div>
             </div>
@@ -218,8 +222,8 @@ const RedUsuarioPage = () => {
             <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                 <div className="text-center bg-white p-8 rounded-xl shadow-lg border" style={{ borderColor: '#e5e7eb' }}>
                     <div className="text-gray-400 text-5xl mb-4">🌐</div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">No hay red disponible</h2>
-                    <p className="text-gray-600">Aún no tienes referidos en tu red</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("network.no_network_available")}</h2>
+                    <p className="text-gray-600">{t("network.no_referrals_yet")}</p>
                 </div>
             </div>
         );
@@ -234,10 +238,10 @@ const RedUsuarioPage = () => {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold mb-2 text-gray-900">
-                        Tu Red de Usuarios
+                        {t("network.user_network")}
                     </h1>
                     <p className="text-gray-600 mb-4">
-                        Visualiza tu red de referidos hasta el nivel {maxNivel}
+                        {t("network.view_your_referral_network", { maxNivel })}
                     </p>
 
                     {/* Info del rango */}
@@ -245,14 +249,14 @@ const RedUsuarioPage = () => {
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
                             <span className="text-sm font-semibold text-gray-700">
-                                Nivel máximo visible: {maxNivel}
+                               {t("network.max_visible_level")} {maxNivel}
                             </span>
                         </div>
                         <div className="h-6 w-0.5 bg-gray-300"></div>
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#F0973C' }}></div>
                             <span className="text-sm font-semibold text-gray-700">
-                                Usuario: {usuario?.username}
+                                {t("network.user")} {usuario?.username}
                             </span>
                         </div>
                     </div>
@@ -263,17 +267,17 @@ const RedUsuarioPage = () => {
                     <div className="flex items-center justify-around text-xs">
                         <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-gray-600">Usuario</span>
+                            <span className="text-gray-600">{t("network.user")}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-gray-600">Usuario Principal (Nivel 0)</span>
+                            <span className="text-gray-600">{t("network.main_user")} (Nivel 0)</span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <svg className="w-4 h-4" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
-                            <span className="text-gray-600">Click para expandir</span>
+                            <span className="text-gray-600">{t("network.click_to_expand")}</span>
                         </div>
                     </div>
                 </div>
@@ -296,10 +300,9 @@ const RedUsuarioPage = () => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Información sobre niveles</h3>
+                            <h3 className="font-semibold text-gray-900 mb-2">{t("network.level_information")}</h3>
                             <p className="text-gray-700 text-sm">
-                                El <strong>nivel 0</strong> siempre es tu usuario. Los niveles subsiguientes representan
-                                tus referidos directos e indirectos. A mayor rango, más niveles podrás visualizar de tu red.
+                                {t("network.the")}<strong>{t("network.level_0")}</strong> {t("network.always_your_user")}
                             </p>
                         </div>
                     </div>

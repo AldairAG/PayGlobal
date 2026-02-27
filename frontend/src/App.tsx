@@ -22,6 +22,7 @@ import { store } from './store'
 import "./i18n";
 import RedUsuarioPage from './pages/user/RedUsuarioPage'
 import GestionSoportePage from './pages/admin/GestionSoportePage'
+import RecuperarPassword from './pages/user/RecuperarPassword'
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path={ROUTES.LANDING} element={<LandingPage />} />
+            <Route path={ROUTES.RECUPERAR_PASSWORD} element={<RecuperarPassword />} />
 
             <Route path={ROUTES.USER.LAYOUT} element={<UserLayout />} >
 
