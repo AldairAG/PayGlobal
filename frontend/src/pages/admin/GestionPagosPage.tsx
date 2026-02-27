@@ -15,10 +15,10 @@ export const GestionPagosPage = () => {
     const [filtroEstado, setFiltroEstado] = useState<EstadoOperacion | "TODOS">("TODOS");
     const [filtroTipo, setFiltroTipo] = useState<TipoSolicitud | "TODOS">("TODOS");
     const [paginaActual, setPaginaActual] = useState(0);
-    const [tamanioPagina, setTamanioPagina] = useState(10);
+    const [tamanioPagina, setTamanioPagina] = useState(25);
 
     useEffect(() => {
-        obtenerSolicitudes(paginaActual, tamanioPagina);
+        obtenerSolicitudes(paginaActual, tamanioPagina);    
     }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación
@@ -131,7 +131,7 @@ export const GestionPagosPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                         <p className="text-sm text-gray-600 mb-1">Total</p>
-                        <p className="text-2xl font-bold text-gray-800">{solicitudes?.totalElements ?? 0}</p>
+                        <p className="text-2xl font-bold text-gray-800">{solicitudes?.page?.totalElements ?? 0}</p>
                     </div>
                     <div className="bg-yellow-50 rounded-lg shadow-sm border border-yellow-200 p-4">
                         <p className="text-sm text-yellow-700 mb-1">Pendientes</p>
@@ -220,7 +220,7 @@ export const GestionPagosPage = () => {
                         </div>
                     ) : solicitudesFiltradas.length > 0 ? (
                         // Lista de solicitudes
-                        solicitudesFiltradas.reverse().map(solicitud => (
+                        solicitudesFiltradas.map(solicitud => (
                             <SolicitudItem
                                 key={solicitud.id}
                                 solicitud={solicitud}
@@ -241,15 +241,15 @@ export const GestionPagosPage = () => {
                 </div>
 
                 {/* Controles de paginación */}
-                {solicitudes && solicitudes.totalPages > 1 && (
+                {solicitudes && solicitudes.page.totalPages > 1 && (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
                         <div className="flex items-center justify-between">
                             {/* Información de paginación */}
                             <div className="text-sm text-gray-600">
-                                Mostrando <span className="font-semibold">{solicitudes.numberOfElements}</span> de{' '}
-                                <span className="font-semibold">{solicitudes.totalElements}</span> solicitudes
+                                Mostrando <span className="font-semibold">{tamanioPagina}</span> de{' '}
+                                <span className="font-semibold">{solicitudes.page.totalElements}</span> solicitudes
                                 {' '}(Página <span className="font-semibold">{paginaActual + 1}</span> de{' '}
-                                <span className="font-semibold">{solicitudes.totalPages}</span>)
+                                <span className="font-semibold">{solicitudes.page.totalPages}</span>)
                             </div>
 
                             {/* Controles de navegación */}
@@ -257,7 +257,6 @@ export const GestionPagosPage = () => {
                                 {/* Botón Primera página */}
                                 <button
                                     onClick={() => setPaginaActual(0)}
-                                    disabled={solicitudes.first || loadingSolicitudes}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Primera página"
                                 >
@@ -267,7 +266,6 @@ export const GestionPagosPage = () => {
                                 {/* Botón Anterior */}
                                 <button
                                     onClick={() => setPaginaActual(prev => Math.max(0, prev - 1))}
-                                    disabled={solicitudes.first || loadingSolicitudes}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página anterior"
                                 >
@@ -276,14 +274,14 @@ export const GestionPagosPage = () => {
 
                                 {/* Números de página */}
                                 <div className="flex items-center gap-1">
-                                    {Array.from({ length: Math.min(5, solicitudes.totalPages) }, (_, i) => {
+                                    {Array.from({ length: Math.min(5, solicitudes.page.totalPages) }, (_, i) => {
                                         let pageNum;
-                                        if (solicitudes.totalPages <= 5) {
+                                        if (solicitudes.page.totalPages <= 5) {
                                             pageNum = i;
                                         } else if (paginaActual < 3) {
                                             pageNum = i;
-                                        } else if (paginaActual > solicitudes.totalPages - 4) {
-                                            pageNum = solicitudes.totalPages - 5 + i;
+                                        } else if (paginaActual > solicitudes.page.totalPages - 4) {
+                                            pageNum = solicitudes.page.totalPages - 5 + i;
                                         } else {
                                             pageNum = paginaActual - 2 + i;
                                         }
@@ -307,8 +305,7 @@ export const GestionPagosPage = () => {
 
                                 {/* Botón Siguiente */}
                                 <button
-                                    onClick={() => setPaginaActual(prev => Math.min(solicitudes.totalPages - 1, prev + 1))}
-                                    disabled={solicitudes.last || loadingSolicitudes}
+                                    onClick={() => setPaginaActual(prev => Math.min(solicitudes.page.totalPages - 1, prev + 1))}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página siguiente"
                                 >
@@ -317,8 +314,7 @@ export const GestionPagosPage = () => {
 
                                 {/* Botón Última página */}
                                 <button
-                                    onClick={() => setPaginaActual(solicitudes.totalPages - 1)}
-                                    disabled={solicitudes.last || loadingSolicitudes}
+                                    onClick={() => setPaginaActual(solicitudes.page.totalPages - 1)}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Última página"
                                 >

@@ -87,8 +87,13 @@ export enum EstadoOperacion {
 }
 
 export enum EstadoTicket {
-    ABIERTO = "abierto",
-    CERRADO = "cerrado"
+    ABIERTO = "ABIERTO",
+    CERRADO = "CERRADO"
+}
+
+export enum TipoAutorTiket {
+    SOLICITANTE = "SOLICITANTE",
+    SOPORTE = "SOPORTE"
 }
 
 export enum TipoConceptos {
@@ -110,4 +115,16 @@ export enum TipoMetodoPago {
     TRANSFERENCIA_CRYPTO= "TRANSFERENCIA_CRYPTO",
     WALLET_DIVIDENDOS = "WALLET_DIVIDENDOS",
     WALLET_COMISIONES = "WALLET_COMISIONES"
+}
+
+export enum TipoKycFile {
+    COMPROBANTE_DOMICILIO = "COMPROBANTE_DOMICILIO",
+    DOCUMENTO_IDENTIDAD = "DOCUMENTO_IDENTIDAD"
+}
+
+export enum TipoRechazos {
+    ARCHIVO_NO_LEGIBLE = "ARCHIVO_NO_LEGIBLE",
+    INFORMACION_INCONSISTENTE = "INFORMACION_INCONSISTENTE",
+    DOCUMENTO_VENCIDO = "DOCUMENTO_VENCIDO",
+    DOCUMENTO_NO_VALIDO = "DOCUMENTO_NO_VALIDO"
 }

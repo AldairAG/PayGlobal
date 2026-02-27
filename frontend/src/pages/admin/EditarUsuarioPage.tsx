@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import type { Usuario } from "../../type/entityTypes";
+import type { Usuario, Wallet, Bono } from "../../type/entityTypes";
 import { TipoRango } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
 
@@ -9,6 +9,8 @@ export const EditarUsuarioPage = () => {
     const { userId } = useParams<{ userId: string }>();
     const { usuarioSeleccionado, obtenerUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado } = useUsuario();
     const [isEditing, setIsEditing] = useState(false);
+    const [editedWallets, setEditedWallets] = useState<Wallet[]>([]);
+    const [editedBonos, setEditedBonos] = useState<Bono[]>([]);
 
     // Cargar datos del usuario cuando el componente se monte
     useEffect(() => {
@@ -17,6 +19,14 @@ export const EditarUsuarioPage = () => {
         }
     }, [userId]);
 
+    // Sincronizar wallets y bonos editables cuando cambia el usuario seleccionado
+    useEffect(() => {
+        if (usuarioSeleccionado) {
+            setEditedWallets([...usuarioSeleccionado.wallets]);
+            setEditedBonos([...usuarioSeleccionado.bonos]);
+        }
+    }, [usuarioSeleccionado]);
+
     const handleInputChange = (field: keyof Usuario, value: Usuario[keyof Usuario]) => {
         if (usuarioSeleccionado) {
             // TODO: Actualizar en Redux store cuando esté en modo edición
@@ -24,9 +34,31 @@ export const EditarUsuarioPage = () => {
         }
     };
 
+    const handleWalletChange = (walletId: number, field: keyof Wallet, value: number) => {
+        setEditedWallets(prev => 
+            prev.map(wallet => 
+                wallet.id === walletId 
+                    ? { ...wallet, [field]: value }
+                    : wallet
+            )
+        );
+    };
+
+    const handleBonoChange = (bonoId: number, field: keyof Bono, value: number) => {
+        setEditedBonos(prev => 
+            prev.map(bono => 
+                bono.id === bonoId 
+                    ? { ...bono, [field]: value }
+                    : bono
+            )
+        );
+    };
+
     const handleSave = () => {
         // TODO: Implementar guardado en backend
         console.log("Guardando usuario:", usuarioSeleccionado);
+        console.log("Wallets actualizadas:", editedWallets);
+        console.log("Bonos actualizados:", editedBonos);
         setIsEditing(false);
     };
 
@@ -221,18 +253,15 @@ export const EditarUsuarioPage = () => {
                                     Rango
                                 </label>
                                 <select
-                                    value={usuarioSeleccionado.rango.numero}
-                                    onChange={(e) => {
-                                        const rangoKey = `RANGO_${e.target.value}` as keyof typeof TipoRango;
-                                        handleInputChange("rango", TipoRango[rangoKey]);
-                                    }}
+                                    value={usuarioSeleccionado.rango}
+                                    onChange={(e) => handleInputChange("rango", e.target.value)}
                                     disabled={!isEditing}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 >
                                     {Object.entries(TipoRango).map(([key, rango]) => {
                                         if (typeof rango === 'object') {
                                             return (
-                                                <option key={key} value={rango.numero}>
+                                                <option key={key} value={rango.nombre}>
                                                     {rango.nombre}
                                                 </option>
                                             );
@@ -367,24 +396,57 @@ export const EditarUsuarioPage = () => {
                         </h2>
                         {usuarioSeleccionado.wallets.length > 0 ? (
                             <div className="space-y-3">
-                                {usuarioSeleccionado.wallets.map((wallet) => (
+                                {editedWallets.map((wallet) => (
                                     <div
                                         key={wallet.id}
-                                        className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                                        className="p-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition"
                                     >
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-700">
-                                                    {wallet.tipo}
-                                                </p>
-                                                <p className="text-xs text-gray-500">
-                                                    Código: {wallet.codigo}
-                                                </p>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex-1">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Tipo
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={wallet.tipo}
+                                                        disabled
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm"
+                                                    />
+                                                </div>
+                                                <div className="ml-3 bg-blue-100 px-3 py-1 rounded-lg self-start mt-6">
+                                                    <p className="text-xs font-semibold text-blue-800">
+                                                        ID: {wallet.id}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-lg font-semibold text-green-600">
-                                                    ${wallet.saldo.toFixed(2)}
-                                                </p>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Código
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={wallet.codigo}
+                                                    disabled
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-sm"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Saldo
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={wallet.saldo}
+                                                    onChange={(e) => handleWalletChange(wallet.id, "saldo", parseFloat(e.target.value) || 0)}
+                                                    disabled={!isEditing}
+                                                    className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-semibold transition-all ${
+                                                        isEditing 
+                                                            ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600" 
+                                                            : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
+                                                    }`}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -404,18 +466,18 @@ export const EditarUsuarioPage = () => {
                         </h2>
                         {usuarioSeleccionado.bonos.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {usuarioSeleccionado.bonos.map((bono) => (
+                                {editedBonos.map((bono) => (
                                     <div
                                         key={bono.id}
-                                        className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition"
+                                        className="p-4 border-2 border-gray-200 rounded-lg hover:shadow-md transition"
                                     >
-                                        <div className="flex items-start justify-between">
-                                            <div>
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-medium text-gray-500 mb-1">
+                                                    Nombre
+                                                </label>
                                                 <p className="text-sm font-medium text-gray-700">
                                                     {bono.nombre}
-                                                </p>
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    Código: {bono.codigo}
                                                 </p>
                                             </div>
                                             <div className="bg-blue-100 px-2 py-1 rounded">
@@ -424,11 +486,30 @@ export const EditarUsuarioPage = () => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="mt-3">
-                                            <p className="text-lg font-bold text-green-600">
-                                                ${bono.acumulado.toFixed(2)}
+                                        <div className="mb-3">
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">
+                                                Código
+                                            </label>
+                                            <p className="text-sm text-gray-600">
+                                                {bono.codigo}
                                             </p>
-                                            <p className="text-xs text-gray-500">Acumulado</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                                Acumulado
+                                            </label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={bono.acumulado}
+                                                onChange={(e) => handleBonoChange(bono.id, "acumulado", parseFloat(e.target.value) || 0)}
+                                                disabled={!isEditing}
+                                                className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-bold transition-all ${
+                                                    isEditing 
+                                                        ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600" 
+                                                        : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
+                                                }`}
+                                            />
                                         </div>
                                     </div>
                                 ))}

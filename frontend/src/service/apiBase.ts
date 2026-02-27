@@ -283,29 +283,40 @@ class ApiBase {
         }
     }
 
-    // Método para descargar archivos
-    async downloadFile(url: string, filename?: string): Promise<Blob> {
+    descargarArchivo = async (fileName: string): Promise<Blob> => {
         try {
-            const response = await this.axiosInstance.get(url, {
-                responseType: 'blob',
-            });
-
-            // En web, podemos crear un enlace de descarga
-            if (typeof window !== 'undefined') {
-                const blob = new Blob([response.data]);
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = downloadUrl;
-                link.download = filename || 'download';
-                link.click();
-                window.URL.revokeObjectURL(downloadUrl);
+            // Obtener token de Redux o storage
+            let token = this.getTokenFromRedux();
+            if (!token) {
+                token = JSON.parse(await storage.getItem('auth_token') || 'null');
             }
 
-            return response.data;
+            const response = await fetch(
+                `${API_BASE_URL}/kyc/file/${fileName}`,
+                {
+                    headers: {
+                        Authorization: token ? `Bearer ${token}` : '',
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Error al obtener archivo: ${response.statusText}`);
+            }
+
+            // Obtener el Content-Type del response
+            const contentType = response.headers.get('Content-Type') || 'application/octet-stream';
+
+            // Crear blob con el tipo MIME correcto
+            const arrayBuffer = await response.arrayBuffer();
+            const blob = new Blob([arrayBuffer], { type: contentType });
+
+            return blob;
         } catch (error) {
-            throw this.handleError(error);
+            console.error('Error al descargar archivo:', error);
+            throw error;
         }
-    }
+    };
 
     // Métodos de utilidad
 
@@ -372,8 +383,6 @@ class ApiBase {
 
     async post<T>(url: string, data?: RequestData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
         try {
-            console.log(import.meta.env.VITE_API_BASE_URL);
-
             const response = await this.axiosInstance.post<ApiResponse<T>>(url, data, config);
             return response.data;
         } catch (error) {
@@ -420,7 +429,7 @@ export { ApiBase, API_BASE_URL };
 export const api = {
     uploadFile: <T>(url: string, file: FormData, onUploadProgress?: (progressEvent: UploadProgressEvent) => void) =>
         apiBase.uploadFile<T>(url, file, onUploadProgress),
-    downloadFile: (url: string, filename?: string) => apiBase.downloadFile(url, filename),
+    descargarArchivo: (fileName: string) => apiBase.descargarArchivo(fileName),
     get: <T>(url: string, config?: AxiosRequestConfig) => apiBase.get<T>(url, config),
     post: <T>(url: string, data?: RequestData, config?: AxiosRequestConfig) => apiBase.post<T>(url, data, config),
     put: <T>(url: string, data?: RequestData, config?: AxiosRequestConfig) => apiBase.put<T>(url, data, config),

@@ -260,7 +260,7 @@ export const obtenerSolicitudesThunk = createAsyncThunk<
     ApiResponse<Page<Solicitud>>,
     { page?: number; size?: number; sort?: string },
     { rejectValue: string }
->("usuario/obtenerSolicitudes", async ({ page = 0, size = 10, sort }, { rejectWithValue }) => {
+>("usuario/obtenerSolicitudes", async ({ page = 0, size = 25, sort }, { rejectWithValue }) => {
     try {
         const response = await usuarioService.obtenerSolicitudes(page, size, sort);
         if (!response.success) {

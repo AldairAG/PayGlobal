@@ -1,55 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Ticket, Plus, MessageSquare, X, Send, CheckCircle, Clock } from "lucide-react";
+import { Ticket, Plus, MessageSquare, X, Send, CheckCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
-import type { Ticket as TicketType, RespuestaTicket } from "../../type/entityTypes";
+import type { Ticket as TicketType } from "../../type/entityTypes";
 import { EstadoTicket as EstadoTicketEnum } from "../../type/enum";
-import { useTranslation } from 'react-i18next';
-
+import { useSoporte } from "../../hooks/useSoporte";
+import type { CrearTiketRequest } from "../../type/requestTypes";
+import { useTranslation } from "react-i18next";
 
 export const SoportePage = () => {
+
+    const {
+        listarMisTikets, crearTiket, actualizarEstadoTiket, agregarComentario,
+        misTikets,
+        loadingCrearTiket, errorCrearTiket,
+        loadingActualizarEstado, errorActualizarEstado,
+        loadingAgregarComentario, errorAgregarComentario,
+        loadingMisTikets,
+        totalPaginasMisTikets,
+        totalElementosMisTikets,
+
+    } = useSoporte();
+
     const { t } = useTranslation();
-    // Estado para almacenar los tickets (mock data)
-    const [tickets, setTickets] = useState<TicketType[]>([
-        {
-            id: 1,
-            asunto: "Problema con retiro de fondos",
-            fechaCreacion: new Date("2026-02-10"),
-            estado: EstadoTicketEnum.ABIERTO,
-            descripcion: "No puedo realizar un retiro de mis fondos. El sistema muestra un error al procesar la transacción.",
-            respuestas: [
-                {
-                    id: 1,
-                    respuesta: "Hemos recibido su solicitud y estamos investigando el problema. Le informaremos pronto.",
-                    fechaRespuesta: new Date("2026-02-10T14:30:00")
-                }
-            ]
-        },
-        {
-            id: 2,
-            asunto: "Consulta sobre comisiones",
-            fechaCreacion: new Date("2026-02-08"),
-            estado: EstadoTicketEnum.CERRADO,
-            descripcion: "¿Cuáles son las comisiones aplicables a las transferencias internacionales?",
-            respuestas: [
-                {
-                    id: 2,
-                    respuesta: "Las comisiones varían según el tipo de transacción. Para transferencias internacionales, la comisión es del 2%.",
-                    fechaRespuesta: new Date("2026-02-08T16:00:00")
-                },
-                {
-                    id: 3,
-                    respuesta: "Para más detalles, puede consultar nuestra política de comisiones en la sección de ayuda.",
-                    fechaRespuesta: new Date("2026-02-08T16:05:00")
-                }
-            ]
-        }
-    ]);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize] = useState(10);
+
+    useEffect(() => {
+        listarMisTikets(currentPage, pageSize);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage]);
 
     const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
     const [showNewTicketForm, setShowNewTicketForm] = useState(false);
     const [newResponse, setNewResponse] = useState("");
+
+    // Funciones de paginación
+    const handleNextPage = () => {
+        if (currentPage < totalPaginasMisTikets - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     // Validación para nuevo ticket
     const validationSchema = Yup.object({
@@ -69,15 +72,20 @@ export const SoportePage = () => {
         },
         validationSchema,
         onSubmit: (values, { resetForm }) => {
-            const nuevoTicket: TicketType = {
-                id: tickets.length + 1,
+            const nuevoTicket: CrearTiketRequest = {
                 asunto: values.asunto,
-                fechaCreacion: new Date(),
-                estado: EstadoTicketEnum.ABIERTO,
                 descripcion: values.descripcion,
-                respuestas: []
             };
-            setTickets([nuevoTicket, ...tickets]);
+
+            crearTiket(nuevoTicket)
+                .then(() => {
+                    listarMisTikets(currentPage, pageSize);
+                })
+                .catch((error) => {
+                    console.error("Error al crear ticket:", error);
+                    toast.error(errorCrearTiket || "Error al crear el ticket. Por favor, intenta nuevamente.");
+                });
+
             resetForm();
             setShowNewTicketForm(false);
             toast.success(t("support.ticket_created_successfully"));
@@ -87,21 +95,18 @@ export const SoportePage = () => {
     // Agregar respuesta a un ticket
     const handleAddResponse = () => {
         if (!selectedTicket || !newResponse.trim()) return;
-        
-        const nuevaRespuesta: RespuestaTicket = {
-            id: selectedTicket.respuestas.length + 1,
-            respuesta: newResponse,
-            fechaRespuesta: new Date()
-        };
 
-        const ticketsActualizados = tickets.map(ticket => 
-            ticket.id === selectedTicket.id 
-                ? { ...ticket, respuestas: [...ticket.respuestas, nuevaRespuesta] }
-                : ticket
-        );
+        agregarComentario(selectedTicket.id, newResponse.trim())
+            .then(() => {
+                listarMisTikets(currentPage, pageSize);
+                setSelectedTicket(null);
+                toast.success("Respuesta agregada exitosamente");
+            })  
+            .catch((error) => {
+                console.error("Error al agregar respuesta:", error);
+                toast.error(errorAgregarComentario || "Error al agregar la respuesta. Por favor, intenta nuevamente.");
+            });
 
-        setTickets(ticketsActualizados);
-        setSelectedTicket({ ...selectedTicket, respuestas: [...selectedTicket.respuestas, nuevaRespuesta] });
         setNewResponse("");
         toast.success(t("support.response_added_successfully"));
     };
@@ -110,13 +115,15 @@ export const SoportePage = () => {
     const handleCloseTicket = () => {
         if (!selectedTicket) return;
 
-        const ticketsActualizados = tickets.map(ticket =>
-            ticket.id === selectedTicket.id
-                ? { ...ticket, estado: EstadoTicketEnum.CERRADO }
-                : ticket
-        );
+        actualizarEstadoTiket(selectedTicket.id, EstadoTicketEnum.CERRADO)
+            .then(() => {
+                listarMisTikets(currentPage, pageSize);
+            }).catch((error) => {
+                console.error("Error al cerrar el ticket:", error);
+                toast.error(errorActualizarEstado || "Error al cerrar el ticket. Por favor, intenta nuevamente.");
+            });
 
-        setTickets(ticketsActualizados);
+        //setTickets(ticketsActualizados);
         setSelectedTicket({ ...selectedTicket, estado: EstadoTicketEnum.CERRADO });
         toast.info(t("support.ticket_closed_successfully"));
     };
@@ -154,44 +161,118 @@ export const SoportePage = () => {
 
                             {/* Lista de tickets */}
                             <div className="space-y-3 max-h-150 overflow-y-auto">
-                                {tickets.map((ticket) => (
-                                    <div
-                                        key={ticket.id}
-                                        onClick={() => setSelectedTicket(ticket)}
-                                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                                            selectedTicket?.id === ticket.id
+                                {loadingMisTikets ? (
+                                    <div className="flex justify-center items-center py-8">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F0973C]"></div>
+                                    </div>
+                                ) : misTikets.length === 0 ? (
+                                    <div className="text-center py-8 text-gray-400">
+                                        <Ticket size={48} className="mx-auto mb-2 opacity-30" />
+                                        <p>No tienes tickets aún</p>
+                                    </div>
+                                ) : (
+                                    misTikets.map((ticket) => (
+                                        <div
+                                            key={ticket.id}
+                                            onClick={() => setSelectedTicket(ticket)}
+                                            className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${selectedTicket?.id === ticket.id
                                                 ? "border-[#F0973C] border-opacity-100 shadow-md"
                                                 : "border-gray-200 hover:border-opacity-50"
-                                        }`}
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-semibold text-sm line-clamp-1">
-                                                {ticket.asunto}
-                                            </h3>
-                                            <span
-                                                className={`px-2 py-1 rounded text-xs font-semibold text-white ${
-                                                    ticket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
                                                 }`}
-                                            >
-                                                {ticket.estado === EstadoTicketEnum.ABIERTO ? t("support.open") : t("support.closed")}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="font-semibold text-sm line-clamp-1">
+                                                    {ticket.asunto}
+                                                </h3>
+                                                <span
+                                                    className={`px-2 py-1 rounded text-xs font-semibold text-white ${ticket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
+                                                        }`}
+                                                >
+                                                    {ticket.estado === EstadoTicketEnum.ABIERTO ? "Abierto" : "Cerrado"}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mb-2 line-clamp-2">
+                                                {ticket.descripcion}
+                                            </p>
+                                            <div className="flex justify-between items-center text-xs text-gray-400">
+                                                <span className="flex items-center gap-1">
+                                                    <Clock size={12} />
+                                                    {new Date(ticket.fechaCreacion).toLocaleDateString()}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <MessageSquare size={12} />
+                                                    {ticket.respuestaTikect.length}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            {/* Paginación */}
+                            {!loadingMisTikets && totalPaginasMisTikets > 1 && (
+                                <div className="mt-6 pt-4 border-t border-gray-200">
+                                    <div className="flex items-center justify-between">
+                                        {/* Información de página */}
+                                        <div className="text-sm text-gray-600">
+                                            Página {currentPage + 1} de {totalPaginasMisTikets}
+                                            <span className="ml-2 text-gray-400">
+                                                ({totalElementosMisTikets} tickets)
                                             </span>
                                         </div>
-                                        <p className="text-xs text-gray-500 mb-2 line-clamp-2">
-                                            {ticket.descripcion}
-                                        </p>
-                                        <div className="flex justify-between items-center text-xs text-gray-400">
-                                            <span className="flex items-center gap-1">
-                                                <Clock size={12} />
-                                                {ticket.fechaCreacion.toLocaleDateString()}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <MessageSquare size={12} />
-                                                {ticket.respuestas.length}
-                                            </span>
+
+                                        {/* Controles de paginación */}
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={handlePreviousPage}
+                                                disabled={currentPage === 0}
+                                                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                title="Página anterior"
+                                            >
+                                                <ChevronLeft size={18} />
+                                            </button>
+
+                                            {/* Números de página */}
+                                            <div className="flex gap-1">
+                                                {Array.from({ length: Math.min(5, totalPaginasMisTikets) }, (_, i) => {
+                                                    let pageNum;
+                                                    if (totalPaginasMisTikets <= 5) {
+                                                        pageNum = i;
+                                                    } else if (currentPage < 3) {
+                                                        pageNum = i;
+                                                    } else if (currentPage > totalPaginasMisTikets - 4) {
+                                                        pageNum = totalPaginasMisTikets - 5 + i;
+                                                    } else {
+                                                        pageNum = currentPage - 2 + i;
+                                                    }
+
+                                                    return (
+                                                        <button
+                                                            key={pageNum}
+                                                            onClick={() => handlePageChange(pageNum)}
+                                                            className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${currentPage === pageNum
+                                                                ? "bg-[#F0973C] text-white"
+                                                                : "border border-gray-300 hover:bg-gray-50"
+                                                                }`}
+                                                        >
+                                                            {pageNum + 1}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <button
+                                                onClick={handleNextPage}
+                                                disabled={currentPage === totalPaginasMisTikets - 1}
+                                                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                title="Página siguiente"
+                                            >
+                                                <ChevronRight size={18} />
+                                            </button>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -207,7 +288,7 @@ export const SoportePage = () => {
                                             {t("support.new_ticket")}
                                         </h2>
                                         <button
-
+                                            disabled={loadingCrearTiket}
                                             onClick={() => {
                                                 setShowNewTicketForm(false);
                                                 formik.resetForm();
@@ -301,12 +382,11 @@ export const SoportePage = () => {
                                                 <div className="flex items-center gap-4 text-sm text-gray-600">
                                                     <span className="flex items-center gap-1">
                                                         <Clock size={16} />
-                                                        Creado: {selectedTicket.fechaCreacion.toLocaleDateString()}
+                                                        Creado: {new Date(selectedTicket.fechaCreacion).toLocaleDateString()}
                                                     </span>
                                                     <span
-                                                        className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-white ${
-                                                            selectedTicket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
-                                                        }`}
+                                                        className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-white ${selectedTicket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
+                                                            }`}
                                                     >
                                                         {selectedTicket.estado === EstadoTicketEnum.ABIERTO ? (
                                                             <>
@@ -325,6 +405,7 @@ export const SoportePage = () => {
                                             {/* NO SE TRADUCE */}
                                             {selectedTicket.estado === EstadoTicketEnum.ABIERTO && (
                                                 <button
+                                                    disabled={loadingActualizarEstado}
                                                     onClick={handleCloseTicket}
                                                     className="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-red-600 text-white"
                                                 >
@@ -332,7 +413,7 @@ export const SoportePage = () => {
                                                 </button>
                                             )}
                                         </div>
-                                        
+
                                         {/* Descripción original */}
                                         <div className="bg-gray-50 p-4 rounded-lg">
                                             <h3 className="font-semibold mb-2 text-sm text-[#F0973C]">
@@ -348,16 +429,16 @@ export const SoportePage = () => {
                                     <div className="flex-1 overflow-y-auto mb-6 space-y-4">
                                         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                                             <MessageSquare size={20} className="text-[#69AC95]" />
-                                            {t("support.responses")} ({selectedTicket.respuestas.length})
+                                            {t("support.responses")} ({selectedTicket.respuestaTikect.length})
                                         </h3>
-                                        
-                                        {selectedTicket.respuestas.length === 0 ? (
+
+                                        {selectedTicket.respuestaTikect.length === 0 ? (
                                             <div className="text-center py-8 text-gray-400">
                                                 <MessageSquare size={48} className="mx-auto mb-2 opacity-30" />
                                                 <p>{t("support.no_responses_yet")}</p>
                                             </div>
                                         ) : (
-                                            selectedTicket.respuestas.map((respuesta) => (
+                                            selectedTicket.respuestaTikect.map((respuesta) => (
                                                 <div
                                                     key={respuesta.id}
                                                     className="p-4 rounded-lg border-l-4 bg-gray-50 border-l-[#69AC95]"
@@ -382,13 +463,13 @@ export const SoportePage = () => {
                                                     onChange={(e) => setNewResponse(e.target.value)}
                                                         placeholder={t("support.write_a_comment")}
                                                     rows={3}
-                                                        className="flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none border-[#F0973C]"
+                                                    className="flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none border-[#F0973C]"
                                                 />
                                                 <button
                                                     title="subir"
                                                     onClick={handleAddResponse}
-                                                    disabled={!newResponse.trim()}
-                                                        className="px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
+                                                    disabled={!newResponse.trim() || loadingAgregarComentario}
+                                                    className="px-6 py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
                                                 >
                                                     <Send size={20} />
                                                 </button>

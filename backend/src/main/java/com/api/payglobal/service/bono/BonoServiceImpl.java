@@ -8,16 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
+import com.api.payglobal.entity.Bono;
 import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.enums.EstadoOperacion;
+import com.api.payglobal.entity.enums.TipoBono;
 import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
 import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.UninivelHelper;
+import com.api.payglobal.repository.BonoRepository;
 import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
@@ -46,6 +49,9 @@ public class BonoServiceImpl implements BonoService {
 
     @Autowired
     private TransaccionService transaccionService;
+
+    @Autowired
+    private BonoRepository bonoRepository;
 
     @Override
     @Transactional
@@ -76,8 +82,14 @@ public class BonoServiceImpl implements BonoService {
                             ? TipoConceptos.BONO_REGISTRO_DIRECTO
                             : TipoConceptos.BONO_REGISTRO_INDIRECTO;
 
+                    Bono nuevoBono = CrearOActualizarBono(usuarioEnRed.getUsername(),TipoBono.BONO_INSCRIPCION, bonoFinal);
+                    bonoRepository.save(nuevoBono);
+
+                    String descripcion= "Bono de inscripción por " + (usuarioEnRed.getNivel() == 1 ? "registro directo" : "registro indirecto") +
+                            " de usuario: " + usernameReferido;
+
                     registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, concepto,
-                            TipoMetodoPago.WALLET_COMISIONES, usernameReferido);
+                            TipoMetodoPago.WALLET_COMISIONES, descripcion);
                 }
             }
         }
@@ -98,6 +110,9 @@ public class BonoServiceImpl implements BonoService {
         if (wallet != null) {
             wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
             walletRepository.save(wallet);
+
+            Bono nuevoBono = CrearOActualizarBono(usernameReferido,TipoBono.BONO_REONOVACION_LICENCIA, bono);
+            bonoRepository.save(nuevoBono);
 
             registrarTransaccion(usernameReferido, bono, TipoConceptos.BONO_REONOVACION_LICENCIA,
                     TipoMetodoPago.WALLET_COMISIONES, null);
@@ -142,13 +157,15 @@ public class BonoServiceImpl implements BonoService {
                 }
 
                 wallet.setSaldo(nuevoSaldo);
-                Licencia nuevaLicencia=licenciaRepository.save(licencia);
+                Licencia nuevaLicencia = licenciaRepository.save(licencia);
                 walletRepository.save(wallet);
 
-                registrarTransaccion(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo, TipoConceptos.INGRESO_PASIVO,
+                registrarTransaccion(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
+                        TipoConceptos.INGRESO_PASIVO,
                         TipoMetodoPago.WALLET_DIVIDENDOS, null);
 
-                bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo, nuevaLicencia.getUsuario().getRango());
+                bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
+                        nuevaLicencia.getUsuario().getRango());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -245,4 +262,27 @@ public class BonoServiceImpl implements BonoService {
                 descripcion);
     }
 
+    private Bono CrearOActualizarBono(String username, TipoBono tipoBono, Double monto) {
+
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Bono bono = usuario.getBonos().stream()
+                .filter(b -> b.getNombre().equals(tipoBono))
+                .findFirst()
+                .map(b -> {
+                    b.setAcumulado(b.getAcumulado().add(BigDecimal.valueOf(monto)));
+                    return b;
+                })
+                .orElseGet(() -> {
+                    Bono nuevoBono = Bono.builder()
+                            .acumulado(BigDecimal.valueOf(monto))
+                            .nombre(tipoBono)
+                            .usuario(usuario)
+                            .build();
+                    return nuevoBono;
+                });
+
+        return bono;
+    }
 }

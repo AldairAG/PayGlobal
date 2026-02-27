@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, transferenciaEntreUsuariosThunk, setUsuarioEnRed } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -111,7 +111,7 @@ export const useUsuario = () => {
                 dispatch(setUsuarioEnRed(data.usuarioEnRed)); // Guardar datos del usuario en el estado
             }
 
-            const ruta = obtenerRutaSegunRol();
+            const ruta = obtenerRutaSegunRol(data.token);
             navigate(ruta); // Redirigir según el rol del usuario
 
             return unwrapResult(result);
@@ -134,7 +134,7 @@ export const useUsuario = () => {
      * Función para obtener el rol del usuario desde el token JWT
      * @returns El rol del usuario o null si no hay token o es inválido
      */
-    const obtenerRolDesdeToken = (): string | null => {
+    const obtenerRolDesdeToken = (token: string): string | null => {
         if (!token) return null;
 
         try {
@@ -150,8 +150,8 @@ export const useUsuario = () => {
      * Función para obtener la ruta de redirección según el rol del usuario
      * @returns La ruta correspondiente al rol del usuario
      */
-    const obtenerRutaSegunRol = (): string => {
-        const rol = obtenerRolDesdeToken();
+    const obtenerRutaSegunRol = (token: string): string => {
+        const rol = obtenerRolDesdeToken(token);
 
         switch (rol) {
             case 'ROLE_ADMINISTRADOR':
@@ -186,7 +186,7 @@ export const useUsuario = () => {
         }
     }
 
-    const obtenerSolicitudes = async (page: number = 0, size: number = 10, sort?: string) => {
+    const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: string) => {
         try {
             const result = await dispatch(obtenerSolicitudesThunk({ page, size, sort }));
             return unwrapResult(result);

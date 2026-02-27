@@ -21,6 +21,7 @@ import { ExploradorUsuarioPage } from './pages/admin/ExploradorUsuarioPage'
 import { store } from './store'
 import "./i18n";
 import RedUsuarioPage from './pages/user/RedUsuarioPage'
+import GestionSoportePage from './pages/admin/GestionSoportePage'
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
               <Route path={ROUTES.ADMIN.GESTION_KYC} element={<GestionKycPage />} />
               <Route path={`${ROUTES.ADMIN.EDITAR_USUARIO}/:userId`} element={<EditarUsuarioPage />} />
               <Route path={ROUTES.ADMIN.USERS_EXPLORER} element={<ExploradorUsuarioPage />} />
+              <Route path={ROUTES.ADMIN.GESTION_SOPORTE} element={<GestionSoportePage />} />
             </Route>
           </Routes>
 

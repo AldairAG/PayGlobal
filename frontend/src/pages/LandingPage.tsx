@@ -34,7 +34,7 @@ const ReturnsTable = () => {
                     La tabla representa el <span className="text-[#69AC95] font-bold">0.50% diario</span> de lunes a viernes
                 </p>
             </div>
-            
+
             <div className="bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
                 {/* Header */}
                 <div className="grid grid-cols-4 gap-2 p-4 bg-gradient-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
@@ -51,7 +51,7 @@ const ReturnsTable = () => {
                         <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">Mensual</p>
                     </div>
                 </div>
-                
+
                 {/* Body */}
                 <div className="max-h-[400px] overflow-y-auto">
                     {tableData.map((row, idx) => (
@@ -63,7 +63,7 @@ const ReturnsTable = () => {
                                 <p className="text-sm font-bold text-white">
                                     {row.licenses >= 1000 ? `${(row.licenses / 1000).toFixed(0)}K` : row.licenses}
                                 </p>
-          
+
                             </div>
                             <div className="text-center">
                                 <p className="text-sm text-[#69AC95] font-semibold">${row.daily.toFixed(2)}</p>
@@ -84,24 +84,34 @@ const ReturnsTable = () => {
     );
 };
 
-const StatCard = ({ value, label, accent }) => (
-    <div className="flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm" style={{ borderColor: accent + "33", background: "rgba(0,0,0,0.4)" }}>
-        <span className="text-2xl font-black" style={{ color: accent, fontFamily: "'Playfair Display', serif" }}>{value}</span>
-        <span className="text-white/50 text-xs mt-1 uppercase tracking-widest">{label}</span>
-    </div>
-);
+const StatCard = ({ value, label, accent }: { value: string; label: string; accent: string }) => {
+    const borderColor = accent === '#F0973C' ? 'border-[#F0973C33]' : 'border-[#69AC9533]';
+    const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
 
-const FeatureRow = ({ icon: Icon, title, desc, accent }) => (
-    <div className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-        <div className="text-2xl w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0" style={{ background: accent + "22" }}>
-            <Icon size={24} style={{ color: accent }} />
+    return (
+        <div className={`flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm bg-black/40 ${borderColor}`}>
+            <span className={`text-2xl font-black font-['Playfair_Display'] ${textColor}`}>{value}</span>
+            <span className="text-white/50 text-xs mt-1 uppercase tracking-widest">{label}</span>
         </div>
-        <div>
-            <h4 className="text-white font-semibold text-sm mb-0.5">{title}</h4>
-            <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
+    );
+};
+
+const FeatureRow = ({ icon: Icon, title, desc, accent }: { icon: React.ElementType; title: string; desc: string; accent: string }) => {
+    const bgColor = accent === '#F0973C' ? 'bg-[#F0973C22]' : 'bg-[#69AC9522]';
+    const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
+
+    return (
+        <div className="flex items-start gap-4 p-4 rounded-xl border border-white/5 bg-white/2 hover:bg-white/5 transition-colors">
+            <div className={`text-2xl w-10 h-10 flex items-center justify-center rounded-lg shrink-0 ${bgColor}`}>
+                <Icon size={24} className={textColor} />
+            </div>
+            <div>
+                <h4 className="text-white font-semibold text-sm mb-0.5">{title}</h4>
+                <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default function LandingPage() {
     const { t } = useTranslation();
@@ -109,7 +119,7 @@ export default function LandingPage() {
     const [regOpen, setRegOpen] = useState(false);
 
     return (
-        <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+        <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative font-['DM_Sans']">
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -191,8 +201,8 @@ export default function LandingPage() {
 
             {/* Background effects */}
             <div className="fixed inset-0 grid-bg pointer-events-none" />
-            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full pointer-events-none pulse-glow" style={{ background: "radial-gradient(ellipse, rgba(240,151,60,0.08) 0%, transparent 70%)" }} />
-            <div className="fixed bottom-0 left-0 w-[400px] h-[400px] rounded-full pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(105,172,149,0.05) 0%, transparent 70%)" }} />
+            <div className="fixed top-0 left-1/2 -translate-x-1/2 w-200 h-125 rounded-full pointer-events-none pulse-glow bg-[radial-gradient(ellipse,rgba(240,151,60,0.08)_0%,transparent_70%)]" />
+            <div className="fixed bottom-0 left-0 w-100 h-100 rounded-full pointer-events-none bg-[radial-gradient(ellipse,rgba(105,172,149,0.05)_0%,transparent_70%)]" />
 
             {/* NAV */}
             <nav className="relative z-40 flex items-center justify-between px-6 md:px-12 py-5 border-b border-white/5 backdrop-blur-md bg-black/40">
@@ -201,21 +211,19 @@ export default function LandingPage() {
                 </div>
 
                 <div></div>
-                
+
 
                 <div className="flex items-center gap-3">
                     <div className="landing-lang-selector"><LangSelector /></div>
                     <button
                         onClick={() => setLoginOpen(true)}
-                        className="text-sm font-semibold px-5 py-2 rounded-lg border transition-all hover:bg-[#F0973C]/10"
-                        style={{ borderColor: "#F0973C44", color: "#F0973C" }}
+                        className="text-sm font-semibold px-5 py-2 rounded-lg border border-[#F0973C44] text-[#F0973C] transition-all hover:bg-[#F0973C]/10"
                     >
                         {t("landing.login")}
                     </button>
                     <button
                         onClick={() => setRegOpen(true)}
-                        className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105"
-                        style={{ background: "linear-gradient(135deg,#F0973C,#e8841f)" }}
+                        className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                     >
                         {t("landing.register")}
                     </button>
@@ -224,7 +232,7 @@ export default function LandingPage() {
 
             {/* TICKER */}
             <div className="overflow-hidden bg-[#F0973C]/10 border-y border-[#F0973C]/10 py-2">
-                <div className="ticker-wrap flex gap-16 whitespace-nowrap" style={{ width: "200%" }}>
+                <div className="ticker-wrap flex gap-16 whitespace-nowrap w-[200%]">
                     {[...Array(2)].map((_, i) => (
                         <div key={i} className="flex gap-16">
                             {[
@@ -235,12 +243,15 @@ export default function LandingPage() {
                                 ["ADA/USD", "-0.32%", "#BC2020"],
                                 ["DOGE/USD", "+8.73%", "#F0973C"],
                                 ["XRP/USD", "+4.15%", "#69AC95"],
-                            ].map(([coin, chg, clr]) => (
-                                <span key={coin} className="text-xs font-mono">
-                                    <span className="text-white/60">{coin}</span>{" "}
-                                    <span style={{ color: clr }}>{chg}</span>
-                                </span>
-                            ))}
+                            ].map(([coin, chg, clr]) => {
+                                const color = clr === '#F0973C' ? 'text-[#F0973C]' : clr === '#69AC95' ? 'text-[#69AC95]' : 'text-[#BC2020]';
+                                return (
+                                    <span key={coin} className="text-xs font-mono">
+                                        <span className="text-white/60">{coin}</span>{" "}
+                                        <span className={color}>{chg}</span>
+                                    </span>
+                                );
+                            })}
                         </div>
                     ))}
                 </div>
@@ -255,7 +266,7 @@ export default function LandingPage() {
                             <span className="text-[#F0973C] text-xs font-semibold uppercase tracking-widest">{t("landing.exclusive_places")}</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-6xl font-black leading-[1.05] mb-4 fade-up delay-100" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <h1 className="text-5xl md:text-6xl font-black leading-[1.05] mb-4 fade-up delay-100 font-['Playfair_Display']">
                             {t("landing.welcome")}
                             <br />
                             <span className="shimmer-text">{t("landing.daily_capital")}</span>
@@ -268,8 +279,7 @@ export default function LandingPage() {
                         <div className="flex flex-col sm:flex-row gap-4 mb-10 fade-up delay-300">
                             <button
                                 onClick={() => setRegOpen(true)}
-                                className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30"
-                                style={{ background: "linear-gradient(135deg, #F0973C, #e8841f)" }}
+                                className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2"><Rocket size={18} /> {t("landing.register")}</span>
                                 <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
@@ -369,8 +379,7 @@ export default function LandingPage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                             onClick={() => setRegOpen(true)}
-                            className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30"
-                            style={{ background: "linear-gradient(135deg, #F0973C, #e8841f)" }}
+                            className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                         >
                             {t("landing.register")} →
                         </button>

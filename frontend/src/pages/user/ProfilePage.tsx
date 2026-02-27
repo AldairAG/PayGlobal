@@ -2,6 +2,7 @@ import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCir
 import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
+import { KycDocuments } from "../../components/KycDocuments";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -112,7 +113,7 @@ export const ProfilePage = () => {
                             <h3 className="text-lg font-bold text-gray-800">{t("profile.current_rank")}</h3>
                         </div>
                         <p className="text-2xl font-bold" style={{ color: '#69AC95' }}>
-                            {usuario?.rango?.nombre || t("profile.no_rank")}
+                            {usuario?.rango || t("profile.no_rank")}
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
                             {t("profile.rank")} {usuario?.rango?.numero || 0} • {t("profile.capital")}: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"}
@@ -393,6 +394,9 @@ export const ProfilePage = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Documentos KYC */}
+                    {usuario?.id && <KycDocuments usuarioId={usuario.id} />}
                 </div>
             </div>
         </div>

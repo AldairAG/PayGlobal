@@ -88,7 +88,7 @@ public class UninivelHelper {
         UsuarioEnRedResponse usuarioResponse = UsuarioEnRedResponse.builder()
             .username(usuario.getUsername())
             .licencia(usuario.getLicencia())
-            .nivel(nivelActual)
+            .nivel(nivelActual+1)
             .build();
 
         redInversa.add(usuarioResponse);

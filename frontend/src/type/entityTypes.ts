@@ -1,4 +1,4 @@
-import { EstadoTicket, TipoConceptos, TipoMetodoPago, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
+import { EstadoTicket, TipoAutorTiket, TipoConceptos, TipoKycFile, TipoMetodoPago, TipoRechazos, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
 
 export interface Usuario {
     id: number;
@@ -49,10 +49,10 @@ export const LICENCIAS = {
     P25: { name: "P25", value: 25 },
     P50: { name: "P50", value: 50 },
     P100: { name: "P100", value: 100 },
-    P200: { name: "P200", value: 200 },
+    P250: { name: "P250", value: 250 },
     P500: { name: "P500", value: 500 },
     P1000: { name: "P1000", value: 1000 },
-    P3000: { name: "P3000", value: 3000 },
+    P2500: { name: "P2500", value: 2500 },
     P5000: { name: "P5000", value: 5000 },
     P10000: { name: "P10000", value: 10000 },
     P15000: { name: "P15000", value: 15000 },
@@ -81,6 +81,8 @@ export interface RespuestaTicket {
     id: number;
     respuesta: string;
     fechaRespuesta: Date;
+    comentario: string;
+    autor: TipoAutorTiket;
 }
 
 export interface Ticket {
@@ -89,7 +91,8 @@ export interface Ticket {
     fechaCreacion: Date;
     estado: EstadoTicket;
     descripcion: string;
-    respuestas: RespuestaTicket[];
+    numeroComentarios: number;
+    respuestaTikect: RespuestaTicket[];
 }
 
 export interface WalletRetiro {
@@ -124,4 +127,18 @@ export interface Transaccion extends Operacion {
     concepto: TipoConceptos;
     metodoPago: TipoMetodoPago;
     usuario: Usuario;
+}
+
+export interface KycFile {
+    id: number;
+    fileName: string;
+    fileType: TipoKycFile;
+    filePath: string;
+    fileSize: number;
+    uploadDate: Date;
+    verificationDate?: Date;
+    estado: EstadoOperacion;
+    razonRechazo?: TipoRechazos;
+    comentarioRechazo?: string;
+    usuario?: Usuario;
 }

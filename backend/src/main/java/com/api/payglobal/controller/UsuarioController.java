@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -280,7 +282,12 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponseWrapper<Page<Solicitud>>> obtenerSolicitudes(Pageable pageable) {
         try {
-            Page<Solicitud> solicitudesPendientes = usuarioService.obtenerSolicitudes(pageable);
+            Pageable sortedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "fecha"));
+
+            Page<Solicitud> solicitudesPendientes = usuarioService.obtenerSolicitudes(sortedPageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudesPendientes,
                     "Solicitudes pendientes obtenidas correctamente"));
         } catch (Exception e) {
@@ -291,7 +298,8 @@ public class UsuarioController {
 
     /**
      * Obtener solicitudes filtradas por uno o más tipos (Admin)
-     * Permite filtrar solicitudes por COMPRA_LICENCIA, SOLICITUD_RETIRO_WALLET_DIVIDENDOS,
+     * Permite filtrar solicitudes por COMPRA_LICENCIA,
+     * SOLICITUD_RETIRO_WALLET_DIVIDENDOS,
      * SOLICITUD_RETIRO_WALLET_COMISIONES, TRANFERENCIA_USUARIO, PAGO_DELEGADO
      */
     @GetMapping("/admin/solicitudes/por-tipos")
@@ -308,8 +316,6 @@ public class UsuarioController {
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
-
-    
 
     /**
      * Obtener todos los usuarios con filtro de búsqueda (Admin)

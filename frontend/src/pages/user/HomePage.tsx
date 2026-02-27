@@ -5,15 +5,15 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { formatearFechaDate } from "../../helpers/formatHelpers";
 import { TipoWallets } from "../../type/enum";
 import { useEffect, useMemo } from 'react';
-import {getLicenseImage } from "../../helpers/imgHelpers";
+import { getLicenseImage } from "../../helpers/imgHelpers";
 import { useTransacciones } from "../../hooks/useTransacciones";
 import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
     const { t } = useTranslation();
     const { usuario, usuarioEnRed } = useUsuario();
-    const { cargarGananciasPorMes, gananciasPorMes,loadingGanancias, errorGanancias } = useTransacciones();
-    
+    const { cargarGananciasPorMes, gananciasPorMes, loadingGanancias, errorGanancias } = useTransacciones();
+
     useEffect(() => {
         cargarGananciasPorMes();
     }, []);
@@ -221,7 +221,7 @@ const HomePage = () => {
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
                             <h3 className="font-semibold text-lg">{t('home.my_current_rank')}</h3>
-                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango?.nombre || t('home.no_range')}</p>
+                            <p className="mt-2 text-2xl font-bold" style={{ color: '#69AC95' }}>{usuario?.rango || t('home.no_range')}</p>
                         </div>
 
                         <div className="p-5 rounded-xl" style={{ backgroundColor: '#f9fafb' }}>
@@ -249,15 +249,15 @@ const HomePage = () => {
                         ) : gananciasPorMes.length === 0 ? (
                             <p className="text-center text-gray-500">{t("home.no_earnings_data_available.")}</p>
                         ) : (
-                        <ResponsiveContainer>
-                            <LineChart data={gananciasPorMes}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Line type="monotone" dataKey="ganancias" stroke="#69AC95" strokeWidth={3} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                            <ResponsiveContainer>
+                                <LineChart data={gananciasPorMes}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="mes" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Line type="monotone" dataKey="ganancia" stroke="#69AC95" strokeWidth={3} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         )}
                     </div>
                 </div>
