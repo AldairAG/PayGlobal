@@ -5,10 +5,11 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
+import type { Usuario } from '../type/entityTypes';
 
 interface JwtPayload {
     sub: string;
@@ -77,6 +78,9 @@ export const useUsuario = () => {
     // Estados de transferencia entre usuarios
     const loadingTransferenciaEntreUsuarios = useSelector((state: RootState) => state.usuario.loadingTransferenciaEntreUsuarios);
     const errorTransferenciaEntreUsuarios = useSelector((state: RootState) => state.usuario.errorTransferenciaEntreUsuarios);
+
+    const loadingEditarUsuarioAdmin = useSelector((state: RootState) => state.usuario.loadingEditarUsuarioAdmin);
+    const errorEditarUsuarioAdmin = useSelector((state: RootState) => state.usuario.errorEditarUsuarioAdmin);
 
     /**
      * Función para registrar un nuevo usuario
@@ -283,6 +287,20 @@ export const useUsuario = () => {
         }
     };
 
+    const editarUsuarioAdmin = async (usuario: Usuario) => {
+        try {
+            const result = await dispatch(editarUsuarioAdminThunk(usuario));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al editar usuario (Admin):', error);
+            throw error;
+        }
+    };
+
+    const handleSetUsuarioSeleccionado = (usuario: Usuario | null) => {
+        dispatch(setUsuarioSeleccionado(usuario));
+     };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -355,6 +373,12 @@ export const useUsuario = () => {
         // Transferencia entre usuarios
         transferenciaEntreUsuarios,
         loadingTransferenciaEntreUsuarios,
-        errorTransferenciaEntreUsuarios
+        errorTransferenciaEntreUsuarios,
+
+        editarUsuarioAdmin,
+        loadingEditarUsuarioAdmin,
+        errorEditarUsuarioAdmin,
+
+        handleSetUsuarioSeleccionado
     };
 };
