@@ -1,16 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import type { Usuario, Wallet, Bono } from "../../type/entityTypes";
+import type { Usuario, Wallet, Bono, Licencia } from "../../type/entityTypes";
 import { TipoRango } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { toast } from "react-toastify";
+
 
 export const EditarUsuarioPage = () => {
     const { userId } = useParams<{ userId: string }>();
-    const { usuarioSeleccionado, obtenerUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado } = useUsuario();
+    const {
+        usuarioSeleccionado, obtenerUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado,
+        editarUsuarioAdmin, loadingEditarUsuarioAdmin, errorEditarUsuarioAdmin,
+        handleSetUsuarioSeleccionado
+
+    } = useUsuario();
     const [isEditing, setIsEditing] = useState(false);
     const [editedWallets, setEditedWallets] = useState<Wallet[]>([]);
     const [editedBonos, setEditedBonos] = useState<Bono[]>([]);
+    const [editedLicencia, setEditedLicencia] = useState<Licencia | null>(null);
 
     // Cargar datos del usuario cuando el componente se monte
     useEffect(() => {
@@ -19,25 +27,26 @@ export const EditarUsuarioPage = () => {
         }
     }, [userId]);
 
-    // Sincronizar wallets y bonos editables cuando cambia el usuario seleccionado
+    // Sincronizar wallets, bonos y licencia editables cuando cambia el usuario seleccionado
     useEffect(() => {
         if (usuarioSeleccionado) {
             setEditedWallets([...usuarioSeleccionado.wallets]);
             setEditedBonos([...usuarioSeleccionado.bonos]);
+            setEditedLicencia({...usuarioSeleccionado.licencia});
         }
     }, [usuarioSeleccionado]);
 
     const handleInputChange = (field: keyof Usuario, value: Usuario[keyof Usuario]) => {
         if (usuarioSeleccionado) {
-            // TODO: Actualizar en Redux store cuando esté en modo edición
-            console.log("Campo a actualizar:", field, value);
+            const updatedUsuario = { ...usuarioSeleccionado, [field]: value };
+            handleSetUsuarioSeleccionado(updatedUsuario);
         }
     };
 
     const handleWalletChange = (walletId: number, field: keyof Wallet, value: number) => {
-        setEditedWallets(prev => 
-            prev.map(wallet => 
-                wallet.id === walletId 
+        setEditedWallets(prev =>
+            prev.map(wallet =>
+                wallet.id === walletId
                     ? { ...wallet, [field]: value }
                     : wallet
             )
@@ -45,21 +54,42 @@ export const EditarUsuarioPage = () => {
     };
 
     const handleBonoChange = (bonoId: number, field: keyof Bono, value: number) => {
-        setEditedBonos(prev => 
-            prev.map(bono => 
-                bono.id === bonoId 
+        setEditedBonos(prev =>
+            prev.map(bono =>
+                bono.id === bonoId
                     ? { ...bono, [field]: value }
                     : bono
             )
         );
     };
 
+    const handleLicenciaChange = (field: keyof Licencia, value: Licencia[keyof Licencia]) => {
+        setEditedLicencia((prev) => {
+            if (!prev) return null;
+            return {
+                ...prev,
+                [field]: value
+            };
+        });
+    };
+
     const handleSave = () => {
-        // TODO: Implementar guardado en backend
-        console.log("Guardando usuario:", usuarioSeleccionado);
-        console.log("Wallets actualizadas:", editedWallets);
-        console.log("Bonos actualizados:", editedBonos);
-        setIsEditing(false);
+        if (usuarioSeleccionado && editedLicencia) {
+            const usuarioActualizado: Usuario = {
+                ...usuarioSeleccionado,
+                wallets: editedWallets,
+                bonos: editedBonos,
+                licencia: editedLicencia
+            };
+            editarUsuarioAdmin(usuarioActualizado)
+                .then(() => {
+                    setIsEditing(false);
+                    toast.success("Usuario actualizado correctamente");
+                })
+                .catch((error) => {
+                    toast.error(errorEditarUsuarioAdmin || "Error al actualizar usuario " + error);
+                });
+        };
     };
 
     // Estado de carga
@@ -131,6 +161,7 @@ export const EditarUsuarioPage = () => {
                                     Cancelar
                                 </button>
                                 <button
+                                    disabled={loadingEditarUsuarioAdmin}
                                     onClick={handleSave}
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                                 >
@@ -261,7 +292,7 @@ export const EditarUsuarioPage = () => {
                                     {Object.entries(TipoRango).map(([key, rango]) => {
                                         if (typeof rango === 'object') {
                                             return (
-                                                <option key={key} value={rango.nombre}>
+                                                <option key={key} value={rango.Key}>
                                                     {rango.nombre}
                                                 </option>
                                             );
@@ -323,7 +354,7 @@ export const EditarUsuarioPage = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        value={usuarioSeleccionado.licencia.nombre}
+                                        value={editedLicencia?.nombre || ''}
                                         disabled
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
                                     />
@@ -334,9 +365,14 @@ export const EditarUsuarioPage = () => {
                                     </label>
                                     <input
                                         type="number"
-                                        value={usuarioSeleccionado.licencia.precio}
-                                        disabled
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                                        step="0.01"
+                                        value={editedLicencia?.precio || 0}
+                                        onChange={(e) => handleLicenciaChange("precio", parseFloat(e.target.value) || 0)}
+                                        disabled={!isEditing}
+                                        className={`w-full px-3 py-2 border-2 rounded-lg transition-all ${isEditing
+                                            ? "border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            : "border-gray-300 bg-gray-100 cursor-not-allowed"
+                                        }`}
                                     />
                                 </div>
                             </div>
@@ -347,9 +383,14 @@ export const EditarUsuarioPage = () => {
                                     </label>
                                     <input
                                         type="number"
-                                        value={usuarioSeleccionado.licencia.limite}
-                                        disabled
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                                        step="0.01"
+                                        value={editedLicencia?.limite || 0}
+                                        onChange={(e) => handleLicenciaChange("limite", parseFloat(e.target.value) || 0)}
+                                        disabled={!isEditing}
+                                        className={`w-full px-3 py-2 border-2 rounded-lg transition-all ${isEditing
+                                            ? "border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            : "border-gray-300 bg-gray-100 cursor-not-allowed"
+                                        }`}
                                     />
                                 </div>
                                 <div>
@@ -358,9 +399,14 @@ export const EditarUsuarioPage = () => {
                                     </label>
                                     <input
                                         type="number"
-                                        value={usuarioSeleccionado.licencia.saldoAcumulado}
-                                        disabled
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                                        step="0.01"
+                                        value={editedLicencia?.saldoAcumulado || 0}
+                                        onChange={(e) => handleLicenciaChange("saldoAcumulado", parseFloat(e.target.value) || 0)}
+                                        disabled={!isEditing}
+                                        className={`w-full px-3 py-2 border-2 rounded-lg transition-all ${isEditing
+                                            ? "border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            : "border-gray-300 bg-gray-100 cursor-not-allowed"
+                                        }`}
                                     />
                                 </div>
                             </div>
@@ -378,9 +424,10 @@ export const EditarUsuarioPage = () => {
                             <div className="flex items-center">
                                 <input
                                     type="checkbox"
-                                    checked={usuarioSeleccionado.licencia.activo}
-                                    disabled
-                                    className="w-4 h-4 text-blue-600 rounded cursor-not-allowed"
+                                    checked={editedLicencia?.activo || false}
+                                    onChange={(e) => handleLicenciaChange("activo", e.target.checked)}
+                                    disabled={!isEditing}
+                                    className={`w-4 h-4 text-blue-600 rounded ${!isEditing ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                                 />
                                 <label className="ml-2 text-sm font-medium text-gray-700">
                                     Licencia Activa
@@ -441,11 +488,10 @@ export const EditarUsuarioPage = () => {
                                                     value={wallet.saldo}
                                                     onChange={(e) => handleWalletChange(wallet.id, "saldo", parseFloat(e.target.value) || 0)}
                                                     disabled={!isEditing}
-                                                    className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-semibold transition-all ${
-                                                        isEditing 
-                                                            ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600" 
-                                                            : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
-                                                    }`}
+                                                    className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-semibold transition-all ${isEditing
+                                                        ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600"
+                                                        : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
+                                                        }`}
                                                 />
                                             </div>
                                         </div>
@@ -504,11 +550,10 @@ export const EditarUsuarioPage = () => {
                                                 value={bono.acumulado}
                                                 onChange={(e) => handleBonoChange(bono.id, "acumulado", parseFloat(e.target.value) || 0)}
                                                 disabled={!isEditing}
-                                                className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-bold transition-all ${
-                                                    isEditing 
-                                                        ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600" 
-                                                        : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
-                                                }`}
+                                                className={`w-full px-3 py-2 border-2 rounded-lg text-lg font-bold transition-all ${isEditing
+                                                    ? "border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-600"
+                                                    : "border-gray-300 bg-gray-100 cursor-not-allowed text-green-600"
+                                                    }`}
                                             />
                                         </div>
                                     </div>

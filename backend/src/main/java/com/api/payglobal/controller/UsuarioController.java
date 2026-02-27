@@ -141,7 +141,7 @@ public class UsuarioController {
      * Editar usuario (Admin)
      */
     @PutMapping("/admin/editar")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponseWrapper<String>> editarUsuario(@RequestBody Usuario usuario) {
         try {
             usuarioService.editarUsuario(usuario);

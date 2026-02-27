@@ -58,6 +58,9 @@ interface UsuarioState {
     usuariosEnRed?: UsuarioEnRedResponse[] | null;
     loadingUsuariosEnRed: boolean;
     errorUsuariosEnRed: string | null;
+
+    loadingEditarUsuario: boolean;
+    errorEditarUsuario: string | null;
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -99,6 +102,8 @@ const loadInitialState = (): UsuarioState => {
         usuariosEnRed: null,
         loadingUsuariosEnRed: false,
         errorUsuariosEnRed: null,
+        loadingEditarUsuario: false,
+        errorEditarUsuario: null,
     };
 };
 
@@ -325,6 +330,24 @@ export const obtenerUsuariosEnRedThunk = createAsyncThunk<
     }
 });
 
+export const editarUsuarioAdmin = createAsyncThunk<
+    ApiResponse<string>,
+    Usuario,
+    { rejectValue: string }
+>("usuario/editarUsuarioAdmin", async (usuario, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.editarUsuarioAdmin(usuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al editar usuario (admin)");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al editar usuario (admin)";
+        return rejectWithValue(message);
+    }
+});
+
+
 const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
@@ -340,6 +363,9 @@ const usuarioSlice = createSlice({
         },
         setUsuarioEnRed(state, action: PayloadAction<number>) {
             state.usuarioEnRed = action.payload;
+        },
+        setUsuarioSeleccionado(state, action: PayloadAction<Usuario | null>) {
+            state.usuarioSeleccionado = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -505,9 +531,9 @@ const usuarioSlice = createSlice({
                 state.usuarios = null;
                 state.usuarioSeleccionado = null;
                 state.usuariosEnRed = null;
-            });
+            })
     },
 });
 
-export const { setUsuario, clearUsuario,setUsuarioEnRed } = usuarioSlice.actions;
+export const { setUsuario, clearUsuario, setUsuarioEnRed,setUsuarioSeleccionado } = usuarioSlice.actions;
 export default usuarioSlice.reducer;

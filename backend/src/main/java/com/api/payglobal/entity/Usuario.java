@@ -53,6 +53,7 @@ public class Usuario implements UserDetails{
     @Column(nullable = false)
     private Date fechaRegistro;
     private boolean activo;
+    @Enumerated(EnumType.STRING)
     private TipoRango rango;
 
     @Enumerated(EnumType.STRING)

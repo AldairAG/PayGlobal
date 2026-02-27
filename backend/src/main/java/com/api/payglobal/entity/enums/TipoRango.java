@@ -1,16 +1,17 @@
 package com.api.payglobal.entity.enums;
 public enum TipoRango {
-    RANGO_0("Rango 0", 0, 0.0),
-    RANGO_1("Rango 1", 1, 10.0),
-    RANGO_2("Rango 2", 2, 20.0),
-    RANGO_3("Rango 3", 3, 30.0),
-    RANGO_4("Rango 4", 4, 40.0),
-    RANGO_5("Rango 5", 5, 50.0),
-    RANGO_6("Rango 6", 6, 60.0),
-    RANGO_7("Rango 7", 7, 70.0),
-    RANGO_8("Rango 8", 8, 80.0),
-    RANGO_9("Rango 9", 9, 90.0),
-    RANGO_10("Rango 10", 10, 100.0);
+    SIN_RANGO("SIN RANGO", 0, 0.0),
+    SENIOR_MANAGER("SENIOR MANAGER", 1, 5000),
+    EXECUTIVE_DIRECTOR("EXECUTIVE DIRECTOR", 2, 10000),
+    DIAMOND_TEAM("DIAMOND TEAM", 3, 25000),
+    DOUBLE_DIAMOND("DOUBLE DIAMOND", 4, 50000),
+    TRIPLE_DIAMOND("TRIPLE DIAMOND", 5, 80000),
+    PRESIDENT_TEAM("PRESIDENT TEAM", 6, 120000),
+    PRESIDENT_BLACK_DIAMOND("PRESIDENT BLACK DIAMOND", 7, 240000),
+    CROWN_BLACK_DIAMOND("CROWN BLACK DIAMOND", 8, 480000),
+    AMBASSADOR("AMBASSADOR", 9, 1000000),
+    GLOBAL_AMBASSADOR("GLOBAL AMBASSADOR", 10, 2000000);
+
 
     private final String nombre;
     private final int numero;

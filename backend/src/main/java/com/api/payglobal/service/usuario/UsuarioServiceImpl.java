@@ -150,7 +150,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .fechaRegistro(new Date())
                 .activo(true)
                 .rol(RolesUsuario.USUARIO)
-                .rango(TipoRango.RANGO_0)
+                .rango(TipoRango.SIN_RANGO)
                 .wallets(new ArrayList<>())
                 .build();
 
@@ -228,44 +228,39 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + usuario.getId()));
 
         // Actualizar campos básicos
-        if (usuario.getUsername() != null) {
-            usuarioExistente.setUsername(usuario.getUsername());
+        actualizarCampoSiPresente(usuario.getUsername(), usuarioExistente::setUsername);
+        actualizarCampoSiPresente(usuario.getEmail(), usuarioExistente::setEmail);
+        actualizarCampoSiPresente(usuario.getNombre(), usuarioExistente::setNombre);
+        actualizarCampoSiPresente(usuario.getApellido(), usuarioExistente::setApellido);
+        actualizarCampoSiPresente(usuario.getTelefono(), usuarioExistente::setTelefono);
+        actualizarCampoSiPresente(usuario.getPais(), usuarioExistente::setPais);
+        actualizarCampoSiPresente(usuario.getRango(), usuarioExistente::setRango);
+        actualizarCampoSiPresente(usuario.getReferenciado(), usuarioExistente::setReferenciado);
+
+        // Actualizar colecciones
+        if (usuario.getWallets() != null && !usuario.getWallets().isEmpty()) {
+            usuario.getWallets().forEach(wallet -> wallet.setUsuario(usuarioExistente));
+            usuarioExistente.setWallets(usuario.getWallets());
         }
-        if (usuario.getEmail() != null) {
-            usuarioExistente.setEmail(usuario.getEmail());
+        
+        if (usuario.getBonos() != null && !usuario.getBonos().isEmpty()) {
+            usuario.getBonos().forEach(bono -> bono.setUsuario(usuarioExistente));
+            usuarioExistente.setBonos(usuario.getBonos());
         }
-        if (usuario.getNombre() != null) {
-            usuarioExistente.setNombre(usuario.getNombre());
-        }
-        if (usuario.getApellido() != null) {
-            usuarioExistente.setApellido(usuario.getApellido());
-        }
-        if (usuario.getTelefono() != null) {
-            usuarioExistente.setTelefono(usuario.getTelefono());
-        }
-        if (usuario.getPais() != null) {
-            usuarioExistente.setPais(usuario.getPais());
+        
+        if (usuario.getLicencia() != null) {
+            usuario.getLicencia().setUsuario(usuarioExistente);
+            usuarioExistente.setLicencia(usuario.getLicencia());
         }
 
-        // Actualizar password solo si se proporciona uno nuevo
-        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
-            usuarioExistente.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        }
-
-        // Actualizar rol
-        if (usuario.getRol() != null) {
-            usuarioExistente.setRol(usuario.getRol());
-        }
-
-        // Actualizar estado activo
         usuarioExistente.setActivo(usuario.isActivo());
-
-        // Actualizar referenciado
-        if (usuario.getReferenciado() != null) {
-            usuarioExistente.setReferenciado(usuario.getReferenciado());
-        }
-
         usuarioRepository.save(usuarioExistente);
+    }
+
+    private <T> void actualizarCampoSiPresente(T valor, java.util.function.Consumer<T> setter) {
+        if (valor != null) {
+            setter.accept(valor);
+        }
     }
 
     @Override

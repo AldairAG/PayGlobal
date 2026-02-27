@@ -229,7 +229,7 @@ public class BonoServiceImpl implements BonoService {
                         .map(licencia -> BigDecimal.valueOf(licencia.getPrecio()))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                TipoRango nuevoRango = TipoRango.RANGO_0;
+                TipoRango nuevoRango = TipoRango.SIN_RANGO;
                 for (TipoRango rango : TipoRango.values()) {
                     if (totalPrecioLicencias.compareTo(BigDecimal.valueOf(rango.getCapitalNecesario())) >= 0) {
                         nuevoRango = rango;

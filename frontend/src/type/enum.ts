@@ -49,20 +49,21 @@ export interface TipoRango {
     nombre: string;
     numero: number;
     capitalNecesario: number;
+    Key: string;
 }
 
 export const TipoRango = {
-    RANGO_0: { nombre: "Rango 0", numero: 0, capitalNecesario: 0.0 },
-    RANGO_1: { nombre: "Rango 1", numero: 1, capitalNecesario: 10.0 },
-    RANGO_2: { nombre: "Rango 2", numero: 2, capitalNecesario: 20.0 },
-    RANGO_3: { nombre: "Rango 3", numero: 3, capitalNecesario: 30.0 },
-    RANGO_4: { nombre: "Rango 4", numero: 4, capitalNecesario: 40.0 },
-    RANGO_5: { nombre: "Rango 5", numero: 5, capitalNecesario: 50.0 },
-    RANGO_6: { nombre: "Rango 6", numero: 6, capitalNecesario: 60.0 },
-    RANGO_7: { nombre: "Rango 7", numero: 7, capitalNecesario: 70.0 },
-    RANGO_8: { nombre: "Rango 8", numero: 8, capitalNecesario: 80.0 },
-    RANGO_9: { nombre: "Rango 9", numero: 9, capitalNecesario: 90.0 },
-    RANGO_10: { nombre: "Rango 10", numero: 10, capitalNecesario: 100.0 }
+    SIN_RANGO: { nombre: "SIN RANGO", numero: 0, capitalNecesario: 0.0 ,Key: "SIN_RANGO"},
+    SENIOR_MANAGER: { nombre: "SENIOR MANAGER", numero: 1, capitalNecesario: 5000 ,Key: "SENIOR_MANAGER"},
+    EXECUTIVE_DIRECTOR: { nombre: "EXECUTIVE DIRECTOR", numero: 2, capitalNecesario: 10000 ,Key: "EXECUTIVE_DIRECTOR"},
+    DIAMOND_TEAM: { nombre: "DIAMOND TEAM", numero: 3, capitalNecesario: 25000 ,Key: "DIAMOND_TEAM"},
+    DOUBLE_DIAMOND: { nombre: "DOUBLE DIAMOND", numero: 4, capitalNecesario: 50000 ,Key: "DOUBLE_DIAMOND"},
+    TRIPLE_DIAMOND: { nombre: "TRIPLE DIAMOND", numero: 5, capitalNecesario: 80000 ,Key: "TRIPLE_DIAMOND"},
+    PRESIDENT_TEAM: { nombre: "PRESIDENT TEAM", numero: 6, capitalNecesario: 120000 ,Key: "PRESIDENT_TEAM"},
+    PRESIDENT_BLACK_DIAMOND: { nombre: "PRESIDENT BLACK DIAMOND", numero: 7, capitalNecesario: 240000 ,Key: "PRESIDENT_BLACK_DIAMOND"},
+    CROWN_BLACK_DIAMOND: { nombre: "CROWN BLACK DIAMOND", numero: 8, capitalNecesario: 480000 ,Key: "CROWN_BLACK_DIAMOND"},
+    AMBASSADOR: { nombre: "AMBASSADOR", numero: 9, capitalNecesario: 1000000 ,Key: "AMBASSADOR"},
+    GLOBAL_AMBASSADOR: { nombre: "GLOBAL AMBASSADOR", numero: 10, capitalNecesario: 2000000 ,Key: "GLOBAL_AMBASSADOR"}
 } as const;
 
 export enum TipoWallets {
