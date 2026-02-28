@@ -44,7 +44,6 @@ export default function Header() {
                     <span className="font-bold" style={{ color: '#F0973C' }}>${(ultimoBono||0).toFixed(2)}</span>
                 </div>
 
-                
             </div>
             <div className="flex items-center justify-center m-0 p-0">
                 <img
