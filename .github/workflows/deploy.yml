@@ -6,38 +6,19 @@ on:
       - main
 
 jobs:
-
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASS }}
-
-      - name: Build & Push Backend
-        run: |
-          docker build -t TU_USUARIO_DOCKER/backend:latest ./backend
-          docker push TU_USUARIO_DOCKER/backend:latest
-
-      - name: Build & Push Frontend
-        run: |
-          docker build -t TU_USUARIO_DOCKER/frontend:latest ./frontend
-          docker push TU_USUARIO_DOCKER/frontend:latest
-
-      - name: Deploy to VPS
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: TU_IP
+          host: vps-5600697-x.dattaweb.com
           username: ubuntu
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /home/ubuntu/app
-            docker compose pull
+            git pull origin main
+            docker compose down
+            docker compose build --no-cache
             docker compose up -d
