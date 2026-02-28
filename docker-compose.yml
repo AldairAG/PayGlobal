@@ -27,7 +27,7 @@ services:
       - ./frontend/web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
     environment:
-      - VITE_API_BASE_URL=https://payglobal.mx/api
+      - VITE_API_BASE_URL=https://payglobal.vip/api
     networks:
       - main_network
 
