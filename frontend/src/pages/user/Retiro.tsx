@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { use, useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle, Pencil, Trash2 } from "lucide-react";
@@ -26,8 +26,8 @@ export const RetiroPage = () => {
         loadingCreate,
         errorCreate,
         deleteWalletAddress,
-        loadingDelete,
-        errorDelete,
+        //loadingDelete,
+        //errorDelete,
         updateWalletAddress,
         loadingUpdate,
         errorUpdate
@@ -35,7 +35,7 @@ export const RetiroPage = () => {
 
     // Estado para solicitudes de retiro
     // Estados de UI
-    const [solicitarRetiroHard, setSolicitarRetiro] = useState<SolicitudRetiro[]>([]);
+    const [solicitarRetiroHard] = useState<SolicitudRetiro[]>([]);
     const [showWalletForm, setShowWalletForm] = useState<string | null>(null);
     const [selectedWallet, setSelectedWallet] = useState<number | null>(null);
     const [estadoFiltro, setEstadoFiltro] = useState<string>("");
@@ -654,8 +654,8 @@ export const RetiroPage = () => {
                                         const estadoInfo = getEstadoInfo(solicitud.estado);
                                         const IconoEstado = estadoInfo.icon;
                                         return (
-                                            <tr key={solicitud.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-4 text-sm font-semibold">#{solicitud.id}</td>
+                                            <tr key={solicitud.walletId} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                                                <td className="px-4 py-4 text-sm font-semibold">#{solicitud.walletId}</td>
                                                 <td className="px-4 py-4 text-xs font-mono text-gray-600 max-w-50 truncate">
                                                     {solicitud.walletAddress}
                                                 </td>

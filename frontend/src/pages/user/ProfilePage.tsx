@@ -116,7 +116,7 @@ export const ProfilePage = () => {
                             {usuario?.rango || t("profile.no_rank")}
                         </p>
                         <p className="text-sm text-gray-500 mt-2">
-                            {t("profile.rank")} {usuario?.rango?.numero || 0} • {t("profile.capital")}: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"}
+                            {/* {t("profile.rank")} {usuario?.rango || 0} • {t("profile.capital")}: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"} */}
                         </p>
                     </div>
 

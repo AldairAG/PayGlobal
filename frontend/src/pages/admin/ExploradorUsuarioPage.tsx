@@ -73,7 +73,7 @@ export const ExploradorUsuarioPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                         <p className="text-sm text-gray-600 mb-1">Total Usuarios</p>
-                        <p className="text-2xl font-bold text-gray-800">{usuarios?.totalElements ?? 0}</p>
+                        <p className="text-2xl font-bold text-gray-800">{usuarios?.page.totalElements ?? 0}</p>
                     </div>
                     <div className="bg-blue-50 rounded-lg shadow-sm border border-blue-200 p-4">
                         <p className="text-sm text-blue-700 mb-1">Página Actual</p>
@@ -81,11 +81,11 @@ export const ExploradorUsuarioPage = () => {
                     </div>
                     <div className="bg-green-50 rounded-lg shadow-sm border border-green-200 p-4">
                         <p className="text-sm text-green-700 mb-1">Mostrando</p>
-                        <p className="text-2xl font-bold text-green-800">{usuarios?.numberOfElements ?? 0}</p>
+                        <p className="text-2xl font-bold text-green-800">{usuarios?.page.totalElements ?? 0}</p>
                     </div>
                     <div className="bg-purple-50 rounded-lg shadow-sm border border-purple-200 p-4">
                         <p className="text-sm text-purple-700 mb-1">Total Páginas</p>
-                        <p className="text-2xl font-bold text-purple-800">{usuarios?.totalPages ?? 0}</p>
+                        <p className="text-2xl font-bold text-purple-800">{usuarios?.page.totalPages ?? 0}</p>
                     </div>
                 </div>
 
@@ -235,15 +235,15 @@ export const ExploradorUsuarioPage = () => {
                 </div>
 
                 {/* Controles de paginación */}
-                {usuarios && usuarios.totalPages > 1 && (
+                {usuarios && usuarios.page.totalPages > 1 && (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
                         <div className="flex items-center justify-between">
                             {/* Información de paginación */}
                             <div className="text-sm text-gray-600">
-                                Mostrando <span className="font-semibold">{usuarios.numberOfElements}</span> de{' '}
-                                <span className="font-semibold">{usuarios.totalElements}</span> usuarios
+                                Mostrando <span className="font-semibold">{usuarios.page.totalElements}</span> de{' '}
+                                <span className="font-semibold">{usuarios.page.totalElements}</span> usuarios
                                 {' '}(Página <span className="font-semibold">{paginaActual + 1}</span> de{' '}
-                                <span className="font-semibold">{usuarios.totalPages}</span>)
+                                <span className="font-semibold">{usuarios.page.totalPages}</span>)
                             </div>
 
                             {/* Controles de navegación */}
@@ -251,7 +251,7 @@ export const ExploradorUsuarioPage = () => {
                                 {/* Botón Primera página */}
                                 <button
                                     onClick={() => setPaginaActual(0)}
-                                    disabled={usuarios.first || loadingUsuarios}
+                                    disabled={usuarios.page.number === 0 || loadingUsuarios}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Primera página"
                                 >
@@ -261,7 +261,7 @@ export const ExploradorUsuarioPage = () => {
                                 {/* Botón Anterior */}
                                 <button
                                     onClick={() => setPaginaActual(prev => Math.max(0, prev - 1))}
-                                    disabled={usuarios.first || loadingUsuarios}
+                                    disabled={usuarios.page.number === 0 || loadingUsuarios}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página anterior"
                                 >
@@ -270,14 +270,14 @@ export const ExploradorUsuarioPage = () => {
 
                                 {/* Números de página */}
                                 <div className="flex items-center gap-1">
-                                    {Array.from({ length: Math.min(5, usuarios.totalPages) }, (_, i) => {
+                                    {Array.from({ length: Math.min(5, usuarios.page.totalPages) }, (_, i) => {
                                         let pageNum;
-                                        if (usuarios.totalPages <= 5) {
+                                        if (usuarios.page.totalPages <= 5) {
                                             pageNum = i;
                                         } else if (paginaActual < 3) {
                                             pageNum = i;
-                                        } else if (paginaActual > usuarios.totalPages - 4) {
-                                            pageNum = usuarios.totalPages - 5 + i;
+                                        } else if (paginaActual > usuarios.page.totalPages - 4) {
+                                            pageNum = usuarios.page.totalPages - 5 + i;
                                         } else {
                                             pageNum = paginaActual - 2 + i;
                                         }
@@ -301,8 +301,8 @@ export const ExploradorUsuarioPage = () => {
 
                                 {/* Botón Siguiente */}
                                 <button
-                                    onClick={() => setPaginaActual(prev => Math.min(usuarios.totalPages - 1, prev + 1))}
-                                    disabled={usuarios.last || loadingUsuarios}
+                                    onClick={() => setPaginaActual(prev => Math.min(usuarios.page.totalPages - 1, prev + 1))}
+                                    disabled={usuarios.page.number === usuarios.page.totalPages - 1 || loadingUsuarios}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página siguiente"
                                 >
@@ -311,8 +311,8 @@ export const ExploradorUsuarioPage = () => {
 
                                 {/* Botón Última página */}
                                 <button
-                                    onClick={() => setPaginaActual(usuarios.totalPages - 1)}
-                                    disabled={usuarios.last || loadingUsuarios}
+                                    onClick={() => setPaginaActual(usuarios.page.totalPages - 1)}
+                                    disabled={usuarios.page.number === usuarios.page.totalPages - 1 || loadingUsuarios}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Última página"
                                 >

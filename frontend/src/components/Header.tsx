@@ -10,8 +10,8 @@ export default function Header() {
     const { t } = useTranslation();
     const { usuario } = useUsuario();
 
-    const ultimoBono = usuario?.bonos?.length > 0 
-        ? usuario.bonos.reduce((max: any, bono: any) => bono.acumulado > max.acumulado ? bono : max, usuario.bonos[0]).acumulado 
+    const ultimoBono = usuario?.bonos?.length || 0 > 0 
+        ? usuario?.bonos.reduce((max: { acumulado: number }, bono: { acumulado: number }) => bono.acumulado > max.acumulado ? bono : max, usuario.bonos[0]).acumulado 
         : 0;
 
     const ultimoDividendo = usuario?.licencia?.saldoAcumulado || 0;
@@ -41,7 +41,7 @@ export default function Header() {
                 <div className="flex flex-col items-center px-4 py-2 rounded-lg border" 
                      style={{ backgroundColor: '#fef3e8', borderColor: '#F0973C' }}>
                     <span className="font-medium" style={{ color: '#4a5568' }}>{t("header.last_bonus")}</span>
-                    <span className="font-bold" style={{ color: '#F0973C' }}>${ultimoBono.toFixed(2)}</span>
+                    <span className="font-bold" style={{ color: '#F0973C' }}>${(ultimoBono||0).toFixed(2)}</span>
                 </div>
 
                 
