@@ -18,7 +18,7 @@ services:
     build:
       context: frontend/
       args:
-        VITE_API_BASE_URL: https://payglobal.vip/api
+        VITE_API_BASE_URL: http://payglobal.vip/api
       dockerfile: Dockerfile
     ports:
       - "80:80"
@@ -28,8 +28,6 @@ services:
     volumes:
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
-    environment:
-      - VITE_API_BASE_URL=https://payglobal.vip/api
     networks:
       - main_network
 
