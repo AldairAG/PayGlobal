@@ -9,7 +9,7 @@ services:
       - main_network
     environment:
       DB_URL: jdbc:postgresql://vps-5600697-x.dattaweb.com/db_payglobal
-      DB_USER_NAME: superUsuario
+      DB_USER_NAME: postgres
       DB_PASSWORD: P4ygl0b41+
       TZ: Etc/GMT+6
     restart: always
