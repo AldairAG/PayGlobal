@@ -78,7 +78,6 @@ const storage = new WebSessionStorageWrapper();
 
 // Configuración base de la API
 //const API_BASE_URL = 'http://localhost:8080/24bet';
-//const API_BASE_URL = 'https://24bet.mx/24bet';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 // Rutas públicas que no requieren autenticación
