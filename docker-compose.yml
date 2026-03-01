@@ -18,7 +18,8 @@ services:
     build:
       context: frontend/
       args:
-        VITE_API_BASE_URL: http://payglobal.vip/api
+        #VITE_API_BASE_URL: http://payglobal.vip/api
+        VITE_API_BASE_URL: http://vps-5600697-x.dattaweb.com/api
       dockerfile: Dockerfile
     ports:
       - "80:80"
