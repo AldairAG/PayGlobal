@@ -15,6 +15,7 @@ jobs:
         with:
           host: vps-5600697-x.dattaweb.com
           username: root
+          port: 5371
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /deploy/PayGlobal
