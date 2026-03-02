@@ -52,6 +52,7 @@ public class UsuarioController {
     @PostMapping("/registro")
     public ResponseEntity<ApiResponseWrapper<JwtResponse>> registrar(@RequestBody RegistroResquestDTO registroRequest) {
         try {
+            System.out.println("Registro request: ");
             JwtResponse response = usuarioService.registrar(registroRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseWrapper<>(true, response, null));
         } catch (Exception e) {
