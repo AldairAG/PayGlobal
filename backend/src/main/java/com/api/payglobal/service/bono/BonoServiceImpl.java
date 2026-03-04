@@ -82,11 +82,15 @@ public class BonoServiceImpl implements BonoService {
                             ? TipoConceptos.BONO_REGISTRO_DIRECTO
                             : TipoConceptos.BONO_REGISTRO_INDIRECTO;
 
-                    Bono nuevoBono = CrearOActualizarBono(usuarioEnRed.getUsername(),TipoBono.BONO_INSCRIPCION, bonoFinal);
+                    Bono nuevoBono = crearOActualizarBono(usuarioEnRed.getUsername(), TipoBono.BONO_INSCRIPCION,
+                            bonoFinal);
                     bonoRepository.save(nuevoBono);
 
-                    String descripcion= "Bono de inscripción por " + (usuarioEnRed.getNivel() == 1 ? "registro directo" : "registro indirecto") +
+                    String descripcion = "Bono de inscripción por "
+                            + (usuarioEnRed.getNivel() == 1 ? "registro directo" : "registro indirecto") +
                             " de usuario: " + usernameReferido;
+
+                    aumentarSaldoAcumuladoLicencia(usernameReferido, bonoFinal);
 
                     registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, concepto,
                             TipoMetodoPago.WALLET_COMISIONES, descripcion);
@@ -111,8 +115,10 @@ public class BonoServiceImpl implements BonoService {
             wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
             walletRepository.save(wallet);
 
-            Bono nuevoBono = CrearOActualizarBono(usernameReferido,TipoBono.BONO_REONOVACION_LICENCIA, bono);
+            Bono nuevoBono = crearOActualizarBono(usernameReferido, TipoBono.BONO_REONOVACION_LICENCIA, bono);
             bonoRepository.save(nuevoBono);
+
+            aumentarSaldoAcumuladoLicencia(usernameReferido, bono);
 
             registrarTransaccion(usernameReferido, bono, TipoConceptos.BONO_REONOVACION_LICENCIA,
                     TipoMetodoPago.WALLET_COMISIONES, null);
@@ -262,7 +268,7 @@ public class BonoServiceImpl implements BonoService {
                 descripcion);
     }
 
-    private Bono CrearOActualizarBono(String username, TipoBono tipoBono, Double monto) {
+    private Bono crearOActualizarBono(String username, TipoBono tipoBono, Double monto) {
 
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -284,5 +290,17 @@ public class BonoServiceImpl implements BonoService {
                 });
 
         return bono;
+    }
+
+    private void aumentarSaldoAcumuladoLicencia(String username, Double monto) {
+        usuarioRepository.findByUsername(username).ifPresent(usuario -> {
+            if (usuario.getLicencia() != null) {
+                Integer saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
+                        ? usuario.getLicencia().getSaldoAcumulado()
+                        : 0;
+                usuario.getLicencia().setSaldoAcumulado(saldoActual + monto.intValue());
+                licenciaRepository.save(usuario.getLicencia());
+            }
+        });
     }
 }
