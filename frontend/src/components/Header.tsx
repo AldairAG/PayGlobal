@@ -10,12 +10,6 @@ export default function Header() {
     const { t } = useTranslation();
     const { usuario } = useUsuario();
 
-    const ultimoBono = usuario?.bonos?.length || 0 > 0 
-        ? usuario?.bonos.reduce((max: { acumulado: number }, bono: { acumulado: number }) => bono.acumulado > max.acumulado ? bono : max, usuario.bonos[0]).acumulado 
-        : 0;
-
-    const ultimoDividendo = usuario?.licencia?.saldoAcumulado || 0;
-
     return (
         <header className="relative z-20 px-6 py-4 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-black/90">
             {/* Información: Licencia, Dividendo, Bono */}

@@ -8,6 +8,8 @@ import { useEffect, useMemo } from 'react';
 import { getLicenseImage } from "../../helpers/imgHelpers";
 import { useTransacciones } from "../../hooks/useTransacciones";
 import { useTranslation } from 'react-i18next';
+import CryptoTicker from '../../components/CryptoTicker';
+import ForexTicker from '../../components/ForexTicker';
 
 const HomePage = () => {
     const { t } = useTranslation();
@@ -30,103 +32,12 @@ const HomePage = () => {
         <div className="flex flex-col w-full min-h-screen bg-[#000000] text-white">
 
             {/* TICKER DE CRYPTOMONEDAS */}
-            <div className="bg-[#F0973C]/10 border-b border-[#F0973C]/10">
-                <div className="px-6 py-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <CryptoTicker />
 
-                        {/* BTC/USD */}
-                        <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-[#F0973C]/20 bg-[#F0973C]/5 hover:bg-[#F0973C]/10 transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm bg-[#F0973C]">
-                                    ₿
-                                </div>
-                                <div>
-                                    <p className="font-bold text-sm text-white/80">BTC/USD</p>
-                                    <p className="text-2xl font-bold text-white">38549.77</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 justify-end">
-                                    <svg className="w-4 h-4 text-[#69AC95]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-xs font-semibold text-[#69AC95]">0.21%</span>
-                                </div>
-                                <p className="text-xs font-medium text-[#69AC95]">81.42</p>
-                            </div>
-                        </div>
+            {/* MERCADO FOREX */}
+            <ForexTicker />
 
-                        {/* USDT (ERC-20) */}
-                        <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-[#69AC95]/20 bg-[#69AC95]/5 hover:bg-[#69AC95]/10 transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm" style={{ backgroundColor: '#26A17B' }}>
-                                    ₮
-                                </div>
-                                <div>
-                                    <p className="font-bold text-sm text-white/80">USDT/USD</p>
-                                    <p className="text-xs text-white/40">(ERC-20)</p>
-                                    <p className="text-2xl font-bold text-white">1.00</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 justify-end">
-                                    <svg className="w-4 h-4 text-[#69AC95]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-xs font-semibold text-[#69AC95]">0.01%</span>
-                                </div>
-                                <p className="text-xs font-medium text-[#69AC95]">0.0001</p>
-                            </div>
-                        </div>
 
-                        {/* USDT (TRC-20) */}
-                        <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-[#69AC95]/20 bg-[#69AC95]/5 hover:bg-[#69AC95]/10 transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm" style={{ backgroundColor: '#26A17B' }}>
-                                    ₮
-                                </div>
-                                <div>
-                                    <p className="font-bold text-sm text-white/80">USDT/USD</p>
-                                    <p className="text-xs text-white/40">(TRC-20)</p>
-                                    <p className="text-2xl font-bold text-white">1.00</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 justify-end">
-                                    <svg className="w-4 h-4 text-[#69AC95]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-xs font-semibold text-[#69AC95]">0.02%</span>
-                                </div>
-                                <p className="text-xs font-medium text-[#69AC95]">0.0002</p>
-                            </div>
-                        </div>
-
-                        {/* SOL/USD */}
-                        <div className="flex items-center justify-between rounded-xl px-4 py-3 border border-white/10 bg-white/5 hover:bg-white/10 transition-all">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm" style={{ backgroundColor: '#9945FF' }}>
-                                    ◎
-                                </div>
-                                <div>
-                                    <p className="font-bold text-sm text-white/80">SOL/USD</p>
-                                    <p className="text-2xl font-bold text-white">142.35</p>
-                                </div>
-                            </div>
-                            <div className="text-right">
-                                <div className="flex items-center gap-1 justify-end">
-                                    <svg className="w-4 h-4 text-[#69AC95]" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    <span className="text-xs font-semibold text-[#69AC95]">1.87%</span>
-                                </div>
-                                <p className="text-xs font-medium text-[#69AC95]">2.61</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
 
             <div className="p-6 space-y-8">
 
