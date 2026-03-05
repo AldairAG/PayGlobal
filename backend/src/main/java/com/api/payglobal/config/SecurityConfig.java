@@ -87,7 +87,7 @@ public class SecurityConfig {
 
         // Permitir orígenes específicos (en producción, especificar dominios//dominios permitidos
         // específicos)
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173/","http://vps-5600697-x.dattaweb.com/", "https://vps-5600697-x.dattaweb.com/", "http://payglobal.com/", "https://payglobal.com/"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173/","http://vps-5600697-x.dattaweb.com/", "https://vps-5600697-x.dattaweb.com/", "http://payglobal.vip/", "https://payglobal.vip/"));
 
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
