@@ -130,38 +130,8 @@ const HomePage = () => {
 
             <div className="p-6 space-y-8">
 
-                {/* SECCIÓN SUPERIOR: TARJETAS */}
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-                    {/* Reloj de progreso */}
-                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
-                        <div className="flex items-center gap-4">
-                            <div className="relative w-24 h-24 shrink-0">
-                                <div
-                                    className="w-24 h-24 rounded-full flex items-center justify-center text-lg font-bold"
-                                    style={{
-                                        background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
-                                    }}>
-                                    <div className="w-20 h-20 rounded-full bg-[#0a0a0a] flex items-center justify-center text-sm font-bold text-[#69AC95]">
-                                        {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex-1 text-left">
-                                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-2">{t('home.progress_clock')}</h3>
-                                <div className="space-y-1">
-                                    <div>
-                                        <p className="text-xs text-white/40">{t('home.maximum_amount')}</p>
-                                        <p className="text-sm font-bold text-white">$ {usuario?.licencia.limite}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-white/40">{t('home.total_collected')}</p>
-                                        <p className="text-sm font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                {/* FILA 1: Licencia, Dividendos, Comisiones */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                     {/* Licencia */}
                     <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
@@ -195,6 +165,39 @@ const HomePage = () => {
                             <h3 className="text-xl font-semibold text-white/80">{t('home.commissions')}</h3>
                         </div>
                         <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
+                    </div>
+
+                </div>
+
+                {/* FILA 2: Reloj de progreso y Montos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    {/* Reloj de progreso */}
+                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center">
+                        <div
+                            className="w-36 h-36 rounded-full flex items-center justify-center"
+                            style={{
+                                background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
+                            }}>
+                            <div className="w-28 h-28 rounded-full bg-[#0a0a0a] flex flex-col items-center justify-center gap-0.5">
+                                <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('home.progress_clock')}</span>
+                                <span className="text-lg font-bold text-[#69AC95]">
+                                    {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Monto máximo y Total Recaudado */}
+                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col justify-center gap-4">
+                        <div className="border-b border-[#69AC95]/20 pb-3">
+                            <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
+                            <p className="text-2xl font-bold text-white">$ {usuario?.licencia.limite}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
+                            <p className="text-2xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
+                        </div>
                     </div>
 
                 </div>

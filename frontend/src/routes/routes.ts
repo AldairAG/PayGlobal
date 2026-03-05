@@ -19,7 +19,8 @@ export const ROUTES = {
         RETIRO: '/c/withdrawal',
         CAMBIO_CONTRASENA: '/c/change-password',
         TRANSFERENCIA_INTERNA: '/c/internal-transfer',
-        RED_USUARIOS: '/c/red-usuarios'
+        RED_USUARIOS: '/c/red-usuarios',
+        NOVEDADES: '/c/novedades'
     },
 
     RECUPERAR_PASSWORD: '/recuperar-password',

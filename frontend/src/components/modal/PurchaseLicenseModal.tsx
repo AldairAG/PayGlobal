@@ -2,6 +2,11 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { TipoCrypto, TipoSolicitud } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
+import { getLicenseImage } from "../../helpers/imgHelpers";
+import imgBNB from "../../assets/BNB-Smart.png";
+import imgETH from "../../assets/ETHEREUM.png";
+import imgSOL from "../../assets/SOLANA.png";
+import imgTRON from "../../assets/TRON.png";
 
 
 interface PurchaseLicenseModalProps {
@@ -21,7 +26,7 @@ export default function PurchaseLicenseModal({
 }: PurchaseLicenseModalProps) {
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
-    const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_TRC20);
+    const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_BEP20);
     const { solicitarCompraLicencia } = useUsuario(); 
 
     const handleConfirmPurchase = async () => {
@@ -35,36 +40,41 @@ export default function PurchaseLicenseModal({
     
     // Wallets diferentes para cada tipo de criptomoneda - esto debería venir del backend
     const cryptoWallets = {
-        [TipoCrypto.BITCOIN]: {
-            address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-            name: "Bitcoin (BTC)",
-            symbol: "BTC",
-            tipo:TipoCrypto.BITCOIN 
-        },
-        [TipoCrypto.USDT_ERC20]: {
-            address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-            name: "USDT (ERC-20)",
+        [TipoCrypto.USDT_BEP20]: {
+            address: "0x3bBe92e195E58b1762009aAb264F83aB0F676FA3",
+            name: "USDT Red: BNB Smart Chain",
             symbol: "USDT",
-            tipo:TipoCrypto.USDT_ERC20
-        },
-        [TipoCrypto.USDT_TRC20]: {
-            address: "TYASr5UV6HEcXatwdFQfmLVUqQQQMUxHLS",
-            name: "USDT (TRC-20)",
-            symbol: "USDT",
-            tipo:TipoCrypto.USDT_TRC20
+            tipo: TipoCrypto.USDT_BEP20,
+            img: imgBNB,
+            logo: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/bnb.png"
         },
         [TipoCrypto.SOLANA]: {
-            address: "7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV",
-            name: "Solana (SOL)",
-            symbol: "SOL",
-            tipo:TipoCrypto.SOLANA
-        }
+            address: "EKhvoLfMW65dPHB2dany39bc7AppmqmzDnsfsLE7JGCT",
+            name: "USDT Red: Solana",
+            symbol: "USDT",
+            tipo: TipoCrypto.SOLANA,
+            img: imgSOL,
+            logo: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/sol.png"
+        },
+        [TipoCrypto.USDT_TRC20]: {
+            address: "TY9vjjLCp1HsoHNhDWGEyL2f4JciojfKRL",
+            name: "USDT Red: TRON",
+            symbol: "USDT",
+            tipo: TipoCrypto.USDT_TRC20,
+            img: imgTRON,
+            logo: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/trx.png"
+        },
+        [TipoCrypto.USDT_ERC20]: {
+            address: "0x3bBe92e195E58b1762009aAb264F83aB0F676FA3",
+            name: "USDT Red: Ethereum",
+            symbol: "USDT",
+            tipo: TipoCrypto.USDT_ERC20,
+            img: imgETH,
+            logo: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png"
+        },
     };
 
     const currentWallet = cryptoWallets[selectedCrypto];
-    
-    // Generar URL para código QR (usando un servicio de QR público)
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${currentWallet.address}`;
 
     if (!open) return null;
 
@@ -95,14 +105,20 @@ export default function PurchaseLicenseModal({
                     </h2>
 
                 {/* Información de la licencia */}
-                <div className="mb-6 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-4">
-                    <p className="text-lg font-semibold text-white">{licenseName}</p>
-                    <p className="text-2xl font-bold text-[#69AC95]">${licenseValue} {currentWallet.symbol}</p>
-                    <p className="text-sm text-white/50 mt-2">
-                        {purchaseType === TipoSolicitud.COMPRA_LICENCIA
-                            ? (t("licenses.purchase_for_myself") )
-                            : (t("licenses.purchase_for_others") )}
-                    </p>
+                <div className="mb-6 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-4 flex items-center gap-4">
+                    <img
+                        src={getLicenseImage(licenseName)}
+                        alt={licenseName}
+                        className="w-20 h-20 object-contain shrink-0"
+                    />
+                    <div>
+                        <p className="text-2xl font-bold text-[#69AC95]">${licenseValue} {currentWallet.symbol}</p>
+                        <p className="text-sm text-white/50 mt-2">
+                            {purchaseType === TipoSolicitud.COMPRA_LICENCIA
+                                ? (t("licenses.purchase_for_myself") )
+                                : (t("licenses.purchase_for_others") )}
+                        </p>
+                    </div>
                 </div>
 
                 {/* Input para username si es compra para otro */}
@@ -131,25 +147,28 @@ export default function PurchaseLicenseModal({
                             <button
                                 key={key}
                                 onClick={() => setSelectedCrypto(wallet.tipo)}
-                                className={`p-3 rounded-xl border transition-all ${
+                                className={`p-3 rounded-xl border transition-all flex items-center gap-2 ${
                                     selectedCrypto === wallet.tipo
                                         ? 'border-[#F0973C] bg-[#F0973C]/10 text-[#F0973C]'
                                         : 'border-white/10 bg-white/5 text-white/70 hover:border-[#F0973C]/40 hover:bg-[#F0973C]/5'
                                 }`}
                             >
-                                <div className="text-sm font-semibold">{wallet.symbol}</div>
-                                <div className="text-xs opacity-60">{wallet.name}</div>
+                                <img src={wallet.logo} alt={wallet.name} className="w-7 h-7 object-contain shrink-0" />
+                                <div className="text-left">
+                                    <div className="text-sm font-semibold">{wallet.symbol}</div>
+                                    <div className="text-xs opacity-60">{wallet.name}</div>
+                                </div>
                             </button>
                         ))}
                     </div>
                 </div>
 
-                {/* Código QR */}
+                {/* Imagen de la red seleccionada */}
                 <div className="mb-6 flex justify-center">
-                    <img 
-                        src={qrCodeUrl} 
-                        alt="QR Code" 
-                        className="border border-white/10 rounded-xl p-2 bg-white"
+                    <img
+                        src={currentWallet.img}
+                        alt={currentWallet.name}
+                        className="w-66 h-66 object-contain rounded-2xl"
                     />
                 </div>
 

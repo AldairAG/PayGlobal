@@ -5,11 +5,12 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 import type { Usuario } from '../type/entityTypes';
+import { usuarioService } from '../service/usuarioService';
 
 interface JwtPayload {
     sub: string;
@@ -81,6 +82,9 @@ export const useUsuario = () => {
 
     const loadingEditarUsuarioAdmin = useSelector((state: RootState) => state.usuario.loadingEditarUsuarioAdmin);
     const errorEditarUsuarioAdmin = useSelector((state: RootState) => state.usuario.errorEditarUsuarioAdmin);
+
+    const loadingSubirFotoPerfil = useSelector((state: RootState) => state.usuario.loadingSubirFotoPerfil);
+    const errorSubirFotoPerfil = useSelector((state: RootState) => state.usuario.errorSubirFotoPerfil);
 
     /**
      * Función para registrar un nuevo usuario
@@ -297,6 +301,20 @@ export const useUsuario = () => {
         }
     };
 
+    const subirFotoPerfil = async (file: File) => {
+        try {
+            const result = await dispatch(subirFotoPerfilThunk(file));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al subir foto de perfil:', error);
+            throw error;
+        }
+    };
+
+    const obtenerFotoPerfil = async (filename: string): Promise<Blob> => {
+        return usuarioService.obtenerFotoPerfil(filename);
+    };
+
     const handleSetUsuarioSeleccionado = (usuario: Usuario | null) => {
         dispatch(setUsuarioSeleccionado(usuario));
      };
@@ -378,6 +396,11 @@ export const useUsuario = () => {
         editarUsuarioAdmin,
         loadingEditarUsuarioAdmin,
         errorEditarUsuarioAdmin,
+
+        subirFotoPerfil,
+        loadingSubirFotoPerfil,
+        errorSubirFotoPerfil,
+        obtenerFotoPerfil,
 
         handleSetUsuarioSeleccionado
     };

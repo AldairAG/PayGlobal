@@ -2,11 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 const languages = [
-    { code: "es", label: "Español",   flag: "https://flagcdn.com/w40/es.png" },
-    { code: "en", label: "English",   flag: "https://flagcdn.com/w40/gb.png" },
-    { code: "fr", label: "Français",  flag: "https://flagcdn.com/w40/fr.png" },
-    { code: "ar", label: "عربي",      flag: "https://flagcdn.com/w40/sa.png" },
-    { code: "pt", label: "Português", flag: "https://flagcdn.com/w40/br.png" },
+    { code: "es", label: "España",   flag: "https://flagcdn.com/w40/es.png" },
+    { code: "en", label: "UK",   flag: "https://flagcdn.com/w40/gb.png" },
+    { code: "fr", label: "France",  flag: "https://flagcdn.com/w40/fr.png" },
+    { code: "ar", label: "الإمارات العربية المتحدة",      flag: "https://flagcdn.com/w40/ae.png" },
+    { code: "pt", label: "Portugal", flag: "https://flagcdn.com/w40/pt.png" },
 ];
 
 export default function LangSelector() {
@@ -14,7 +14,7 @@ export default function LangSelector() {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
-    const current = languages.find((l) => l.code === i18n.language) ?? languages[0];
+    const current = languages.find((l) => l.code === i18n.language) ?? languages[1];
 
     const changeLang = (code: string) => {
         i18n.changeLanguage(code);

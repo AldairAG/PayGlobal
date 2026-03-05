@@ -14,6 +14,7 @@ export interface Usuario {
     activo: boolean;
     rango: string;
     verificado: boolean;
+    fotoPerfil?: string;
     bonos: Bono[];
     wallets: Wallet[];
     licencia: Licencia;

@@ -86,20 +86,21 @@
     },
 
     "sidebar": {
-        "home": "Home",
-        "licenses": "Licenses",
+        "home": "Dashboard",
+        "licenses": "Buy License",
         "withdrawal": "Withdraw",
-        "reports": "Reports",
+        "reports": "Payment History",
         "internal_transfers": "Internal Transfers",
         "profile": "Profile",
         "support": "Support",
-        "user_network": "User Network",
+        "user_network": "Organization",
         "go_to_profile": "Go to Profile",
-        "log_out": "Log Out"
+        "log_out": "Log Out",
+        "news": "News / Tools"
     },
 
     "home": {
-        "progress_clock": "Progress Clock",
+        "progress_clock": "Progress",
         "maximum_amount": "Maximum Amount",
         "total_collected": "Total Collected",
         "license":"License",
@@ -120,7 +121,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "Choose the license that best suits your needs",
-        "available_licenses": "Available Licenses",
+        "available_licenses": "Staking packages",
         "purchase_for_myself": "Purchase for myself",
         "purchase_for_others": "Purchase for others",
         "important_information": "Important Information",

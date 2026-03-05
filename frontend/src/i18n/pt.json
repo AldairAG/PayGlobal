@@ -87,21 +87,22 @@
     },
 
     "sidebar": {
-        "home": "Início",
-        "licenses": "Licenças",
+        "home": "Painel",
+        "licenses": "Adquirir licença",
         "withdrawal": "Retirada",
-        "reports": "Relatórios",
+        "reports": "Histórico de pagamentos",
         "internal_transfers": "Transferências Internas",
         "profile": "Perfil",
         "support": "Suporte",
-        "user_network": "Rede de Usuários",
+        "user_network": "Organização",
         "go_to_profile": "Ir para o Perfil",
-        "log_out": "Sair"
+        "log_out": "Sair",
+        "news": "Novidades / Ferramentas"
 
     },
 
     "home": {
-        "progress_clock": "Relógio de Progresso",
+        "progress_clock": "Progresso",
         "maximum_amount": "Montante Máximo",
         "total_collected": "Total Coletado",
         "license": "Licença",
@@ -123,7 +124,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "Escolha a licença que melhor se adequa às suas necessidades",
-        "available_licenses": "Licenças disponíveis",
+        "available_licenses": "Pacotes de staking",
         "purchase_for_myself": "Comprar para mim",
         "purchase_for_others": "Comprar para outros",
         "important_information": "Informações importantes",
@@ -264,8 +265,8 @@
         "processing": "Processando...",
         "continue": "Continuar",
         "wallets_information": "Informações das Carteiras",
-        "dividends_wallet": "Carteira de Dividendos",
-        "commissions_wallet": "Carteira de Comissões",
+        "dividends_wallet": "Staking de carteira",
+        "commissions_wallet": "Carteira de Rede",
         "important_information": "Informação Importante",
         "instant_transfers": "As transferências são instantâneas",
         "no_fee_internal_transfers": "Não há comissão para transferências internas",
@@ -325,8 +326,8 @@
         "registration_date": "Data de Registro",
         "account_status": "Status da Conta",
         "my_wallets": "Minhas Carteiras",
-        "dividends_wallet": "Carteira de Dividendos",
-        "commissions_wallet": "Carteira de Comissões",
+        "dividends_wallet": "Carteira de Staking",
+        "commissions_wallet": "Carteira de Rede",
         "my_bonuses": "Meus Bônus",
         "no_bonuses_available": "Nenhum bônus disponível",
         "file_too_large": "O arquivo é muito grande. Máximo 5MB.",

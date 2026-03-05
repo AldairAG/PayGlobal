@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { KycDocuments } from "../../components/KycDocuments";
+import { ProfilePhoto } from "../../components/ProfilePhoto";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -79,10 +80,8 @@ export const ProfilePage = () => {
                     {/* Tarjeta de Avatar */}
                     <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex flex-col items-center text-center">
-                            <div className="w-32 h-32 rounded-full flex items-center justify-center text-white mb-4 bg-[#69AC95]/20 border border-[#69AC95]/30">
-                                <User size={64} className="text-[#69AC95]" />
-                            </div>
-                            <h2 className="text-2xl font-bold text-white">
+                            <ProfilePhoto fotoPerfil={usuario?.fotoPerfil} />
+                            <h2 className="text-2xl font-bold text-white mt-4">
                                 {usuario?.nombre && usuario?.apellido
                                     ? `${usuario.nombre} ${usuario.apellido}`
                                     : usuario?.username || "Usuario"}

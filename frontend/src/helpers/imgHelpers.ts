@@ -1,17 +1,17 @@
-import l1 from "../assets/licencias/l1.png";
-import l2 from "../assets/licencias/l2.png";
-import l3 from "../assets/licencias/l3.png";
-import l4 from "../assets/licencias/l4.png";
-import l5 from "../assets/licencias/l5.png";
-import l6 from "../assets/licencias/l6.png";
-import l7 from "../assets/licencias/l7.png";
-import l8 from "../assets/licencias/l8.png";
-import l9 from "../assets/licencias/l9.png";
-import l10 from "../assets/licencias/l10.png";
-import l11 from "../assets/licencias/l11.png";
-import l12 from "../assets/licencias/l12.png";
-import l13 from "../assets/licencias/l13.png";
-import l14 from "../assets/licencias/l14.png"; 
+import l1 from "../assets/licencias/l1.webp";
+import l2 from "../assets/licencias/l2.webp";
+import l3 from "../assets/licencias/l3.webp";
+import l4 from "../assets/licencias/l4.webp";
+import l5 from "../assets/licencias/l5.webp";
+import l6 from "../assets/licencias/l6.webp";
+import l7 from "../assets/licencias/l7.webp";
+import l8 from "../assets/licencias/l8.webp";
+import l9 from "../assets/licencias/l9.webp";
+import l10 from "../assets/licencias/l10.webp";
+import l11 from "../assets/licencias/l11.webp";
+import l12 from "../assets/licencias/l12.webp";
+import l13 from "../assets/licencias/l13.webp";
+import l14 from "../assets/licencias/l14.webp"; 
 
 export const getLicenseImage = (licenseName: string) => {
     const licenseMap: Record<string, string> = {
