@@ -5,7 +5,7 @@ const PLACEHOLDER = [
     'AUD/USD', 'USD/CAD', 'USD/CNY', 'USD/MXN',
 ];
 
-const formatRate = (pair: string, rate: number): string => {
+const formatRate = ( rate: number): string => {
     // JPY, CNY, MXN pairs typically show 2 decimals at large values
     if (rate >= 100) return rate.toFixed(2);
     return rate.toFixed(4);
@@ -37,7 +37,7 @@ export default function ForexTicker() {
                                 <span key={`${pass}-${i}`} className="text-xs font-mono">
                                     <span className="text-white/50">{item.pair}</span>{' '}
                                     {item.rate !== null
-                                        ? <span className="text-[#A5D6C8] font-semibold">{formatRate(item.pair, item.rate as number)}</span>
+                                        ? <span className="text-[#A5D6C8] font-semibold">{formatRate( item.rate as number)}</span>
                                         : <span className="text-white/20">—</span>
                                     }
                                 </span>
