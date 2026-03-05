@@ -173,23 +173,23 @@ export const RetiroPage = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-6">
+        <div className="w-full min-h-screen bg-[#000000] text-white p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2 text-black">
+                    <h1 className="text-3xl font-bold mb-2 text-[#F0973C]">
                         {t("withdrawal.withdrawal_management")}
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-white/40">
                         {t("withdrawal.manage_your_wallets_and_withdrawal_requests")}
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Sección: Mis Wallets */}
-                    <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold flex items-center gap-2">
+                            <h2 className="text-xl font-bold flex items-center gap-2 text-white">
                                 <Wallet size={24} className="text-[#F0973C]" />
                                 {t("withdrawal.my_wallets")}
                             </h2>
@@ -204,11 +204,11 @@ export const RetiroPage = () => {
 
                         {/* Formulario Nueva Wallet */}
                         {showWalletForm === "crear" ? (
-                            <div className="mb-6 p-4 rounded-lg border-2 border-[#F0973C] bg-[#FFF4E6]">
-                                <h3 className="font-semibold mb-4">Nueva Wallet</h3>
+                            <div className="mb-6 p-4 rounded-xl border border-[#F0973C]/30 bg-[#F0973C]/10">
+                                <h3 className="font-semibold mb-4 text-white">Nueva Wallet</h3>
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.wallet_name")}
                                         </label>
                                         <input
@@ -217,36 +217,35 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.nombre}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
-                                                }`}
+                                            className={`w-full px-4 py-2 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none focus:ring-1 ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                             placeholder={t("withdrawal.main_wallet")}
                                         />
                                         {walletFormik.touched.nombre && walletFormik.errors.nombre && (
-                                            <p className="text-sm mt-1 text-red-600">
+                                            <p className="text-xs mt-1 text-red-400">
                                                 {walletFormik.errors.nombre}
                                             </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.crypto_type")}
                                         </label>
                                         <select
                                             name="tipoCrypto"
                                             value={walletFormik.values.tipoCrypto}
                                             onChange={walletFormik.handleChange}
-                                            className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none border-[#F0973C]"
+                                            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50"
                                         >
-                                            <option value={TipoCrypto.USDT_ERC20}>USDT (ERC-20)</option>
-                                            <option value={TipoCrypto.USDT_TRC20}>USDT (TRC-20)</option>
-                                            <option value={TipoCrypto.BITCOIN}>Bitcoin</option>
-                                            <option value={TipoCrypto.SOLANA}>Solana</option>
+                                            <option value={TipoCrypto.USDT_ERC20} className="bg-[#111]">USDT (ERC-20)</option>
+                                            <option value={TipoCrypto.USDT_TRC20} className="bg-[#111]">USDT (TRC-20)</option>
+                                            <option value={TipoCrypto.BITCOIN} className="bg-[#111]">Bitcoin</option>
+                                            <option value={TipoCrypto.SOLANA} className="bg-[#111]">Solana</option>
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.wallet_address")}
                                         </label>
                                         <input
@@ -255,12 +254,11 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.address}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-600" : "border-[#F0973C]"
-                                                }`}
+                                            className={`w-full px-4 py-2 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none focus:ring-1 font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                             placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
                                         />
                                         {walletFormik.touched.address && walletFormik.errors.address && (
-                                            <p className="text-sm mt-1 text-red-600">
+                                            <p className="text-xs mt-1 text-red-400">
                                                 {walletFormik.errors.address}
                                             </p>
                                         )}
@@ -270,7 +268,7 @@ export const RetiroPage = () => {
                                         <button
                                             disabled={loadingCreate}
                                             type="submit"
-                                            className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
+                                            className="flex-1 py-2 rounded-xl font-semibold transition-all hover:scale-105 bg-[#69AC95] hover:bg-[#5a9a84] text-black"
                                         >
                                             {t("withdrawal.create_wallet")}
                                         </button>
@@ -280,7 +278,7 @@ export const RetiroPage = () => {
                                                 setShowWalletForm(null);
                                                 walletFormik.resetForm();
                                             }}
-                                            className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
+                                            className="flex-1 py-2 rounded-xl font-semibold border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all"
                                         >
                                             {t("withdrawal.cancel")}
                                         </button>
@@ -288,11 +286,11 @@ export const RetiroPage = () => {
                                 </form>
                             </div>
                         ) : showWalletForm == "update" && (
-                            <div className="mb-6 p-4 rounded-lg border-2 border-[#F0973C] bg-[#FFF4E6]">
-                                <h3 className="font-semibold mb-4">{t("withdrawal.update_wallet")}</h3>
+                            <div className="mb-6 p-4 rounded-xl border border-[#F0973C]/30 bg-[#F0973C]/10">
+                                <h3 className="font-semibold mb-4 text-white">{t("withdrawal.update_wallet")}</h3>
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.wallet_name")}
                                         </label>
                                         <input
@@ -301,36 +299,35 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.nombre}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-600" : "border-[#F0973C]"
-                                                }`}
+                                            className={`w-full px-4 py-2 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none focus:ring-1 ${walletFormik.touched.nombre && walletFormik.errors.nombre ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                             placeholder={t("withdrawal.main_wallet")}
                                         />
                                         {walletFormik.touched.nombre && walletFormik.errors.nombre && (
-                                            <p className="text-sm mt-1 text-red-600">
+                                            <p className="text-xs mt-1 text-red-400">
                                                 {walletFormik.errors.nombre}
                                             </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.crypto_type")}
                                         </label>
                                         <select
                                             name="tipoCrypto"
                                             value={walletFormik.values.tipoCrypto}
                                             onChange={walletFormik.handleChange}
-                                            className="w-full px-4 py-2 border-2 rounded-lg focus:outline-none border-[#F0973C]"
+                                            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50"
                                         >
-                                            <option value={TipoCrypto.USDT_ERC20}>USDT (ERC-20)</option>
-                                            <option value={TipoCrypto.USDT_TRC20}>USDT (TRC-20)</option>
-                                            <option value={TipoCrypto.BITCOIN}>Bitcoin</option>
-                                            <option value={TipoCrypto.SOLANA}>Solana</option>
+                                            <option value={TipoCrypto.USDT_ERC20} className="bg-[#111]">USDT (ERC-20)</option>
+                                            <option value={TipoCrypto.USDT_TRC20} className="bg-[#111]">USDT (TRC-20)</option>
+                                            <option value={TipoCrypto.BITCOIN} className="bg-[#111]">Bitcoin</option>
+                                            <option value={TipoCrypto.SOLANA} className="bg-[#111]">Solana</option>
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2">
+                                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                             {t("withdrawal.wallet_address")}
                                         </label>
                                         <input
@@ -339,12 +336,11 @@ export const RetiroPage = () => {
                                             value={walletFormik.values.address}
                                             onChange={walletFormik.handleChange}
                                             onBlur={walletFormik.handleBlur}
-                                            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-600" : "border-[#F0973C]"
-                                                }`}
+                                            className={`w-full px-4 py-2 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none focus:ring-1 font-mono text-sm ${walletFormik.touched.address && walletFormik.errors.address ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                             placeholder="0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
                                         />
                                         {walletFormik.touched.address && walletFormik.errors.address && (
-                                            <p className="text-sm mt-1 text-red-600">
+                                            <p className="text-xs mt-1 text-red-400">
                                                 {walletFormik.errors.address}
                                             </p>
                                         )}
@@ -354,7 +350,7 @@ export const RetiroPage = () => {
                                         <button
                                             disabled={loadingUpdate}
                                             type="submit"
-                                            className="flex-1 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] text-white"
+                                            className="flex-1 py-2 rounded-xl font-semibold transition-all hover:scale-105 bg-[#69AC95] hover:bg-[#5a9a84] text-black"
                                         >
                                             {t("withdrawal.update_wallet")}
                                         </button>
@@ -364,7 +360,7 @@ export const RetiroPage = () => {
                                                 setShowWalletForm(null);
                                                 walletFormik.resetForm();
                                             }}
-                                            className="flex-1 py-2 rounded-lg font-semibold border-2 border-black text-black"
+                                            className="flex-1 py-2 rounded-xl font-semibold border border-white/20 text-white/60 hover:text-white hover:border-white/40 transition-all"
                                         >
                                             {t("withdrawal.cancel")}
                                         </button>
@@ -376,30 +372,30 @@ export const RetiroPage = () => {
                         {/* Lista de Wallets */}
                         <div className="space-y-3 max-h-100 overflow-y-auto">
                             {loadingMyWallets ? (
-                                <p className="text-center text-gray-500">{t("withdrawal.loading_wallets")}</p>
+                                <p className="text-center text-white/40">{t("withdrawal.loading_wallets")}</p>
                             ) : errorMyWallets ? (
-                                <p className="text-center text-red-600">{t("withdrawal.error_loading_wallets")}</p>
+                                <p className="text-center text-red-400">{t("withdrawal.error_loading_wallets")}</p>
                             ) : walletAddresses.length === 0 ? (
-                                <p className="text-center text-gray-500">{t("withdrawal.no_wallets_found")}</p>
+                                <p className="text-center text-white/40">{t("withdrawal.no_wallets_found")}</p>
                             ) : (walletAddresses.map((wallet) => (
                                 <div
                                     key={wallet.id}
-                                    className="p-4 rounded-lg border-2 transition-all hover:shadow-md border-gray-200 bg-white"
+                                    className="p-4 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 transition-all hover:border-[#F0973C]/40"
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <h3 className="font-semibold">{wallet.nombre}</h3>
+                                            <h3 className="font-semibold text-white">{wallet.nombre}</h3>
                                             <p className="text-xs text-[#F0973C]">
                                                 {getCryptoSymbol(wallet.tipoCrypto)}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#69AC95] text-white">
+                                            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#69AC95]/20 border border-[#69AC95]/30 text-[#69AC95]">
                                                 ${wallet.balanceRetirado.toFixed(2)}
                                             </span>
                                             <button
                                                 title={t("withdrawal.edit_wallet")}
-                                                className="p-2 rounded-lg transition-all hover:scale-105 bg-blue-500 text-white"
+                                                className="p-2 rounded-lg transition-all hover:scale-105 bg-[#69AC95]/10 border border-[#69AC95]/30 text-[#69AC95] hover:bg-[#69AC95]/20"
                                                 onClick={() => {
                                                     setSelectedWallet(wallet.id);
                                                     walletFormik.setValues({
@@ -421,7 +417,7 @@ export const RetiroPage = () => {
                                             </button>
                                         </div>
                                     </div>
-                                    <p className="text-xs font-mono text-gray-500 break-all">
+                                    <p className="text-xs font-mono text-white/40 break-all">
                                         {wallet.address}
                                     </p>
                                 </div>
@@ -430,8 +426,8 @@ export const RetiroPage = () => {
                     </div>
 
                     {/* Sección: Solicitar Retiro */}
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                    <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
                             <ArrowDownToLine size={24} className="text-[#69AC95]" />
                             {t("withdrawal.request_withdrawal")}
                         </h2>
@@ -440,7 +436,7 @@ export const RetiroPage = () => {
 
                             {/* Selector 2 */}
                             <div>
-                                <label className="block text-sm font-semibold mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("withdrawal.**select_the_wallet_address_for_deposit ***")}
                                 </label>
                                 <select
@@ -450,18 +446,17 @@ export const RetiroPage = () => {
                                         retiroFormik.handleChange(e);
                                     }}
                                     onBlur={retiroFormik.handleBlur}
-                                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-600" : "border-[#F0973C]"
-                                        }`}
+                                    className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                 >
-                                    <option value={0}>{t("withdrawal.select_a_wallet")}</option>
+                                    <option value={0} className="bg-[#111]">{t("withdrawal.select_a_wallet")}</option>
                                     {usuario?.wallets.map((wallet) => (
-                                        <option key={wallet.id} value={wallet.id}>
+                                        <option key={wallet.id} value={wallet.id} className="bg-[#111]">
                                             {wallet.tipo} - ${wallet.saldo.toFixed(2)}
                                         </option>
                                     ))}
                                 </select>
                                 {retiroFormik.touched.walletId && retiroFormik.errors.walletId && (
-                                    <p className="text-sm mt-1 text-red-600">
+                                    <p className="text-xs mt-1 text-red-400">
                                         {retiroFormik.errors.walletId}
                                     </p>
                                 )}
@@ -469,13 +464,13 @@ export const RetiroPage = () => {
                             {/* PROBLEMA CON LA TRADUCCION AQUI */}   
                             {/* Información de la wallet seleccionada 2 */}
                             {retiroFormik.values.walletId > 0 && (
-                                <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
+                                <div className="p-4 rounded-xl bg-[#69AC95]/10 border border-[#69AC95]/30">
                                     {(() => {
                                         const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
                                         return wallet ? (
                                             <>
-                                                <p className="text-sm font-semibold mb-2">{t("withdrawal.selected_wallet:")}</p>
-                                                <p className="text-xs font-mono text-gray-600 break-all mb-2">{wallet.tipo}</p>
+                                                <p className="text-sm font-semibold mb-2 text-white">{t("withdrawal.selected_wallet:")}</p>
+                                                <p className="text-xs font-mono text-white/50 break-all mb-2">{wallet.tipo}</p>
                                                 <p className="text-sm">
                                                     {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.saldo.toFixed(2)}
@@ -488,7 +483,7 @@ export const RetiroPage = () => {
                             )}
 
                             <div>
-                                <label className="block text-sm font-semibold mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("withdrawal.**select_wallet ***")}
                                 </label>
                                 <select
@@ -499,31 +494,30 @@ export const RetiroPage = () => {
                                         setSelectedWallet(Number(e.target.value));
                                     }}
                                     onBlur={retiroFormik.handleBlur}
-                                    className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.addresId && retiroFormik.errors.addresId ? "border-red-600" : "border-[#F0973C]"
-                                        }`}
+                                    className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white focus:outline-none ${retiroFormik.touched.addresId && retiroFormik.errors.addresId ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                 >
-                                    <option value={0}>{t("withdrawal.select_a_wallet")}</option>
+                                    <option value={0} className="bg-[#111]">{t("withdrawal.select_a_wallet")}</option>
                                     {walletAddresses.map((wallet) => (
-                                        <option key={wallet.id} value={wallet.id}>
+                                        <option key={wallet.id} value={wallet.id} className="bg-[#111]">
                                             {wallet.nombre} - {getCryptoSymbol(wallet.tipoCrypto)}
                                         </option>
                                     ))}
                                 </select>
                                 {retiroFormik.touched.addresId && retiroFormik.errors.addresId && (
-                                    <p className="text-sm mt-1 text-red-600">
+                                    <p className="text-xs mt-1 text-red-400">
                                         {retiroFormik.errors.addresId}
                                     </p>
                                 )}
                             </div>
                             {/* Información de la wallet seleccionada */}
                             {retiroFormik && retiroFormik.values.addresId > 0 && (
-                                <div className="p-4 rounded-lg bg-[#E6F4F1] border-2 border-[#69AC95]">
+                                <div className="p-4 rounded-xl bg-[#69AC95]/10 border border-[#69AC95]/30">
                                     {(() => {
                                         const wallet = walletAddresses.find(w => w.id === selectedWallet);
                                         return wallet ? (
                                             <>
-                                                <p className="text-sm font-semibold mb-2">{t("withdrawal.selected_wallet:")}</p>
-                                                <p className="text-xs font-mono text-gray-600 break-all mb-2">{wallet.address}</p>
+                                                <p className="text-sm font-semibold mb-2 text-white">{t("withdrawal.selected_wallet:")}</p>
+                                                <p className="text-xs font-mono text-white/50 break-all mb-2">{wallet.address}</p>
                                                 <p className="text-sm">
                                                     {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.balanceRetirado.toFixed(2)}
@@ -538,11 +532,11 @@ export const RetiroPage = () => {
                             
 
                             <div>
-                                <label className="block text-sm font-semibold mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("withdrawal.**amount_to_withdraw ***")}
                                 </label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">
+                                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 font-bold">
                                         $
                                     </span>
                                     <input
@@ -551,14 +545,13 @@ export const RetiroPage = () => {
                                         value={retiroFormik.values.monto || ""}
                                         onChange={retiroFormik.handleChange}
                                         onBlur={retiroFormik.handleBlur}
-                                        className={`w-full pl-8 pr-4 py-3 border-2 rounded-lg focus:outline-none ${retiroFormik.touched.monto && retiroFormik.errors.monto ? "border-red-600" : "border-[#F0973C]"
-                                            }`}
+                                        className={`w-full pl-8 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none ${retiroFormik.touched.monto && retiroFormik.errors.monto ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                         placeholder="0.00"
                                         step="0.01"
                                     />
                                 </div>
                                 {retiroFormik.touched.monto && retiroFormik.errors.monto && (
-                                    <p className="text-sm mt-1 text-red-600">
+                                    <p className="text-xs mt-1 text-red-400">
                                         {retiroFormik.errors.monto}
                                     </p>
                                 )}
@@ -567,7 +560,7 @@ export const RetiroPage = () => {
                             <button
                                 type="submit"
                                 disabled={ loadingSolicitarRetiroFondos}
-                                className="w-full py-3 rounded-lg font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] text-white"
+                                className="w-full py-3 rounded-xl font-bold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] hover:bg-[#5a9a84] text-black"
                             >
                                 {t("withdrawal.request_withdrawal")}
                             </button>
@@ -575,11 +568,11 @@ export const RetiroPage = () => {
 
                         {/* ERROR AL TRADUCIR */}     
                         {/* Información adicional */}
-                        <div className="mt-6 p-4 rounded-lg bg-[#FFF4E5] border border-[#F0973C]">
+                        <div className="mt-6 p-4 rounded-xl bg-[#F0973C]/10 border border-[#F0973C]/30">
                             <h3 className="font-semibold text-sm mb-2 text-[#F0973C]">
                                 ℹ️ {t("withdrawal.important_information")}
                             </h3>
-                            <ul className="text-xs text-gray-600 space-y-1">
+                            <ul className="text-xs text-white/50 space-y-1">
                                 <li>• {t("withdrawal.requests_processed_within_24_48_hours")}</li>
                                 <li>• {t("withdrawal.minimum_withdrawal_amount:")} $10 USD</li>
                                 <li>• {t("withdrawal.network_fees_will_apply")}</li>
@@ -589,9 +582,9 @@ export const RetiroPage = () => {
                 </div>
 
                 {/* Historial de Solicitudes */}
-                <div className="bg-white rounded-lg shadow-md p-6">
+                <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
+                        <h2 className="text-xl font-bold flex items-center gap-2 text-white">
                             <Calendar size={24} className="text-[#F0973C]" />
                             {t("withdrawal.request_history")}
                         </h2>
@@ -606,12 +599,12 @@ export const RetiroPage = () => {
                                     setEstadoFiltro(e.target.value);
                                     setPaginaActual(1);
                                 }}
-                                className="px-3 py-2 border-2 rounded-lg text-sm focus:outline-none border-[#F0973C]"
+                                className="px-3 py-2 bg-white/5 border border-[#F0973C]/30 rounded-xl text-white text-sm focus:outline-none focus:border-[#F0973C]/60"
                             >
-                                <option value="">{t("withdrawal.all_statuses")}</option>
-                                <option value={EstadoOperacion.PENDIENTE}>{t("withdrawal.pending")}</option>
-                                <option value={EstadoOperacion.COMPLETADA}>{t("withdrawal.completed")}</option>
-                                <option value={EstadoOperacion.RECHAZADA}>{t("withdrawal.rejected")}</option>
+                                <option value="" className="bg-[#111]">{t("withdrawal.all_statuses")}</option>
+                                <option value={EstadoOperacion.PENDIENTE} className="bg-[#111]">{t("withdrawal.pending")}</option>
+                                <option value={EstadoOperacion.COMPLETADA} className="bg-[#111]">{t("withdrawal.completed")}</option>
+                                <option value={EstadoOperacion.RECHAZADA} className="bg-[#111]">{t("withdrawal.rejected")}</option>
                             </select>
 
                             {estadoFiltro && (
@@ -633,19 +626,19 @@ export const RetiroPage = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="bg-gray-50 border-b-2 border-gray-200">
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.id")}</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.wallet")}</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.crypto")}</th>
-                                    <th className="px-4 py-3 text-right text-sm font-semibold">{t("withdrawal.amount")}</th>
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">{t("withdrawal.date")}</th>
-                                    <th className="px-4 py-3 text-center text-sm font-semibold">{t("withdrawal.status")}</th>
+                                <tr className="bg-white/5 border-b border-white/10">
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.id")}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.wallet")}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.crypto")}</th>
+                                    <th className="px-4 py-3 text-right text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.amount")}</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.date")}</th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold text-white/50 uppercase tracking-wider">{t("withdrawal.status")}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {solicitudesPaginadas.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                                        <td colSpan={6} className="px-4 py-8 text-center text-white/30">
                                             {t("withdrawal.no_requests_to_display")}
                                         </td>
                                     </tr>
@@ -654,9 +647,9 @@ export const RetiroPage = () => {
                                         const estadoInfo = getEstadoInfo(solicitud.estado);
                                         const IconoEstado = estadoInfo.icon;
                                         return (
-                                            <tr key={solicitud.walletId} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-4 text-sm font-semibold">#{solicitud.walletId}</td>
-                                                <td className="px-4 py-4 text-xs font-mono text-gray-600 max-w-50 truncate">
+                                            <tr key={solicitud.walletId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                                <td className="px-4 py-4 text-sm font-semibold text-white">#{solicitud.walletId}</td>
+                                                <td className="px-4 py-4 text-xs font-mono text-white/50 max-w-50 truncate">
                                                     {solicitud.walletAddress}
                                                 </td>
                                                 <td className="px-4 py-4 text-sm">
@@ -667,7 +660,7 @@ export const RetiroPage = () => {
                                                 <td className="px-4 py-4 text-right text-sm font-bold text-[#69AC95]">
                                                     ${solicitud.monto.toFixed(2)}
                                                 </td>
-                                                <td className="px-4 py-4 text-sm text-gray-600">
+                                                <td className="px-4 py-4 text-sm text-white/50">
                                                     {solicitud.fecha.toLocaleDateString()}
                                                 </td>
                                                 <td className="px-4 py-4">
@@ -688,8 +681,8 @@ export const RetiroPage = () => {
 
                     {/* Paginación */}
                     {totalPaginas > 1 && (
-                        <div className="flex justify-between items-center mt-6 pt-4 border-t-2 border-gray-200">
-                            <p className="text-sm text-gray-600">
+                        <div className="flex justify-between items-center mt-6 pt-4 border-t border-white/10">
+                            <p className="text-sm text-white/40">
                                 {t("withdrawal.Showing")} {indexPrimeraSolicitud + 1} - {Math.min(indexUltimaSolicitud, solicitudesFiltradas.length)} {t("withdrawal.of")} {solicitudesFiltradas.length} {t("withdrawal.requests")}
                             </p>
                             <div className="flex gap-2">
@@ -697,7 +690,7 @@ export const RetiroPage = () => {
                                     title={t("withdrawal.previous_page")}
                                     onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
                                     disabled={paginaActual === 1}
-                                    className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"
+                                    className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#F0973C] text-black hover:bg-[#F0973C]/80"
                                 >
                                     <ChevronLeft size={20} />
                                 </button>
@@ -706,8 +699,7 @@ export const RetiroPage = () => {
                                         <button
                                             key={pagina}
                                             onClick={() => setPaginaActual(pagina)}
-                                            className={`px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 ${paginaActual === pagina ? "bg-orange-500 text-white" : "bg-gray-200 text-black"
-                                                }`}
+                                            className={`px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 ${paginaActual === pagina ? "bg-[#F0973C] text-black" : "bg-white/10 text-white/60"}`}
                                         >
                                             {pagina}
                                         </button>
@@ -717,7 +709,7 @@ export const RetiroPage = () => {
                                     title={t("withdrawal.next_page")}
                                     onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
                                     disabled={paginaActual === totalPaginas}
-                                    className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-orange-500 text-white"
+                                    className="p-2 rounded-lg transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#F0973C] text-black hover:bg-[#F0973C]/80"
                                 >
                                     <ChevronRight size={20} />
                                 </button>

@@ -147,13 +147,13 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
     const getEstadoInfo = (estado: EstadoOperacion) => {
         switch (estado) {
             case EstadoOperacion.APROBADA:
-                return { icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', text: t("profile.approved") };
+                return { icon: CheckCircle, color: 'text-[#69AC95]', bg: 'bg-[#69AC95]/10', border: 'border-[#69AC95]/30', text: t("profile.approved") };
             case EstadoOperacion.RECHAZADA:
-                return { icon: XCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', text: t("profile.rejected") };
+                return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', text: t("profile.rejected") };
             case EstadoOperacion.PENDIENTE:
-                return { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200', text: t("profile.in_review") };
+                return { icon: Clock, color: 'text-[#F0973C]', bg: 'bg-[#F0973C]/10', border: 'border-[#F0973C]/30', text: t("profile.in_review") };
             default:
-                return { icon: Clock, color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200', text: t("profile.pending") };
+                return { icon: Clock, color: 'text-white/40', bg: 'bg-white/5', border: 'border-white/10', text: t("profile.pending") };
         }
     };
 
@@ -165,7 +165,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
         const isUploading = uploadingType === tipo && loadingSubirArchivo;
 
         return (
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:border-gray-300 transition-all">
+            <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6 hover:border-[#69AC95]/40 transition-all">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -173,8 +173,8 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                             <FileText size={24} className="text-white" />
                         </div>
                         <div>
-                            <h4 className="font-bold text-gray-800">{getTipoDocumentoLabel(tipo)}</h4>
-                            <p className="text-xs text-gray-500">{getTipoDocumentoDescripcion(tipo)}</p>
+                            <h4 className="font-bold text-white">{getTipoDocumentoLabel(tipo)}</h4>
+                            <p className="text-xs text-white/40">{getTipoDocumentoDescripcion(tipo)}</p>
                         </div>
                     </div>
                     {estadoInfo && IconoEstado && (
@@ -191,26 +191,26 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                 {archivo ? (
                     <div className="space-y-3">
                         {/* Información del archivo */}
-                        <div className="p-3 bg-gray-50 rounded-lg">
+                        <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-medium text-gray-700">{t("profile.file_uploaded")}</span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-sm font-medium text-white/70">{t("profile.file_uploaded")}</span>
+                                <span className="text-xs text-white/40">
                                     {new Date(archivo.uploadDate).toLocaleDateString('es-ES')}
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-600 truncate">{archivo.fileName}</p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-sm text-white/60 truncate">{archivo.fileName}</p>
+                            <p className="text-xs text-white/40 mt-1">
                                 {t("profile.file_size")} {(archivo.fileSize / 1024).toFixed(2)} KB
                             </p>
                         </div>
 
                         {/* Comentario de rechazo */}
                         {archivo.estado === EstadoOperacion.RECHAZADA && archivo.comentarioRechazo && (
-                            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                                <p className="text-xs font-semibold text-red-700 mb-1">{t("profile.rejection_reason")}:</p>
-                                <p className="text-sm text-red-600">{archivo.comentarioRechazo}</p>
+                            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                                <p className="text-xs font-semibold text-red-400 mb-1">{t("profile.rejection_reason")}:</p>
+                                <p className="text-sm text-red-400/80">{archivo.comentarioRechazo}</p>
                                 {archivo.razonRechazo && (
-                                    <p className="text-xs text-red-500 mt-1">{t("profile.reason")}: {archivo.razonRechazo}</p>
+                                    <p className="text-xs text-red-400/60 mt-1">{t("profile.reason")}: {archivo.razonRechazo}</p>
                                 )}
                             </div>
                         )}
@@ -219,7 +219,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                         <div className="flex gap-2">
                             <button
                                 onClick={() => handleViewFile(archivo)}
-                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium"
+                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl transition-colors text-sm font-medium border border-white/10"
                             >
                                 <Eye size={16} />
                                 {t("profile.view")}
@@ -266,14 +266,14 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                                 className="hidden"
                             />
                             <div
-                                className="flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex flex-col items-center justify-center gap-3 p-6 border-2 border-dashed border-white/10 rounded-xl cursor-pointer hover:border-[#69AC95]/50 hover:bg-[#69AC95]/5 transition-all"
                             >
-                                <Upload size={32} className="text-gray-400" />
+                                <Upload size={32} className="text-white/30" />
                                 <div className="text-center">
-                                    <p className="text-sm font-semibold text-gray-700">
+                                    <p className="text-sm font-semibold text-white/70">
                                         {isUploading ? t("profile.uploading_document") : t("profile.upload_document")}
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-white/30 mt-1">
                                             {t("profile.file_format")}
                                     </p>
                                 </div>
@@ -286,26 +286,26 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
+        <div className="rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
             <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{t("profile.kyc_verification")}</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-xl font-bold text-[#F0973C] mb-2">{t("profile.kyc_verification")}</h3>
+                <p className="text-sm text-white/40">
                     {t("profile.kyc_verification_description")}
                 </p>
             </div>
 
             {/* Mensajes */}
             {successMessage && (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                    <CheckCircle size={20} className="text-green-600" />
-                    <span className="text-sm font-medium text-green-700">{successMessage}</span>
+                <div className="mb-4 p-4 bg-[#69AC95]/10 border border-[#69AC95]/30 rounded-xl flex items-center gap-3">
+                    <CheckCircle size={20} className="text-[#69AC95]" />
+                    <span className="text-sm font-medium text-[#69AC95]">{successMessage}</span>
                 </div>
             )}
 
             {(errorMisArchivosKyc || errorSubirArchivo) && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                    <AlertCircle size={20} className="text-red-600" />
-                    <span className="text-sm font-medium text-red-700">
+                <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3">
+                    <AlertCircle size={20} className="text-red-400" />
+                    <span className="text-sm font-medium text-red-400">
                         {errorMisArchivosKyc || errorSubirArchivo}
                     </span>
                 </div>
@@ -314,7 +314,7 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
             {/* Estado de carga */}
             {loadingMisArchivosKyc ? (
                 <div className="flex items-center justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#69AC95]"></div>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -324,12 +324,12 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
             )}
 
             {/* Información adicional */}
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mt-6 p-4 bg-[#F0973C]/5 border border-[#F0973C]/20 rounded-xl">
                 <div className="flex items-start gap-3">
-                    <AlertCircle size={20} className="text-blue-600 shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-700">
-                        <p className="font-semibold mb-1">{t("profile.kyc_verification_info")}</p>
-                        <ul className="list-disc list-inside space-y-1 text-xs">
+                    <AlertCircle size={20} className="text-[#F0973C] shrink-0 mt-0.5" />
+                    <div className="text-sm">
+                        <p className="font-semibold mb-1 text-[#F0973C]">{t("profile.kyc_verification_info")}</p>
+                        <ul className="list-disc list-inside space-y-1 text-xs text-white/50">
                             <li>{t("profile.kyc_verification_documents")}</li>
                             <li>{t("profile.kyc_verification_images")}</li>
                             <li>{t("profile.kyc_verification_process")}</li>

@@ -39,15 +39,15 @@ const NodoUsuario = ({
                 {/* Tarjeta del usuario */}
                 <div
                     className={`
-                        relative bg-white rounded-xl shadow-lg border-2 
-                        ${esRaiz ? 'ring-4' : ''}
+                        relative rounded-xl border 
+                        ${esRaiz ? 'ring-2 ring-[#69AC95]/40' : ''}
                         p-4 min-w-50 max-w-62.5
-                        transition-all duration-300 hover:shadow-2xl hover:scale-105
+                        transition-all duration-300 hover:scale-105
                         ${tieneReferidos && puedeVerMas ? 'cursor-pointer' : ''}
                     `}
                     style={{
-                        borderColor: esRaiz ? '#69AC95' : '#e5e7eb',
-                        ...(esRaiz ? { '--tw-ring-color': '#d1fae5' } : {})
+                        backgroundColor: esRaiz ? 'rgba(105,172,149,0.08)' : 'rgba(255,255,255,0.03)',
+                        borderColor: esRaiz ? '#69AC95' : 'rgba(255,255,255,0.10)',
                     } as React.CSSProperties}
                     onClick={() => tieneReferidos && puedeVerMas && setExpandido(!expandido)}
                 >
@@ -67,12 +67,12 @@ const NodoUsuario = ({
 
                     {/* Info del usuario */}
                     <div className="text-center">
-                        <h3 className="font-bold text-gray-800 text-sm mb-1">
+                        <h3 className="font-bold text-white text-sm mb-1">
                             @{nodo.usuarioRaiz.username}
                         </h3>
 
                         {/* Licencia */}
-                        <div className="px-3 py-1 rounded-full mb-2" style={{ backgroundColor: '#f3f4f6' }}>
+                        <div className="px-3 py-1 rounded-full mb-2" style={{ backgroundColor: 'rgba(105,172,149,0.15)' }}>
                             <span className="text-xs font-semibold" style={{ color: '#69AC95' }}>
                                 {nodo.usuarioRaiz.licencia.nombre}
                             </span>
@@ -80,8 +80,8 @@ const NodoUsuario = ({
 
                         {/* Estadísticas */}
                         <div className="mt-3 text-xs">
-                            <div className="rounded-lg p-2" style={{ backgroundColor: '#f9fafb' }}>
-                                <p className="text-gray-500">{t("network.referrals")}</p>
+                            <div className="rounded-lg p-2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                                <p className="text-white/40">{t("network.referrals")}</p>
                                 <p className="font-bold" style={{ color: '#69AC95' }}>{nodo.referidos.length}</p>
                             </div>
                         </div>
@@ -89,8 +89,8 @@ const NodoUsuario = ({
 
                     {/* Indicador de expandible */}
                     {tieneReferidos && puedeVerMas && (
-                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white border-2 rounded-full p-1 shadow-md"
-                            style={{ borderColor: '#69AC95' }}>
+                        <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 border-2 rounded-full p-1 shadow-md"
+                            style={{ backgroundColor: '#0d0d0d', borderColor: '#69AC95' }}>
                             <svg
                                 className={`w-5 h-5 transition-transform ${expandido ? 'rotate-180' : ''}`}
                                 style={{ color: '#69AC95' }}
@@ -189,10 +189,10 @@ const RedUsuarioPage = () => {
     // Mostrar loading mientras se carga o si los datos aún no están disponibles
     if (loadingUsuariosEnRed) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+            <div className="min-h-screen bg-[#000000] flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-16 w-16 border-b-4 mx-auto mb-4" style={{ borderColor: '#69AC95' }}></div>
-                    <p className="text-lg text-gray-600">{t("network.loading_user_network")}</p>
+                    <p className="text-lg text-white/50">{t("network.loading_user_network")}</p>
                 </div>
             </div>
         );
@@ -200,14 +200,14 @@ const RedUsuarioPage = () => {
 
     if (errorUsuariosEnRed) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                <div className="text-center bg-white p-8 rounded-xl shadow-lg border" style={{ borderColor: '#e5e7eb' }}>
-                    <div className="text-red-500 text-5xl mb-4">⚠️</div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("network.error_loading_network")}</h2>
-                    <p className="text-gray-600 mb-4">{errorUsuariosEnRed}</p>
+            <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+                <div className="text-center p-8 rounded-2xl border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                    <div className="text-red-400 text-5xl mb-4">⚠️</div>
+                    <h2 className="text-2xl font-bold text-white mb-2">{t("network.error_loading_network")}</h2>
+                    <p className="text-white/50 mb-4">{errorUsuariosEnRed}</p>
                     <button
                         onClick={() => usuario && obtenerUsuariosEnRed(usuario.username)}
-                        className="px-4 py-2 text-white rounded-lg transition hover:opacity-90"
+                        className="px-4 py-2 text-white rounded-xl transition hover:opacity-90"
                         style={{ backgroundColor: '#69AC95' }}
                     >
                         {t("network.retry")}
@@ -219,11 +219,11 @@ const RedUsuarioPage = () => {
 
     if (usuariosEnRed?.length === 0) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                <div className="text-center bg-white p-8 rounded-xl shadow-lg border" style={{ borderColor: '#e5e7eb' }}>
-                    <div className="text-gray-400 text-5xl mb-4">🌐</div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("network.no_network_available")}</h2>
-                    <p className="text-gray-600">{t("network.no_referrals_yet")}</p>
+            <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+                <div className="text-center p-8 rounded-2xl border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                    <div className="text-white/30 text-5xl mb-4">🌐</div>
+                    <h2 className="text-2xl font-bold text-white mb-2">{t("network.no_network_available")}</h2>
+                    <p className="text-white/40">{t("network.no_referrals_yet")}</p>
                 </div>
             </div>
         );
@@ -233,29 +233,29 @@ const RedUsuarioPage = () => {
 
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 p-6 overflow-x-auto">
+        <div className="min-h-screen bg-[#000000] text-white p-6 overflow-x-auto">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold mb-2 text-gray-900">
+                    <h1 className="text-4xl font-bold mb-2 text-[#F0973C]">
                         {t("network.user_network")}
                     </h1>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-white/40 mb-4">
                         {t("network.view_your_referral_network", { maxNivel })}
                     </p>
 
                     {/* Info del rango */}
-                    <div className="inline-flex items-center bg-white rounded-full shadow-lg px-6 py-3 space-x-4 border" style={{ borderColor: '#e5e7eb' }}>
+                    <div className="inline-flex items-center rounded-full px-6 py-3 space-x-4 border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-sm font-semibold text-gray-700">
+                            <span className="text-sm font-semibold text-white/70">
                                {t("network.max_visible_level")} {maxNivel}
                             </span>
                         </div>
-                        <div className="h-6 w-0.5 bg-gray-300"></div>
+                        <div className="h-6 w-0.5 bg-white/10"></div>
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#F0973C' }}></div>
-                            <span className="text-sm font-semibold text-gray-700">
+                            <span className="text-sm font-semibold text-white/70">
                                 {t("network.user")} {usuario?.username}
                             </span>
                         </div>
@@ -263,27 +263,27 @@ const RedUsuarioPage = () => {
                 </div>
 
                 {/* Leyenda */}
-                <div className="bg-white rounded-xl shadow-lg p-4 mb-8 max-w-2xl mx-auto border" style={{ borderColor: '#e5e7eb' }}>
+                <div className="rounded-xl p-4 mb-8 max-w-2xl mx-auto border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
                     <div className="flex items-center justify-around text-xs">
                         <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-gray-600">{t("network.user")}</span>
+                            <span className="text-white/50">{t("network.user")}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-gray-600">{t("network.main_user")} (Nivel 0)</span>
+                            <span className="text-white/50">{t("network.main_user")} (Nivel 0)</span>
                         </div>
                         <div className="flex items-center space-x-2">
                             <svg className="w-4 h-4" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
-                            <span className="text-gray-600">{t("network.click_to_expand")}</span>
+                            <span className="text-white/50">{t("network.click_to_expand")}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Árbol de red */}
-                <div className="bg-white rounded-2xl shadow-2xl p-8 overflow-x-auto border" style={{ borderColor: '#e5e7eb' }}>
+                <div className="rounded-2xl p-8 overflow-x-auto border" style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.08)' }}>
                     <div className="min-w-max flex justify-center">
                         <NodoUsuario
                             nodo={construirArbolRed(usuariosEnRed || [])}
@@ -294,15 +294,15 @@ const RedUsuarioPage = () => {
                 </div>
 
                 {/* Información adicional */}
-                <div className="mt-8 rounded-xl p-6 max-w-2xl mx-auto border" style={{ backgroundColor: '#f3f4f6', borderColor: '#e5e7eb' }}>
+                <div className="mt-8 rounded-xl p-6 max-w-2xl mx-auto border" style={{ backgroundColor: 'rgba(105,172,149,0.06)', borderColor: 'rgba(105,172,149,0.2)' }}>
                     <div className="flex items-start space-x-3">
                         <svg className="w-6 h-6 shrink-0 mt-1" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
-                            <h3 className="font-semibold text-gray-900 mb-2">{t("network.level_information")}</h3>
-                            <p className="text-gray-700 text-sm">
-                                {t("network.the")}<strong>{t("network.level_0")}</strong> {t("network.always_your_user")}
+                            <h3 className="font-semibold text-white mb-2">{t("network.level_information")}</h3>
+                            <p className="text-white/60 text-sm">
+                                {t("network.the")}<strong className="text-white">{t("network.level_0")}</strong> {t("network.always_your_user")}
                             </p>
                         </div>
                     </div>

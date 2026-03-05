@@ -120,13 +120,13 @@ export const TransferenciaInternaPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white p-6">
+        <div className="min-h-screen bg-[#000000] text-white p-6">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-black mb-2">
+                <h1 className="text-3xl font-bold text-[#F0973C] mb-2">
                     {t("transfers.title")}
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-white/40">
                     {t("transfers.description")}
                 </p>
             </div>
@@ -144,30 +144,30 @@ export const TransferenciaInternaPage = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Formulario de transferencia */}
-                <div className="bg-white border-2 border-[#69AC95] rounded-lg p-6 shadow-lg">
-                    <h2 className="text-2xl font-bold text-black mb-6">
+                <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
+                    <h2 className="text-2xl font-bold text-white mb-6">
                         {t("transfers.new_transfer")}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Selector de Wallet */}
                         <div>
-                            <label className="block text-sm font-semibold text-black mb-2">
+                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                 {t("transfers.wallet_to_withdraw")}
                             </label>
                             <select
                                 value={tipoWallet}
                                 onChange={(e) => setTipoWallet(e.target.value as TipoWallets)}
-                                className="w-full p-3 border-2 border-[#F0973C] rounded-lg focus:outline-none focus:border-[#69AC95] transition-colors"
+                                className="w-full p-3 bg-white/5 border border-[#F0973C]/30 rounded-xl text-white focus:outline-none focus:border-[#69AC95]/50 transition-colors"
                             >
-                                <option value={TipoWallets.WALLET_DIVIDENDOS}>
+                                <option value={TipoWallets.WALLET_DIVIDENDOS} className="bg-[#111]">
                                     {t("transfers.dividends")} (${getSaldoActual().toFixed(2)})
                                 </option>
-                                <option value={TipoWallets.WALLET_COMISIONES}>
+                                <option value={TipoWallets.WALLET_COMISIONES} className="bg-[#111]">
                                     {t("transfers.commissions")} (${getSaldoActual().toFixed(2)})
                                 </option>
                             </select>
-                            <p className="mt-2 text-sm text-gray-600">
+                            <p className="mt-2 text-sm text-white/40">
                                 {t("transfers.available_balance")}: <span className="font-bold text-[#69AC95]">
                                     ${getSaldoActual().toFixed(2)}
                                 </span>
@@ -176,7 +176,7 @@ export const TransferenciaInternaPage = () => {
 
                         {/* Username destinatario */}
                         <div>
-                            <label className="block text-sm font-semibold text-black mb-2">
+                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                 {t("transfers.destination_username")}
                             </label>
                             <input
@@ -184,14 +184,14 @@ export const TransferenciaInternaPage = () => {
                                 value={usernameDestino}
                                 onChange={(e) => setUsernameDestino(e.target.value)}
                                 placeholder={t("transfers.enter_username")}
-                                className="w-full p-3 border-2 border-[#F0973C] rounded-lg focus:outline-none focus:border-[#69AC95] transition-colors"
+                                className="w-full p-3 bg-white/5 border border-[#F0973C]/30 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 transition-colors"
                                 required
                             />
                         </div>
 
                         {/* Cantidad */}
                         <div>
-                            <label className="block text-sm font-semibold text-black mb-2">
+                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                 {t("transfers.amount_to_transfer")}
                             </label>
                             <input
@@ -202,7 +202,7 @@ export const TransferenciaInternaPage = () => {
                                 step="0.01"
                                 min="0.01"
                                 max={getSaldoActual()}
-                                className="w-full p-3 border-2 border-[#F0973C] rounded-lg focus:outline-none focus:border-[#69AC95] transition-colors"
+                                className="w-full p-3 bg-white/5 border border-[#F0973C]/30 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 transition-colors"
                                 required
                             />
                         </div>
@@ -219,8 +219,8 @@ export const TransferenciaInternaPage = () => {
                 </div>
 
                 {/* Información de la cuenta */}
-                <div className="bg-white border-2 border-[#F0973C] rounded-lg p-6 shadow-lg">
-                    <h2 className="text-2xl font-bold text-black mb-6">
+                <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
+                    <h2 className="text-2xl font-bold text-white mb-6">
                         {t("transfers.wallets_information")}
                     </h2>
 
@@ -248,14 +248,14 @@ export const TransferenciaInternaPage = () => {
                     </div>
 
                     {/* Información adicional */}
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <h3 className="font-semibold text-black mb-2 flex items-center">
+                    <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
+                        <h3 className="font-semibold text-white mb-2 flex items-center">
                             <svg className="w-5 h-5 mr-2 text-[#F0973C]" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
                             {t("transfers.important_information")}
                         </h3>
-                        <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                        <ul className="text-sm text-white/50 space-y-1 list-disc list-inside">
                             <li>{t("transfers.instant_transfers")}</li>
                             <li>{t("transfers.no_fee_internal_transfers")}</li>
                             <li>{t("transfers.verify_destination_username")}</li>
@@ -266,15 +266,15 @@ export const TransferenciaInternaPage = () => {
             </div>
 
             {/* Historial de Transferencias */}
-            <div className="mt-8 bg-white border-2 border-[#69AC95] rounded-lg p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-black mb-6">
+            <div className="mt-8 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
+                <h2 className="text-2xl font-bold text-white mb-6">
                     {t("transfers.transfer_history")}
                 </h2>
 
                 {cargandoTransacciones ? (
                     <div className="text-center py-8">
                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-[#F0973C] border-t-transparent"></div>
-                        <p className="mt-2 text-gray-600">{t("transfers.loading")}</p>
+                        <p className="mt-2 text-white/40">{t("transfers.loading")}</p>
                     </div>
                 ) : transacciones && transacciones.length > 0 ? (
                     <div className="overflow-x-auto">
@@ -298,19 +298,19 @@ export const TransferenciaInternaPage = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="divide-y divide-white/5">
                                 {transacciones.map((transaccion: Transaccion) => (
-                                    <tr key={transaccion.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <tr key={transaccion.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                                             {formatearFecha(transaccion.fecha)}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                                             {transaccion.usuario.username}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-[#69AC95]">
                                             ${transaccion.monto.toFixed(2)}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                                             {transaccion.metodoPago === 'WALLET_DIVIDENDOS' 
                                                 ? t("transfers.dividends") 
                                                 : t("transfers.commissions")}
@@ -332,8 +332,8 @@ export const TransferenciaInternaPage = () => {
                         </table>
                     </div>
                 ) : (
-                    <div className="text-center py-8 text-gray-500">
-                        <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="text-center py-8 text-white/30">
+                        <svg className="mx-auto h-12 w-12 text-white/20 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         <p>{t("transfers.no_transfers_registered")}</p>
@@ -345,8 +345,8 @@ export const TransferenciaInternaPage = () => {
             {showModal && (
                 <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="absolute inset-0 bg-black opacity-50"></div>
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl z-52">
-                        <h3 className="text-2xl font-bold text-black mb-6 flex items-center">
+                    <div className="bg-[#0d0d0d] border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl z-52">
+                        <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
                             <svg className="w-8 h-8 mr-3 text-[#F0973C]" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                             </svg>
@@ -354,28 +354,28 @@ export const TransferenciaInternaPage = () => {
                         </h3>
                         
                         <div className="space-y-4 mb-6">
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">{t("transfers.destination")}</p>
-                                <p className="text-lg font-semibold text-black">{usernameDestino}</p>
+                            <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                <p className="text-sm text-white/40 mb-1">{t("transfers.destination")}</p>
+                                <p className="text-lg font-semibold text-white">{usernameDestino}</p>
                             </div>
                             
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">{t("transfers.amount")}</p>
+                            <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                <p className="text-sm text-white/40 mb-1">{t("transfers.amount")}</p>
                                 <p className="text-lg font-semibold text-[#69AC95]">
                                     ${parseFloat(cantidad).toFixed(2)}
                                 </p>
                             </div>
                             
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">{t("transfers.from_wallet")}</p>
-                                <p className="text-lg font-semibold text-black">
+                            <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                                <p className="text-sm text-white/40 mb-1">{t("transfers.from_wallet")}</p>
+                                <p className="text-lg font-semibold text-white">
                                     {tipoWallet === TipoWallets.WALLET_DIVIDENDOS ? t("transfers.dividends") : t("transfers.commissions")}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="bg-yellow-50 border-l-4 border-[#F0973C] p-4 mb-6">
-                            <p className="text-sm text-gray-700">
+                        <div className="bg-[#F0973C]/10 border-l-4 border-[#F0973C] p-4 mb-6 rounded-r-xl">
+                            <p className="text-sm text-white/70">
                                 ⚠️ {t("transfers.irreversible_action")}
                             </p>
                         </div>
@@ -383,7 +383,7 @@ export const TransferenciaInternaPage = () => {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="flex-1 bg-gray-300 text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-400 transition-colors"
+                                className="flex-1 bg-white/10 text-white/70 font-bold py-3 px-6 rounded-xl hover:bg-white/20 transition-colors"
                             >
                                 {t("transfers.cancel")}
                             </button>

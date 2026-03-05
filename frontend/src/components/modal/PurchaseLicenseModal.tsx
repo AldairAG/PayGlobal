@@ -75,12 +75,13 @@ export default function PurchaseLicenseModal({
 
     return (
         <div className="fixed inset-0 flex justify-center items-center z-50 p-4">
-            <div className="absolute inset-0 bg-black opacity-50 z-51"></div>
-            <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full z-52 max-h-[90vh] flex flex-col">
+            <div className="absolute inset-0 bg-black opacity-80 z-51"></div>
+            <div className="relative bg-[#0d0d0d] border border-white/10 rounded-2xl max-w-md w-full z-52 max-h-[90vh] flex flex-col">
                 {/* Botón de cerrar - fijo en la parte superior */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 bg-white rounded-full p-1"
+                    aria-label="Cerrar"
+                    className="absolute top-4 right-4 text-white/40 hover:text-white z-10 bg-white/5 hover:bg-white/10 rounded-full p-1 transition-colors"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -89,15 +90,15 @@ export default function PurchaseLicenseModal({
 
                 {/* Contenedor con scroll */}
                 <div className="overflow-y-auto p-8">
-                    <h2 className="text-2xl mb-6 font-bold text-center pr-8">
+                    <h2 className="text-2xl mb-6 font-bold text-center pr-8 text-[#F0973C]">
                         {t("licenses.purchase_license")}
                     </h2>
 
                 {/* Información de la licencia */}
-                <div className="mb-6 bg-gray-50 p-4 rounded">
-                    <p className="text-lg font-semibold">{licenseName}</p>
-                    <p className="text-2xl font-bold text-green-600">${licenseValue} {currentWallet.symbol}</p>
-                    <p className="text-sm text-gray-600 mt-2">
+                <div className="mb-6 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-4">
+                    <p className="text-lg font-semibold text-white">{licenseName}</p>
+                    <p className="text-2xl font-bold text-[#69AC95]">${licenseValue} {currentWallet.symbol}</p>
+                    <p className="text-sm text-white/50 mt-2">
                         {purchaseType === TipoSolicitud.COMPRA_LICENCIA
                             ? (t("licenses.purchase_for_myself") )
                             : (t("licenses.purchase_for_others") )}
@@ -107,14 +108,14 @@ export default function PurchaseLicenseModal({
                 {/* Input para username si es compra para otro */}
                 {purchaseType === TipoSolicitud.PAGO_DELEGADO && (
                     <div className="mb-6">
-                        <label className="block text-sm font-medium mb-2">
+                        <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                 {t("licenses.referred_username") }
                         </label>
                         <input
                             type="text"
                             value={referredUsername}
                             onChange={(e) => setReferredUsername(e.target.value)}
-                            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 bg-white/5 border border-[#F0973C]/40 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#F0973C]/70 transition-all"
                                 placeholder={t("licenses.enter_username")}
                         />
                     </div>
@@ -122,7 +123,7 @@ export default function PurchaseLicenseModal({
 
                 {/* Selector de criptomoneda */}
                 <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                         {t("licenses.select_crypto_type")}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -130,14 +131,14 @@ export default function PurchaseLicenseModal({
                             <button
                                 key={key}
                                 onClick={() => setSelectedCrypto(wallet.tipo)}
-                                className={`p-3 rounded-lg border-2 transition-all ${
+                                className={`p-3 rounded-xl border transition-all ${
                                     selectedCrypto === wallet.tipo
-                                        ? 'border-blue-600 bg-blue-50 text-blue-700'
-                                        : 'border-gray-200 hover:border-blue-300'
+                                        ? 'border-[#F0973C] bg-[#F0973C]/10 text-[#F0973C]'
+                                        : 'border-white/10 bg-white/5 text-white/70 hover:border-[#F0973C]/40 hover:bg-[#F0973C]/5'
                                 }`}
                             >
                                 <div className="text-sm font-semibold">{wallet.symbol}</div>
-                                <div className="text-xs text-gray-600">{wallet.name}</div>
+                                <div className="text-xs opacity-60">{wallet.name}</div>
                             </button>
                         ))}
                     </div>
@@ -148,20 +149,20 @@ export default function PurchaseLicenseModal({
                     <img 
                         src={qrCodeUrl} 
                         alt="QR Code" 
-                        className="border-2 border-gray-200 rounded p-2"
+                        className="border border-white/10 rounded-xl p-2 bg-white"
                     />
                 </div>
 
                 {/* Wallet Address */}
                 <div className="mb-6">
-                    <p className="text-sm font-medium text-gray-700 mb-2">
+                    <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                             {t("licenses.wallet_address")} ({currentWallet.name})
                     </p>
-                    <div className="flex items-center bg-gray-50 p-3 rounded">
-                        <p className="text-sm break-all flex-1 font-mono">{currentWallet.address}</p>
+                    <div className="flex items-center bg-white/5 border border-white/10 p-3 rounded-xl">
+                        <p className="text-sm break-all flex-1 font-mono text-white/80">{currentWallet.address}</p>
                         <button
                             onClick={copyToClipboard}
-                            className="ml-2 text-blue-600 hover:text-blue-800"
+                            className="ml-2 text-[#F0973C] hover:text-[#F0973C]/70 transition-colors"
                             title={t("licenses.copy")}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,8 +173,8 @@ export default function PurchaseLicenseModal({
                 </div>
 
                 {/* Instrucciones */}
-                <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                    <p className="text-sm text-yellow-800">
+                <div className="mb-6 border-l-4 border-[#F0973C]/60 bg-[#F0973C]/5 p-4 rounded-r-xl">
+                    <p className="text-sm text-[#F0973C]/80">
                         {t("licenses.transfer_instructions")}
                     </p>
                 </div>
@@ -181,7 +182,7 @@ export default function PurchaseLicenseModal({
                     {/* Botón de confirmación */}
                     <button
                         onClick={handleConfirmPurchase}
-                        className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 transition-colors font-semibold"
+                        className="w-full bg-[#F0973C] text-black py-3 rounded-xl hover:bg-[#F0973C]/90 transition-colors font-bold"
                     >
                         {t("licenses.close")}
                     </button>

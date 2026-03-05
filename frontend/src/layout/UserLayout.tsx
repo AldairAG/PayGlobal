@@ -31,17 +31,17 @@ export const UserLayout = () => {
     }, []);
 
     if (loadingUsuarioSeleccionado) {
-        return <div>Cargando...</div>;
+        return <div className="flex h-screen items-center justify-center bg-[#000000] text-white/50 text-sm uppercase tracking-widest">Cargando...</div>;
     }
 
     if (errorUsuarioSeleccionado) {
-        return <div>Error: {errorUsuarioSeleccionado}</div>;
+        return <div className="flex h-screen items-center justify-center bg-[#000000] text-red-400 text-sm">Error: {errorUsuarioSeleccionado}</div>;
     }
 
     const currentPageName = routeNames[location.pathname] || 'Página';
 
     return (
-        <div className="flex h-screen ">
+        <div className="flex h-screen bg-[#000000] text-white">
             {/* SideBar ocupa toda la altura */}
             <SideBar />
 
@@ -50,19 +50,18 @@ export const UserLayout = () => {
                 <Header />
 
                 {/* Breadcrumb */}
-                <div className="px-6 py-3 border-b" style={{ backgroundColor: '#f9fafb', borderColor: '#e5e7eb' }}>
+                <div className="px-6 py-3 border-b border-white/5 bg-black/60 backdrop-blur-sm">
                     <div className="flex items-center justify-center space-x-2 text-sm">
                         <Link
                             to={ROUTES.USER.HOME}
-                            className="flex items-center hover:opacity-70 transition"
-                            style={{ color: '#69AC95' }}
+                            className="flex items-center text-[#69AC95] hover:text-[#69AC95]/70 transition-colors"
                         >
                             <Home size={16} />
                         </Link>
                         {location.pathname !== ROUTES.USER.HOME && (
                             <>
-                                <ChevronRight size={16} style={{ color: '#9ca3af' }} />
-                                <span className="font-medium" style={{ color: '#374151' }}>
+                                <ChevronRight size={16} className="text-white/20" />
+                                <span className="font-medium text-white/50 uppercase tracking-wider text-xs">
                                     {currentPageName}
                                 </span>
                             </>

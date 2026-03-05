@@ -129,14 +129,14 @@ export const SoportePage = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-6">
+        <div className="w-full min-h-screen bg-[#000000] text-white p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2 text-black">
+                    <h1 className="text-3xl font-bold mb-2 text-[#F0973C]">
                         {t("support.support_center")}
                     </h1>
-                    <p className="text-gray-600">
+                    <p className="text-white/40">
                         {t("support.manage_your_tickets_and_get_help_from_our_team")}
                     </p>
                 </div>
@@ -144,9 +144,9 @@ export const SoportePage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Panel izquierdo - Lista de tickets */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg shadow-md p-6">
+                        <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                     <Ticket size={24} className="text-[#F0973C]" />
                                     {t("support.my_tickets")}
                                 </h2>
@@ -166,7 +166,7 @@ export const SoportePage = () => {
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F0973C]"></div>
                                     </div>
                                 ) : misTikets.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-400">
+                                    <div className="text-center py-8 text-white/30">
                                         <Ticket size={48} className="mx-auto mb-2 opacity-30" />
                                         <p>No tienes tickets aún</p>
                                     </div>
@@ -175,13 +175,13 @@ export const SoportePage = () => {
                                         <div
                                             key={ticket.id}
                                             onClick={() => setSelectedTicket(ticket)}
-                                            className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${selectedTicket?.id === ticket.id
-                                                ? "border-[#F0973C] border-opacity-100 shadow-md"
-                                                : "border-gray-200 hover:border-opacity-50"
+                                            className={`p-4 rounded-xl border cursor-pointer transition-all ${selectedTicket?.id === ticket.id
+                                                ? "border-[#F0973C]/60 bg-[#F0973C]/10"
+                                                : "border-white/10 bg-white/[0.02] hover:border-[#F0973C]/30 hover:bg-white/5"
                                                 }`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
-                                                <h3 className="font-semibold text-sm line-clamp-1">
+                                                <h3 className="font-semibold text-sm text-white line-clamp-1">
                                                     {ticket.asunto}
                                                 </h3>
                                                 <span
@@ -191,10 +191,10 @@ export const SoportePage = () => {
                                                     {ticket.estado === EstadoTicketEnum.ABIERTO ? "Abierto" : "Cerrado"}
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-gray-500 mb-2 line-clamp-2">
+                                            <p className="text-xs text-white/40 mb-2 line-clamp-2">
                                                 {ticket.descripcion}
                                             </p>
-                                            <div className="flex justify-between items-center text-xs text-gray-400">
+                                            <div className="flex justify-between items-center text-xs text-white/30">
                                                 <span className="flex items-center gap-1">
                                                     <Clock size={12} />
                                                     {new Date(ticket.fechaCreacion).toLocaleDateString()}
@@ -211,12 +211,12 @@ export const SoportePage = () => {
 
                             {/* Paginación */}
                             {!loadingMisTikets && totalPaginasMisTikets > 1 && (
-                                <div className="mt-6 pt-4 border-t border-gray-200">
+                                <div className="mt-6 pt-4 border-t border-white/5">
                                     <div className="flex items-center justify-between">
                                         {/* Información de página */}
-                                        <div className="text-sm text-gray-600">
+                                        <div className="text-sm text-white/40">
                                             Página {currentPage + 1} de {totalPaginasMisTikets}
-                                            <span className="ml-2 text-gray-400">
+                                            <span className="ml-2 text-white/30">
                                                 ({totalElementosMisTikets} tickets)
                                             </span>
                                         </div>
@@ -226,7 +226,7 @@ export const SoportePage = () => {
                                             <button
                                                 onClick={handlePreviousPage}
                                                 disabled={currentPage === 0}
-                                                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                className="p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                                 title="Página anterior"
                                             >
                                                 <ChevronLeft size={18} />
@@ -251,8 +251,8 @@ export const SoportePage = () => {
                                                             key={pageNum}
                                                             onClick={() => handlePageChange(pageNum)}
                                                             className={`px-3 py-1 rounded-lg text-sm font-semibold transition-all ${currentPage === pageNum
-                                                                ? "bg-[#F0973C] text-white"
-                                                                : "border border-gray-300 hover:bg-gray-50"
+                                                                ? "bg-[#F0973C] text-black"
+                                                                : "border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
                                                                 }`}
                                                         >
                                                             {pageNum + 1}
@@ -264,7 +264,7 @@ export const SoportePage = () => {
                                             <button
                                                 onClick={handleNextPage}
                                                 disabled={currentPage === totalPaginasMisTikets - 1}
-                                                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                                className="p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                                 title="Página siguiente"
                                             >
                                                 <ChevronRight size={18} />
@@ -278,12 +278,12 @@ export const SoportePage = () => {
 
                     {/* Panel derecho - Detalle del ticket o formulario */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg shadow-md p-6 min-h-150">
+                        <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6 min-h-150">
                             {showNewTicketForm ? (
                                 /* Formulario de nuevo ticket */
                                 <div>
                                     <div className="flex justify-between items-center mb-6">
-                                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                                             <Plus size={28} className="text-[#F0973C]" />
                                             {t("support.new_ticket")}
                                         </h2>
@@ -293,7 +293,7 @@ export const SoportePage = () => {
                                                 setShowNewTicketForm(false);
                                                 formik.resetForm();
                                             }}
-                                            className="p-2 rounded-lg hover:bg-gray-100 transition-all"
+                                            className="p-2 rounded-xl text-white/50 hover:bg-white/10 hover:text-white transition-all"
                                             title={t("support.close_form")}
                                         >
                                             <X size={24} />
@@ -303,7 +303,7 @@ export const SoportePage = () => {
                                     <form onSubmit={formik.handleSubmit} className="space-y-6">
                                         {/* Campo Asunto */}
                                         <div>
-                                            <label className="block text-sm font-semibold mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("support.subject")} *
                                             </label>
                                             <input
@@ -312,8 +312,8 @@ export const SoportePage = () => {
                                                 value={formik.values.asunto}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all ${
-                                                    formik.touched.asunto && formik.errors.asunto ? "border-red-600" : "border-[#F0973C]"
+                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all ${
+                                                    formik.touched.asunto && formik.errors.asunto ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
                                                 }`}
                                                 placeholder={t("support.describe_briefly_the_problem")}
                                             />
@@ -326,7 +326,7 @@ export const SoportePage = () => {
 
                                         {/* Campo Descripción */}
                                         <div>
-                                            <label className="block text-sm font-semibold mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("support.description")} *
                                             </label>
                                             <textarea
@@ -335,8 +335,8 @@ export const SoportePage = () => {
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
                                                 rows={8}
-                                                className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none ${
-                                                    formik.touched.descripcion && formik.errors.descripcion ? "border-red-600" : "border-[#F0973C]"
+                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all resize-none ${
+                                                    formik.touched.descripcion && formik.errors.descripcion ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
                                                 }`}
                                                 placeholder={t("support.describe_your_problem_in_detail")}
                                             />
@@ -362,7 +362,7 @@ export const SoportePage = () => {
                                                     setShowNewTicketForm(false);
                                                     formik.resetForm();
                                                 }}
-                                                className="flex-1 py-3 rounded-lg font-semibold border-2 transition-all hover:bg-gray-50 border-black text-black"
+                                                className="flex-1 py-3 rounded-xl font-semibold border border-white/10 bg-white/5 text-white/70 transition-all hover:bg-white/10"
                                             >
                                                 {t("support.cancel")}
                                             </button>
@@ -373,13 +373,13 @@ export const SoportePage = () => {
                                 /* Vista detallada del ticket */
                                 <div className="flex flex-col h-full">
                                     {/* Header del ticket */}
-                                    <div className="mb-6 pb-6 border-b-2 border-gray-200">
+                                    <div className="mb-6 pb-6 border-b border-white/10">
                                         <div className="flex justify-between items-start mb-4">
                                             <div className="flex-1">
-                                                <h2 className="text-2xl font-bold mb-2">
+                                                <h2 className="text-2xl font-bold text-white mb-2">
                                                     {selectedTicket.asunto}
                                                 </h2>
-                                                <div className="flex items-center gap-4 text-sm text-gray-600">
+                                                <div className="flex items-center gap-4 text-sm text-white/50">
                                                     <span className="flex items-center gap-1">
                                                         <Clock size={16} />
                                                         Creado: {new Date(selectedTicket.fechaCreacion).toLocaleDateString()}
@@ -415,11 +415,11 @@ export const SoportePage = () => {
                                         </div>
 
                                         {/* Descripción original */}
-                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
                                             <h3 className="font-semibold mb-2 text-sm text-[#F0973C]">
                                                 {t("support.original_description")}
                                             </h3>
-                                            <p className="text-gray-700 whitespace-pre-wrap">
+                                            <p className="text-white/70 whitespace-pre-wrap">
                                                 {selectedTicket.descripcion}
                                             </p>
                                         </div>
@@ -433,7 +433,7 @@ export const SoportePage = () => {
                                         </h3>
 
                                         {selectedTicket.respuestaTikect.length === 0 ? (
-                                            <div className="text-center py-8 text-gray-400">
+                                            <div className="text-center py-8 text-white/30">
                                                 <MessageSquare size={48} className="mx-auto mb-2 opacity-30" />
                                                 <p>{t("support.no_responses_yet")}</p>
                                             </div>
@@ -441,12 +441,12 @@ export const SoportePage = () => {
                                             selectedTicket.respuestaTikect.map((respuesta) => (
                                                 <div
                                                     key={respuesta.id}
-                                                    className="p-4 rounded-lg border-l-4 bg-gray-50 border-l-[#69AC95]"
+                                                    className="p-4 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 border-l-4 border-l-[#69AC95]"
                                                 >
-                                                    <p className="text-gray-800 mb-2 whitespace-pre-wrap">
+                                                    <p className="text-white/80 mb-2 whitespace-pre-wrap">
                                                         {respuesta.respuesta}
                                                     </p>
-                                                    <p className="text-xs text-gray-500">
+                                                    <p className="text-xs text-white/30">
                                                         {respuesta.fechaRespuesta.toLocaleString()}
                                                     </p>
                                                 </div>
@@ -456,14 +456,14 @@ export const SoportePage = () => {
 
                                     {/* Campo para nueva respuesta */}
                                     {selectedTicket.estado === EstadoTicketEnum.ABIERTO ? (
-                                        <div className="border-t-2 border-gray-200 pt-4">
+                                        <div className="border-t border-white/10 pt-4">
                                             <div className="flex gap-2">
                                                 <textarea
                                                     value={newResponse}
                                                     onChange={(e) => setNewResponse(e.target.value)}
                                                         placeholder={t("support.write_a_comment")}
                                                     rows={3}
-                                                    className="flex-1 px-4 py-3 border-2 rounded-lg focus:outline-none focus:border-opacity-100 transition-all resize-none border-[#F0973C]"
+                                                    className="flex-1 px-4 py-3 bg-white/5 border border-[#F0973C]/40 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#F0973C]/70 transition-all resize-none"
                                                 />
                                                 <button
                                                     title="subir"
@@ -476,9 +476,9 @@ export const SoportePage = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="border-t-2 border-gray-200 pt-4">
-                                            <div className="bg-gray-100 p-4 rounded-lg text-center">
-                                                <p className="text-gray-600 font-semibold">
+                                        <div className="border-t border-white/10 pt-4">
+                                            <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
+                                                <p className="text-white/40 font-semibold">
                                                     {t("support.ticket_is_closed")}
                                                 </p>
                                             </div>
@@ -487,7 +487,7 @@ export const SoportePage = () => {
                                 </div>
                             ) : (
                                 /* Estado inicial - sin ticket seleccionado */
-                                <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                                <div className="flex flex-col items-center justify-center h-full text-white/30">
                                     <Ticket size={64} className="mb-4 opacity-30" />
                                     <p className="text-lg font-semibold mb-2">
                                                 {t("support.select_ticket_to_view_details")}
