@@ -17,7 +17,7 @@ export default function Header() {
     const ultimoDividendo = usuario?.licencia?.saldoAcumulado || 0;
 
     return (
-        <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-black/90">
+        <header className="relative z-20 px-6 py-4 flex items-center justify-between border-b border-white/5 backdrop-blur-md bg-black/90">
             {/* Información: Licencia, Dividendo, Bono */}
             <div className="flex items-center space-x-3 text-sm">
                 {/* Licencia */}
@@ -28,21 +28,10 @@ export default function Header() {
                     </div>
                 )}
 
-                {/* Último dividendo */}
-                <div className="flex flex-col items-center px-4 py-2 rounded-xl border border-[#69AC95]/30 bg-[#69AC95]/10">
-                    <span className="text-xs font-medium text-white/50 uppercase tracking-wider">{t("header.last_dividend")}</span>
-                    <span className="font-bold text-[#69AC95]">${ultimoDividendo.toFixed(2)}</span>
-                </div>
-
-                {/* Último bono */}
-                <div className="flex flex-col items-center px-4 py-2 rounded-xl border border-[#F0973C]/30 bg-[#F0973C]/10">
-                    <span className="text-xs font-medium text-white/50 uppercase tracking-wider">{t("header.last_bonus")}</span>
-                    <span className="font-bold text-[#F0973C]">${(ultimoBono || 0).toFixed(2)}</span>
-                </div>
             </div>
 
             {/* Logo central */}
-            <div className="flex items-center justify-center">
+            <div className="hidden md:flex items-center justify-center">
                 <img
                     src={LogoB}
                     alt="PayGlobal Logo"
