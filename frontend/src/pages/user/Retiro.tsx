@@ -159,8 +159,8 @@ export const RetiroPage = () => {
     // Obtener símbolo de crypto
     const getCryptoSymbol = (tipo: TipoCrypto): string => {
         switch (tipo) {
-            case TipoCrypto.BITCOIN:
-                return "BTC";
+            case TipoCrypto.USDT_BEP20:
+                return "USDT (BEP-20)";
             case TipoCrypto.USDT_ERC20:
                 return "USDT (ERC-20)";
             case TipoCrypto.USDT_TRC20:
@@ -239,7 +239,7 @@ export const RetiroPage = () => {
                                         >
                                             <option value={TipoCrypto.USDT_ERC20} className="bg-[#111]">USDT (ERC-20)</option>
                                             <option value={TipoCrypto.USDT_TRC20} className="bg-[#111]">USDT (TRC-20)</option>
-                                            <option value={TipoCrypto.BITCOIN} className="bg-[#111]">Bitcoin</option>
+                                            <option value={TipoCrypto.USDT_BEP20} className="bg-[#111]">USDT (BEP-20)</option>
                                             <option value={TipoCrypto.SOLANA} className="bg-[#111]">Solana</option>
                                         </select>
                                     </div>
@@ -321,7 +321,7 @@ export const RetiroPage = () => {
                                         >
                                             <option value={TipoCrypto.USDT_ERC20} className="bg-[#111]">USDT (ERC-20)</option>
                                             <option value={TipoCrypto.USDT_TRC20} className="bg-[#111]">USDT (TRC-20)</option>
-                                            <option value={TipoCrypto.BITCOIN} className="bg-[#111]">Bitcoin</option>
+                                            <option value={TipoCrypto.USDT_BEP20} className="bg-[#111]">USDT (BEP-20)</option>
                                             <option value={TipoCrypto.SOLANA} className="bg-[#111]">Solana</option>
                                         </select>
                                     </div>
