@@ -19,8 +19,8 @@ export const ProfilePage = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
 
-    // const inviteUrl = `https://payglobal.vip/${usuario?.username ?? ''}`;
-    const inviteUrl = `http://localhost:5173/${usuario?.username ?? ''}`;
+    const inviteUrl = `https://payglobal.vip/${usuario?.username ?? ''}`;
+    // const inviteUrl = `http://localhost:5173/${usuario?.username ?? ''}`;
 
     const handleCopyInvite = () => {
         navigator.clipboard.writeText(inviteUrl).then(() => {
