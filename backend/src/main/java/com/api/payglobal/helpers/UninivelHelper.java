@@ -21,7 +21,7 @@ public class UninivelHelper {
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         List<Usuario> redDeUsuario = new java.util.ArrayList<>();
-        obtenerReferidosRecursivo(usuario.getUsername(), redDeUsuario, 0, 7);
+        obtenerReferidosRecursivo(usuario.getUsername(), redDeUsuario, 0, 10);
         
         return redDeUsuario;
     }
