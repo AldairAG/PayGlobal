@@ -15,16 +15,13 @@ interface NodoRed {
 // Componente de nodo individual
 const NodoUsuario = ({
     nodo,
-    maxNivel,
     esRaiz = false
 }: {
     nodo: NodoRed;
-    maxNivel: number;
     esRaiz?: boolean;
 }) => {
     const [expandido, setExpandido] = useState(esRaiz);
     const tieneReferidos = nodo.referidos.length > 0;
-    const puedeVerMas = nodo.usuarioRaiz.nivel < maxNivel;
     const { t } = useTranslation();
 
     return (
@@ -42,14 +39,13 @@ const NodoUsuario = ({
                         relative rounded-xl border 
                         ${esRaiz ? 'ring-2 ring-[#69AC95]/40' : ''}
                         p-4 min-w-50 max-w-62.5
-                        transition-all duration-300 hover:scale-105
-                        ${tieneReferidos && puedeVerMas ? 'cursor-pointer' : ''}
+                        transition-all duration-300 hover:scale-105 cursor-pointer}
                     `}
                     style={{
                         backgroundColor: esRaiz ? 'rgba(105,172,149,0.08)' : 'rgba(255,255,255,0.03)',
                         borderColor: esRaiz ? '#69AC95' : 'rgba(255,255,255,0.10)',
                     } as React.CSSProperties}
-                    onClick={() => tieneReferidos && puedeVerMas && setExpandido(!expandido)}
+                    onClick={() => setExpandido(!expandido)}
                 >
                     {/* Badge de nivel */}
                     <div className="absolute -top-3 -right-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"
@@ -88,7 +84,7 @@ const NodoUsuario = ({
                     </div>
 
                     {/* Indicador de expandible */}
-                    {tieneReferidos && puedeVerMas && (
+                    {tieneReferidos && (
                         <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 border-2 rounded-full p-1 shadow-md"
                             style={{ backgroundColor: '#0d0d0d', borderColor: '#69AC95' }}>
                             <svg
@@ -106,7 +102,7 @@ const NodoUsuario = ({
             </div>
 
             {/* Referidos */}
-            {expandido && tieneReferidos && puedeVerMas && (
+            {expandido && tieneReferidos && (
                 <div className="relative mt-12">
                     {nodo.referidos.length > 1 && (
                         <div
@@ -124,7 +120,6 @@ const NodoUsuario = ({
                             <div key={`${referido.usuarioRaiz.username}-${index}`} className="relative">
                                 <NodoUsuario
                                     nodo={referido}
-                                    maxNivel={maxNivel}
                                 />
                             </div>
                         ))}
@@ -246,12 +241,6 @@ const RedUsuarioPage = () => {
 
                     {/* Info del rango */}
                     <div className="inline-flex items-center rounded-full px-6 py-3 space-x-4 border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-sm font-semibold text-white/70">
-                               {t("network.max_visible_level")} {maxNivel}
-                            </span>
-                        </div>
                         <div className="h-6 w-0.5 bg-white/10"></div>
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#F0973C' }}></div>
@@ -287,7 +276,6 @@ const RedUsuarioPage = () => {
                     <div className="min-w-max flex justify-center">
                         <NodoUsuario
                             nodo={construirArbolRed(usuariosEnRed || [])}
-                            maxNivel={maxNivel}
                             esRaiz={true}
                         />
                     </div>
