@@ -25,5 +25,6 @@ export const ROUTES = {
 
     RECUPERAR_PASSWORD: '/recuperar-password',
 
-    LANDING: '/'
+    LANDING: '/',
+    LANDING_REF: '/:ref'
 }

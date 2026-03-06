@@ -1,4 +1,4 @@
-import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins } from "lucide-react";
+import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins, Copy, Check, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,17 @@ export const ProfilePage = () => {
     });
     
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+
+    // const inviteUrl = `https://payglobal.vip/${usuario?.username ?? ''}`;
+    const inviteUrl = `http://localhost:5173/${usuario?.username ?? ''}`;
+
+    const handleCopyInvite = () => {
+        navigator.clipboard.writeText(inviteUrl).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
 
     // Cargar datos del usuario cuando esté disponible
     useEffect(() => {
@@ -140,6 +151,34 @@ export const ProfilePage = () => {
                                     ${usuario?.licencia?.saldoAcumulado?.toFixed(2) || "0.00"}
                                 </span>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Tarjeta de Enlace de Referido */}
+                    <div className="rounded-2xl overflow-hidden border border-[#69AC95]/30 bg-linear-to-br from-[#69AC95]/10 via-black/0 to-[#F0973C]/10">
+                        <div className="px-6 pt-6 pb-4 flex flex-col items-center text-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#69AC95] to-[#F0973C] flex items-center justify-center shadow-lg shadow-[#69AC95]/20">
+                                <UserPlus size={22} className="text-black" />
+                            </div>
+                            <div>
+                                <p className="text-white font-bold text-sm">{t('home.invite_members')}</p>
+                                <p className="text-white/40 text-xs mt-0.5">{t('home.invite_share_text')}</p>
+                            </div>
+                        </div>
+
+                        <div className="mx-4 mb-4 rounded-xl bg-black/40 border border-white/5 px-3 py-2 flex items-center gap-2">
+                            <span className="flex-1 text-[10px] text-[#69AC95]/80 font-mono truncate">{inviteUrl}</span>
+                            <button
+                                onClick={handleCopyInvite}
+                                className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    copied
+                                        ? 'bg-[#69AC95] text-black'
+                                        : 'bg-[#F0973C]/20 text-[#F0973C] hover:bg-[#F0973C]/30'
+                                }`}
+                            >
+                                {copied ? <Check size={12} /> : <Copy size={12} />}
+                                {copied ? t('home.copied') : t('home.copy_invite_link')}
+                            </button>
                         </div>
                     </div>
                 </div>

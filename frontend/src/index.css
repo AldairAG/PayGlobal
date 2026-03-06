@@ -1,1 +1,18 @@
 @import "tailwindcss";
+/* Reduce scrollbar width to 1px */
+::-webkit-scrollbar {
+    width: 1px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Rocket, Gem, Zap, Lock, Crown, BarChart3, Globe, Sprout, Award, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
 import LangSelector from "../components/LangSelector";
 import LoginModal from "../components/modal/LoginModal";
@@ -117,8 +118,15 @@ const FeatureRow = ({ icon: Icon, title, desc, accent }: { icon: React.ElementTy
 
 export default function LandingPage() {
     const { t } = useTranslation();
+    const { ref } = useParams();
     const [loginOpen, setLoginOpen] = useState(false);
     const [regOpen, setRegOpen] = useState(false);
+
+    useEffect(() => {
+        if (ref) {
+            setRegOpen(true);
+        }
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative font-['DM_Sans']">
@@ -391,7 +399,7 @@ export default function LandingPage() {
             </footer>
 
             <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-            <RegisterModal open={regOpen} onClose={() => setRegOpen(false)} />
+            <RegisterModal open={regOpen} onClose={() => setRegOpen(false)} refCode={ref} />
         </div>
     );
 }

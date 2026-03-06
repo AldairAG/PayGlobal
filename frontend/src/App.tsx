@@ -34,6 +34,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path={ROUTES.LANDING} element={<LandingPage />} />
+            <Route path={ROUTES.LANDING_REF} element={<LandingPage />} />
             <Route path={ROUTES.RECUPERAR_PASSWORD} element={<RecuperarPassword />} />
 
             <Route path={ROUTES.USER.LAYOUT} element={<UserLayout />} >
