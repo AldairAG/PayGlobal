@@ -4,6 +4,7 @@ import { Rocket, Gem, Zap, Lock, Crown, BarChart3, Globe, Sprout, Award, Sparkle
 import LangSelector from "../components/LangSelector";
 import LoginModal from "../components/modal/LoginModal";
 import RegisterModal from "../components/modal/RegisterModal";
+import CryptoTicker from "../components/CryptoTicker";
 import LogoA from "../assets/LogoA.png";
 import LogoV from "../assets/LogoV.png";
 
@@ -132,10 +133,6 @@ export default function LandingPage() {
           0%, 100% { opacity: 0.4; }
           50% { opacity: 0.8; }
         }
-        @keyframes ticker {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
@@ -146,7 +143,6 @@ export default function LandingPage() {
         }
         .float { animation: float 6s ease-in-out infinite; }
         .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
-        .ticker-wrap { animation: ticker 20s linear infinite; }
         .fade-up { animation: fadeInUp 0.8s ease forwards; }
         .delay-100 { animation-delay: 0.1s; opacity: 0; }
         .delay-200 { animation-delay: 0.2s; opacity: 0; }
@@ -232,31 +228,7 @@ export default function LandingPage() {
             </nav>
 
             {/* TICKER */}
-            <div className="overflow-hidden bg-[#F0973C]/10 border-y border-[#F0973C]/10 py-2">
-                <div className="ticker-wrap flex gap-16 whitespace-nowrap w-[200%]">
-                    {[...Array(2)].map((_, i) => (
-                        <div key={i} className="flex gap-16">
-                            {[
-                                ["BTC/USD", "+3.24%", "#F0973C"],
-                                ["ETH/USD", "+1.87%", "#69AC95"],
-                                ["SOL/USD", "+5.41%", "#F0973C"],
-                                ["BNB/USD", "+2.10%", "#69AC95"],
-                                ["ADA/USD", "-0.32%", "#BC2020"],
-                                ["DOGE/USD", "+8.73%", "#F0973C"],
-                                ["XRP/USD", "+4.15%", "#69AC95"],
-                            ].map(([coin, chg, clr]) => {
-                                const color = clr === '#F0973C' ? 'text-[#F0973C]' : clr === '#69AC95' ? 'text-[#69AC95]' : 'text-[#BC2020]';
-                                return (
-                                    <span key={coin} className="text-xs font-mono">
-                                        <span className="text-white/60">{coin}</span>{" "}
-                                        <span className={color}>{chg}</span>
-                                    </span>
-                                );
-                            })}
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <CryptoTicker />
 
             {/* HERO */}
             <section className="relative z-10 px-6 md:px-12 pt-20 pb-16 max-w-7xl mx-auto">
