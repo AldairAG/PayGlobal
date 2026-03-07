@@ -574,7 +574,7 @@ export const RetiroPage = () => {
                             </h3>
                             <ul className="text-xs text-white/50 space-y-1">
                                 <li>• {t("withdrawal.requests_processed_within_24_48_hours")}</li>
-                                <li>• {t("withdrawal.minimum_withdrawal_amount:")} $10 USD</li>
+                                <li>• {t("withdrawal.minimum_withdrawal_amount")} $30 USD</li>
                                 <li>• {t("withdrawal.network_fees_will_apply")}</li>
                             </ul>
                         </div>

@@ -332,7 +332,6 @@ export const KycDocuments = ({ usuarioId }: KycDocumentsProps) => {
                         <ul className="list-disc list-inside space-y-1 text-xs text-white/50">
                             <li>{t("profile.kyc_verification_documents")}</li>
                             <li>{t("profile.kyc_verification_images")}</li>
-                            <li>{t("profile.kyc_verification_process")}</li>
                             <li>{t("profile.kyc_verification_notification")}</li>
                         </ul>
                     </div>

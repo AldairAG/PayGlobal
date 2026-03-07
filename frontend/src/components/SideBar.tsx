@@ -1,4 +1,17 @@
-import { Home, BadgeCheck, Wallet, FileChartColumn, Repeat, User, Headphones, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+    PiHouseDuotone,
+    PiUserDuotone,
+    PiChartBarDuotone,
+    PiSealCheckDuotone,
+    PiWalletDuotone,
+    PiArrowsLeftRightDuotone,
+    PiBellRingingDuotone,
+    PiUsersThreeDuotone,
+    PiHeadsetDuotone,
+    PiSignOutDuotone,
+    PiCaretLeftDuotone,
+    PiCaretRightDuotone,
+} from "react-icons/pi";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUsuario } from "../hooks/usuarioHook";
@@ -11,20 +24,24 @@ const SideBar = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { usuario,cerrarSesion } = useUsuario();
+    const { usuario, cerrarSesion } = useUsuario();
 
     const menuItems = [
-        { name: t("sidebar.home"), icon: <Home size={20} />, route: ROUTES.USER.HOME },
-        { name: t("sidebar.profile"), icon: <User size={20} />, route: ROUTES.USER.PROFILE },
-        { name: t("sidebar.reports"), icon: <FileChartColumn size={20} />, route: ROUTES.USER.HISTORIAL },
-        { name: t("sidebar.licenses"), icon: <BadgeCheck size={20} />, route: ROUTES.USER.LICENCIAS },
-        { name: t("sidebar.withdrawal"), icon: <Wallet size={20} />, route: ROUTES.USER.RETIRO },
-        { name: t("sidebar.internal_transfers"), icon: <Repeat size={20} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },
-        { name: t("sidebar.news"), icon: <FileChartColumn size={20} />, route: ROUTES.USER.NOVEDADES },
-        { name: t("sidebar.user_network"), icon: <User size={20} />, route: ROUTES.USER.RED_USUARIOS },
-        { name: t("sidebar.support"), icon: <Headphones size={20} />, route: ROUTES.USER.SOPORTE },
-        
+        { name: t("sidebar.home"), icon: <PiHouseDuotone size={22} />, route: ROUTES.USER.HOME },
+        { name: t("sidebar.profile"), icon: <PiUserDuotone size={22} />, route: ROUTES.USER.PROFILE },
+        { name: t("sidebar.reports"), icon: <PiChartBarDuotone size={22} />, route: ROUTES.USER.HISTORIAL },
+        { name: t("sidebar.licenses"), icon: <PiSealCheckDuotone size={22} />, route: ROUTES.USER.LICENCIAS },
+        { name: t("sidebar.withdrawal"), icon: <PiWalletDuotone size={22} />, route: ROUTES.USER.RETIRO },
+        { name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },
+        { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NOVEDADES },
+        { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS },
+        { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE },
     ];
+
+    const handleNavigate = (route: string) => {
+        navigate(route);
+        setOpen(false);
+    };
 
     return (
         <aside
@@ -40,12 +57,12 @@ const SideBar = () => {
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2a2a2a'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1a1a1a'}
             >
-                {open ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                {open ? <PiCaretLeftDuotone size={20} /> : <PiCaretRightDuotone size={20} />}
             </button>
 
             {/* Botón de perfil */}
             <div
-                onClick={() => navigate(ROUTES.USER.PROFILE)}
+                onClick={() => handleNavigate(ROUTES.USER.PROFILE)}
                 className="flex items-center gap-3 mb-10 cursor-pointer group"
                 title={t("sidebar.go_to_profile")}
             >
@@ -61,7 +78,7 @@ const SideBar = () => {
                 {menuItems.map((item, index) => (
                     <li
                         key={index}
-                        onClick={() => navigate(item.route)}
+                        onClick={() => handleNavigate(item.route)}
                         className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition"
                         style={{ 
                             backgroundColor: location.pathname === item.route ? '#69AC95' : 'transparent'
@@ -88,7 +105,7 @@ const SideBar = () => {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#BC2020'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
-                    <span className="shrink-0"><LogOut size={20} /></span>
+                    <span className="shrink-0"><PiSignOutDuotone size={22} /></span>
                     {open && <span>{t("sidebar.log_out")}</span>}
                 </li>
             </ul>

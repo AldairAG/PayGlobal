@@ -1,5 +1,46 @@
 import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins, Copy, Check, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
+
+const COUNTRIES = [
+    { code: "dz", name: "Argelia", flag: "https://flagcdn.com/w40/dz.png" },
+    { code: "sa", name: "Arabia Saudita", flag: "https://flagcdn.com/w40/sa.png" },
+    { code: "ar", name: "Argentina", flag: "https://flagcdn.com/w40/ar.png" },
+    { code: "au", name: "Australia", flag: "https://flagcdn.com/w40/au.png" },
+    { code: "be", name: "Bélgica", flag: "https://flagcdn.com/w40/be.png" },
+    { code: "bo", name: "Bolivia", flag: "https://flagcdn.com/w40/bo.png" },
+    { code: "br", name: "Brasil", flag: "https://flagcdn.com/w40/br.png" },
+    { code: "ca", name: "Canadá", flag: "https://flagcdn.com/w40/ca.png" },
+    { code: "cl", name: "Chile", flag: "https://flagcdn.com/w40/cl.png" },
+    { code: "co", name: "Colombia", flag: "https://flagcdn.com/w40/co.png" },
+    { code: "cr", name: "Costa Rica", flag: "https://flagcdn.com/w40/cr.png" },
+    { code: "cu", name: "Cuba", flag: "https://flagcdn.com/w40/cu.png" },
+    { code: "do", name: "República Dominicana", flag: "https://flagcdn.com/w40/do.png" },
+    { code: "ec", name: "Ecuador", flag: "https://flagcdn.com/w40/ec.png" },
+    { code: "eg", name: "Egipto", flag: "https://flagcdn.com/w40/eg.png" },
+    { code: "sv", name: "El Salvador", flag: "https://flagcdn.com/w40/sv.png" },
+    { code: "ae", name: "Emiratos Árabes Unidos", flag: "https://flagcdn.com/w40/ae.png" },
+    { code: "es", name: "España", flag: "https://flagcdn.com/w40/es.png" },
+    { code: "us", name: "Estados Unidos", flag: "https://flagcdn.com/w40/us.png" },
+    { code: "fr", name: "Francia", flag: "https://flagcdn.com/w40/fr.png" },
+    { code: "gt", name: "Guatemala", flag: "https://flagcdn.com/w40/gt.png" },
+    { code: "hn", name: "Honduras", flag: "https://flagcdn.com/w40/hn.png" },
+    { code: "iq", name: "Irak", flag: "https://flagcdn.com/w40/iq.png" },
+    { code: "jo", name: "Jordania", flag: "https://flagcdn.com/w40/jo.png" },
+    { code: "kw", name: "Kuwait", flag: "https://flagcdn.com/w40/kw.png" },
+    { code: "lb", name: "Líbano", flag: "https://flagcdn.com/w40/lb.png" },
+    { code: "ma", name: "Marruecos", flag: "https://flagcdn.com/w40/ma.png" },
+    { code: "mx", name: "México", flag: "https://flagcdn.com/w40/mx.png" },
+    { code: "ni", name: "Nicaragua", flag: "https://flagcdn.com/w40/ni.png" },
+    { code: "pa", name: "Panamá", flag: "https://flagcdn.com/w40/pa.png" },
+    { code: "py", name: "Paraguay", flag: "https://flagcdn.com/w40/py.png" },
+    { code: "pe", name: "Perú", flag: "https://flagcdn.com/w40/pe.png" },
+    { code: "pt", name: "Portugal", flag: "https://flagcdn.com/w40/pt.png" },
+    { code: "gb", name: "Reino Unido", flag: "https://flagcdn.com/w40/gb.png" },
+    { code: "ch", name: "Suiza", flag: "https://flagcdn.com/w40/ch.png" },
+    { code: "tn", name: "Túnez", flag: "https://flagcdn.com/w40/tn.png" },
+    { code: "uy", name: "Uruguay", flag: "https://flagcdn.com/w40/uy.png" },
+    { code: "ve", name: "Venezuela", flag: "https://flagcdn.com/w40/ve.png" },
+];
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { KycDocuments } from "../../components/KycDocuments";
@@ -257,14 +298,36 @@ export const ProfilePage = () => {
                                         <Globe size={14} />
                                         {t("profile.country")}
                                     </label>
-                                    <input
-                                        type="text"
-                                        name="pais"
-                                        value={formData.pais}
-                                        onChange={handleInputChange}
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors"
-                                        placeholder={t("profile.enter_country")}
-                                    />
+                                    <div className="relative">
+                                        <select
+                                            name="pais"
+                                            value={formData.pais}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, pais: e.target.value }))}
+                                            className="w-full py-3 pr-8 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors appearance-none cursor-pointer"
+                                            style={{ backgroundColor: 'rgba(255,255,255,0.05)', paddingLeft: formData.pais ? '2.5rem' : '1rem' }}
+                                        >
+                                            <option value="" style={{ backgroundColor: '#0d0d0d' }} className="text-white/40">{t("profile.select_country")}</option>
+                                            {COUNTRIES.map(c => (
+                                                <option key={c.code} value={c.name} style={{ backgroundColor: '#0d0d0d' }} className="text-white">
+                                                    {c.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                                            <svg className="w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                        {formData.pais && (
+                                            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                                <img
+                                                    src={COUNTRIES.find(c => c.name === formData.pais)?.flag}
+                                                    alt={formData.pais}
+                                                    className="w-5 h-3.5 object-cover rounded-sm"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
@@ -285,15 +348,7 @@ export const ProfilePage = () => {
                         <h3 className="text-xl font-bold text-white mb-6">{t("profile.account_information")}</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {/* ID */}
-                            <div>
-                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                    {t("profile.user_id")}
-                                </label>
-                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
-                                    #{usuario?.id || "N/A"}
-                                </div>
-                            </div>
+
 
                             {/* Username */}
                             <div>

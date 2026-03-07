@@ -41,74 +41,82 @@ const HomePage = () => {
 
             <div className="p-6 space-y-8">
 
-                {/* FILA 1: Licencia, Dividendos, Comisiones */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                    {/* Licencia */}
-                    <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
-                        <div className="flex items-center gap-4">
-                            <img
-                                src={getLicenseImage(usuario?.licencia.nombre || '')}
-                                alt={t('home.license')}
-                                className="w-20 h-20 object-contain shrink-0"
-                            />
-                            <div className="flex-1">
-                                <h3 className="text-lg font-semibold text-white">{t('home.active_license')}</h3>
-                                <p className="text-sm text-[#F0973C] font-bold mt-1">{usuario?.licencia.nombre || t('home.without_license')}</p>
-                                <p className="text-xs text-white/40 mt-2">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Wallet Dividendos */}
-                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
-                        <div className="flex items-center gap-3">
-                            <Wallet size={30} className="text-[#69AC95]" />
-                            <h3 className="text-xl font-semibold text-white/80">{t('home.dividends')}</h3>
-                        </div>
-                        <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_DIVIDENDOS)?.saldo}</p>
-                    </div>
-
-                    {/* Wallet Comisiones */}
-                    <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
-                        <div className="flex items-center gap-3">
-                            <Coins size={30} className="text-[#F0973C]" />
-                            <h3 className="text-xl font-semibold text-white/80">{t('home.commissions')}</h3>
-                        </div>
-                        <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
-                    </div>
-
-                </div>
-
-                {/* FILA 2: Reloj de progreso y Montos */}
+                {/* FILA COMBINADA: izquierda = Fila 1 | derecha = Fila 2 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    {/* Reloj de progreso */}
-                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center">
-                        <div
-                            className="w-36 h-36 rounded-full flex items-center justify-center"
-                            style={{
-                                background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
-                            }}>
-                            <div className="w-28 h-28 rounded-full bg-[#0a0a0a] flex flex-col items-center justify-center gap-0.5">
-                                <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('home.progress_clock')}</span>
-                                <span className="text-lg font-bold text-[#69AC95]">
-                                    {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
-                                </span>
+                    
+
+                    {/* COLUMNA DERECHA: Reloj de progreso y Montos */}
+                    <div className="flex flex-col gap-4">
+
+                        {/* Reloj de progreso */}
+                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center flex-1 min-h-0">
+                            <div
+                                className="w-full aspect-square max-w-[235px] rounded-full flex items-center justify-center"
+                                style={{
+                                    background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
+                                }}>
+                                <div className="w-[85%] aspect-square rounded-full bg-[#0a0a0a] flex flex-col items-center justify-center gap-1">
+                                    <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('home.progress_clock')}</span>
+                                    <span className="text-2xl font-bold text-[#69AC95]">
+                                        {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
+                                    </span>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Monto máximo y Total Recaudado */}
+                        <div className="p-4 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-row justify-around items-center gap-4">
+                            <div className="text-center">
+                                <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
+                                <p className="text-xl font-bold text-white">$ {usuario?.licencia.limite}</p>
+                            </div>
+                            <div className="w-px h-10 bg-[#69AC95]/30" />
+                            <div className="text-center">
+                                <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
+                                <p className="text-xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
+                            </div>
+                        </div>
+
                     </div>
 
-                    {/* Monto máximo y Total Recaudado */}
-                    <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col justify-center gap-4">
-                        <div className="border-b border-[#69AC95]/20 pb-3">
-                            <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
-                            <p className="text-2xl font-bold text-white">$ {usuario?.licencia.limite}</p>
+                    {/* COLUMNA IZQUIERDA: Licencia, Dividendos, Comisiones */}
+                    <div className="flex flex-col gap-4">
+
+                        {/* Licencia */}
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                            <div className="flex items-center gap-4">
+                                <img
+                                    src={getLicenseImage(usuario?.licencia.nombre || '')}
+                                    alt={t('home.license')}
+                                    className="w-20 h-20 object-contain shrink-0"
+                                />
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white">{t('home.active_license')}</h3>
+                                    <p className="text-sm text-[#F0973C] font-bold mt-1">{usuario?.licencia.nombre || t('home.without_license')}</p>
+                                    <p className="text-xs text-white/40 mt-2">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
-                            <p className="text-2xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
+
+                        {/* Wallet Dividendos */}
+                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
+                            <div className="flex items-center gap-3">
+                                <Wallet size={30} className="text-[#69AC95]" />
+                                <h3 className="text-xl font-semibold text-white/80">{t('home.dividends')}</h3>
+                            </div>
+                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_DIVIDENDOS)?.saldo}</p>
                         </div>
+
+                        {/* Wallet Comisiones */}
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                            <div className="flex items-center gap-3">
+                                <Coins size={30} className="text-[#F0973C]" />
+                                <h3 className="text-xl font-semibold text-white/80">{t('home.commissions')}</h3>
+                            </div>
+                            <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
+                        </div>
+
                     </div>
 
                 </div>
