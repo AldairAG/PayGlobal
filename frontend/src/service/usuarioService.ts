@@ -170,6 +170,10 @@ const obtenerFotoPerfil = async (filename: string): Promise<Blob> => {
     }
 };
 
+const eliminarUsuarioPorId = async (idUsuario: number): Promise<ApiResponse<void>> => {
+    return api.delete<void>(`${BASE_PATH}/admin/usuario/${idUsuario}`);
+}
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -187,4 +191,5 @@ export const usuarioService = {
     rechazarSolicitud,
     subirFotoPerfil,
     obtenerFotoPerfil,
+    eliminarUsuarioPorId,
 };

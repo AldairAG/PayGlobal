@@ -64,6 +64,9 @@ interface UsuarioState {
 
     loadingSubirFotoPerfil: boolean;
     errorSubirFotoPerfil: string | null;
+
+    loadingEliminarUsuario: boolean;
+    errorEliminarUsuario: string | null;
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -109,6 +112,8 @@ const loadInitialState = (): UsuarioState => {
         errorEditarUsuario: null,
         loadingSubirFotoPerfil: false,
         errorSubirFotoPerfil: null,
+        loadingEliminarUsuario: false,
+        errorEliminarUsuario: null,
     };
 };
 
@@ -369,6 +374,22 @@ export const editarUsuarioAdmin = createAsyncThunk<
     }
 });
 
+export const eliminarUsuarioPorIdThunk = createAsyncThunk<
+    ApiResponse<void>,
+    { idUsuario: number },
+    { rejectValue: string }
+>("usuario/eliminarUsuarioPorId", async ({ idUsuario }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.eliminarUsuarioPorId(idUsuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al eliminar usuario");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al eliminar usuario";
+        return rejectWithValue(message);
+    }
+});
 
 const usuarioSlice = createSlice({
     name: 'usuario',
@@ -569,6 +590,18 @@ const usuarioSlice = createSlice({
             .addCase(subirFotoPerfilThunk.rejected, (state, action) => {
                 state.loadingSubirFotoPerfil = false;
                 state.errorSubirFotoPerfil = action.payload || "Error al subir foto de perfil";
+            })
+            .addCase(eliminarUsuarioPorIdThunk.pending, (state) => {
+                state.loadingEliminarUsuario = true;
+                state.errorEliminarUsuario = null;
+            })
+            .addCase(eliminarUsuarioPorIdThunk.fulfilled, (state) => {
+                state.loadingEliminarUsuario = false;
+                state.errorEliminarUsuario = null;
+            })
+            .addCase(eliminarUsuarioPorIdThunk.rejected, (state, action) => {
+                state.loadingEliminarUsuario = false;
+                state.errorEliminarUsuario = action.payload || "Error al eliminar usuario";
             })
     },
 });

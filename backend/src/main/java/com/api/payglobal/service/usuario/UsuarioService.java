@@ -60,4 +60,6 @@ public interface UsuarioService extends UserDetailsService {
         Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception;
 
         Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception;
+
+        void eliminarUsuarioPorId(Long idUsuario) throws Exception;
 }
