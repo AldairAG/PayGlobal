@@ -4,6 +4,47 @@ import { toast } from "react-toastify";
 import { useUsuario } from "../../hooks/usuarioHook";
 import Logo from "../../assets/Logo.png";
 
+const countryCodes = [
+    { code: "+1", country: "Estados Unidos / Canadá", flag: "🇺🇸" },
+    { code: "+52", country: "México", flag: "🇲🇽" },
+    { code: "+34", country: "España", flag: "🇪🇸" },
+    { code: "+54", country: "Argentina", flag: "🇦🇷" },
+    { code: "+55", country: "Brasil", flag: "🇧🇷" },
+    { code: "+56", country: "Chile", flag: "🇨🇱" },
+    { code: "+57", country: "Colombia", flag: "🇨🇴" },
+    { code: "+51", country: "Perú", flag: "🇵🇪" },
+    { code: "+58", country: "Venezuela", flag: "🇻🇪" },
+    { code: "+593", country: "Ecuador", flag: "🇪🇨" },
+    { code: "+591", country: "Bolivia", flag: "🇧🇴" },
+    { code: "+595", country: "Paraguay", flag: "🇵🇾" },
+    { code: "+598", country: "Uruguay", flag: "🇺🇾" },
+    { code: "+506", country: "Costa Rica", flag: "🇨🇷" },
+    { code: "+507", country: "Panamá", flag: "🇵🇦" },
+    { code: "+503", country: "El Salvador", flag: "🇸🇻" },
+    { code: "+502", country: "Guatemala", flag: "🇬🇹" },
+    { code: "+504", country: "Honduras", flag: "🇭🇳" },
+    { code: "+505", country: "Nicaragua", flag: "🇳🇮" },
+    { code: "+53", country: "Cuba", flag: "🇨🇺" },
+    { code: "+1-809", country: "República Dominicana", flag: "🇩🇴" },
+    { code: "+509", country: "Haití", flag: "🇭🇹" },
+    { code: "+44", country: "Reino Unido", flag: "🇬🇧" },
+    { code: "+33", country: "Francia", flag: "🇫🇷" },
+    { code: "+49", country: "Alemania", flag: "🇩🇪" },
+    { code: "+39", country: "Italia", flag: "🇮🇹" },
+    { code: "+351", country: "Portugal", flag: "🇵🇹" },
+    { code: "+41", country: "Suiza", flag: "🇨🇭" },
+    { code: "+31", country: "Países Bajos", flag: "🇳🇱" },
+    { code: "+32", country: "Bélgica", flag: "🇧🇪" },
+    { code: "+46", country: "Suecia", flag: "🇸🇪" },
+    { code: "+47", country: "Noruega", flag: "🇳🇴" },
+    { code: "+45", country: "Dinamarca", flag: "🇩🇰" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+81", country: "Japón", flag: "🇯🇵" },
+    { code: "+82", country: "Corea del Sur", flag: "🇰🇷" },
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+64", country: "Nueva Zelanda", flag: "🇳🇿" },
+];
 
 interface RegisterModalProps {
     open: boolean;
@@ -15,6 +56,8 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
     const { t } = useTranslation();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [phoneCode, setPhoneCode] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [referenced, setReferenced] = useState(refCode ?? "");
@@ -26,12 +69,14 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
 
     const isUsernameComplete = username.trim().length > 0;
     const isEmailComplete = email.trim().length > 0;
+    const isPhoneCodeComplete = phoneCode.trim().length > 0;
+    const isPhoneNumberComplete = phoneNumber.trim().length > 0;
     const isReferencedComplete = referenced.trim().length > 0;
     const isPasswordComplete = password.trim().length > 0;
     const isConfirmPasswordComplete = confirmPassword.trim().length > 0;
-    const totalFields = 3;
+    const totalFields = 5;
     const completedFields =
-        (isEmailComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0) + (isConfirmPasswordComplete ? 1 : 0);
+        (isEmailComplete ? 1 : 0) + (isPhoneCodeComplete ? 1 : 0) + (isPhoneNumberComplete ? 1 : 0) + (isPasswordComplete ? 1 : 0) + (isConfirmPasswordComplete ? 1 : 0);
     const progressPercentage = (completedFields / totalFields) * 100;
 
     const handleRegister = async () => {
@@ -56,12 +101,14 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
         }
 
         try {
-            await registrar({ username, password, email, referenciado: referenced });
+            await registrar({ username, password, email, referenciado: referenced,telefono: phoneCode + phoneNumber });
             toast.success(t("landing.register_success") || "¡Registro exitoso! Ya puedes iniciar sesión.");
             onClose();
             // Limpiar campos
             setUsername("");
             setEmail("");
+            setPhoneCode("");
+            setPhoneNumber("");
             setPassword("");
             setConfirmPassword("");
             setReferenced("");
@@ -166,6 +213,36 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
                     </div>
                 </div>
 
+                {/* Campo Código de País y Teléfono */}
+                <div className="mb-4">
+                    <div className="flex items-center">
+                        <select
+                            className="text-zinc-950 p-2 border rounded outline-none focus:border-orange-500 cursor-pointer w-20 mr-2"
+                            value={phoneCode}
+                            onChange={(e) => setPhoneCode(e.target.value)}
+                        >
+                            <option value="">{t("landing.code") || "Lada"}</option>
+                            {countryCodes.map((country) => (
+                                <option key={country.code} value={country.code}>
+                                    {country.flag} {country.code}
+                                </option>
+                            ))}
+                        </select>
+                        <input
+                            className="text-zinc-950 flex-1 p-2 border rounded outline-none focus:border-orange-500 w-20"
+                            placeholder={t("landing.phone_number") || "Número de teléfono"}
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
+                        {isPhoneCodeComplete && isPhoneNumberComplete && (
+                            <span className="ml-2 text-2xl text-[#69AC95]">
+                                ✓
+                            </span>
+                        )}
+                    </div>
+                </div>
+
                 {/* Campo Referenciado */}
                 <div className="mb-4">
                     <div className="flex items-center">
@@ -174,6 +251,7 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
                             placeholder={t("landing.referenced")}
                             value={referenced}
                             onChange={(e) => setReferenced(e.target.value)}
+                            disabled={true} // Deshabilitar si viene un código de referencia prellenado
                         />
                         {isReferencedComplete && (
                             <span className="ml-2 text-2xl text-[#69AC95]">

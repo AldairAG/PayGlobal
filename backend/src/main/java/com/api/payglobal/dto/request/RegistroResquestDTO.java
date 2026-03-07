@@ -8,4 +8,5 @@ public class RegistroResquestDTO {
     private String password;
     private String email;
     private String referenciado;
+    private String telefono;
 }

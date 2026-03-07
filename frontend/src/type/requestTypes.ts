@@ -5,6 +5,7 @@ export interface RegistroRequestDTO {
     password: string;
     email: string;
     referenciado: string;
+    telefono: string;
 }
 
 export interface LoginRequestDTO {

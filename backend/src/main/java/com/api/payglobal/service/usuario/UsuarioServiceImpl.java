@@ -152,6 +152,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .rol(RolesUsuario.USUARIO)
                 .rango(TipoRango.SIN_RANGO)
                 .wallets(new ArrayList<>())
+                .telefono(dto.getTelefono())
                 .build();
 
         Licencia licencia = Licencia.builder()
