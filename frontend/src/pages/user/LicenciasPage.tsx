@@ -5,6 +5,8 @@ import PurchaseLicenseModal from "../../components/modal/PurchaseLicenseModal";
 import { TipoSolicitud } from "../../type/enum";
 import { getLicenseImage } from "../../helpers/imgHelpers";
 
+const BACKOFFICE_COMMISSION = 49.95;
+
 export const LicenciasPage = () => {
     const { t } = useTranslation();
     const [modalOpen, setModalOpen] = useState(false);
@@ -53,6 +55,22 @@ export const LicenciasPage = () => {
                                 />
                                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full border border-[#F0973C]/30">
                                     <span className="text-xs font-semibold text-[#F0973C]">USDT</span>
+                                </div>
+                            </div>
+
+                            {/* Precio y comisión */}
+                            <div className="px-4 pb-2 space-y-1">
+                                <div className="flex justify-between text-xs text-white/40">
+                                    <span>{t("licenses.license_cost")}</span>
+                                    <span>${license.value} USDT</span>
+                                </div>
+                                <div className="flex justify-between text-xs text-[#F0973C]/70">
+                                    <span>{t("licenses.backoffice_commission")}</span>
+                                    <span>+${BACKOFFICE_COMMISSION} USDT</span>
+                                </div>
+                                <div className="flex justify-between text-sm font-bold border-t border-white/10 pt-1">
+                                    <span className="text-white/80">{t("licenses.total_to_deposit")}</span>
+                                    <span className="text-[#69AC95]">${license.value + BACKOFFICE_COMMISSION} USDT</span>
                                 </div>
                             </div>
 
