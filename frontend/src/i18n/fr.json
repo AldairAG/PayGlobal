@@ -87,21 +87,22 @@
     },
 
     "sidebar": {
-        "home": "Accueil",
-        "licenses": "Licences",
+        "home": "Tableau de bord",
+        "licenses": "Acheter une licence",
         "withdrawal": "Retrait",
-        "reports": "Rapports",
+        "reports": "Historique des paiements",
         "internal_transfers": "Transferts internes",
         "profile": "Profil",
         "support": "Support",
-        "user_network": "Réseau utilisateur",
+        "user_network": "Organisation",
         "go_to_profile": "Aller au profil",
-        "log_out": "Se déconnecter"
+        "log_out": "Se déconnecter",
+        "news": "Nouveautés / Outils"
 
     },
 
     "home": {
-        "progress_clock": "Horloge de progression",
+        "progress_clock": "Progrès",
         "maximum_amount": "Montant maximum",
         "total_collected": "Total collecté",
         "license": "Licence",
@@ -123,7 +124,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "Choisissez la licence qui correspond le mieux à vos besoins",
-        "available_licenses": "Licences disponibles",
+        "available_licenses": "Packs de staking",
         "purchase_for_myself": "Acheter pour moi-même",
         "purchase_for_others": "Acheter pour les autres",
         "important_information": "Informations importantes",
@@ -264,8 +265,8 @@
         "processing": "Traitement en cours...",
         "continue": "Continuer",
         "wallets_information": "Informations sur les Portefeuilles",
-        "dividends_wallet": "Portefeuille de Dividendes",
-        "commissions_wallet": "Portefeuille de Commissions",
+        "dividends_wallet": "Staking de portefeuille",
+        "commissions_wallet": "Portefeuille de Réseau",
         "important_information": "Informations Importantes",
         "instant_transfers": "Les transferts sont instantanés",
         "no_fee_internal_transfers": "Aucune commission sur les transferts internes",
@@ -325,8 +326,8 @@
         "registration_date": "Date d'Inscription",
         "account_status": "État du Compte",
         "my_wallets": "Mes Portefeuilles",
-        "dividends_wallet": "Portefeuille de Dividendes",
-        "commissions_wallet": "Portefeuille de Commissions",
+        "dividends_wallet": "Staking de portefeuille",
+        "commissions_wallet": "Portefeuille de Réseau",
         "my_bonuses": "Mes Bonus",
         "no_bonuses_available": "Aucun bonus disponible",
         "file_too_large": "Le fichier est trop volumineux. Maximum 5 Mo.",

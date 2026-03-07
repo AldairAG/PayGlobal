@@ -23,6 +23,7 @@ import "./i18n";
 import RedUsuarioPage from './pages/user/RedUsuarioPage'
 import GestionSoportePage from './pages/admin/GestionSoportePage'
 import RecuperarPassword from './pages/user/RecuperarPassword'
+import NovedadesPage from './pages/user/NovedadesPage'
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path={ROUTES.LANDING} element={<LandingPage />} />
+            <Route path={ROUTES.LANDING_REF} element={<LandingPage />} />
             <Route path={ROUTES.RECUPERAR_PASSWORD} element={<RecuperarPassword />} />
 
             <Route path={ROUTES.USER.LAYOUT} element={<UserLayout />} >
@@ -45,7 +47,7 @@ function App() {
               <Route path={ROUTES.USER.SOPORTE} element={<SoportePage />} />
               <Route path={ROUTES.USER.TRANSFERENCIA_INTERNA} element={<TransferenciaInternaPage />} />
               <Route path={ROUTES.USER.RED_USUARIOS} element={<RedUsuarioPage />} />
-
+              <Route path={ROUTES.USER.NOVEDADES} element={<NovedadesPage />} />
 
             </Route>
 

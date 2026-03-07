@@ -1,8 +1,9 @@
-import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins } from "lucide-react";
+import { User, Mail, Phone, Globe, Calendar, Shield, Award, CreditCard, CheckCircle, AlertCircle, Wallet as WalletIcon, Coins, Copy, Check, UserPlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { KycDocuments } from "../../components/KycDocuments";
+import { ProfilePhoto } from "../../components/ProfilePhoto";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -16,6 +17,17 @@ export const ProfilePage = () => {
     });
     
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+
+    const inviteUrl = `https://payglobal.vip/${usuario?.username ?? ''}`;
+    // const inviteUrl = `http://localhost:5173/${usuario?.username ?? ''}`;
+
+    const handleCopyInvite = () => {
+        navigator.clipboard.writeText(inviteUrl).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
 
     // Cargar datos del usuario cuando esté disponible
     useEffect(() => {
@@ -64,41 +76,38 @@ export const ProfilePage = () => {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="min-h-screen bg-[#000000] text-white p-6 space-y-6">
             {/* Encabezado */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">{t("profile.my_profile")}</h1>
-                    <p className="text-gray-500 mt-1">{t("profile.manage_your_personal_information")}</p>
+                    <h1 className="text-3xl font-bold text-[#F0973C]">{t("profile.my_profile")}</h1>
+                    <p className="text-white/40 mt-1 text-sm">{t("profile.manage_your_personal_information")}</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Columna izquierda - Avatar y datos básicos */}
+                {/* Columna izquierda */}
                 <div className="lg:col-span-1 space-y-6">
                     {/* Tarjeta de Avatar */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
+                    <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex flex-col items-center text-center">
-                            <div className="w-32 h-32 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4"
-                                style={{ backgroundColor: '#69AC95' }}>
-                                <User size={64} />
-                            </div>
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                {usuario?.nombre && usuario?.apellido 
-                                    ? `${usuario.nombre} ${usuario.apellido}` 
+                            <ProfilePhoto fotoPerfil={usuario?.fotoPerfil} />
+                            <h2 className="text-2xl font-bold text-white mt-4">
+                                {usuario?.nombre && usuario?.apellido
+                                    ? `${usuario.nombre} ${usuario.apellido}`
                                     : usuario?.username || "Usuario"}
                             </h2>
-                            <p className="text-gray-500 text-sm mt-1">@{usuario?.username || "usuario"}</p>
-                            
+                            <p className="text-white/40 text-sm mt-1">@{usuario?.username || "usuario"}</p>
+
                             {/* Estado de verificación */}
-                            <div className={`flex items-center gap-2 mt-4 px-4 py-2 rounded-full ${
-                                usuario?.verificado 
-                                    ? 'bg-green-50 border border-green-200' 
-                                    : 'bg-yellow-50 border border-yellow-200'
+                            <div className={`flex items-center gap-2 mt-4 px-4 py-2 rounded-full border ${
+                                usuario?.verificado
+                                    ? 'bg-[#69AC95]/10 border-[#69AC95]/30'
+                                    : 'bg-[#F0973C]/10 border-[#F0973C]/30'
                             }`}>
-                                <Shield size={16} className={usuario?.verificado ? "text-green-600" : "text-yellow-600"} />
+                                <Shield size={16} className={usuario?.verificado ? "text-[#69AC95]" : "text-[#F0973C]"} />
                                 <span className={`text-sm font-semibold ${
-                                    usuario?.verificado ? "text-green-700" : "text-yellow-700"
+                                    usuario?.verificado ? "text-[#69AC95]" : "text-[#F0973C]"
                                 }`}>
                                     {usuario?.verificado ? "Verificado" : "No Verificado"}
                                 </span>
@@ -107,76 +116,98 @@ export const ProfilePage = () => {
                     </div>
 
                     {/* Tarjeta de Rango */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
+                    <div className="rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <Award size={24} style={{ color: '#F0973C' }} />
-                            <h3 className="text-lg font-bold text-gray-800">{t("profile.current_rank")}</h3>
+                            <Award size={24} className="text-[#F0973C]" />
+                            <h3 className="text-lg font-bold text-white/80">{t("profile.current_rank")}</h3>
                         </div>
-                        <p className="text-2xl font-bold" style={{ color: '#69AC95' }}>
+                        <p className="text-2xl font-bold text-[#69AC95]">
                             {usuario?.rango || t("profile.no_rank")}
-                        </p>
-                        <p className="text-sm text-gray-500 mt-2">
-                            {/* {t("profile.rank")} {usuario?.rango || 0} • {t("profile.capital")}: ${usuario?.rango?.capitalNecesario?.toFixed(2) || "0.00"} */}
                         </p>
                     </div>
 
                     {/* Tarjeta de Licencia */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
+                    <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <CreditCard size={24} style={{ color: '#69AC95' }} />
-                            <h3 className="text-lg font-bold text-gray-800">{t("profile.license")}</h3>
+                            <CreditCard size={24} className="text-[#69AC95]" />
+                            <h3 className="text-lg font-bold text-white/80">{t("profile.license")}</h3>
                         </div>
-                        <p className="text-2xl font-bold text-gray-900">
+                        <p className="text-2xl font-bold text-[#F0973C]">
                             {usuario?.licencia?.nombre || t("profile.no_license")}
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-white/40 mt-1">
                             {t("profile.value")}: ${usuario?.licencia?.precio?.toFixed(2) || "0.00"} USDT
                         </p>
-                        <div className="mt-3 pt-3 border-t border-gray-200">
+                        <div className="mt-3 pt-3 border-t border-white/5">
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">{t("profile.status")}:</span>
-                                <span className={`font-semibold ${
-                                    usuario?.licencia?.activo ? "text-green-600" : "text-red-600"
-                                }`}>
+                                <span className="text-white/40">{t("profile.status")}:</span>
+                                <span className={`font-semibold ${usuario?.licencia?.activo ? "text-[#69AC95]" : "text-red-400"}`}>
                                     {usuario?.licencia?.activo ? t("profile.active") : t("profile.inactive")}
                                 </span>
                             </div>
                             <div className="flex justify-between text-sm mt-1">
-                                <span className="text-gray-600">{t("profile.accumulated")}:</span>
-                                <span className="font-semibold text-gray-900">
+                                <span className="text-white/40">{t("profile.accumulated")}:</span>
+                                <span className="font-semibold text-white">
                                     ${usuario?.licencia?.saldoAcumulado?.toFixed(2) || "0.00"}
                                 </span>
                             </div>
                         </div>
                     </div>
+
+                    {/* Tarjeta de Enlace de Referido */}
+                    <div className="rounded-2xl overflow-hidden border border-[#69AC95]/30 bg-linear-to-br from-[#69AC95]/10 via-black/0 to-[#F0973C]/10">
+                        <div className="px-6 pt-6 pb-4 flex flex-col items-center text-center gap-3">
+                            <div className="w-12 h-12 rounded-full bg-linear-to-br from-[#69AC95] to-[#F0973C] flex items-center justify-center shadow-lg shadow-[#69AC95]/20">
+                                <UserPlus size={22} className="text-black" />
+                            </div>
+                            <div>
+                                <p className="text-white font-bold text-sm">{t('home.invite_members')}</p>
+                                <p className="text-white/40 text-xs mt-0.5">{t('home.invite_share_text')}</p>
+                            </div>
+                        </div>
+
+                        <div className="mx-4 mb-4 rounded-xl bg-black/40 border border-white/5 px-3 py-2 flex items-center gap-2">
+                            <span className="flex-1 text-[10px] text-[#69AC95]/80 font-mono truncate">{inviteUrl}</span>
+                            <button
+                                onClick={handleCopyInvite}
+                                className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                                    copied
+                                        ? 'bg-[#69AC95] text-black'
+                                        : 'bg-[#F0973C]/20 text-[#F0973C] hover:bg-[#F0973C]/30'
+                                }`}
+                            >
+                                {copied ? <Check size={12} /> : <Copy size={12} />}
+                                {copied ? t('home.copied') : t('home.copy_invite_link')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Columna derecha - Formulario de información */}
+                {/* Columna derecha */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Información Personal (Editable) */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.personal_information")}</h3>
-                        
-                        {/* Mensajes de éxito o error */}
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.personal_information")}</h3>
+
                         {successMessage && (
-                            <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                                <CheckCircle size={20} className="text-green-600" />
-                                <span className="text-sm font-medium text-green-700">{successMessage}</span>
+                            <div className="mb-4 p-4 bg-[#69AC95]/10 border border-[#69AC95]/30 rounded-xl flex items-center gap-3">
+                                <CheckCircle size={20} className="text-[#69AC95]" />
+                                <span className="text-sm font-medium text-[#69AC95]">{successMessage}</span>
                             </div>
                         )}
-                        
+
                         {errorEditarPerfil && (
-                            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                                <AlertCircle size={20} className="text-red-600" />
-                                <span className="text-sm font-medium text-red-700">{errorEditarPerfil}</span>
+                            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-3">
+                                <AlertCircle size={20} className="text-red-400" />
+                                <span className="text-sm font-medium text-red-400">{errorEditarPerfil}</span>
                             </div>
                         )}
-                        
+
                         <form onSubmit={handleSubmit} className="space-y-5">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                {/* Nombre - Editable */}
+                                {/* Nombre */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                         {t("profile.name")}
                                     </label>
                                     <input
@@ -184,14 +215,14 @@ export const ProfilePage = () => {
                                         name="nombre"
                                         value={formData.nombre}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors"
                                         placeholder={t("profile.enter_name")}
                                     />
                                 </div>
 
-                                {/* Apellido - Editable */}
+                                {/* Apellido */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                         {t("profile.last_name")}
                                     </label>
                                     <input
@@ -199,15 +230,15 @@ export const ProfilePage = () => {
                                         name="apellido"
                                         value={formData.apellido}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors"
                                         placeholder={t("profile.enter_last_name")}
                                     />
                                 </div>
 
-                                {/* Teléfono - Editable */}
+                                {/* Teléfono */}
                                 <div>
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                                        <Phone size={16} />
+                                    <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                        <Phone size={14} />
                                         {t("profile.phone")}
                                     </label>
                                     <input
@@ -215,15 +246,15 @@ export const ProfilePage = () => {
                                         name="telefono"
                                         value={formData.telefono}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors"
                                         placeholder="+1234567890"
                                     />
                                 </div>
 
-                                {/* País - Editable */}
+                                {/* País */}
                                 <div>
-                                    <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                                        <Globe size={16} />
+                                    <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                        <Globe size={14} />
                                         {t("profile.country")}
                                     </label>
                                     <input
@@ -231,19 +262,18 @@ export const ProfilePage = () => {
                                         name="pais"
                                         value={formData.pais}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-green-500 transition-colors"
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#69AC95]/50 focus:ring-1 focus:ring-[#69AC95]/20 transition-colors"
                                         placeholder={t("profile.enter_country")}
                                     />
                                 </div>
                             </div>
 
-                            {/* Botón de guardar */}
                             <div className="flex justify-end pt-4">
                                 <button
                                     type="submit"
                                     disabled={loadingEditarPerfil}
-                                    className="px-8 py-3 rounded-lg font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: '#69AC95' }}>
+                                    className="px-8 py-3 rounded-xl font-bold text-black bg-[#69AC95] hover:bg-[#5a9a84] transition-all hover:scale-105 hover:shadow-lg hover:shadow-[#69AC95]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                >
                                     {loadingEditarPerfil ? t("profile.saving") : t("profile.save_changes")}
                                 </button>
                             </div>
@@ -251,76 +281,74 @@ export const ProfilePage = () => {
                     </div>
 
                     {/* Información de Cuenta (No editable) */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.account_information")}</h3>
-                        
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.account_information")}</h3>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* ID */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("profile.user_id")}
                                 </label>
-                                <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
+                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
                                     #{usuario?.id || "N/A"}
                                 </div>
                             </div>
 
                             {/* Username */}
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                                    <User size={16} />
+                                <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                    <User size={14} />
                                     {t("profile.username")}
                                 </label>
-                                <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
+                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
                                     {usuario?.username || "N/A"}
                                 </div>
                             </div>
 
                             {/* Email */}
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                                    <Mail size={16} />
+                                <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                    <Mail size={14} />
                                     {t("profile.email")}
                                 </label>
-                                <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
+                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
                                     {usuario?.email || "N/A"}
                                 </div>
                             </div>
 
                             {/* Referenciado por */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("profile.referred_by")}
                                 </label>
-                                <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
+                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
                                     @{usuario?.referenciado || "N/A"}
                                 </div>
                             </div>
 
                             {/* Fecha de Registro */}
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                                    <Calendar size={16} />
+                                <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                    <Calendar size={14} />
                                     {t("profile.registration_date")}
                                 </label>
-                                <div className="px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-lg text-gray-600">
+                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
                                     {formatearFecha(usuario?.fechaRegistro)}
                                 </div>
                             </div>
 
                             {/* Estado de cuenta */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                     {t("profile.account_status")}
                                 </label>
-                                <div className={`px-4 py-3 border-2 rounded-lg ${
-                                    usuario?.activo 
-                                        ? 'bg-green-50 border-green-200' 
-                                        : 'bg-red-50 border-red-200'
+                                <div className={`px-4 py-3 border rounded-xl ${
+                                    usuario?.activo
+                                        ? 'bg-[#69AC95]/10 border-[#69AC95]/30'
+                                        : 'bg-red-500/10 border-red-500/30'
                                 }`}>
-                                    <span className={`font-semibold ${
-                                        usuario?.activo ? 'text-green-700' : 'text-red-700'
-                                    }`}>
+                                    <span className={`font-semibold ${usuario?.activo ? 'text-[#69AC95]' : 'text-red-400'}`}>
                                         {usuario?.activo ? t("profile.active") : t("profile.inactive")}
                                     </span>
                                 </div>
@@ -329,68 +357,63 @@ export const ProfilePage = () => {
                     </div>
 
                     {/* Resumen de Wallets */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.my_wallets")}</h3>
-                        
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.my_wallets")}</h3>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {usuario?.wallets && usuario.wallets.length > 0 ? (
                                 usuario.wallets.map((wallet) => (
-                                    <div 
+                                    <div
                                         key={wallet.id}
-                                        className="p-4 rounded-xl border-2 border-gray-200"
-                                        style={{
-                                            background: wallet.codigo === 0 
-                                                ? 'linear-gradient(to bottom right, rgb(240 253 244), white)' 
-                                                : 'linear-gradient(to bottom right, rgb(255 247 237), white)'
-                                        }}
+                                        className={`p-4 rounded-xl border ${
+                                            wallet.codigo === 0
+                                                ? 'border-[#69AC95]/20 bg-[#69AC95]/5'
+                                                : 'border-[#F0973C]/20 bg-[#F0973C]/5'
+                                        }`}
                                     >
                                         <div className="flex items-center gap-2 mb-2">
-                                            <div 
-                                                className="w-8 h-8 rounded-full flex items-center justify-center"
-                                                style={{ backgroundColor: wallet.codigo === 0 ? '#69AC95' : '#F0973C' }}
-                                            >
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                                wallet.codigo === 0 ? 'bg-[#69AC95]/20' : 'bg-[#F0973C]/20'
+                                            }`}>
                                                 {wallet.codigo === 0 ? (
-                                                    <WalletIcon size={16} className="text-white" />
+                                                    <WalletIcon size={16} className="text-[#69AC95]" />
                                                 ) : (
-                                                    <Coins size={16} className="text-white" />
+                                                    <Coins size={16} className="text-[#F0973C]" />
                                                 )}
                                             </div>
-                                            <h4 className="font-bold text-gray-800">
+                                            <h4 className="font-bold text-white/80 text-sm">
                                                 {wallet.codigo === 0 ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
                                             </h4>
                                         </div>
-                                        <p 
-                                            className="text-2xl font-bold" 
-                                            style={{ color: wallet.codigo === 0 ? '#69AC95' : '#F0973C' }}
-                                        >
+                                        <p className={`text-2xl font-bold ${wallet.codigo === 0 ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
                                             $ {wallet.saldo?.toFixed(2) || "0.00"}
                                         </p>
                                     </div>
                                 ))
                             ) : (
-                                <p className="col-span-2 text-center text-gray-500 py-4">No hay wallets disponibles</p>
+                                <p className="col-span-2 text-center text-white/30 py-4">No hay wallets disponibles</p>
                             )}
                         </div>
                     </div>
 
                     {/* Resumen de Bonos */}
-                    <div className="bg-white rounded-2xl shadow border border-gray-200 p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-6">{t("profile.my_bonuses")}</h3>
-                        
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.my_bonuses")}</h3>
+
                         <div className="space-y-3">
                             {usuario?.bonos && usuario.bonos.length > 0 ? (
                                 usuario.bonos.map((bono) => (
-                                    <div key={bono.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                        <span className="text-sm font-semibold text-gray-700">
+                                    <div key={bono.id} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-xl">
+                                        <span className="text-sm font-semibold text-white/70">
                                             {bono.nombre}
                                         </span>
-                                        <span className="text-lg font-bold" style={{ color: '#69AC95' }}>
+                                        <span className="text-lg font-bold text-[#69AC95]">
                                             ${bono.acumulado?.toFixed(2) || "0.00"}
                                         </span>
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center text-gray-500 py-4">{t("profile.no_bonuses_available")}</p>
+                                <p className="text-center text-white/30 py-4">{t("profile.no_bonuses_available")}</p>
                             )}
                         </div>
                     </div>

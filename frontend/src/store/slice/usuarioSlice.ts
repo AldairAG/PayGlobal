@@ -61,6 +61,12 @@ interface UsuarioState {
 
     loadingEditarUsuario: boolean;
     errorEditarUsuario: string | null;
+
+    loadingSubirFotoPerfil: boolean;
+    errorSubirFotoPerfil: string | null;
+
+    loadingEliminarUsuario: boolean;
+    errorEliminarUsuario: string | null;
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -104,6 +110,10 @@ const loadInitialState = (): UsuarioState => {
         errorUsuariosEnRed: null,
         loadingEditarUsuario: false,
         errorEditarUsuario: null,
+        loadingSubirFotoPerfil: false,
+        errorSubirFotoPerfil: null,
+        loadingEliminarUsuario: false,
+        errorEliminarUsuario: null,
     };
 };
 
@@ -330,6 +340,23 @@ export const obtenerUsuariosEnRedThunk = createAsyncThunk<
     }
 });
 
+export const subirFotoPerfilThunk = createAsyncThunk<
+    ApiResponse<Usuario>,
+    File,
+    { rejectValue: string }
+>("usuario/subirFotoPerfil", async (file, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.subirFotoPerfil(file);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al subir foto de perfil");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al subir foto de perfil";
+        return rejectWithValue(message);
+    }
+});
+
 export const editarUsuarioAdmin = createAsyncThunk<
     ApiResponse<string>,
     Usuario,
@@ -347,6 +374,22 @@ export const editarUsuarioAdmin = createAsyncThunk<
     }
 });
 
+export const eliminarUsuarioPorIdThunk = createAsyncThunk<
+    ApiResponse<void>,
+    { idUsuario: number },
+    { rejectValue: string }
+>("usuario/eliminarUsuarioPorId", async ({ idUsuario }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.eliminarUsuarioPorId(idUsuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al eliminar usuario");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al eliminar usuario";
+        return rejectWithValue(message);
+    }
+});
 
 const usuarioSlice = createSlice({
     name: 'usuario',
@@ -531,6 +574,34 @@ const usuarioSlice = createSlice({
                 state.usuarios = null;
                 state.usuarioSeleccionado = null;
                 state.usuariosEnRed = null;
+            })
+            .addCase(subirFotoPerfilThunk.pending, (state) => {
+                state.loadingSubirFotoPerfil = true;
+                state.errorSubirFotoPerfil = null;
+            })
+            .addCase(subirFotoPerfilThunk.fulfilled, (state, action) => {
+                state.loadingSubirFotoPerfil = false;
+                state.errorSubirFotoPerfil = null;
+                state.usuario = action.payload.data || state.usuario;
+                if (action.payload.data) {
+                    saveToSessionStorage('auth_user', action.payload.data);
+                }
+            })
+            .addCase(subirFotoPerfilThunk.rejected, (state, action) => {
+                state.loadingSubirFotoPerfil = false;
+                state.errorSubirFotoPerfil = action.payload || "Error al subir foto de perfil";
+            })
+            .addCase(eliminarUsuarioPorIdThunk.pending, (state) => {
+                state.loadingEliminarUsuario = true;
+                state.errorEliminarUsuario = null;
+            })
+            .addCase(eliminarUsuarioPorIdThunk.fulfilled, (state) => {
+                state.loadingEliminarUsuario = false;
+                state.errorEliminarUsuario = null;
+            })
+            .addCase(eliminarUsuarioPorIdThunk.rejected, (state, action) => {
+                state.loadingEliminarUsuario = false;
+                state.errorEliminarUsuario = action.payload || "Error al eliminar usuario";
             })
     },
 });

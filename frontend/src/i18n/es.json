@@ -91,20 +91,21 @@
     },
 
     "sidebar": {
-        "home": "Inicio",
-        "licenses": "Licencias",
+        "home": "Panel de control",
+        "licenses": "Comprar Licencia",
         "withdrawal": "Retirar",
-        "reports": "Informes",
+        "reports": "Historial de Pagos",
         "internal_transfers": "Transferencias Internas",
         "profile": "Perfil",
         "support": "Soporte",
-        "user_network": "Red de Usuarios",
+        "user_network": "Organización",
         "go_to_profile": "Ir al Perfil",
-        "log_out": "Cerrar sesión"
+        "log_out": "Cerrar sesión",
+        "news": "Novedades / Herramientas"
     },
 
     "home": {
-        "progress_clock": "Reloj de Progreso",
+        "progress_clock": "Progreso",
         "maximum_amount": "Monto máximo",
         "total_collected": "Total Recaudado",
         "license": "Licencia",
@@ -126,7 +127,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "Elige la licencia que mejor se adapte a tus necesidades",
-        "available_licenses": "Licencias disponibles",
+        "available_licenses": "Paquetes de staking",
         "purchase_for_myself": "Comprar para mí",
         "purchase_for_others": "Comprar para otros",
         "important_information": "Información Importante",
@@ -270,8 +271,8 @@
         "processing": "Procesando...",
         "continue": "Continuar",
         "wallets_information": "Información de Wallets",
-        "dividends_wallet": "Wallet Dividendos",
-        "commissions_wallet": "Wallet Comisiones",
+        "dividends_wallet": "Wallet Staking",
+        "commissions_wallet": "Wallet Red",
         "important_information": "Información Importante",
         "instant_transfers": "Las transferencias son instantáneas",
         "no_fee_internal_transfers": "No hay comisión por transferencias internas",
@@ -331,8 +332,8 @@
         "registration_date": "Fecha de Registro",
         "account_status": "Estado de Cuenta",
         "my_wallets": "Mis Wallets",
-        "dividends_wallet": "Wallet Dividendos",
-        "commissions_wallet": "Wallet Comisiones",
+        "dividends_wallet": "Wallet Staking",
+        "commissions_wallet": "Wallet Red",
         "my_bonuses": "Mis Bonos",
         "no_bonuses_available": "No hay bonos disponibles",
         ".":"..",

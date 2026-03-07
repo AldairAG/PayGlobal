@@ -15,13 +15,15 @@ const SideBar = () => {
 
     const menuItems = [
         { name: t("sidebar.home"), icon: <Home size={20} />, route: ROUTES.USER.HOME },
+        { name: t("sidebar.profile"), icon: <User size={20} />, route: ROUTES.USER.PROFILE },
+        { name: t("sidebar.reports"), icon: <FileChartColumn size={20} />, route: ROUTES.USER.HISTORIAL },
         { name: t("sidebar.licenses"), icon: <BadgeCheck size={20} />, route: ROUTES.USER.LICENCIAS },
         { name: t("sidebar.withdrawal"), icon: <Wallet size={20} />, route: ROUTES.USER.RETIRO },
-        { name: t("sidebar.reports"), icon: <FileChartColumn size={20} />, route: ROUTES.USER.HISTORIAL },
         { name: t("sidebar.internal_transfers"), icon: <Repeat size={20} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },
-        { name: t("sidebar.profile"), icon: <User size={20} />, route: ROUTES.USER.PROFILE },
-        { name: t("sidebar.support"), icon: <Headphones size={20} />, route: ROUTES.USER.SOPORTE },
+        { name: t("sidebar.news"), icon: <FileChartColumn size={20} />, route: ROUTES.USER.NOVEDADES },
         { name: t("sidebar.user_network"), icon: <User size={20} />, route: ROUTES.USER.RED_USUARIOS },
+        { name: t("sidebar.support"), icon: <Headphones size={20} />, route: ROUTES.USER.SOPORTE },
+        
     ];
 
     return (

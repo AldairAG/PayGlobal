@@ -1,10 +1,10 @@
 import { TipoCrypto,TipoRango } from "../type/enum";
 
 export const cryptoLabels: Record<TipoCrypto, string> = {
-    [TipoCrypto.BITCOIN]: "Bitcoin (BTC)",
     [TipoCrypto.USDT_ERC20]: "USDT (ERC20)",
     [TipoCrypto.USDT_TRC20]: "USDT (TRC20)",
     [TipoCrypto.SOLANA]: "Solana (SOL)",
+    [TipoCrypto.USDT_BEP20]: "USDT (BEP20)"
 };
 
 export const obtenerRangoPorNombre = (nombre: string): TipoRango | null => {

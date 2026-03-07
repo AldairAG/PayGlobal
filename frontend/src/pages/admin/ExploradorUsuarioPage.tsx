@@ -1,20 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useUsuario } from "../../hooks/usuarioHook";
-import { Users, Search, RefreshCw, Loader2, AlertTriangle, ChevronLeft, ChevronRight, Edit, Mail, Calendar } from "lucide-react";
+import { Users, Search, RefreshCw, Loader2, AlertTriangle, ChevronLeft, ChevronRight, Edit, Mail, Calendar, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../routes/routes";
 import { formatearFecha } from "../../helpers/formatHelpers";
 
 export const ExploradorUsuarioPage = () => {
 
-    const { obtenerTodosLosUsuarios, usuarios, loadingUsuarios, errorUsuarios } = useUsuario();
+    const { obtenerTodosLosUsuarios, usuarios, loadingUsuarios, errorUsuarios, eliminarUsuarioPorId, loadingEliminarUsuario } = useUsuario();
     const navigate = useNavigate();
 
     const [filtro, setFiltro] = useState("");
-    const [filtroBusqueda, setFiltroBusqueda] = useState(""); // El filtro que se envía al backend
+    const [filtroBusqueda, setFiltroBusqueda] = useState("");
     const [paginaActual, setPaginaActual] = useState(0);
     const [tamanioPagina, setTamanioPagina] = useState(10);
+    const [usuarioAEliminar, setUsuarioAEliminar] = useState<{ id: number; username: string } | null>(null);
 
     useEffect(() => {
         obtenerTodosLosUsuarios(filtroBusqueda, paginaActual, tamanioPagina);
@@ -35,6 +36,13 @@ export const ExploradorUsuarioPage = () => {
         navigate(`${ROUTES.ADMIN.EDITAR_USUARIO}/${idUsuario}`);
     };
 
+    const handleConfirmarEliminar = async () => {
+        if (!usuarioAEliminar) return;
+        await eliminarUsuarioPorId(usuarioAEliminar.id);
+        setUsuarioAEliminar(null);
+        obtenerTodosLosUsuarios(filtroBusqueda, paginaActual, tamanioPagina);
+    };
+
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleBuscar();
@@ -45,6 +53,43 @@ export const ExploradorUsuarioPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
+
+            {/* Modal de confirmación de eliminación */}
+            {usuarioAEliminar && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => setUsuarioAEliminar(null)} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
+                        <div className="flex flex-col items-center text-center gap-3">
+                            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+                                <Trash2 size={28} className="text-red-500" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800">¿Eliminar usuario?</h3>
+                            <p className="text-sm text-gray-500">
+                                Estás a punto de eliminar a{' '}
+                                <span className="font-semibold text-gray-800">@{usuarioAEliminar.username}</span>.
+                                Esta acción no se puede deshacer.
+                            </p>
+                        </div>
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={() => setUsuarioAEliminar(null)}
+                                disabled={loadingEliminarUsuario}
+                                className="flex-1 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleConfirmarEliminar}
+                                disabled={loadingEliminarUsuario}
+                                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {loadingEliminarUsuario ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                                {loadingEliminarUsuario ? 'Eliminando...' : 'Eliminar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Header */}
             <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-5 mb-6">
                 <div className="flex items-center justify-between">
@@ -206,13 +251,22 @@ export const ExploradorUsuarioPage = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <button
-                                                        onClick={() => handleEditarUsuario(usuario.id)}
-                                                        className="flex items-center gap-2 px-3 py-1.5 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg transition-colors duration-200"
-                                                    >
-                                                        <Edit size={14} />
-                                                        Editar
-                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => handleEditarUsuario(usuario.id)}
+                                                            className="flex items-center gap-2 px-3 py-1.5 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg transition-colors duration-200"
+                                                        >
+                                                            <Edit size={14} />
+                                                            Editar
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setUsuarioAEliminar({ id: usuario.id, username: usuario.username })}
+                                                            className="flex items-center gap-2 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}

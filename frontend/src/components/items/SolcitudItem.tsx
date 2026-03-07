@@ -99,8 +99,6 @@ const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAproba
     // Función para formatear el tipo de crypto
     const getTipoCryptoText = (tipo: TipoCrypto) => {
         switch (tipo) {
-            case TipoCrypto.BITCOIN:
-                return "Bitcoin (BTC)";
             case TipoCrypto.USDT_ERC20:
                 return "Tether (USDT ERC20)";
             case TipoCrypto.USDT_TRC20:

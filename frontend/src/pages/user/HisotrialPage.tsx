@@ -97,7 +97,7 @@ export const HistorialPage = () => {
         }));
     }, [bonosUsuario]);
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
+    const COLORS = ['#F0973C', '#69AC95', '#e8841f', '#5a9a84', '#F0973C99', '#69AC9599'];
 
     // Calcular estadísticas
     const totalGanancias = useMemo(() => {
@@ -120,14 +120,14 @@ export const HistorialPage = () => {
         switch (estado) {
             case EstadoOperacion.COMPLETADA:
             case EstadoOperacion.APROBADA:
-                return "text-green-600 bg-green-50";
+                return "text-[#69AC95] bg-[#69AC95]/10 border border-[#69AC95]/30";
             case EstadoOperacion.PENDIENTE:
-                return "text-yellow-600 bg-yellow-50";
+                return "text-[#F0973C] bg-[#F0973C]/10 border border-[#F0973C]/30";
             case EstadoOperacion.FALLIDA:
             case EstadoOperacion.RECHAZADA:
-                return "text-red-600 bg-red-50";
+                return "text-red-400 bg-red-500/10 border border-red-500/30";
             default:
-                return "text-gray-600 bg-gray-50";
+                return "text-white/50 bg-white/5 border border-white/10";
         }
     };
 
@@ -147,58 +147,58 @@ export const HistorialPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 px-4 py-8">
+        <div className="min-h-screen bg-[#000000] text-white px-4 py-8">
             <div className="container mx-auto max-w-7xl">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">
                         {t("reports.history_and_reports")}
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-white/40 text-lg">
                         {t("reports.view_your_transaction_history_and_generate_reports")}
                     </p>
                 </div>
 
                 {/* Estadísticas Rápidas */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                    <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_earnings")}</p>
-                                <p className="text-3xl font-bold text-gray-800">${totalGanancias.toFixed(2)}</p>
-                                <p className="text-green-600 text-xs mt-1 flex items-center">
+                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_earnings")}</p>
+                                <p className="text-3xl font-bold text-white">${totalGanancias.toFixed(2)}</p>
+                                <p className="text-[#69AC95] text-xs mt-1 flex items-center">
                                     <TrendingUp className="w-3 h-3 mr-1" />
                                     {t("reports.completed")}
                                 </p>
                             </div>
-                            <div className="bg-green-100 p-3 rounded-full">
-                                <DollarSign className="w-8 h-8 text-green-600" />
+                            <div className="bg-[#69AC95]/20 p-3 rounded-full border border-[#69AC95]/30">
+                                <DollarSign className="w-8 h-8 text-[#69AC95]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                    <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_bonuses")}</p>
-                                <p className="text-3xl font-bold text-gray-800">${totalBonos.toFixed(2)}</p>
-                                <p className="text-purple-600 text-xs mt-1">{bonosUsuario.length} {t("reports.bonus_types")}</p>
+                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_bonuses")}</p>
+                                <p className="text-3xl font-bold text-white">${totalBonos.toFixed(2)}</p>
+                                <p className="text-[#F0973C] text-xs mt-1">{bonosUsuario.length} {t("reports.bonus_types")}</p>
                             </div>
-                            <div className="bg-purple-100 p-3 rounded-full">
-                                <Award className="w-8 h-8 text-purple-600" />
+                            <div className="bg-[#F0973C]/20 p-3 rounded-full border border-[#F0973C]/30">
+                                <Award className="w-8 h-8 text-[#F0973C]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-500 text-sm font-medium mb-1">{t("reports.total_withdrawals")}</p>
-                                <p className="text-3xl font-bold text-gray-800">${totalRetiros.toFixed(2)}</p>
-                                <p className="text-blue-600 text-xs mt-1">{t("reports.processed")}</p>
+                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_withdrawals")}</p>
+                                <p className="text-3xl font-bold text-white">${totalRetiros.toFixed(2)}</p>
+                                <p className="text-white/50 text-xs mt-1">{t("reports.processed")}</p>
                             </div>
-                            <div className="bg-blue-100 p-3 rounded-full">
-                                <DollarSign className="w-8 h-8 text-blue-600" />
+                            <div className="bg-white/10 p-3 rounded-full border border-white/10">
+                                <DollarSign className="w-8 h-8 text-white/50" />
                             </div>
                         </div>
                     </div>
@@ -207,27 +207,27 @@ export const HistorialPage = () => {
                 {/* Gráficas */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {/* Gráfica de Ganancias por Mes */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                            <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
+                    <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                            <TrendingUp className="w-5 h-5 mr-2 text-[#69AC95]" />
                             {t("reports.monthly_earnings")}
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={datosGanancias}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey={t("reports.month")} />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Line type="monotone" dataKey={t("reports.earnings")} stroke="#3B82F6" strokeWidth={3} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                <XAxis dataKey={t("reports.month")} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(105,172,149,0.3)', borderRadius: '12px', color: '#fff' }} />
+                                <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
+                                <Line type="monotone" dataKey={t("reports.earnings")} stroke="#69AC95" strokeWidth={3} dot={{ fill: '#69AC95' }} />
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
 
                     {/* Gráfica de Distribución de Bonos */}
-                    <div className="bg-white rounded-xl shadow-lg p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                            <Award className="w-5 h-5 mr-2 text-purple-600" />
+                    <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                            <Award className="w-5 h-5 mr-2 text-[#F0973C]" />
                             {t("reports.bonus_distribution")}
                         </h3>
                         <ResponsiveContainer width="100%" height={300}>
@@ -237,7 +237,7 @@ export const HistorialPage = () => {
                                     cx="50%"
                                     cy="50%"
                                     outerRadius={80}
-                                    fill="#8884d8"
+                                    fill="#F0973C"
                                     dataKey={t("reports.accumulated")}
                                     label
                                 >
@@ -245,22 +245,22 @@ export const HistorialPage = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0.00'} />
-                                <Legend />
+                                <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.3)', borderRadius: '12px', color: '#fff' }} formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0.00'} />
+                                <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div className="flex border-b">
+                <div className="rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden">
+                    <div className="flex border-b border-white/5">
                         <button
                             onClick={() => setActiveTab("transacciones")}
                             className={`flex-1 px-6 py-4 font-semibold transition-colors ${
                                 activeTab === "transacciones"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    ? "bg-[#F0973C] text-black"
+                                    : "bg-transparent text-white/50 hover:text-white hover:bg-white/5"
                             }`}
                         >
                             <div className="flex items-center justify-center">
@@ -272,8 +272,8 @@ export const HistorialPage = () => {
                             onClick={() => setActiveTab("bonos")}
                             className={`flex-1 px-6 py-4 font-semibold transition-colors ${
                                 activeTab === "bonos"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    ? "bg-[#F0973C] text-black"
+                                    : "bg-transparent text-white/50 hover:text-white hover:bg-white/5"
                             }`}
                         >
                             <div className="flex items-center justify-center">
@@ -288,25 +288,25 @@ export const HistorialPage = () => {
                         {activeTab === "transacciones" && (
                             <div>
                                 {/* Filtros */}
-                                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-700">
-                                        <Filter className="w-5 h-5 mr-2" />
+                                <div className="mb-6 p-4 rounded-xl border border-white/5 bg-white/[0.03]">
+                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+                                        <Filter className="w-5 h-5 mr-2 text-[#F0973C]" />
                                         {t("reports.filters")}
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {/* Filtro de Concepto */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("reports.concept")}
                                             </label>
                                             <select
                                                 value={filtroConcepto}
                                                 onChange={(e) => setFiltroConcepto(e.target.value as TipoConceptos | "TODOS")}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50"
                                             >
-                                                <option value="TODOS">{t("reports.all")}</option>
+                                                <option value="TODOS" className="bg-[#111]">{t("reports.all")}</option>
                                                 {Object.values(TipoConceptos).map((concepto) => (
-                                                    <option key={concepto} value={concepto}>
+                                                    <option key={concepto} value={concepto} className="bg-[#111]">
                                                         {TraducirConcepto(concepto, idiomaActual)}
                                                     </option>
                                                 ))}
@@ -315,17 +315,17 @@ export const HistorialPage = () => {
 
                                         {/* Filtro de Estado */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("reports.status")}
                                             </label>
                                             <select
                                                 value={filtroEstado}
                                                 onChange={(e) => setFiltroEstado(e.target.value as EstadoOperacion | "TODOS")}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50"
                                             >
-                                                <option value="TODOS">{t("reports.all")}</option>
+                                                <option value="TODOS" className="bg-[#111]">{t("reports.all")}</option>
                                                 {Object.values(EstadoOperacion).map((estado) => (
-                                                    <option key={estado} value={estado}>
+                                                    <option key={estado} value={estado} className="bg-[#111]">
                                                         {TraducirEstadoOperacion(estado, idiomaActual)}
                                                     </option>
                                                 ))}
@@ -334,27 +334,27 @@ export const HistorialPage = () => {
 
                                         {/* Fecha Inicio */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("reports.start_date")}
                                             </label>
                                             <input
                                                 type="date"
                                                 value={fechaInicio}
                                                 onChange={(e) => setFechaInicio(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50 [color-scheme:dark]"
                                             />
                                         </div>
 
                                         {/* Fecha Fin */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
                                                 {t("reports.end_date")}
                                             </label>
                                             <input
                                                 type="date"
                                                 value={fechaFin}
                                                 onChange={(e) => setFechaFin(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#F0973C]/50 [color-scheme:dark]"
                                             />
                                         </div>
                                     </div>
@@ -363,61 +363,61 @@ export const HistorialPage = () => {
                                 {/* Tabla de Transacciones */}
                                 {cargando ? (
                                     <div className="text-center py-8">
-                                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                                        <p className="mt-2 text-gray-600">{t("reports.loading_transactions")}</p>
+                                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#F0973C]"></div>
+                                        <p className="mt-2 text-white/40">{t("reports.loading_transactions")}</p>
                                     </div>
                                 ) : error ? (
-                                    <div className="text-center py-8 text-red-600">
+                                    <div className="text-center py-8 text-red-400">
                                         <p>{error}</p>
                                     </div>
                                 ) : !transacciones || transacciones.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-500">
+                                    <div className="text-center py-8 text-white/30">
                                         <p>{t("reports.no_transactions_found")}</p>
                                     </div>
                                 ) : (
                                     <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50">
+                                        <table className="min-w-full divide-y divide-white/5">
+                                            <thead className="bg-white/5">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         ID
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         Fecha
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         Concepto
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         Descripción
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         Monto
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
                                                         Estado
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
+                                            <tbody className="divide-y divide-white/5">
                                                 {transacciones.map((transaccion) => (
-                                                    <tr key={transaccion.id} className="hover:bg-gray-50 transition-colors">
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    <tr key={transaccion.id} className="hover:bg-white/5 transition-colors">
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                                                             #{transaccion.id}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/50">
                                                             {new Date(transaccion.fecha).toLocaleDateString('es-ES')}
                                                         </td>
-                                                        <td className="px-6 py-4 text-sm text-gray-900">
+                                                        <td className="px-6 py-4 text-sm text-white">
                                                             <span className="font-medium">
                                                                 {transaccion.concepto.replace(/_/g, ' ')}
                                                             </span>
                                                         </td>
-                                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                                        <td className="px-6 py-4 text-sm text-white/50">
                                                             {transaccion.descripcion}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
-                                                            <span className={transaccion.monto >= 0 ? "text-green-600" : "text-red-600"}>
+                                                            <span className={transaccion.monto >= 0 ? "text-[#69AC95]" : "text-red-400"}>
                                                                 {transaccion.monto >= 0 ? '+' : ''}{transaccion.monto.toFixed(2)} USD
                                                             </span>
                                                         </td>
@@ -436,10 +436,10 @@ export const HistorialPage = () => {
 
                                 {/* Paginación */}
                                 {totalPaginas > 1 && (
-                                    <div className="mt-6 border-t pt-4">
+                                    <div className="mt-6 border-t border-white/5 pt-4">
                                         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                                             {/* Información de resultados */}
-                                            <div className="text-sm text-gray-700">
+                                            <div className="text-sm text-white/40">
                                                 {t("reports.showing")} <span className="font-semibold">{(paginaActualRedux * itemsPorPagina) + 1}</span> {t("reports.to")}{' '}
                                                 <span className="font-semibold">{Math.min((paginaActualRedux + 1) * itemsPorPagina, totalElementos)}</span> {t("reports.of")}{' '}
                                                 <span className="font-semibold">{totalElementos}</span> {t("reports.results")}
@@ -451,7 +451,7 @@ export const HistorialPage = () => {
                                                 <button
                                                     onClick={() => cambiarPagina(0)}
                                                     disabled={paginaActualRedux === 0}
-                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-white"
                                                     title={t("reports.first_page")}
                                                 >
                                                     <ChevronLeft className="w-4 h-4" />
@@ -462,7 +462,7 @@ export const HistorialPage = () => {
                                                 <button
                                                     onClick={() => cambiarPagina(Math.max(0, paginaActualRedux - 1))}
                                                     disabled={paginaActualRedux === 0}
-                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-white"
                                                     title={t("reports.previous_page")}
                                                 >
                                                     <ChevronLeft className="w-4 h-4" />
@@ -490,12 +490,12 @@ export const HistorialPage = () => {
                                                                 <>
                                                                     <button
                                                                         onClick={() => cambiarPagina(0)}
-                                                                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                                                                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 font-medium transition-colors text-white"
                                                                     >
                                                                         1
                                                                     </button>
                                                                     {inicio > 1 && (
-                                                                        <span className="px-2 text-gray-500">...</span>
+                                                                        <span className="px-2 text-white/30">...</span>
                                                                     )}
                                                                 </>
                                                             )}
@@ -506,8 +506,8 @@ export const HistorialPage = () => {
                                                                     onClick={() => cambiarPagina(numPagina)}
                                                                     className={`px-3 py-2 rounded-lg font-medium transition-colors ${
                                                                         numPagina === paginaActualRedux
-                                                                            ? "bg-blue-600 text-white border-2 border-blue-600"
-                                                                            : "bg-white border border-gray-300 hover:bg-gray-50"
+                                                                            ? "bg-[#F0973C] text-black"
+                                                                            : "bg-white/5 border border-white/10 hover:bg-white/10 text-white"
                                                                     }`}
                                                                 >
                                                                     {numPagina + 1}
@@ -517,11 +517,11 @@ export const HistorialPage = () => {
                                                             {fin < totalPaginas - 1 && (
                                                                 <>
                                                                     {fin < totalPaginas - 2 && (
-                                                                        <span className="px-2 text-gray-500">...</span>
+                                                                        <span className="px-2 text-white/30">...</span>
                                                                     )}
                                                                     <button
                                                                         onClick={() => cambiarPagina(totalPaginas - 1)}
-                                                                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                                                                        className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 font-medium transition-colors text-white"
                                                                     >
                                                                         {totalPaginas}
                                                                     </button>
@@ -535,7 +535,7 @@ export const HistorialPage = () => {
                                                 <button
                                                     onClick={() => cambiarPagina(Math.min(totalPaginas - 1, paginaActualRedux + 1))}
                                                     disabled={paginaActualRedux >= totalPaginas - 1}
-                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-white"
                                                     title={t("reports.next_page")}
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
@@ -545,7 +545,7 @@ export const HistorialPage = () => {
                                                 <button
                                                     onClick={() => cambiarPagina(totalPaginas - 1)}
                                                     disabled={paginaActualRedux >= totalPaginas - 1}
-                                                    className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+                                                    className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors text-white"
                                                     title={t("reports.last_page")}
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
@@ -562,31 +562,39 @@ export const HistorialPage = () => {
                         {activeTab === "bonos" && (
                             <div>
                                 {bonosUsuario.length === 0 ? (
-                                    <div className="text-center py-8 text-gray-500">
+                                    <div className="text-center py-8 text-white/30">
                                         <p>{t("reports.no_bonuses_found")}</p>
                                     </div>
                                 ) : (
                                     <>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {bonosUsuario.map((bono) => (
+                                            {bonosUsuario.map((bono, index) => (
                                                 <div
                                                     key={bono.id}
-                                                    className="bg-linear-to-br from-blue-50 to-purple-50 rounded-xl shadow-lg p-6 border-2 border-blue-200 hover:border-blue-400 transition-all hover:shadow-xl"
+                                                    className={`rounded-xl p-6 border transition-all hover:scale-[1.02] ${
+                                                        index % 2 === 0
+                                                            ? 'border-[#F0973C]/20 bg-[#F0973C]/5 hover:border-[#F0973C]/40'
+                                                            : 'border-[#69AC95]/20 bg-[#69AC95]/5 hover:border-[#69AC95]/40'
+                                                    }`}
                                                 >
                                                     <div className="flex items-center justify-between mb-4">
-                                                        <div className="bg-blue-600 text-white p-3 rounded-full">
-                                                            <Award className="w-6 h-6" />
+                                                        <div className={`p-3 rounded-full ${
+                                                            index % 2 === 0 ? 'bg-[#F0973C]/20 border border-[#F0973C]/30' : 'bg-[#69AC95]/20 border border-[#69AC95]/30'
+                                                        }`}>
+                                                            <Award className={`w-6 h-6 ${index % 2 === 0 ? 'text-[#F0973C]' : 'text-[#69AC95]'}`} />
                                                         </div>
-                                                        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                                            index % 2 === 0 ? 'bg-[#F0973C]/20 text-[#F0973C] border border-[#F0973C]/30' : 'bg-[#69AC95]/20 text-[#69AC95] border border-[#69AC95]/30'
+                                                        }`}>
                                                             {bono.codigo}
                                                         </span>
                                                     </div>
-                                                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                                                    <h3 className="text-lg font-bold text-white mb-2">
                                                         {bono.nombre.toString().replace('BONO_', '').replace(/_/g, ' ')}
                                                     </h3>
                                                     <div className="mt-4">
-                                                        <p className="text-sm text-gray-600 mb-1">{t("reports.total_accumulated")}</p>
-                                                        <p className="text-3xl font-bold text-blue-600">
+                                                        <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t("reports.total_accumulated")}</p>
+                                                        <p className={`text-3xl font-bold ${index % 2 === 0 ? 'text-[#F0973C]' : 'text-[#69AC95]'}`}>
                                                             ${bono.acumulado.toFixed(2)}
                                                         </p>
                                                     </div>
@@ -595,18 +603,18 @@ export const HistorialPage = () => {
                                         </div>
 
                                         {/* Gráfica de Barras de Bonos */}
-                                        <div className="mt-8 bg-white rounded-xl shadow-lg p-6 border">
-                                            <h3 className="text-xl font-bold text-gray-800 mb-4">
+                                        <div className="mt-8 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
+                                            <h3 className="text-xl font-bold text-white mb-4">
                                                 {t("reports.bonus_comparison")}
                                             </h3>
                                             <ResponsiveContainer width="100%" height={400}>
                                                 <BarChart data={datosBonosChart}>
-                                                    <CartesianGrid strokeDasharray="3 3" />
-                                                    <XAxis dataKey={t("reports.name")} />
-                                                    <YAxis />
-                                                    <Tooltip />
-                                                    <Legend />
-                                                    <Bar dataKey={t("reports.accumulated")} fill="#3B82F6" />
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                                    <XAxis dataKey={t("reports.name")} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                                    <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.3)', borderRadius: '12px', color: '#fff' }} />
+                                                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
+                                                    <Bar dataKey={t("reports.accumulated")} fill="#F0973C" radius={[4, 4, 0, 0]} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>

@@ -149,6 +149,31 @@ const rechazarSolicitud = async (idSolicitud: number): Promise<ApiResponse<strin
     return api.put<string>(`${BASE_PATH}/admin/rechazar-solicitud/${idSolicitud}`);
 };
 
+// Subir foto de perfil
+// POST /api/usuarios/foto-perfil
+const subirFotoPerfil = async (file: File): Promise<ApiResponse<Usuario>> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post<Usuario>(`${BASE_PATH}/foto-perfil`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+};
+
+// Obtener foto de perfil como Blob
+// GET /api/usuarios/foto-perfil/{filename}
+const obtenerFotoPerfil = async (filename: string): Promise<Blob> => {
+    try {
+        return await api.descargarArchivo(filename);
+    } catch (error) {
+        console.error('Error al obtener foto de perfil:', error);
+        return new Blob();
+    }
+};
+
+const eliminarUsuarioPorId = async (idUsuario: number): Promise<ApiResponse<void>> => {
+    return api.delete<void>(`${BASE_PATH}/admin/usuario/${idUsuario}`);
+}
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -164,4 +189,7 @@ export const usuarioService = {
     transferenciaEntreUsuarios,
     aprobarCompraLicencia,
     rechazarSolicitud,
+    subirFotoPerfil,
+    obtenerFotoPerfil,
+    eliminarUsuarioPorId,
 };

@@ -8,15 +8,16 @@ import Logo from "../../assets/Logo.png";
 interface RegisterModalProps {
     open: boolean;
     onClose: () => void;
+    refCode?: string;
 }
 
-export default function RegisterModal({ open, onClose }: RegisterModalProps) {
+export default function RegisterModal({ open, onClose, refCode }: RegisterModalProps) {
     const { t } = useTranslation();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [referenced, setReferenced] = useState("");
+    const [referenced, setReferenced] = useState(refCode ?? "");
     const [localError, setLocalError] = useState<string | null>(null);
 
     const { registrar, loadingRegistro, errorRegistro } = useUsuario();

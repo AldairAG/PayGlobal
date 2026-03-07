@@ -604,4 +604,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
     }
+
+    @Override
+    public void eliminarUsuarioPorId(Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+        usuarioRepository.delete(usuario);
+    }
 }

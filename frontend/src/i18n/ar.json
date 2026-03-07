@@ -87,20 +87,21 @@
     },
 
     "sidebar": {
-        "home": "الرئيسية",
-        "licenses": "الرخص",
+        "home": "لوحة التحكم",
+        "licenses": "رخصة الشراء",
         "withdrawal": "السحب",
-        "reports": "التقارير",
+        "reports": "سجل الدفعات",
         "internal_transfers": "التحويلات الداخلية",
         "profile": "الملف الشخصي",
         "support": "الدعم",
-        "user_network": "شبكة المستخدمين",
+        "user_network": "منظمةك",
         "go_to_profile": "اذهب إلى الملف الشخصي",
-        "log_out": "تسجيل الخروج"
+        "log_out": "تسجيل الخروج",
+        "news": "الأخبار / الأدوات"
     },
     
     "home": {
-        "progress_clock": "ساعة التقدم",
+        "progress_clock": "بروغريسو",
         "maximum_amount": "الحد الأقصى للمبلغ",
         "total_collected": "إجمالي المبالغ المحصلة",
         "license": "الرخصة",
@@ -121,7 +122,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "اختر الرخصة التي تناسب احتياجاتك",
-        "available_licenses": "الرخص المتاحة",
+        "available_licenses": "باقات التخزين",
         "purchase_for_myself": "شراء لنفسي",
         "purchase_for_others": "شراء للآخرين",
         "important_information": "معلومات مهمة",
@@ -261,8 +262,8 @@
         "processing": "جاري المعالجة...",
         "continue": "استمرار",
         "wallets_information": "معلومات المحافظ",
-        "dividends_wallet": "محفظة الأرباح",
-        "commissions_wallet": "محفظة العمولات",
+        "dividends_wallet": "رهن المحفظة",
+        "commissions_wallet": "محفظة الشبكة",
         "important_information": "معلومات هامة",
         "instant_transfers": "التحويلات فورية",
         "no_fee_internal_transfers": "لا توجد رسوم على التحويلات الداخلية",
@@ -322,8 +323,8 @@
         "registration_date": "تاريخ التسجيل",
         "account_status": "حالة الحساب",
         "my_wallets": "محافظي",
-        "dividends_wallet": "محفظة الأرباح",
-        "commissions_wallet": "محفظة العمولات",
+        "dividends_wallet": "رهن المحفظة",
+        "commissions_wallet": "محفظة الشبكة",
         "my_bonuses": "مكافآتي",
         "no_bonuses_available": "لا توجد مكافآت متاحة",
         "file_too_large": "الملف كبير جداً. الحد الأقصى 5 ميجابايت.",

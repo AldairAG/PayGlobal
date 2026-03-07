@@ -86,20 +86,21 @@
     },
 
     "sidebar": {
-        "home": "Home",
-        "licenses": "Licenses",
+        "home": "Dashboard",
+        "licenses": "Buy License",
         "withdrawal": "Withdraw",
-        "reports": "Reports",
+        "reports": "Payment History",
         "internal_transfers": "Internal Transfers",
         "profile": "Profile",
         "support": "Support",
-        "user_network": "User Network",
+        "user_network": "Organization",
         "go_to_profile": "Go to Profile",
-        "log_out": "Log Out"
+        "log_out": "Log Out",
+        "news": "News / Tools"
     },
 
     "home": {
-        "progress_clock": "Progress Clock",
+        "progress_clock": "Progress",
         "maximum_amount": "Maximum Amount",
         "total_collected": "Total Collected",
         "license":"License",
@@ -120,7 +121,7 @@
 
     "licenses": {
         "choose_the_license_that_best_suits_your_needs": "Choose the license that best suits your needs",
-        "available_licenses": "Available Licenses",
+        "available_licenses": "Staking packages",
         "purchase_for_myself": "Purchase for myself",
         "purchase_for_others": "Purchase for others",
         "important_information": "Important Information",
@@ -260,8 +261,8 @@
         "processing": "Processing...",
         "continue": "Continue",
         "wallets_information": "Wallets Information",
-        "dividends_wallet": "Dividends Wallet",
-        "commissions_wallet": "Commissions Wallet",
+        "dividends_wallet": "Wallet Staking",
+        "commissions_wallet": "Wallet Red",
         "important_information": "Important Information",
         "instant_transfers": "Transfers are instantaneous",
         "no_fee_internal_transfers": "No fee for internal transfers",
@@ -321,8 +322,8 @@
         "registration_date": "Registration Date",
         "account_status": "Account Status",
         "my_wallets": "My Wallets",
-        "dividends_wallet": "Dividends Wallet",
-        "commissions_wallet": "Commissions Wallet",
+        "dividends_wallet": "Wallet Staking",
+        "commissions_wallet": "Wallet Red",
         "my_bonuses": "My Bonuses",
         "no_bonuses_available": "No bonuses available",
         "file_too_large": "The file is too large. Maximum 5MB.",

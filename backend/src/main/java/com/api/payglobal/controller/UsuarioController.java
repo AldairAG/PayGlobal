@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -345,6 +346,21 @@ public class UsuarioController {
         try {
             Usuario usuario = usuarioService.obtenerUsuarioPorId(idUsuario);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuario, "Usuario obtenido correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Eliminar usuario por ID (Admin)
+     */
+    @DeleteMapping("/admin/usuario/{idUsuario}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<Void>> eliminarUsuarioPorId(@PathVariable Long idUsuario) {
+        try {
+            usuarioService.eliminarUsuarioPorId(idUsuario);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, null, "Usuario eliminado correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
