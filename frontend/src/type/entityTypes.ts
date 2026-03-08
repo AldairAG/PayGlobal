@@ -18,7 +18,7 @@ export interface Usuario {
     bonos: Bono[];
     wallets: Wallet[];
     licencia: Licencia;
-
+    membresia: boolean;
 }
 
 export interface Bono {

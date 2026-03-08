@@ -77,6 +77,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private TransaccionService transaccionService;
 
+    Float valorMembresia = 49.95f;
+
     @Transactional
     public JwtResponse registrar(RegistroResquestDTO registroRequest) {
 
@@ -152,6 +154,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .rol(RolesUsuario.USUARIO)
                 .rango(TipoRango.SIN_RANGO)
                 .wallets(new ArrayList<>())
+                .membresia(false)
                 .build();
 
         Licencia licencia = Licencia.builder()
@@ -242,12 +245,12 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.getWallets().forEach(wallet -> wallet.setUsuario(usuarioExistente));
             usuarioExistente.setWallets(usuario.getWallets());
         }
-        
+
         if (usuario.getBonos() != null && !usuario.getBonos().isEmpty()) {
             usuario.getBonos().forEach(bono -> bono.setUsuario(usuarioExistente));
             usuarioExistente.setBonos(usuario.getBonos());
         }
-        
+
         if (usuario.getLicencia() != null) {
             usuario.getLicencia().setUsuario(usuarioExistente);
             usuarioExistente.setLicencia(usuario.getLicencia());
@@ -266,14 +269,17 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void solicitarCompraLicencia(TipoCrypto tipoCrypto, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud,
-            Long idUsuario) throws Exception {
+            Long idUsuario, Boolean pagoMembresia) throws Exception {
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
+        BigDecimal monto = new BigDecimal((usuario.getLicencia().getPrecio() == 0 ? tipoLicencia.getValor()
+                : tipoLicencia.getValor() - usuario.getLicencia().getPrecio()) + (!usuario.getMembresia() ? valorMembresia : 0));
+
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
-                .monto(new BigDecimal(tipoLicencia.getValor()))
+                .monto(monto)
                 .usuario(usuario)
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
@@ -281,6 +287,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
                         + tipoLicencia.name())
                 .estado(EstadoOperacion.PENDIENTE)
+                .pagoMembresia(!pagoMembresia)
                 .build();
 
         usuario.addSolicitud(solicitud);
@@ -426,54 +433,41 @@ public class UsuarioServiceImpl implements UsuarioService {
     private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia) {
         Licencia licencia = usuario.getLicencia();
 
-        if (licencia == null) {
-            // Crear nueva licencia
-            licencia = Licencia.builder()
-                    .nombre(tipoLicencia.name())
-                    .fechaCompra(LocalDate.now())
-                    .precio(tipoLicencia.getValor())
-                    .limite(tipoLicencia.getValor() * 2)
-                    .activo(true)
-                    .saldoAcumulado(0)
-                    .usuario(usuario)
-                    .build();
-        } else {
-            // Actualizar licencia existente
-            // Obtener el tipo de licencia actual
-            TipoLicencia licenciaActual = determinarTipoLicenciaPorPrecio(licencia.getPrecio());
+        // Actualizar licencia existente
+        // Obtener el tipo de licencia actual
+        TipoLicencia licenciaActual = determinarTipoLicenciaPorPrecio(licencia.getPrecio());
 
-            // Validar que la nueva licencia sea igual o superior a la actual
-            if (tipoLicencia.getValor() < licenciaActual.getValor()) {
-                throw new RuntimeException(
-                        "Para renovar la licencia, debe adquirir un paquete igual o superior al actual. " +
-                                "Licencia actual: " + licenciaActual.name() + " ($" + licenciaActual.getValor() + "), "
-                                +
-                                "Licencia nueva: " + tipoLicencia.name() + " ($" + tipoLicencia.getValor() + ")");
-            }
-
-            // Sumar el nuevo valor al precio existente
-            int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
-
-            // Determinar la licencia correspondiente según el precio total
-            TipoLicencia licenciaCorrespondiente = determinarTipoLicenciaPorPrecio(precioTotal);
-
-            // Procesar bono de renovación si la licencia estaba inactiva
-            if (licencia.getActivo() == null || !licencia.getActivo()) {
-                try {
-                    bonoService.bonoRenovacion(tipoLicencia, usuario.getReferenciado());
-                } catch (Exception e) {
-                    throw new RuntimeException("Error al procesar bono de renovación: " + e.getMessage(), e);
-                }
-            }
-
-            licencia.setNombre(licenciaCorrespondiente.name());
-            licencia.setFechaCompra(LocalDate.now());
-            licencia.setPrecio(precioTotal);
-            licencia.setLimite(licenciaCorrespondiente.getValor() * 2);
-            licencia.setActivo(true);
-            // Resetear el saldo acumulado al renovar/actualizar
-            licencia.setSaldoAcumulado(0);
+        // Validar que la nueva licencia sea igual o superior a la actual
+        if (tipoLicencia.getValor() < licenciaActual.getValor()) {
+            throw new RuntimeException(
+                    "Para renovar la licencia, debe adquirir un paquete igual o superior al actual. " +
+                            "Licencia actual: " + licenciaActual.name() + " ($" + licenciaActual.getValor() + "), "
+                            +
+                            "Licencia nueva: " + tipoLicencia.name() + " ($" + tipoLicencia.getValor() + ")");
         }
+
+        // Sumar el nuevo valor al precio existente
+        int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
+
+        // Determinar la licencia correspondiente según el precio total
+        TipoLicencia licenciaCorrespondiente = determinarTipoLicenciaPorPrecio(precioTotal);
+
+        // Procesar bono de renovación si la licencia estaba inactiva
+        if (licencia.getActivo() == null || !licencia.getActivo()) {
+            try {
+                bonoService.bonoRenovacion(tipoLicencia, usuario.getReferenciado());
+            } catch (Exception e) {
+                throw new RuntimeException("Error al procesar bono de renovación: " + e.getMessage(), e);
+            }
+        }
+
+        licencia.setNombre(licenciaCorrespondiente.name());
+        licencia.setFechaCompra(LocalDate.now());
+        licencia.setPrecio(precioTotal);
+        licencia.setLimite(licenciaCorrespondiente.getValor() * 2);
+        licencia.setActivo(true);
+        // Resetear el saldo acumulado al renovar/actualizar
+        licencia.setSaldoAcumulado(0);
 
         return licencia;
     }
@@ -530,8 +524,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
+        BigDecimal precioTotal = solicitud.getPagoMembresia()
+                ? solicitud.getMonto().subtract(BigDecimal.valueOf(valorMembresia))
+                : solicitud.getMonto();
+
         Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
-                determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()));
+                determinarTipoLicenciaPorPrecio(precioTotal.intValue()));
 
         solicitud.getUsuario().setLicencia(licencia);
 
@@ -545,7 +543,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 solicitud.getTipoCrypto(),
                 null);
 
-        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(solicitud.getMonto().intValue()),
+        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado());
     }
 

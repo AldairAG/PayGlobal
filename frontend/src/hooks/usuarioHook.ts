@@ -191,7 +191,7 @@ export const useUsuario = () => {
 
     const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud) => {
         try {
-            await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud }));
+            await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud,pagoMembresia: usuario?.membresia || false }));
         } catch (error) {
             console.error('Error al solicitar compra de licencia:', error);
         }

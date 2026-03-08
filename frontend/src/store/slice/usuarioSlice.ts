@@ -155,14 +155,15 @@ export const editarUsuarioAdminThunk = createAsyncThunk<
 
 export const solicitarCompraLicenciaThunk = createAsyncThunk<
     ApiResponse<string>,
-    { tipoCrypto: TipoCrypto; tipoLicencia: string; tipoSolicitud: TipoSolicitud; },
+    { tipoCrypto: TipoCrypto; tipoLicencia: string; tipoSolicitud: TipoSolicitud; pagoMembresia: boolean },
     { rejectValue: string }
 >("usuario/solicitarCompraLicencia", async (payload, { rejectWithValue }) => {
     try {
         const response = await usuarioService.solicitarCompraLicencia(
             payload.tipoCrypto,
             payload.tipoLicencia,
-            payload.tipoSolicitud
+            payload.tipoSolicitud,
+            payload.pagoMembresia
         );
         if (!response.success) {
             return rejectWithValue(response.message || "Error al solicitar compra de licencia");
