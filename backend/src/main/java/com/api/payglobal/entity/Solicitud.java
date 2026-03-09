@@ -34,6 +34,8 @@ public class Solicitud extends Operacion {
     @Enumerated(EnumType.STRING)
     private TipoSolicitud tipoSolicitud;
 
+    private Boolean pagoMembresia;
+
     @ManyToOne
     @JsonBackReference
     private Usuario usuario;

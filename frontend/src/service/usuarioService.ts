@@ -50,12 +50,13 @@ const editarUsuarioAdmin = async (usuario: Usuario): Promise<ApiResponse<string>
 
 // Solicitar compra de licencia
 // POST /api/usuarios/solicitar-licencia
-const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud): Promise<ApiResponse<string>> => {
+const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud,pagoMembresia:boolean): Promise<ApiResponse<string>> => {
     return api.post<string>(`${BASE_PATH}/solicitar-licencia`, null, {
         params: {
             tipoCrypto: TipoCrypto[tipoCrypto], // Convertir enum a string
             tipoLicencia,
-            tipoSolicitud: TipoSolicitud[tipoSolicitud] // Convertir enum a string
+            tipoSolicitud: TipoSolicitud[tipoSolicitud], // Convertir enum a string
+            pagoMembresia: pagoMembresia
         }
     });
 };
