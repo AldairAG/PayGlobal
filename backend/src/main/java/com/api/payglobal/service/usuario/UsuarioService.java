@@ -38,7 +38,7 @@ public interface UsuarioService extends UserDetailsService {
         void editarUsuario(Usuario usuario) throws Exception;
 
         void solicitarCompraLicencia(TipoCrypto tipoCrypto, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud,
-                        Long idUsuario, Boolean pagoMembresia) throws Exception;
+                        Long idUsuario) throws Exception;
 
         void solicitarRetiroFondos(Long walletAddressId, BigDecimal monto, TipoSolicitud tipoSolicitud, Long idUsuario)
                         throws Exception;

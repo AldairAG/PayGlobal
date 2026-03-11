@@ -77,7 +77,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private TransaccionService transaccionService;
 
-    Float valorMembresia = 49.95f;
+    Float cobroPorCompra = 15f;
 
     @Transactional
     public JwtResponse registrar(RegistroResquestDTO registroRequest) {
@@ -155,7 +155,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .rango(TipoRango.SIN_RANGO)
                 .wallets(new ArrayList<>())
                 .telefono(dto.getTelefono())
-                .membresia(false)
                 .build();
 
         Licencia licencia = Licencia.builder()
@@ -270,13 +269,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void solicitarCompraLicencia(TipoCrypto tipoCrypto, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud,
-            Long idUsuario, Boolean pagoMembresia) throws Exception {
+            Long idUsuario) throws Exception {
 
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-        BigDecimal monto = new BigDecimal((usuario.getLicencia().getPrecio() == 0 ? tipoLicencia.getValor()
-                : tipoLicencia.getValor() - usuario.getLicencia().getPrecio()) + (!usuario.getMembresia() ? valorMembresia : 0));
+        BigDecimal monto = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
@@ -288,7 +286,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
                         + tipoLicencia.name())
                 .estado(EstadoOperacion.PENDIENTE)
-                .pagoMembresia(!pagoMembresia)
                 .build();
 
         usuario.addSolicitud(solicitud);
@@ -525,9 +522,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
-        BigDecimal precioTotal = solicitud.getPagoMembresia()
-                ? solicitud.getMonto().subtract(BigDecimal.valueOf(valorMembresia))
-                : solicitud.getMonto();
+        BigDecimal precioTotal = solicitud.getMonto().subtract(BigDecimal.valueOf(cobroPorCompra));
 
         Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
                 determinarTipoLicenciaPorPrecio(precioTotal.intValue()));

@@ -16,6 +16,7 @@ export enum TipoCrypto {
     USDT_BEP20 = "USDT_BEP20",
     USDT_ERC20 = "USDT_ERC20",
     USDT_TRC20 = "USDT_TRC20",
+    
     SOLANA = "SOLANA"
 }
 

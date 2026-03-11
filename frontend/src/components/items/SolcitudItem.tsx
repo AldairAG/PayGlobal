@@ -105,6 +105,8 @@ const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAproba
                 return "Tether (USDT TRC20)";
             case TipoCrypto.SOLANA:
                 return "Solana (SOL)";
+            case TipoCrypto.USDT_BEP20:
+                return "Tether (USDT BEP20)";
             default:
                 return "N/A";
         }

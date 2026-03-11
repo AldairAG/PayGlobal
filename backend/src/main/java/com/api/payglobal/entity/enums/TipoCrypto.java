@@ -4,5 +4,6 @@ public enum TipoCrypto {
     BITCOIN,
     USDT_ERC20,
     USDT_TRC20,
-    SOLANA
+    SOLANA,
+    USDT_BEP20
 }

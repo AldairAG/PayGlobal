@@ -162,10 +162,9 @@ public class UsuarioController {
             @RequestParam TipoCrypto tipoCrypto,
             @RequestParam TipoLicencia tipoLicencia,
             @RequestParam TipoSolicitud tipoSolicitud,
-            @RequestParam boolean pagoMembresia,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            usuarioService.solicitarCompraLicencia(tipoCrypto, tipoLicencia, tipoSolicitud, usuario.getId(),pagoMembresia);
+            usuarioService.solicitarCompraLicencia(tipoCrypto, tipoLicencia, tipoSolicitud, usuario.getId());
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponseWrapper<>(true, "Solicitud de licencia creada correctamente", null));
         } catch (Exception e) {
