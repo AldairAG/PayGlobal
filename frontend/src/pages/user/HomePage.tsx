@@ -42,7 +42,7 @@ const HomePage = () => {
             <div className="p-6 space-y-8">
 
                 {/* FILA COMBINADA: izquierda = Fila 1 | derecha = Fila 2 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6">
 
                     
 
@@ -68,13 +68,13 @@ const HomePage = () => {
                         {/* Monto máximo y Total Recaudado */}
                         <div className="p-4 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-row justify-around items-center gap-4">
                             <div className="text-center">
-                                <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
-                                <p className="text-xl font-bold text-white">$ {usuario?.licencia.limite}</p>
+                                <p className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
+                                <p className="text-2xl font-bold text-white">$ {usuario?.licencia.limite}</p>
                             </div>
                             <div className="w-px h-10 bg-[#69AC95]/30" />
                             <div className="text-center">
-                                <p className="text-xs text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
-                                <p className="text-xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
+                                <p className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
+                                <p className="text-2xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
                             </div>
                         </div>
 
@@ -118,7 +118,7 @@ const HomePage = () => {
                         </div>
 
                     </div>
-
+                    
                 </div>
 
                 {/* DATOS DE RED Y RANGO */}

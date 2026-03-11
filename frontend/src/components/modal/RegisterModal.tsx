@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useUsuario } from "../../hooks/usuarioHook";
-import Logo from "../../assets/Logo.png";
+import LogoC from "../../assets/LogoC.png";
 
 const countryCodes = [
     { code: "+1", country: "Estados Unidos / Canadá", flag: "🇺🇸" },
@@ -172,7 +172,7 @@ export default function RegisterModal({ open, onClose, refCode }: RegisterModalP
 
                 <div className="flex items-center justify-center m-0 p-0">
                     <img
-                        src={Logo}
+                        src={LogoC}
                         alt="PayGlobal Logo"
                         className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                     />

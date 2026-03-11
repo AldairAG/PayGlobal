@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useUsuario } from "../../hooks/usuarioHook";
-import Logo from "../../assets/Logo.png";
+import LogoC from "../../assets/LogoC.png";
 import { ROUTES } from "../../routes/routes";
 
 
@@ -107,7 +107,7 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
 
                 <div className="flex items-center justify-center m-0 p-0">
                     <img
-                        src={Logo}
+                        src={LogoC}
                         alt="PayGlobal Logo"
                         className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                     />

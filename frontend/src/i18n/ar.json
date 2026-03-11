@@ -76,7 +76,9 @@
         "roi_licenses": "التراخيص",
         "roi_daily_label": "يومي",
         "roi_weekly_label": "أسبوعي",
-        "roi_monthly_label": "شهري"
+        "roi_monthly_label": "شهري",
+        "code": "رمز المنطقة",
+        "phone_number": "رقم الهاتف"
     },
 
     "header": {
@@ -117,7 +119,11 @@
         "affiliates": "الشركاء",
         "profit_increase": "زيادة الأرباح",
         "loading_monthly_earnings...": "جارٍ تحميل الأرباح الشهرية...",
-        "no_earnings_data_available.": "لا تتوفر بيانات الأرباح."
+        "no_earnings_data_available.": "لا تتوفر بيانات الأرباح.",
+        "invite_members": "دعوة الأعضاء",
+        "invite_share_text": "شارك رابط الدعوة الخاص بك مع أصدقائك واكسب المكافآت.",
+        "copy_invite_link": "نسخ رابط الدعوة",
+        "copied": "تم النسخ"
     },
 
     "licenses": {
@@ -130,7 +136,7 @@
         "error_requesting_license_purchase": "خطأ في طلب شراء الترخيص:",
         "address_copied": "تم نسخ العنوان إلى الحافظة",
         "license_cost": "تكلفة الترخيص",
-        "backoffice_commission": "عضوية Backoffice",
+        "backoffice_commission": "رسوم التسجيل",
         "total_to_deposit": "إجمالي المبلغ المطلوب",
         "purchase_license": "شراء ترخيص",
         "referred_username": "اسم مستخدم الإحالة",

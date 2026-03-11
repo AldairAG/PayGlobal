@@ -82,7 +82,9 @@
         "roi_licenses": "Licencias",
         "roi_daily_label": "Diario",
         "roi_weekly_label": "Semanal",
-        "roi_monthly_label": "Mensual"
+        "roi_monthly_label": "Mensual",
+        "code": "Lada",
+        "phone_number": "Número de teléfono"
     },
     "header": {
         "license": "Licencia",
@@ -121,7 +123,11 @@
         "affiliates": "Afiliados",
         "profit_increase": "Aumento de ganancias",
         "loading_monthly_earnings...": "Cargando ganancias mensuales...",
-        "no_earnings_data_available.": "No hay datos de ganancias disponibles."
+        "no_earnings_data_available.": "No hay datos de ganancias disponibles.",
+        "invite_members": "Invitar miembros",
+        "invite_share_text": "Comparte tu enlace de invitación con tus amigos y gana recompensas.",
+        "copy_invite_link": "Copiar enlace de invitación",
+        "copied": "Copiado"
 
     },
 
@@ -136,7 +142,7 @@
         "error_requesting_license_purchase": "Error al solicitar compra de licencia:",
         "address_copied": "Dirección copiada al portapapeles",
         "license_cost": "Costo de licencia",
-        "backoffice_commission": "Membresía Backoffice",
+        "backoffice_commission": "Pago por inscripción",
         "total_to_deposit": "Total a depositar",
         "purchase_license": "Comprar Licencia",
         "referred_username": "Username del referido",

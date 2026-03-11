@@ -24,7 +24,7 @@ const SideBar = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const { usuario, cerrarSesion } = useUsuario();
+    const { cerrarSesion } = useUsuario();
 
     const menuItems = [
         { name: t("sidebar.home"), icon: <PiHouseDuotone size={22} />, route: ROUTES.USER.HOME },
@@ -60,53 +60,35 @@ const SideBar = () => {
                 {open ? <PiCaretLeftDuotone size={20} /> : <PiCaretRightDuotone size={20} />}
             </button>
 
-            {/* Botón de perfil */}
-            <div
-                onClick={() => handleNavigate(ROUTES.USER.PROFILE)}
-                className="flex items-center gap-3 mb-10 cursor-pointer group"
-                title={t("sidebar.go_to_profile")}
-            >
-                <div className="w-10 h-10 shrink-0 rounded-full transition-all duration-200 
-                               flex items-center justify-center text-white font-bold text-lg shadow-lg"
-                     style={{ background: 'linear-gradient(to bottom right, #F0973C, #69AC95)' }}>
-                    {usuario?.nombre?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                {open && <span className="text-base font-semibold truncate">{usuario?.nombre || t("sidebar.profile")}</span>}
-            </div>
-
             <ul className="space-y-4">
                 {menuItems.map((item, index) => (
                     <li
                         key={index}
                         onClick={() => handleNavigate(item.route)}
-                        className="flex items-center gap-4 p-3 rounded-lg cursor-pointer transition"
+                        className="group flex items-center gap-4 p-3 rounded-lg cursor-pointer transition"
                         style={{ 
                             backgroundColor: location.pathname === item.route ? '#69AC95' : 'transparent'
                         }}
-                        onMouseEnter={(e) => {
-                            if (location.pathname !== item.route) {
-                                e.currentTarget.style.backgroundColor = '#2a2a2a';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (location.pathname !== item.route) {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                            }
-                        }}
                     >
                         <span className="shrink-0">{item.icon}</span>
-                        {open && <span>{item.name}</span>}
+                        {open && (
+                            <span className="group-hover:text-[#F0973C] transition-colors duration-150">
+                                {item.name}
+                            </span>
+                        )}
                     </li>
                 ))}
 
                 <li 
-                    className="flex mt-10 items-center gap-4 p-3 rounded-lg cursor-pointer transition"
+                    className="group flex mt-10 items-center gap-4 p-3 rounded-lg cursor-pointer transition"
                     onClick={cerrarSesion}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#BC2020'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                     <span className="shrink-0"><PiSignOutDuotone size={22} /></span>
-                    {open && <span>{t("sidebar.log_out")}</span>}
+                    {open && (
+                        <span className="group-hover:text-red-500 transition-colors duration-150">
+                            {t("sidebar.log_out")}
+                        </span>
+                    )}
                 </li>
             </ul>
         </aside>

@@ -45,6 +45,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { KycDocuments } from "../../components/KycDocuments";
 import { ProfilePhoto } from "../../components/ProfilePhoto";
+import { TipoWallets } from "../../type/enum";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
@@ -372,16 +373,6 @@ export const ProfilePage = () => {
                                 </div>
                             </div>
 
-                            {/* Referenciado por */}
-                            <div>
-                                <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                    {t("profile.referred_by")}
-                                </label>
-                                <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white/60">
-                                    @{usuario?.referenciado || "N/A"}
-                                </div>
-                            </div>
-
                             {/* Fecha de Registro */}
                             <div>
                                 <label className="flex items-center gap-2 text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
@@ -421,26 +412,26 @@ export const ProfilePage = () => {
                                     <div
                                         key={wallet.id}
                                         className={`p-4 rounded-xl border ${
-                                            wallet.codigo === 0
+                                            wallet.tipo === TipoWallets.WALLET_DIVIDENDOS
                                                 ? 'border-[#69AC95]/20 bg-[#69AC95]/5'
                                                 : 'border-[#F0973C]/20 bg-[#F0973C]/5'
                                         }`}
                                     >
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                                wallet.codigo === 0 ? 'bg-[#69AC95]/20' : 'bg-[#F0973C]/20'
+                                                wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? 'bg-[#69AC95]/20' : 'bg-[#F0973C]/20'
                                             }`}>
-                                                {wallet.codigo === 0 ? (
+                                                {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? (
                                                     <WalletIcon size={16} className="text-[#69AC95]" />
                                                 ) : (
                                                     <Coins size={16} className="text-[#F0973C]" />
                                                 )}
                                             </div>
                                             <h4 className="font-bold text-white/80 text-sm">
-                                                {wallet.codigo === 0 ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
+                                                {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
                                             </h4>
                                         </div>
-                                        <p className={`text-2xl font-bold ${wallet.codigo === 0 ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
+                                        <p className={`text-2xl font-bold ${wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
                                             $ {wallet.saldo?.toFixed(2) || "0.00"}
                                         </p>
                                     </div>

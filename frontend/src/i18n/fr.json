@@ -76,7 +76,9 @@
         "roi_licenses": "Licences",
         "roi_daily_label": "Quotidien",
         "roi_weekly_label": "Hebdomadaire",
-        "roi_monthly_label": "Mensuel"
+        "roi_monthly_label": "Mensuel",
+        "code": "Indicatif",
+        "phone_number": "Numéro de téléphone"
     },
 
     "header": {
@@ -118,7 +120,11 @@
         "affiliates": "Affiliés",
         "profit_increase": "Augmentation des bénéfices",
         "loading_monthly_earnings...": "Chargement des gains mensuels...",
-        "no_earnings_data_available.": "Aucune donnée de gains disponible."
+        "no_earnings_data_available.": "Aucune donnée de gains disponible.",
+        "invite_members": "Inviter des membres",
+        "invite_share_text": "Partagez votre lien d'invitation avec vos amis et gagnez des récompenses.",
+        "copy_invite_link": "Copier le lien d'invitation",
+        "copied": "Copié"
 
     },
 
@@ -132,7 +138,7 @@
         "error_requesting_license_purchase": "Erreur lors de la demande d'achat de licence :",
         "address_copied": "Adresse copiée dans le presse-papiers",
         "license_cost": "Coût de la licence",
-        "backoffice_commission": "Adhésion Backoffice",
+        "backoffice_commission": "Frais d'inscription",
         "total_to_deposit": "Total à déposer",
         "purchase_license": "Acheter une licence",
         "referred_username": "Nom d'utilisateur du parrainage",

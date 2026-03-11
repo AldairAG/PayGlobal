@@ -7,7 +7,7 @@ import PurchaseLicenseModal from "../../components/modal/PurchaseLicenseModal";
 import { TipoSolicitud } from "../../type/enum";
 import { getLicenseImage } from "../../helpers/imgHelpers";
 
-const BACKOFFICE_COMMISSION = 49.95;
+const BACKOFFICE_COMMISSION = 15;
 
 export const LicenciasPage = () => {
     const { t } = useTranslation();

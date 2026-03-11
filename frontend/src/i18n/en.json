@@ -76,7 +76,9 @@
         "roi_licenses": "Licenses",
         "roi_daily_label": "Daily",
         "roi_weekly_label": "Weekly",
-        "roi_monthly_label": "Monthly"
+        "roi_monthly_label": "Monthly",
+        "code": "Country Code",
+        "phone_number": "Phone Number"
     },
 
     "header": {
@@ -116,7 +118,11 @@
         "affiliates": "Affiliates",
         "profit_increase": "Profit Increase",
         "loading_monthly_earnings...": "Loading Monthly Earnings...",
-        "no_earnings_data_available.": "No earnings data available."
+        "no_earnings_data_available.": "No earnings data available.",
+        "invite_members": "Invite Members",
+        "invite_share_text": "Share your invitation link with your friends and earn rewards.",
+        "copy_invite_link": "Copy invitation link",
+        "copied": "Copied"
     },
 
     "licenses": {
@@ -129,7 +135,7 @@
         "error_requesting_license_purchase": "Error requesting license purchase:",
         "address_copied": "Address copied to clipboard",
         "license_cost": "License cost",
-        "backoffice_commission": "Backoffice Membership",
+        "backoffice_commission": "Registration Fee",
         "total_to_deposit": "Total to deposit",
         "purchase_license": "Buy License",
         "referred_username": "Referral username",

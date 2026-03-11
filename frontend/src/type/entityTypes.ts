@@ -46,8 +46,6 @@ export interface Licencia {
 }
 
 export const LICENCIAS = {
-    P10: { name: "P10", value: 10 },
-    P25: { name: "P25", value: 25 },
     P50: { name: "P50", value: 50 },
     P100: { name: "P100", value: 100 },
     P250: { name: "P250", value: 250 },
