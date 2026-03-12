@@ -53,6 +53,7 @@ export const LICENCIAS = {
     P1000: { name: "P1000", value: 1000 },
     P2500: { name: "P2500", value: 2500 },
     P5000: { name: "P5000", value: 5000 },
+    P7500: { name: "P7500", value: 7500 },
     P10000: { name: "P10000", value: 10000 },
     P15000: { name: "P15000", value: 15000 },
     P25000: { name: "P25000", value: 25000 },

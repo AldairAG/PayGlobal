@@ -12,6 +12,7 @@ import l11 from "../assets/licencias/l11.webp";
 import l12 from "../assets/licencias/l12.webp";
 import l13 from "../assets/licencias/l13.webp";
 import l14 from "../assets/licencias/l14.webp"; 
+import l15 from "../assets/licencias/l15.webp";
 
 export const getLicenseImage = (licenseName: string) => {
     const licenseMap: Record<string, string> = {
@@ -25,10 +26,11 @@ export const getLicenseImage = (licenseName: string) => {
         "P2500": l8,
         "P5000": l9,
         "P10000": l10,
-        "P15000": l11,
-        "P25000": l12,
-        "P50000": l13,
-        "P100000": l14
+        "P15000": l14,
+        "P25000": l11,
+        "P50000": l12,
+        "P100000": l13,
+        "P7500": l15
     };  
     return licenseMap[licenseName] || l1;
 }    
