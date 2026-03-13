@@ -84,7 +84,8 @@
     "header": {
         "license": "Licence",
         "last_dividend": "Dernier dividende",
-        "last_bonus": "Dernier bonus"
+        "last_bonus": "Dernier bonus",
+        "user": "Utilisateur"
 
     },
 
@@ -147,7 +148,7 @@
         "wallet_address": "Adresse du portefeuille",
         "copy": "Copier",
         "transfer_instructions": "Effectuez le transfert à l'adresse du portefeuille affichée. Une fois la transaction confirmée, votre licence sera activée.",
-        "close": "Fermer"
+        "close": "Acheter"
 
     },
 

@@ -131,7 +131,7 @@ const HomePage = () => {
 
                         <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5">
                             <h3 className="font-semibold text-lg text-white/70 uppercase tracking-wider text-sm">{t('home.my_current_rank')}</h3>
-                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">{usuario?.rango || t('home.no_range')}</p>
+                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">{!usuario?.rango || usuario.rango === 'SIN_RANGO' ? t('home.no_range') : usuario.rango}</p>
                         </div>
 
                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">

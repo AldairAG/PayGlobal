@@ -224,27 +224,27 @@ export const TransferenciaInternaPage = () => {
                         {t("transfers.wallets_information")}
                     </h2>
 
-                    <div className="space-y-4">
-                        {usuario?.wallets.map((wallet) => (
-                            <div 
-                                key={wallet.id}
-                                className="bg-gradient-to-r from-[#69AC95] to-[#F0973C] text-white p-5 rounded-lg"
-                            >
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-sm font-medium opacity-90">
-                                        {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS 
-                                            ? t("transfers.dividends_wallet") 
-                                            : t("transfers.commissions_wallet")}
-                                    </span>
-                                    <span className="text-xs opacity-75">
-                                        {wallet.codigo}
-                                    </span>
+                    <div className="grid grid-cols-2 gap-4">
+                        {usuario?.wallets.map((wallet) => {
+                            const isDividendos = wallet.tipo === TipoWallets.WALLET_DIVIDENDOS;
+                            return (
+                                <div 
+                                    key={wallet.id}
+                                    className={`p-5 rounded-xl border ${
+                                        isDividendos
+                                            ? 'border-[#69AC95]/20 bg-[#69AC95]/5'
+                                            : 'border-[#F0973C]/20 bg-[#F0973C]/5'
+                                    }`}
+                                >
+                                    <p className={`text-sm font-semibold text-white/40 uppercase tracking-wider mb-1`}>
+                                        {isDividendos ? t("transfers.dividends_wallet") : t("transfers.commissions_wallet")}
+                                    </p>
+                                    <p className={`text-2xl font-bold ${isDividendos ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
+                                        ${wallet.saldo.toFixed(2)}
+                                    </p>
                                 </div>
-                                <div className="text-3xl font-bold">
-                                    ${wallet.saldo.toFixed(2)}
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Información adicional */}

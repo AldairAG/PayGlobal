@@ -42,7 +42,7 @@ export default function PurchaseLicenseModal({
     const cryptoWallets = {
         [TipoCrypto.USDT_BEP20]: {
             address: "0x3bBe92e195E58b1762009aAb264F83aB0F676FA3",
-            name: "USDT Red: BNB Smart Chain",
+            name: "USDT Network: BNB SMART CHAIN",
             symbol: "USDT",
             tipo: TipoCrypto.USDT_BEP20,
             img: imgBNB,
@@ -50,15 +50,15 @@ export default function PurchaseLicenseModal({
         },
         [TipoCrypto.SOLANA]: {
             address: "EKhvoLfMW65dPHB2dany39bc7AppmqmzDnsfsLE7JGCT",
-            name: "USDT Red: Solana",
+            name: "USDT Network: SOLANA",
             symbol: "USDT",
             tipo: TipoCrypto.SOLANA,
             img: imgSOL,
-            logo: "https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/sol.png"
+            logo: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
         },
         [TipoCrypto.USDT_TRC20]: {
             address: "TY9vjjLCp1HsoHNhDWGEyL2f4JciojfKRL",
-            name: "USDT Red: TRON",
+            name: "USDT Network: TRON",
             symbol: "USDT",
             tipo: TipoCrypto.USDT_TRC20,
             img: imgTRON,
@@ -66,7 +66,7 @@ export default function PurchaseLicenseModal({
         },
         [TipoCrypto.USDT_ERC20]: {
             address: "0x3bBe92e195E58b1762009aAb264F83aB0F676FA3",
-            name: "USDT Red: Ethereum",
+            name: "USDT Network: ETHEREUM",
             symbol: "USDT",
             tipo: TipoCrypto.USDT_ERC20,
             img: imgETH,
@@ -75,7 +75,7 @@ export default function PurchaseLicenseModal({
     };
 
     const currentWallet = cryptoWallets[selectedCrypto];
-    const BACKOFFICE_COMMISSION = 49.95;
+    const BACKOFFICE_COMMISSION = 15;
     const totalAmount = licenseValue + BACKOFFICE_COMMISSION;
 
     if (!open) return null;

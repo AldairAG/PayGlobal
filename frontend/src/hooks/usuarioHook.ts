@@ -100,6 +100,9 @@ export const useUsuario = () => {
             const data = unwrapResult(result).data;
             if (data) {
                 dispatch(setUsuario(data.user));
+                dispatch(setUsuarioEnRed(data.usuarioEnRed));
+                const ruta = obtenerRutaSegunRol(data.token);
+                navigate(ruta);
             }
             return unwrapResult(result);
         } catch (error) {

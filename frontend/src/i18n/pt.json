@@ -84,7 +84,8 @@
     "header": {
         "license": "Licença",
         "last_dividend": "Último Dividendo",
-        "last_bonus": "Último Bônus"
+        "last_bonus": "Último Bônus",
+        "user": "Usuário"
 
     },
 
@@ -147,7 +148,7 @@
         "wallet_address": "Endereço da Carteira",
         "copy": "Copiar",
         "transfer_instructions": "Realize a transferência para o endereço de carteira mostrado. Assim que a transação for confirmada, sua licença será ativada.",
-        "close": "Fechar"
+        "close": "Comprar"
 
     },
 

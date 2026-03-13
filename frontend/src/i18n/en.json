@@ -84,7 +84,8 @@
     "header": {
         "license": "License",
         "last_dividend": "Last Dividend",
-        "last_bonus": "Last Bonus"
+        "last_bonus": "Last Bonus",
+        "user": "User"
     },
 
     "sidebar": {
@@ -144,7 +145,7 @@
         "wallet_address": "Wallet Address",
         "copy": "Copy",
         "transfer_instructions": "Complete the transfer to the displayed wallet address. Once the transaction is confirmed, your license will be activated.",
-        "close": "Close"
+        "close": "Buy"
     },
 
     "withdrawal": {

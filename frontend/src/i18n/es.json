@@ -89,7 +89,8 @@
     "header": {
         "license": "Licencia",
         "last_dividend": "Último Dividendo",
-        "last_bonus": "Último Bono"
+        "last_bonus": "Último Bono", 
+        "user": "Usuario"
     },
 
     "sidebar": {
@@ -151,7 +152,7 @@
         "wallet_address": "Dirección de Wallet",
         "copy": "Copiar",
         "transfer_instructions": "Realice la transferencia al wallet address mostrado. Una vez confirmada la transacción, su licencia será activada.",
-        "close": "Cerrar"
+        "close": "Comprar"
 
     },
 

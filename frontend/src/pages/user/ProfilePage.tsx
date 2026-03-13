@@ -164,7 +164,7 @@ export const ProfilePage = () => {
                             <h3 className="text-lg font-bold text-white/80">{t("profile.current_rank")}</h3>
                         </div>
                         <p className="text-2xl font-bold text-[#69AC95]">
-                            {usuario?.rango || t("profile.no_rank")}
+                            {!usuario?.rango || usuario.rango === 'SIN_RANGO' ? t("profile.no_rank") : usuario.rango}
                         </p>
                     </div>
 

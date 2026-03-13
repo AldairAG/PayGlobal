@@ -9,10 +9,7 @@ import {
     PiUsersThreeDuotone,
     PiHeadsetDuotone,
     PiSignOutDuotone,
-    PiCaretLeftDuotone,
-    PiCaretRightDuotone,
 } from "react-icons/pi";
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUsuario } from "../hooks/usuarioHook";
 import { ROUTES } from "../routes/routes";
@@ -21,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 const SideBar = () => {
     const { t } = useTranslation();
-    const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const { cerrarSesion } = useUsuario();
@@ -40,42 +36,24 @@ const SideBar = () => {
 
     const handleNavigate = (route: string) => {
         navigate(route);
-        setOpen(false);
     };
 
     return (
         <aside
-            className={`text-white shrink-0 p-5 pt-4 transition-all duration-300 
-                ${open ? "w-64" : "w-20"} relative z-40 h-full overflow-y-auto`}
+            className="text-white shrink-0 p-5 pt-4 transition-all duration-300 w-20 sm:w-64 relative z-40 h-full overflow-y-auto"
             style={{ backgroundColor: '#000000' }}
         >
-            {/* Botón toggle arriba del sidebar */}
-            <button
-                onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-center p-2 mb-6 rounded-lg transition"
-                style={{ backgroundColor: '#1a1a1a' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2a2a2a'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1a1a1a'}
-            >
-                {open ? <PiCaretLeftDuotone size={20} /> : <PiCaretRightDuotone size={20} />}
-            </button>
-
             <ul className="space-y-4">
                 {menuItems.map((item, index) => (
                     <li
                         key={index}
                         onClick={() => handleNavigate(item.route)}
                         className="group flex items-center gap-4 p-3 rounded-lg cursor-pointer transition"
-                        style={{ 
-                            backgroundColor: location.pathname === item.route ? '#69AC95' : 'transparent'
-                        }}
                     >
-                        <span className="shrink-0">{item.icon}</span>
-                        {open && (
-                            <span className="group-hover:text-[#F0973C] transition-colors duration-150">
-                                {item.name}
-                            </span>
-                        )}
+                        <span className={`shrink-0 transition-colors duration-150 ${location.pathname === item.route ? 'text-[#F0973C]' : ''}`}>{item.icon}</span>
+                        <span className={`hidden sm:inline transition-colors duration-150 ${location.pathname === item.route ? 'text-[#F0973C]' : 'group-hover:text-[#F0973C]'}`}>
+                            {item.name}
+                        </span>
                     </li>
                 ))}
 
@@ -84,11 +62,9 @@ const SideBar = () => {
                     onClick={cerrarSesion}
                 >
                     <span className="shrink-0"><PiSignOutDuotone size={22} /></span>
-                    {open && (
-                        <span className="group-hover:text-red-500 transition-colors duration-150">
-                            {t("sidebar.log_out")}
-                        </span>
-                    )}
+                    <span className="hidden sm:inline group-hover:text-red-500 transition-colors duration-150">
+                        {t("sidebar.log_out")}
+                    </span>
                 </li>
             </ul>
         </aside>

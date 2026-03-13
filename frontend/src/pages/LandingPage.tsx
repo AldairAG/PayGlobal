@@ -8,23 +8,22 @@ import RegisterModal from "../components/modal/RegisterModal";
 import CryptoTicker from "../components/CryptoTicker";
 import LogoA from "../assets/LogoA.png";
 import LogoV from "../assets/LogoV.png";
+import ForexTicker from "../components/ForexTicker";
 
 const ReturnsTable = () => {
     const { t } = useTranslation();
     const tableData = [
-        { licenses: 10, daily: 0.05, weekly: 0.25, monthly: 1.00 },
-        { licenses: 25, daily: 0.125, weekly: 0.625, monthly: 2.50 },
-        { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 5.00 },
-        { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 10.00 },
-        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 25.00 },
-        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 50.00 },
-        { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 100.00 },
-        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 250.00 },
-        { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 500.00 },
-        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 1000.00 },
-        { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 2500.00 },
-        { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 5000.00 },
-        { licenses: 100000, daily: 500.00, weekly: 2500.00, monthly: 10000.00 },
+        { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 50.00 },
+        { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 100.00 },
+        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 250.00 },
+        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 500.00 },
+        { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 1000.00 },
+        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 2500.00 },
+        { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 5000.00 },
+        { licenses: 7500, daily: 37.50, weekly: 187.50, monthly: 7500.00 },
+        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 10000.00 },
+        { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 25000.00 },
+        { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 50000.00 },
     ];
 
     return (
@@ -237,6 +236,9 @@ export default function LandingPage() {
 
             {/* TICKER */}
             <CryptoTicker />
+
+            {/* MERCADO FOREX */}
+            <ForexTicker />
 
             {/* HERO */}
             <section className="relative z-10 px-6 md:px-12 pt-20 pb-16 max-w-7xl mx-auto">

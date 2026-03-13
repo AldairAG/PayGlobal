@@ -205,7 +205,7 @@ export const RetiroPage = () => {
                         {/* Formulario Nueva Wallet */}
                         {showWalletForm === "crear" ? (
                             <div className="mb-6 p-4 rounded-xl border border-[#F0973C]/30 bg-[#F0973C]/10">
-                                <h3 className="font-semibold mb-4 text-white">Nueva Wallet</h3>
+                                <h3 className="font-semibold mb-4 text-white">{t("withdrawal.new_wallet")}</h3>
                                 <form onSubmit={walletFormik.handleSubmit} className="space-y-4">
                                     <div>
                                         <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
@@ -240,7 +240,7 @@ export const RetiroPage = () => {
                                             <option value={TipoCrypto.USDT_ERC20} className="bg-[#111]">USDT (ERC-20)</option>
                                             <option value={TipoCrypto.USDT_TRC20} className="bg-[#111]">USDT (TRC-20)</option>
                                             <option value={TipoCrypto.USDT_BEP20} className="bg-[#111]">USDT (BEP-20)</option>
-                                            <option value={TipoCrypto.SOLANA} className="bg-[#111]">Solana</option>
+                                            <option value={TipoCrypto.SOLANA} className="bg-[#111]">USDT (SOLANA)</option>
                                         </select>
                                     </div>
 
