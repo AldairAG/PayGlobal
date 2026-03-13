@@ -103,18 +103,18 @@ const HomePage = () => {
                         <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
                             <div className="flex items-center gap-3">
                                 <Wallet size={30} className="text-[#69AC95]" />
-                                <h3 className="text-xl font-semibold text-white/80">{t('home.dividends')}</h3>
+                                <h3 className="text-xl font-semibold text-white/80">{t('home.staking')}</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_DIVIDENDOS)?.saldo}</p>
+                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING)?.saldo}</p>
                         </div>
 
                         {/* Wallet Comisiones */}
                         <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
                             <div className="flex items-center gap-3">
                                 <Coins size={30} className="text-[#F0973C]" />
-                                <h3 className="text-xl font-semibold text-white/80">{t('home.commissions')}</h3>
+                                <h3 className="text-xl font-semibold text-white/80">{t('home.network')}</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_COMISIONES)?.saldo}</p>
+                            <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK)?.saldo}</p>
                         </div>
 
                     </div>

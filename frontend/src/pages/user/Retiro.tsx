@@ -10,10 +10,11 @@ import { useWalletAddress } from "../../hooks/useWalletAddress";
 import type { CreateWalletAddress } from "../../type/requestTypes";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
+import { TraducirWalletType } from '../../helpers/idiomaHelpers';
 
 
 export const RetiroPage = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const { usuario, solicitarRetiro, loadingSolicitarRetiroFondos, errorSolicitarRetiroFondos } = useUsuario();
 
@@ -451,7 +452,7 @@ export const RetiroPage = () => {
                                     <option value={0} className="bg-[#111]">{t("withdrawal.select_a_wallet")}</option>
                                     {usuario?.wallets.map((wallet) => (
                                         <option key={wallet.id} value={wallet.id} className="bg-[#111]">
-                                            {wallet.tipo} - ${wallet.saldo.toFixed(2)}
+                                            {TraducirWalletType(wallet.tipo, i18n.language)} - ${wallet.saldo.toFixed(2)}
                                         </option>
                                     ))}
                                 </select>
@@ -470,7 +471,7 @@ export const RetiroPage = () => {
                                         return wallet ? (
                                             <>
                                                 <p className="text-sm font-semibold mb-2 text-white">{t("withdrawal.selected_wallet:")}</p>
-                                                <p className="text-xs font-mono text-white/50 break-all mb-2">{wallet.tipo}</p>
+                                                <p className="text-xs font-mono text-white/50 break-all mb-2">{TraducirWalletType(wallet.tipo, i18n.language)}</p>
                                                 <p className="text-sm">
                                                     {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.saldo.toFixed(2)}

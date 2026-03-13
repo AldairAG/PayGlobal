@@ -274,3 +274,31 @@ export const TraducirConcepto = (concepto: string, idioma: string): string => {
             return concepto;
     }
 }
+
+const TraducirWalletTypeEs = (tipo: string): string => {
+    switch (tipo) {
+        case "WALLET_STAKING":
+            return "Staking";
+        case "WALLET_NETWORK":
+            return "Network";
+        default:
+            return tipo;
+    }
+};
+
+export const TraducirWalletType = (tipo: string, idioma: string): string => {
+    switch (idioma) {
+        case "es":
+            return TraducirWalletTypeEs(tipo);
+        case "fr":
+            return TraducirWalletTypeEs(tipo);
+        case "pt":
+            return TraducirWalletTypeEs(tipo);
+        case "ar":
+            return TraducirWalletTypeEs(tipo);
+        case "en":
+            return TraducirWalletTypeEs(tipo);
+        default:
+            return tipo;
+    }
+}    

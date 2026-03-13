@@ -168,13 +168,13 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .build();
 
         Wallet walletComisiones = Wallet.builder()
-                .tipo(TipoWallets.WALLET_COMISIONES)
+                .tipo(TipoWallets.WALLET_NETWORK)
                 .saldo(BigDecimal.ZERO)
                 .usuario(usuario)
                 .build();
 
         Wallet walletDividendos = Wallet.builder()
-                .tipo(TipoWallets.WALLET_DIVIDENDOS)
+                .tipo(TipoWallets.WALLET_STAKING)
                 .saldo(BigDecimal.ZERO)
                 .usuario(usuario)
                 .build();
@@ -306,7 +306,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS) {
             Wallet walletDividendo = usuario.getWallets().stream()
-                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                     .findFirst()
                     .orElseThrow(() -> new Exception(
                             "Wallet de dividendos no encontrada para el usuario con id: " + idUsuario));
@@ -317,7 +317,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES) {
             Wallet walletComisiones = usuario.getWallets().stream()
-                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                     .findFirst()
                     .orElseThrow(() -> new Exception(
                             "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
@@ -352,7 +352,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (tipoMetodoPago == TipoMetodoPago.WALLET_COMISIONES) {
             Wallet walletComisiones = usuario.getWallets().stream()
-                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                     .findFirst()
                     .orElseThrow(() -> new Exception(
                             "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
@@ -363,12 +363,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (tipoMetodoPago == TipoMetodoPago.WALLET_DIVIDENDOS) {
             Wallet walletDividendo = usuario.getWallets().stream()
-                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                     .findFirst()
                     .orElseThrow(() -> new Exception(
-                            "Wallet de dividendos no encontrada para el usuario con id: " + idUsuario));
+                            "Wallet de staking no encontrada para el usuario con id: " + idUsuario));
             if (walletDividendo.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
-                throw new Exception("Fondos insuficientes en la wallet de dividendos");
+                throw new Exception("Fondos insuficientes en la wallet de staking");
             }
         }
 
@@ -493,7 +493,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .setSaldo(usuarioOrigen.getWallets().get(0).getSaldo().subtract(monto));
 
         usuarioDestino.getWallets().stream()
-                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
+                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                 .findFirst()
                 .orElseThrow(() -> new Exception(
                         "Wallet de comisiones no encontrada para el usuario con id: " + usuarioDestino.getId()))

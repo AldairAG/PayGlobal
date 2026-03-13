@@ -123,7 +123,9 @@
         "invite_members": "Invite Members",
         "invite_share_text": "Share your invitation link with your friends and earn rewards.",
         "copy_invite_link": "Copy invitation link",
-        "copied": "Copied"
+        "copied": "Copied",
+        "staking": "Staking",
+        "network": "Network"
     },
 
     "licenses": {
@@ -291,7 +293,9 @@
         "irreversible_action": "This action cannot be undone. Verify the data before continuing.",
         "cancel": "Cancel",
         "confirm": "Confirm",
-        "no_transfers_registered": "No transfers registered"
+        "no_transfers_registered": "No transfers registered",
+        "staking": "Staking",
+        "network": "Network"
 
     },
 

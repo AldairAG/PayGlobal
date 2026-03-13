@@ -70,7 +70,7 @@ public class BonoServiceImpl implements BonoService {
             final Double bonoFinal = bono;
             if (bonoFinal > 0) {
                 Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
-                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                         .findFirst()
                         .orElse(null);
 
@@ -107,7 +107,7 @@ public class BonoServiceImpl implements BonoService {
         Double bono = tipoLicencia.getValor() * BONO_RENOVACION;
 
         Wallet wallet = wallets.stream()
-                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                 .findFirst()
                 .orElse(null);
 
@@ -138,9 +138,9 @@ public class BonoServiceImpl implements BonoService {
         licenciaRepository.findByActivoTrue().forEach(licencia -> {
             try {
                 Wallet wallet = walletRepository.findByUsuario_Username(licencia.getUsuario().getUsername()).stream()
-                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_DIVIDENDOS))
+                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                         .findFirst()
-                        .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
+                        .orElseThrow(() -> new Exception("Wallet de staking no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
 
                 Double ingresoPasivo = licencia.getPrecio() * 0.005; // 0.5% de ingreso pasivo diario
@@ -195,7 +195,7 @@ public class BonoServiceImpl implements BonoService {
                 if (bonoFinal > 0) {
                     // Actualizar wallet de comisiones
                     Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
-                            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_COMISIONES))
+                            .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                             .findFirst()
                             .orElse(null);
 

@@ -124,7 +124,9 @@
         "invite_members": "دعوة الأعضاء",
         "invite_share_text": "شارك رابط الدعوة الخاص بك مع أصدقائك واكسب المكافآت.",
         "copy_invite_link": "نسخ رابط الدعوة",
-        "copied": "تم النسخ"
+        "copied": "تم النسخ",
+        "staking": "Staking",
+        "network": "Network"
     },
 
     "licenses": {
@@ -292,7 +294,9 @@
         "irreversible_action": "هذا الإجراء لا يمكن التراجع عنه. تحقق من البيانات قبل الاستمرار.",
         "cancel": "إلغاء",
         "confirm": "تأكيد",
-        "no_transfers_registered": "لا توجد تحويلات مسجلة"
+        "no_transfers_registered": "لا توجد تحويلات مسجلة",
+        "staking": "Staking",
+        "network": "Network"
 
     },
 

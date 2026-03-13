@@ -160,11 +160,11 @@ export const TransferenciaInternaPage = () => {
                                 onChange={(e) => setTipoWallet(e.target.value as TipoWallets)}
                                 className="w-full p-3 bg-white/5 border border-[#F0973C]/30 rounded-xl text-white focus:outline-none focus:border-[#69AC95]/50 transition-colors"
                             >
-                                <option value={TipoWallets.WALLET_DIVIDENDOS} className="bg-[#111]">
-                                    {t("transfers.dividends")} (${getSaldoActual().toFixed(2)})
+                                <option value={TipoWallets.WALLET_STAKING} className="bg-[#111]">
+                                    {t("transfers.staking")} (${getSaldoActual().toFixed(2)})
                                 </option>
-                                <option value={TipoWallets.WALLET_COMISIONES} className="bg-[#111]">
-                                    {t("transfers.commissions")} (${getSaldoActual().toFixed(2)})
+                                <option value={TipoWallets.WALLET_NETWORK} className="bg-[#111]">
+                                    {t("transfers.network")} (${getSaldoActual().toFixed(2)})
                                 </option>
                             </select>
                             <p className="mt-2 text-sm text-white/40">
@@ -226,7 +226,7 @@ export const TransferenciaInternaPage = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                         {usuario?.wallets.map((wallet) => {
-                            const isDividendos = wallet.tipo === TipoWallets.WALLET_DIVIDENDOS;
+                            const isDividendos = wallet.tipo === TipoWallets.WALLET_STAKING;
                             return (
                                 <div 
                                     key={wallet.id}
@@ -237,7 +237,7 @@ export const TransferenciaInternaPage = () => {
                                     }`}
                                 >
                                     <p className={`text-sm font-semibold text-white/40 uppercase tracking-wider mb-1`}>
-                                        {isDividendos ? t("transfers.dividends_wallet") : t("transfers.commissions_wallet")}
+                                        {isDividendos ? t("transfers.staking") : t("transfers.network")}
                                     </p>
                                     <p className={`text-2xl font-bold ${isDividendos ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
                                         ${wallet.saldo.toFixed(2)}

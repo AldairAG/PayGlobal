@@ -125,7 +125,9 @@
         "invite_members": "Inviter des membres",
         "invite_share_text": "Partagez votre lien d'invitation avec vos amis et gagnez des récompenses.",
         "copy_invite_link": "Copier le lien d'invitation",
-        "copied": "Copié"
+        "copied": "Copié",
+        "staking": "Staking",
+        "network": "Network"
 
     },
 
@@ -295,7 +297,9 @@
         "irreversible_action": "Cette action est irréversible. Vérifiez les données avant de continuer.",
         "cancel": "Annuler",
         "confirm": "Confirmer",
-        "no_transfers_registered": "Aucun transfert enregistré"
+        "no_transfers_registered": "Aucun transfert enregistré",
+        "staking": "Staking",
+        "network": "Network"
 
     },
 
