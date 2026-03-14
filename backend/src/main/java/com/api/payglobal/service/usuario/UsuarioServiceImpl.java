@@ -333,6 +333,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .usuario(usuario)
                 .fecha(LocalDateTime.now())
                 .walletAddress(walletAddress.getAddress())
+                .estado(EstadoOperacion.PENDIENTE)
+                .tipoCrypto(walletAddress.getTipoCrypto())
                 .build();
 
         usuario.addSolicitud(solicitud);
@@ -604,5 +606,45 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
         usuarioRepository.delete(usuario);
+    }
+
+    @Override
+    public void aprobarRetiroFondos(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES
+                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS) {
+            throw new Exception("La solicitud no es de tipo retiro de fondos");
+        }
+
+        // Lógica para aprobar la solicitud de retiro de fondos
+        solicitud.setEstado(EstadoOperacion.APROBADA);
+        solicitudRepository.save(solicitud);
+
+        Wallet wallet = solicitud.getUsuario().getWallets().stream()
+                .filter(w -> (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES
+                        && w.getTipo() == TipoWallets.WALLET_NETWORK)
+                        || (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS
+                                && w.getTipo() == TipoWallets.WALLET_STAKING))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet no encontrada para el usuario con id: " + solicitud.getUsuario().getId()));
+
+        if (wallet.getSaldo().compareTo(solicitud.getMonto()) < 0) {
+            throw new Exception("Fondos insuficientes para el retiro");
+        }
+
+        wallet.setSaldo(wallet.getSaldo().subtract(solicitud.getMonto()));
+        usuarioRepository.save(solicitud.getUsuario());
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.RETIRO_FONDOS,
+                null,
+                EstadoOperacion.APROBADA,
+                solicitud.getTipoCrypto(),
+                null);
     }
 }

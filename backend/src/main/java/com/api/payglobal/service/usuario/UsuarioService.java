@@ -62,4 +62,6 @@ public interface UsuarioService extends UserDetailsService {
         Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception;
 
         void eliminarUsuarioPorId(Long idUsuario) throws Exception;
+
+        void aprobarRetiroFondos(Long idSolicitud) throws Exception;
 }

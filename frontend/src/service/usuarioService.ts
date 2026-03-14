@@ -175,6 +175,10 @@ const eliminarUsuarioPorId = async (idUsuario: number): Promise<ApiResponse<void
     return api.delete<void>(`${BASE_PATH}/admin/usuario/${idUsuario}`);
 }
 
+const aprobarRetiroFondos = async (idSolicitud: number): Promise<ApiResponse<string>> => {
+    return api.put<string>(`${BASE_PATH}/admin/aprobar-retiro/${idSolicitud}`);
+}
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -193,4 +197,5 @@ export const usuarioService = {
     subirFotoPerfil,
     obtenerFotoPerfil,
     eliminarUsuarioPorId,
+    aprobarRetiroFondos,
 };

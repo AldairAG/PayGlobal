@@ -79,7 +79,7 @@ public class UsuarioController {
      * Editar perfil del usuario autenticado
      */
     @PutMapping("/perfil")
-    @PreAuthorize("hasRole('USER') and #usuario.id == authentication.principal.id")
+    @PreAuthorize("hasRole('USUARIO') and #usuario.id == authentication.principal.id")
     public ResponseEntity<ApiResponseWrapper<Usuario>> editarPerfil(
             @RequestBody EditarPerfilRequest editarPerfilRequest,
             @AuthenticationPrincipal Usuario usuario) {
@@ -96,6 +96,7 @@ public class UsuarioController {
      * Cambiar contraseña del usuario autenticado
      */
     @PatchMapping("/cambiar-password")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<?> cambiarPassword(
             @RequestBody CambiarPasswordRequest cambiarPasswordRequest,
             @AuthenticationPrincipal Usuario usuario) {

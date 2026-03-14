@@ -10,7 +10,7 @@ export const GestionPagosPage = () => {
     // Estado para las solicitudes (datos de ejemplo)
     const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerSolicitudes,
         aprobarSolicitud, loadingAprobarSolicitud, errorAprobarSolicitud, rechazarSolicitud, loadingRechazarSolicitud,
-        errorRechazarSolicitud } = useUsuario();
+        errorRechazarSolicitud, aprobarRetiroFondos, loadingAprobarRetiroFondos, errorAprobarRetiroFondos } = useUsuario();
 
     const [filtroEstado, setFiltroEstado] = useState<EstadoOperacion | "TODOS">("TODOS");
     const [filtroTipo, setFiltroTipo] = useState<TipoSolicitud | "TODOS">("TODOS");
@@ -27,6 +27,13 @@ export const GestionPagosPage = () => {
             toast.error(`Error al aprobar: ${errorAprobarSolicitud}`);
         }
     }, [errorAprobarSolicitud]);
+
+    // Efecto para mostrar errores de retiro de fondos
+    useEffect(() => {
+        if (errorAprobarRetiroFondos) {
+            toast.error(`Error al aprobar retiro: ${errorAprobarRetiroFondos}`);
+        }
+    }, [errorAprobarRetiroFondos]);
 
     // Efecto para mostrar errores de rechazo
     useEffect(() => {
@@ -46,6 +53,16 @@ export const GestionPagosPage = () => {
         }
     }, [loadingAprobarSolicitud, errorAprobarSolicitud]);
 
+    // Efecto para refrescar después de aprobar retiro exitosamente
+    useEffect(() => {
+        if (!loadingAprobarRetiroFondos && !errorAprobarRetiroFondos) {
+            const timer = setTimeout(() => {
+                obtenerSolicitudes(paginaActual, tamanioPagina);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [loadingAprobarRetiroFondos, errorAprobarRetiroFondos]);
+
     // Efecto para refrescar después de rechazar exitosamente
     useEffect(() => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
@@ -60,8 +77,25 @@ export const GestionPagosPage = () => {
     // Handlers para aprobar/rechazar
     const handleAprobar = async (solicitudId: number) => {
         try {
-            await aprobarSolicitud(solicitudId);
-            toast.success('Solicitud aprobada exitosamente');
+            // Buscar la solicitud para determinar su tipo
+            const solicitud = (solicitudes?.content ?? []).find(sol => sol.id === solicitudId);
+            
+            if (!solicitud) {
+                toast.error('Solicitud no encontrada');
+                return;
+            }
+
+            // Determinar si es un retiro de fondos
+            const esRetiro = solicitud.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS ||
+                            solicitud.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+
+            if (esRetiro) {
+                await aprobarRetiroFondos(solicitudId);
+                toast.success('Retiro de fondos aprobado exitosamente');
+            } else {
+                await aprobarSolicitud(solicitudId);
+                toast.success('Solicitud aprobada exitosamente');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -115,13 +149,13 @@ export const GestionPagosPage = () => {
 
             <div className="px-6">
                 {/* Alertas de Error */}
-                {(errorAprobarSolicitud || errorRechazarSolicitud) && (
+                {(errorAprobarSolicitud || errorRechazarSolicitud || errorAprobarRetiroFondos) && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
                         <AlertTriangle size={20} className="text-red-600 mt-0.5" />
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-red-800">Error en la operación</p>
                             <p className="text-sm text-red-700 mt-1">
-                                {errorAprobarSolicitud || errorRechazarSolicitud}
+                                {errorAprobarSolicitud || errorRechazarSolicitud || errorAprobarRetiroFondos}
                             </p>
                         </div>
                     </div>
@@ -227,7 +261,7 @@ export const GestionPagosPage = () => {
                                 isAdmin={true}
                                 onAprobar={handleAprobar}
                                 onRechazar={handleRechazar}
-                                isLoading={loadingAprobarSolicitud || loadingRechazarSolicitud}
+                                isLoading={loadingAprobarSolicitud || loadingRechazarSolicitud || loadingAprobarRetiroFondos}
                             />
                         ))
                     ) : (

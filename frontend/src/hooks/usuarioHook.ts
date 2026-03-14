@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, eliminarUsuarioPorIdThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -88,6 +88,10 @@ export const useUsuario = () => {
 
     const loadingEliminarUsuario = useSelector((state: RootState) => state.usuario.loadingEliminarUsuario);
     const errorEliminarUsuario = useSelector((state: RootState) => state.usuario.errorEliminarUsuario);
+
+    const loadingAprobarRetiroFondos = useSelector((state: RootState) => state.usuario.loadingAprobarRetiroFondos);
+    const errorAprobarRetiroFondos = useSelector((state: RootState) => state.usuario.errorAprobarRetiroFondos);
+
 
     /**
      * Función para registrar un nuevo usuario
@@ -335,6 +339,16 @@ export const useUsuario = () => {
         }
     };
 
+    const aprobarRetiroFondos = async (idSolicitud: number) => {
+        try {
+            const result = await dispatch(aprobarRetiroFondosThunk({ idSolicitud }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al aprobar retiro de fondos:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -423,5 +437,9 @@ export const useUsuario = () => {
         eliminarUsuarioPorId,
         loadingEliminarUsuario,
         errorEliminarUsuario,
+
+        aprobarRetiroFondos,
+        loadingAprobarRetiroFondos,
+        errorAprobarRetiroFondos,
     };
 };

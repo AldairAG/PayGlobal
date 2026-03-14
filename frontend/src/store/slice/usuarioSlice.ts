@@ -67,6 +67,10 @@ interface UsuarioState {
 
     loadingEliminarUsuario: boolean;
     errorEliminarUsuario: string | null;
+
+    loadingAprobarRetiroFondos: boolean;
+    errorAprobarRetiroFondos: string | null;
+
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -114,6 +118,8 @@ const loadInitialState = (): UsuarioState => {
         errorSubirFotoPerfil: null,
         loadingEliminarUsuario: false,
         errorEliminarUsuario: null,
+        loadingAprobarRetiroFondos: false,
+        errorAprobarRetiroFondos: null,
     };
 };
 
@@ -392,6 +398,23 @@ export const eliminarUsuarioPorIdThunk = createAsyncThunk<
     }
 });
 
+export const aprobarRetiroFondosThunk = createAsyncThunk<
+    ApiResponse<string>,
+    { idSolicitud: number },
+    { rejectValue: string }
+>("usuario/aprobarRetiroFondos", async ({ idSolicitud }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.aprobarRetiroFondos(idSolicitud);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al aprobar retiro de fondos");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al aprobar retiro de fondos";
+        return rejectWithValue(message);
+    }
+});
+
 const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
@@ -444,6 +467,18 @@ const usuarioSlice = createSlice({
                 state.loadingUsuariosEnRed = false;
                 state.errorUsuariosEnRed = action.payload || "Error al obtener usuarios en red";
                 state.usuariosEnRed = [];
+            })
+            .addCase(aprobarRetiroFondosThunk.pending, (state) => {
+                state.loadingAprobarRetiroFondos = true;
+                state.errorAprobarRetiroFondos = null;
+            })
+            .addCase(aprobarRetiroFondosThunk.fulfilled, (state) => {
+                state.loadingAprobarRetiroFondos = false;
+                state.errorAprobarRetiroFondos = null;
+            })
+            .addCase(aprobarRetiroFondosThunk.rejected, (state, action) => {
+                state.loadingAprobarRetiroFondos = false;
+                state.errorAprobarRetiroFondos = action.payload || "Error al aprobar retiro de fondos";
             })
             .addCase(editarUsuarioAdminThunk.pending, (state) => {
                 state.loadingEditarUsuarioAdmin = true;
@@ -607,5 +642,5 @@ const usuarioSlice = createSlice({
     },
 });
 
-export const { setUsuario, clearUsuario, setUsuarioEnRed,setUsuarioSeleccionado } = usuarioSlice.actions;
+export const { setUsuario, clearUsuario, setUsuarioEnRed, setUsuarioSeleccionado } = usuarioSlice.actions;
 export default usuarioSlice.reducer;
