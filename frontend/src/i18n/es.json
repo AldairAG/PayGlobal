@@ -84,7 +84,17 @@
         "roi_weekly_label": "Semanal",
         "roi_monthly_label": "Mensual",
         "code": "Lada",
-        "phone_number": "Número de teléfono"
+        "phone_number": "Número de teléfono",
+        "back": "Volver",
+        "welcome_back": "Bienvenido de vuelta",
+        "enter_credentials": "Ingresa tus credenciales para acceder",
+        "or": "o",
+        "dont_have_account": "¿No tienes una cuenta?",
+        "create_account": "Crear cuenta",
+        "join_us": "Únete a nosotros",
+        "create_account_desc": "Crea tu cuenta y comienza a invertir",
+        "phone": "Teléfono",
+        "already_have_account": "¿Ya tienes una cuenta?"
     },
     "header": {
         "license": "Licencia",

@@ -4,11 +4,11 @@ import {
     PiChartBarDuotone,
     PiSealCheckDuotone,
     PiWalletDuotone,
-    PiArrowsLeftRightDuotone,
     PiBellRingingDuotone,
     PiUsersThreeDuotone,
     PiHeadsetDuotone,
     PiSignOutDuotone,
+    PiCompassToolBold,
 } from "react-icons/pi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUsuario } from "../hooks/usuarioHook";
@@ -28,8 +28,9 @@ const SideBar = () => {
         { name: t("sidebar.reports"), icon: <PiChartBarDuotone size={22} />, route: ROUTES.USER.HISTORIAL },
         { name: t("sidebar.licenses"), icon: <PiSealCheckDuotone size={22} />, route: ROUTES.USER.LICENCIAS },
         { name: t("sidebar.withdrawal"), icon: <PiWalletDuotone size={22} />, route: ROUTES.USER.RETIRO },
-        { name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },
-        { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NOVEDADES },
+        { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NEWS_REPORTS },
+        /*{ name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA },*/        
+        { name: t("sidebar.tools"), icon: <PiCompassToolBold size={22} />, route: ROUTES.USER.TOOLS },
         { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS },
         { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE },
     ];

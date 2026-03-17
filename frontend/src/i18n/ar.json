@@ -78,7 +78,17 @@
         "roi_weekly_label": "أسبوعي",
         "roi_monthly_label": "شهري",
         "code": "رمز المنطقة",
-        "phone_number": "رقم الهاتف"
+        "phone_number": "رقم الهاتف",
+        "back": "رجوع",
+        "welcome_back": "مرحبا بعودتك",
+        "enter_credentials": "أدخل بيانات الاعتماد الخاصة بك للوصول",
+        "or": "أو",
+        "dont_have_account": "ليس لديك حساب؟",
+        "create_account": "إنشاء حساب",
+        "join_us": "انضم إلينا",
+        "create_account_desc": "قم بإنشاء حسابك وابدأ الاستثمار",
+        "phone": "الهاتف",
+        "already_have_account": "هل لديك حساب بالفعل؟"
     },
 
     "header": {

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Header() {
     const navigate = useNavigate();
-    const { usuario } = useUsuario();
+    const { usuario,fotoPerfil,loadingObtenerFotoPerfil } = useUsuario();
     const { t } = useTranslation();
 
 
@@ -44,10 +44,16 @@ export default function Header() {
                         </span>
                     </div>
                     <div
-                        className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg"
-                        style={{ background: 'linear-gradient(to bottom right, #F0973C, #69AC95)' }}
+                        className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg overflow-hidden"
+                        style={{ background: loadingObtenerFotoPerfil ? 'linear-gradient(to bottom right, #F0973C, #69AC95)' : 'transparent' }}
                     >
-                        {usuario?.nombre?.charAt(0).toUpperCase() || 'U'}
+                        {loadingObtenerFotoPerfil ? (
+                            <div className="w-full h-full bg-gradient-to-r from-[#F0973C] to-[#69AC95] animate-pulse" />
+                        ) : fotoPerfil ? (
+                            <img src={URL.createObjectURL(fotoPerfil)} alt="Perfil" className="w-full h-full object-cover" />
+                        ) : (
+                            usuario?.nombre?.charAt(0).toUpperCase() || 'U'
+                        )}
                     </div>
                 </div>
             </div>

@@ -28,7 +28,7 @@ export default function PurchaseLicenseModal({
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
     const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_BEP20);
-    const { solicitarCompraLicencia } = useUsuario(); 
+    const { solicitarCompraLicencia,usuario } = useUsuario(); 
 
     const handleConfirmPurchase = async () => {
         const promise = solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
@@ -142,7 +142,7 @@ export default function PurchaseLicenseModal({
                                 <p className="text-xs text-white/40 mb-2">{licenseName}</p>
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
-                                    <span className="text-xs font-semibold text-white">${licenseValue} {currentWallet.symbol}</span>
+                                    <span className="text-xs font-semibold text-white">${licenseValue-(usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
@@ -150,7 +150,7 @@ export default function PurchaseLicenseModal({
                                 </div>
                                 <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
                                     <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
-                                    <span className="text-lg font-black text-[#69AC95]">${totalAmount} {currentWallet.symbol}</span>
+                                    <span className="text-lg font-black text-[#69AC95]">${totalAmount-(usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
                                 </div>
                             </div>
                         </div>

@@ -20,10 +20,15 @@ export const ROUTES = {
         CAMBIO_CONTRASENA: '/c/change-password',
         TRANSFERENCIA_INTERNA: '/c/internal-transfer',
         RED_USUARIOS: '/c/red-usuarios',
-        NOVEDADES: '/c/novedades'
+        TOOLS: '/c/tools',
+        NEWS_REPORTS: '/c/news-reports'
     },
 
     RECUPERAR_PASSWORD: '/recuperar-password',
+
+    LOGIN: '/login',
+    REGISTER: '/register',
+    REGISTER_REF: '/register/:ref',
 
     LANDING: '/',
     LANDING_REF: '/:ref'

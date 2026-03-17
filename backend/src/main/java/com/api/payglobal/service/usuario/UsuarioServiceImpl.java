@@ -286,7 +286,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
-                .monto(monto)
+                .monto(monto.subtract(new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0)))
                 .usuario(usuario)
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)

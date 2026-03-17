@@ -4,6 +4,8 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { ROUTES } from './routes/routes'
 import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import { UserLayout } from './layout/UserLayout'
 import { AdminLayout } from './layout/AdminLayout'
 import HomePage from './pages/user/HomePage'
@@ -35,6 +37,9 @@ function App() {
           <Routes>
             <Route path={ROUTES.LANDING} element={<LandingPage />} />
             <Route path={ROUTES.LANDING_REF} element={<LandingPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+            <Route path={ROUTES.REGISTER_REF} element={<RegisterPage />} />
             <Route path={ROUTES.RECUPERAR_PASSWORD} element={<RecuperarPassword />} />
 
             <Route path={ROUTES.USER.LAYOUT} element={<UserLayout />} >
@@ -47,7 +52,7 @@ function App() {
               <Route path={ROUTES.USER.SOPORTE} element={<SoportePage />} />
               <Route path={ROUTES.USER.TRANSFERENCIA_INTERNA} element={<TransferenciaInternaPage />} />
               <Route path={ROUTES.USER.RED_USUARIOS} element={<RedUsuarioPage />} />
-              <Route path={ROUTES.USER.NOVEDADES} element={<NovedadesPage />} />
+              <Route path={ROUTES.USER.TOOLS} element={<NovedadesPage />} />
 
             </Route>
 

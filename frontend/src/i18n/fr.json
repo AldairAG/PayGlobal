@@ -78,7 +78,17 @@
         "roi_weekly_label": "Hebdomadaire",
         "roi_monthly_label": "Mensuel",
         "code": "Indicatif",
-        "phone_number": "Numéro de téléphone"
+        "phone_number": "Numéro de téléphone",
+        "back": "Retour",
+        "welcome_back": "Bon retour",
+        "enter_credentials": "Entrez vos identifiants pour accéder",
+        "or": "ou",
+        "dont_have_account": "Vous n'avez pas de compte?",
+        "create_account": "Créer un compte",
+        "join_us": "Rejoignez-nous",
+        "create_account_desc": "Créez votre compte et commencez à investir",
+        "phone": "Téléphone",
+        "already_have_account": "Vous avez déjà un compte?"
     },
 
     "header": {

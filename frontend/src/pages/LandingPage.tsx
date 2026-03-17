@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Rocket, Gem, Zap, Lock, Crown, BarChart3, Globe, Sprout, Award, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
 import LangSelector from "../components/LangSelector";
-import LoginModal from "../components/modal/LoginModal";
-import RegisterModal from "../components/modal/RegisterModal";
 import CryptoTicker from "../components/CryptoTicker";
 import LogoA from "../assets/LogoA.png";
 import LogoV from "../assets/LogoV.png";
 import ForexTicker from "../components/ForexTicker";
+import { ROUTES } from "../routes/routes";
 
 const ReturnsTable = () => {
     const { t } = useTranslation();
@@ -37,9 +36,9 @@ const ReturnsTable = () => {
                 </p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
+            <div className="bg-linear-to-br from-[#F0973C]/10 to-[#69AC95]/10 rounded-2xl border border-[#F0973C]/20 overflow-hidden">
                 {/* Header */}
-                <div className="grid grid-cols-4 gap-2 p-4 bg-gradient-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
+                <div className="grid grid-cols-4 gap-2 p-4 bg-linear-to-r from-[#F0973C]/20 to-[#69AC95]/20 border-b border-white/10">
                     <div className="text-center">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">{t("landing.roi_licenses")}</p>
                     </div>
@@ -55,7 +54,7 @@ const ReturnsTable = () => {
                 </div>
 
                 {/* Body */}
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-100 overflow-y-auto">
                     {tableData.map((row, idx) => (
                         <div
                             key={idx}
@@ -118,14 +117,13 @@ const FeatureRow = ({ icon: Icon, title, desc, accent }: { icon: React.ElementTy
 export default function LandingPage() {
     const { t } = useTranslation();
     const { ref } = useParams();
-    const [loginOpen, setLoginOpen] = useState(false);
-    const [regOpen, setRegOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (ref) {
-            setRegOpen(true);
+            navigate(ROUTES.REGISTER_REF.replace(':ref', ref));
         }
-    }, []);
+    }, [ref, navigate]);
 
     return (
         <div className="min-h-screen bg-[#000000] text-white overflow-x-hidden relative font-['DM_Sans']">
@@ -220,13 +218,13 @@ export default function LandingPage() {
                 <div className="flex items-center gap-3">
                     <div className="landing-lang-selector"><LangSelector /></div>
                     <button
-                        onClick={() => setLoginOpen(true)}
+                        onClick={() => navigate(ROUTES.LOGIN)}
                         className="text-sm font-semibold px-5 py-2 rounded-lg border border-[#F0973C44] text-[#F0973C] transition-all hover:bg-[#F0973C]/10"
                     >
                         {t("landing.login")}
                     </button>
                     <button
-                        onClick={() => setRegOpen(true)}
+                        onClick={() => navigate(ROUTES.REGISTER)}
                         className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                     >
                         {t("landing.register")}
@@ -261,14 +259,14 @@ export default function LandingPage() {
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-10 fade-up delay-300">
                             <button
-                                onClick={() => setRegOpen(true)}
+                                onClick={() => navigate(ROUTES.REGISTER)}
                                 className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2"><Rocket size={18} /> {t("landing.register")}</span>
                                 <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
                             </button>
                             <button
-                                onClick={() => setLoginOpen(true)}
+                                onClick={() => navigate(ROUTES.LOGIN)}
                                 className="px-8 py-4 rounded-xl font-semibold text-sm uppercase tracking-wide border border-white/10 text-white/70 hover:border-white/20 hover:text-white transition-all"
                             >
                                 {t("landing.login")} →
@@ -361,13 +359,13 @@ export default function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
-                            onClick={() => setRegOpen(true)}
+                            onClick={() => navigate(ROUTES.REGISTER)}
                             className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
                         >
                             {t("landing.register")} →
                         </button>
                         <button
-                            onClick={() => setLoginOpen(true)}
+                            onClick={() => navigate(ROUTES.LOGIN)}
                             className="px-10 py-4 rounded-xl font-semibold text-sm uppercase tracking-wide border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all"
                         >
                             {t("landing.login")}
@@ -399,9 +397,6 @@ export default function LandingPage() {
                     <a href="#" className="hover:text-white/60 transition-colors">{t("landing.contact")}</a>
                 </div>
             </footer>
-
-            <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-            <RegisterModal open={regOpen} onClose={() => setRegOpen(false)} refCode={ref} />
         </div>
     );
 }

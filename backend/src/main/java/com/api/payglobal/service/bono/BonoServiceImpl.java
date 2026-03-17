@@ -29,8 +29,8 @@ import com.api.payglobal.service.transaccion.TransaccionService;
 @Service
 public class BonoServiceImpl implements BonoService {
 
-    private final Double BONO_INSCRIPCION_NIVEL_1 = 0.07;
-    private final Double BONO_INSCRIPCION_NIVEL_2 = 0.03;
+    private final Double BONO_INSCRIPCION_NIVEL_1 = 0.1;
+    private final Double BONO_INSCRIPCION_NIVEL_2 = 0.05;
     private final Double BONO_RENOVACION = 0.05;
 
     private final Double[] BONO_UNINIVEL = { 0.10, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.03 };
