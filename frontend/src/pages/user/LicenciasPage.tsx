@@ -41,11 +41,11 @@ export const LicenciasPage = () => {
         <div className="min-h-screen bg-[#000000] text-white px-4 py-8">
             <div className="container mx-auto max-w-7xl">
                 {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-black mb-4 text-[#F0973C]">
+                <div className="mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">
                         {t("licenses.available_licenses")}
                     </h1>
-                    <p className="text-white/50 text-lg">
+                    <p className="text-white/40 text-lg">
                         {t("licenses.choose_the_license_that_best_suits_your_needs")}
                     </p>
                 </div>

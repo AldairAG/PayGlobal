@@ -40,7 +40,7 @@ const SideBar = () => {
 
     return (
         <aside
-            className="text-white shrink-0 p-5 pt-4 transition-all duration-300 w-20 sm:w-64 relative z-40 h-full overflow-y-auto"
+            className="hidden sm:flex flex-col text-white shrink-0 p-5 pt-4 transition-all duration-300 sm:w-64 relative z-40 h-full overflow-y-auto"
             style={{ backgroundColor: '#000000' }}
         >
             <ul className="space-y-4">
@@ -50,7 +50,7 @@ const SideBar = () => {
                         onClick={() => handleNavigate(item.route)}
                         className="group flex items-center gap-4 p-3 rounded-lg cursor-pointer transition"
                     >
-                        <span className={`shrink-0 transition-colors duration-150 ${location.pathname === item.route ? 'text-[#F0973C]' : ''}`}>{item.icon}</span>
+                        <span className={`shrink-0 p-2 rounded-full border-2 border-[#F0973C] transition-colors duration-150 ${location.pathname === item.route ? 'text-[#F0973C] bg-[#F0973C]/10' : 'group-hover:text-[#F0973C]'}`}>{item.icon}</span>
                         <span className={`hidden sm:inline transition-colors duration-150 ${location.pathname === item.route ? 'text-[#F0973C]' : 'group-hover:text-[#F0973C]'}`}>
                             {item.name}
                         </span>

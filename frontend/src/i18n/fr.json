@@ -100,7 +100,8 @@
         "user_network": "Organisation",
         "go_to_profile": "Aller à la configuration",
         "log_out": "Se déconnecter",
-        "news": "Nouveautés / Outils"
+        "news": "Nouveautés / Outils",
+        "menu": "Menu"
 
     },
 
@@ -138,6 +139,8 @@
         "purchase_for_others": "Acheter pour les autres",
         "important_information": "Informations importantes",
         "info_text": "Toutes les licences sont payables en USDT.",
+        "processing_purchase": "Traitement de la demande d'achat...",
+        "purchase_requested_successfully": "Demande d'achat envoyée avec succès !",
         "error_requesting_license_purchase": "Erreur lors de la demande d'achat de licence :",
         "address_copied": "Adresse copiée dans le presse-papiers",
         "license_cost": "Coût de la licence",
