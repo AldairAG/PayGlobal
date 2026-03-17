@@ -8,13 +8,14 @@ import { useEffect } from "react";
 
 
 export const UserLayout = () => {
-    const { recargarUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado, usuario } = useUsuario();
+    const { recargarUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado, usuario,obtenerFotoPerfil } = useUsuario();
 
 
 
     useEffect(() => {
         if (usuario) {
             recargarUsuarioPorId(usuario.id);
+            obtenerFotoPerfil(usuario.fotoPerfilName||"");
         }
     }, []);
 

@@ -1,19 +1,24 @@
 package com.api.payglobal.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.api.payglobal.dto.request.CambiarPasswordRequest;
 import com.api.payglobal.dto.request.EditarPerfilRequest;
+import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
@@ -38,6 +44,8 @@ import com.api.payglobal.entity.enums.TipoMetodoPago;
 import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.ApiResponseWrapper;
+import com.api.payglobal.helpers.FileHelper;
+import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.usuario.UsuarioService;
 
 @RestController
@@ -46,6 +54,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     /**
      * Registro de nuevo usuario
@@ -367,5 +378,48 @@ public class UsuarioController {
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }
     }
+
+    @PostMapping("/imagen/subir")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<String>> subirFotoPerfil(@ModelAttribute GuardarFile guardarFile,
+            @AuthenticationPrincipal Usuario usuario) {
+        try {
+            Resource resurce= usuarioService.subirFotoPerfil(guardarFile, usuario.getId());
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, resurce.getFilename(), "Foto de perfil subida correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint para descargar/visualizar la foto de perfil del usuario
+     * @param fileName Nombre del archivo
+     * @return Archivo como Resource
+     */
+    @GetMapping("/file/{fileName}")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('USUARIO')")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        try {
+            Resource resource = fileStorageService.loadFileAsResource("FOTO_PERFIL/"+fileName);
+            
+            // Detectar el tipo de contenido basándose en la extensión del archivo
+            String contentType = new FileHelper().determineContentType(fileName);
+            
+            // Para archivos visualizables (imágenes y PDFs), usar "inline" en lugar de "attachment"
+            String disposition = contentType.startsWith("image/") || contentType.equals("application/pdf")
+                    ? "inline; filename=\"" + resource.getFilename() + "\""
+                    : "attachment; filename=\"" + resource.getFilename() + "\"";
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=3600")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+    
 
 }

@@ -49,7 +49,7 @@ import { TipoWallets } from "../../type/enum";
 
 export const ProfilePage = () => {
     const { t } = useTranslation();
-    const { usuario, editarPerfil, loadingEditarPerfil, errorEditarPerfil } = useUsuario();
+    const {usuario, editarPerfil, loadingEditarPerfil, errorEditarPerfil} = useUsuario();
     
     const [formData, setFormData] = useState({
         nombre: "",
@@ -133,7 +133,7 @@ export const ProfilePage = () => {
                     {/* Tarjeta de Avatar */}
                     <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex flex-col items-center text-center">
-                            <ProfilePhoto fotoPerfil={usuario?.fotoPerfil} />
+                            <ProfilePhoto />
                             <h2 className="text-2xl font-bold text-white mt-4">
                                 {usuario?.nombre && usuario?.apellido
                                     ? `${usuario.nombre} ${usuario.apellido}`

@@ -65,6 +65,10 @@ interface UsuarioState {
     loadingSubirFotoPerfil: boolean;
     errorSubirFotoPerfil: string | null;
 
+    fotoPerfil: Blob | null;
+    loadingObtenerFotoPerfil: boolean;
+    errorObtenerFotoPerfil: string | null;
+
     loadingEliminarUsuario: boolean;
     errorEliminarUsuario: string | null;
 
@@ -116,6 +120,9 @@ const loadInitialState = (): UsuarioState => {
         errorEditarUsuario: null,
         loadingSubirFotoPerfil: false,
         errorSubirFotoPerfil: null,
+        fotoPerfil: null,
+        loadingObtenerFotoPerfil: false,
+        errorObtenerFotoPerfil: null,
         loadingEliminarUsuario: false,
         errorEliminarUsuario: null,
         loadingAprobarRetiroFondos: false,
@@ -348,18 +355,35 @@ export const obtenerUsuariosEnRedThunk = createAsyncThunk<
 });
 
 export const subirFotoPerfilThunk = createAsyncThunk<
-    ApiResponse<Usuario>,
-    File,
+    ApiResponse<string>,
+    { file: File; fileType: string },
     { rejectValue: string }
->("usuario/subirFotoPerfil", async (file, { rejectWithValue }) => {
+>("usuario/subirFotoPerfil", async ({ file, fileType }, { rejectWithValue }) => {
     try {
-        const response = await usuarioService.subirFotoPerfil(file);
+        const response = await usuarioService.subirFotoPerfil(file, fileType);
         if (!response.success) {
             return rejectWithValue(response.message || "Error al subir foto de perfil");
         }
         return response;
     } catch (error) {
         const message = error instanceof Error ? error.message : "Error al subir foto de perfil";
+        return rejectWithValue(message);
+    }
+});
+
+export const obtenerFotoPerfilThunk = createAsyncThunk<
+    Blob,
+    string,
+    { rejectValue: string }
+>("usuario/obtenerFotoPerfil", async (filename, { rejectWithValue }) => {
+    try {
+        const blob = await usuarioService.obtenerFotoPerfil(filename);
+        if (!blob || blob.size === 0) {
+            return rejectWithValue("Error al obtener foto de perfil");
+        }
+        return blob;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener foto de perfil";
         return rejectWithValue(message);
     }
 });
@@ -615,17 +639,27 @@ const usuarioSlice = createSlice({
                 state.loadingSubirFotoPerfil = true;
                 state.errorSubirFotoPerfil = null;
             })
-            .addCase(subirFotoPerfilThunk.fulfilled, (state, action) => {
+            .addCase(subirFotoPerfilThunk.fulfilled, (state) => {
                 state.loadingSubirFotoPerfil = false;
                 state.errorSubirFotoPerfil = null;
-                state.usuario = action.payload.data || state.usuario;
-                if (action.payload.data) {
-                    saveToSessionStorage('auth_user', action.payload.data);
-                }
+                // El backend devuelve el nombre del archivo, podríamos actualizar el usuario si fuera necesario
             })
             .addCase(subirFotoPerfilThunk.rejected, (state, action) => {
                 state.loadingSubirFotoPerfil = false;
                 state.errorSubirFotoPerfil = action.payload || "Error al subir foto de perfil";
+            })
+            .addCase(obtenerFotoPerfilThunk.pending, (state) => {
+                state.loadingObtenerFotoPerfil = true;
+                state.errorObtenerFotoPerfil = null;
+            })
+            .addCase(obtenerFotoPerfilThunk.fulfilled, (state, action) => {
+                state.loadingObtenerFotoPerfil = false;
+                state.errorObtenerFotoPerfil = null;
+                state.fotoPerfil = action.payload;
+            })
+            .addCase(obtenerFotoPerfilThunk.rejected, (state, action) => {
+                state.loadingObtenerFotoPerfil = false;
+                state.errorObtenerFotoPerfil = action.payload || "Error al obtener foto de perfil";
             })
             .addCase(eliminarUsuarioPorIdThunk.pending, (state) => {
                 state.loadingEliminarUsuario = true;

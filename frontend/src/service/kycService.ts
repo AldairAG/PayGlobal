@@ -74,11 +74,11 @@ const evaluarArchivoKyc = async (
  * Descargar/visualizar un archivo KYC
  * GET /api/kyc/file/{fileName}
  * @param fileName - Nombre del archivo
- * @returns URL del archivo o Blob
+ * @returns Objeto URL del archivo
  */
 const descargarArchivoKyc = async (fileName: string): Promise<Blob> => {
     try {
-        const response = await api.descargarArchivo(fileName);
+        const response = await api.descargarArchivo(`kyc/file/${fileName}`);
         return response;
     } catch (error) {
         console.error('Error al descargar archivo KYC:', error);

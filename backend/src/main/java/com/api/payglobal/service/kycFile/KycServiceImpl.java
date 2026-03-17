@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.payglobal.dto.request.EvaluarKycFileRequest;
-import com.api.payglobal.dto.request.GuardarKycFile;
+import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.entity.KycFile;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.enums.EstadoOperacion;
@@ -29,11 +29,11 @@ public class KycServiceImpl implements KycServicio {
 
     @Override
     @Transactional
-    public KycFile guardarKycFile(GuardarKycFile guardarKycFile, Long idUsuario) throws IOException {
+    public KycFile guardarKycFile(GuardarFile guardarKycFile, Long idUsuario) throws IOException {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        String fileName = fileStorageService.storeFile(guardarKycFile.getFile(), usuario.getUsername(), guardarKycFile.getFileType().name());
+        String fileName = fileStorageService.storeFile(guardarKycFile.getFile(), usuario.getUsername(), guardarKycFile.getFileType().name(), "KYC");
 
         KycFile kycFile = KycFile.builder()
                 .fileName(fileName)
@@ -53,7 +53,7 @@ public class KycServiceImpl implements KycServicio {
     public void eliminarKycFile(Long id)throws IOException {
         KycFile kycFile = kycFileRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("KYC File no encontrado"));
-        fileStorageService.loadFileAsResource(kycFile.getFileName()).getFile().delete();
+        fileStorageService.loadFileAsResource("kyc/" + kycFile.getFileName()).getFile().delete();
         kycFileRepository.delete(kycFile);
 
     }

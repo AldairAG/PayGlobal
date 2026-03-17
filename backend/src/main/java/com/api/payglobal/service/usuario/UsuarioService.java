@@ -3,12 +3,14 @@ package com.api.payglobal.service.usuario;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.api.payglobal.dto.request.CambiarPasswordRequest;
 import com.api.payglobal.dto.request.EditarPerfilRequest;
+import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
@@ -64,4 +66,6 @@ public interface UsuarioService extends UserDetailsService {
         void eliminarUsuarioPorId(Long idUsuario) throws Exception;
 
         void aprobarRetiroFondos(Long idSolicitud) throws Exception;
+
+        Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception;
 }

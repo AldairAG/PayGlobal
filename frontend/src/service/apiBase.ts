@@ -291,7 +291,7 @@ class ApiBase {
             }
 
             const response = await fetch(
-                `${API_BASE_URL}/kyc/file/${fileName}`,
+                `${API_BASE_URL}/${fileName}`,
                 {
                     headers: {
                         Authorization: token ? `Bearer ${token}` : '',

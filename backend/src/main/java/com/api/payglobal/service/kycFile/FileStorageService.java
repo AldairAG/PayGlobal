@@ -15,7 +15,7 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     public FileStorageService() {
-        this.fileStorageLocation = Paths.get("../../uploads/kyc")
+        this.fileStorageLocation = Paths.get("../../uploads")
                 .toAbsolutePath().normalize();
 
         try {
@@ -25,7 +25,7 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, String username, String fileType) throws IOException {
+    public String storeFile(MultipartFile file, String username, String fileType, String dir) throws IOException {
         // Extraer la extensión del archivo original
         String originalFileName = file.getOriginalFilename();
         String fileExtension = "";
@@ -35,14 +35,22 @@ public class FileStorageService {
         
         String fileName = String.format("%s_%s_%s%s", username, System.currentTimeMillis(),
                 fileType, fileExtension);
-        Path targetLocation = this.fileStorageLocation.resolve(fileName);
+        
+        // Crear subdirectorio basado en el tipo (kyc, user-images, etc)
+        Path dirPath = this.fileStorageLocation.resolve(dir).normalize();
+        Files.createDirectories(dirPath);
+        
+        Path targetLocation = dirPath.resolve(fileName);
         Files.copy(file.getInputStream(), targetLocation);
         return fileName;
     }
 
-    public Resource loadFileAsResource(String fileName) throws IOException {
-        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-        Resource resource = new UrlResource(filePath.toUri());
+    public Resource loadFileAsResource(String filePath) throws IOException {
+        Path path = this.fileStorageLocation.resolve(filePath).normalize();
+        Resource resource = new UrlResource(path.toUri());
+        if (!resource.exists()) {
+            throw new RuntimeException("Archivo no encontrado: " + filePath);
+        }
         return resource;
     }
 }

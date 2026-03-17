@@ -5,12 +5,11 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 import type { Usuario } from '../type/entityTypes';
-import { usuarioService } from '../service/usuarioService';
 
 interface JwtPayload {
     sub: string;
@@ -85,6 +84,10 @@ export const useUsuario = () => {
 
     const loadingSubirFotoPerfil = useSelector((state: RootState) => state.usuario.loadingSubirFotoPerfil);
     const errorSubirFotoPerfil = useSelector((state: RootState) => state.usuario.errorSubirFotoPerfil);
+
+    const fotoPerfil = useSelector((state: RootState) => state.usuario.fotoPerfil);
+    const loadingObtenerFotoPerfil = useSelector((state: RootState) => state.usuario.loadingObtenerFotoPerfil);
+    const errorObtenerFotoPerfil = useSelector((state: RootState) => state.usuario.errorObtenerFotoPerfil);
 
     const loadingEliminarUsuario = useSelector((state: RootState) => state.usuario.loadingEliminarUsuario);
     const errorEliminarUsuario = useSelector((state: RootState) => state.usuario.errorEliminarUsuario);
@@ -311,9 +314,9 @@ export const useUsuario = () => {
         }
     };
 
-    const subirFotoPerfil = async (file: File) => {
+    const subirFotoPerfil = async (file: File, fileType: string) => {
         try {
-            const result = await dispatch(subirFotoPerfilThunk(file));
+            const result = await dispatch(subirFotoPerfilThunk({ file, fileType }));
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al subir foto de perfil:', error);
@@ -321,8 +324,14 @@ export const useUsuario = () => {
         }
     };
 
-    const obtenerFotoPerfil = async (filename: string): Promise<Blob> => {
-        return usuarioService.obtenerFotoPerfil(filename);
+    const obtenerFotoPerfil = async (filename: string) => {
+        try {
+            const result = await dispatch(obtenerFotoPerfilThunk(filename));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener foto de perfil:', error);
+            throw error;
+        }
     };
 
     const handleSetUsuarioSeleccionado = (usuario: Usuario | null) => {
@@ -431,6 +440,9 @@ export const useUsuario = () => {
         loadingSubirFotoPerfil,
         errorSubirFotoPerfil,
         obtenerFotoPerfil,
+        fotoPerfil,
+        loadingObtenerFotoPerfil,
+        errorObtenerFotoPerfil,
 
         handleSetUsuarioSeleccionado,
         

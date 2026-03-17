@@ -151,33 +151,35 @@ const rechazarSolicitud = async (idSolicitud: number): Promise<ApiResponse<strin
 };
 
 // Subir foto de perfil
-// POST /api/usuarios/foto-perfil
-const subirFotoPerfil = async (file: File): Promise<ApiResponse<Usuario>> => {
+// POST /api/usuarios/imagen/subir
+const subirFotoPerfil = async (file: File, fileType: string): Promise<ApiResponse<string>> => {
     const formData = new FormData();
     formData.append('file', file);
-    return api.post<Usuario>(`${BASE_PATH}/foto-perfil`, formData, {
+    formData.append('fileType', fileType);
+    return api.post<string>(`${BASE_PATH}/imagen/subir`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
 };
 
 // Obtener foto de perfil como Blob
-// GET /api/usuarios/foto-perfil/{filename}
+// GET /api/usuarios/file/{filename}
 const obtenerFotoPerfil = async (filename: string): Promise<Blob> => {
     try {
-        return await api.descargarArchivo(filename);
+        const response = await api.descargarArchivo(`usuarios/file/${filename}`);
+        return response;
     } catch (error) {
-        console.error('Error al obtener foto de perfil:', error);
+        console.error('Error al descargar archivo KYC:', error);
         return new Blob();
     }
 };
 
 const eliminarUsuarioPorId = async (idUsuario: number): Promise<ApiResponse<void>> => {
     return api.delete<void>(`${BASE_PATH}/admin/usuario/${idUsuario}`);
-}
+};
 
 const aprobarRetiroFondos = async (idSolicitud: number): Promise<ApiResponse<string>> => {
     return api.put<string>(`${BASE_PATH}/admin/aprobar-retiro/${idSolicitud}`);
-}
+};
 
 // Objeto con todas las funciones
 export const usuarioService = {

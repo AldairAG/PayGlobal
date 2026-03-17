@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,9 +21,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.api.payglobal.dto.request.CambiarPasswordRequest;
 import com.api.payglobal.dto.request.EditarPerfilRequest;
+import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
@@ -47,6 +50,7 @@ import com.api.payglobal.helpers.UninivelHelper;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.service.bono.BonoService;
+import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.transaccion.TransaccionService;
 
 @Service
@@ -76,6 +80,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private TransaccionService transaccionService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
+
 
     Float cobroPorCompra = 15f;
 
@@ -646,5 +654,19 @@ public class UsuarioServiceImpl implements UsuarioService {
                 EstadoOperacion.APROBADA,
                 solicitud.getTipoCrypto(),
                 null);
+    }
+
+    @Override
+    @Transactional
+    public Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        String fileName = fileStorageService.storeFile(guardarFile.getFile(), usuario.getUsername(), guardarFile.getFileType().name(), "FOTO_PERFIL");
+
+        usuario.setFotoPerfilName(fileName);
+        usuarioRepository.save(usuario);
+
+        return fileStorageService.loadFileAsResource("FOTO_PERFIL/"+fileName);
     }
 }

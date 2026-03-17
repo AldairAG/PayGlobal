@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.payglobal.dto.request.EvaluarKycFileRequest;
-import com.api.payglobal.dto.request.GuardarKycFile;
+import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.entity.KycFile;
 import com.api.payglobal.helpers.ApiResponseWrapper;
+import com.api.payglobal.helpers.FileHelper;
 import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.kycFile.KycServicio;
 
@@ -46,7 +47,7 @@ public class KycController {
     @PostMapping("/upload/{idUsuario}")
     @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<KycFile>> uploadKycFile(
-            @ModelAttribute GuardarKycFile guardarKycFile,
+            @ModelAttribute GuardarFile guardarKycFile,
             @PathVariable Long idUsuario) {
         try {
             KycFile kycFile = kycServicio.guardarKycFile(guardarKycFile, idUsuario);
@@ -137,10 +138,10 @@ public class KycController {
     @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('USUARIO')")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         try {
-            Resource resource = fileStorageService.loadFileAsResource(fileName);
+            Resource resource = fileStorageService.loadFileAsResource("kyc/" + fileName);
             
             // Detectar el tipo de contenido basándose en la extensión del archivo
-            String contentType = determineContentType(fileName);
+            String contentType = new FileHelper().determineContentType(fileName);
             
             // Para archivos visualizables (imágenes y PDFs), usar "inline" en lugar de "attachment"
             String disposition = contentType.startsWith("image/") || contentType.equals("application/pdf")
@@ -157,28 +158,5 @@ public class KycController {
         }
     }
 
-    /**
-     * Determina el tipo MIME basándose en la extensión del archivo
-     * @param fileName Nombre del archivo
-     * @return Tipo MIME del archivo
-     */
-    private String determineContentType(String fileName) {
-        String lowerCaseFileName = fileName.toLowerCase();
-        
-        if (lowerCaseFileName.endsWith(".pdf")) {
-            return "application/pdf";
-        } else if (lowerCaseFileName.endsWith(".jpg") || lowerCaseFileName.endsWith(".jpeg")) {
-            return "image/jpeg";
-        } else if (lowerCaseFileName.endsWith(".png")) {
-            return "image/png";
-        } else if (lowerCaseFileName.endsWith(".gif")) {
-            return "image/gif";
-        } else if (lowerCaseFileName.endsWith(".bmp")) {
-            return "image/bmp";
-        } else if (lowerCaseFileName.endsWith(".webp")) {
-            return "image/webp";
-        } else {
-            return "application/octet-stream";
-        }
-    }
+
 }

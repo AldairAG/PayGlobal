@@ -3,29 +3,38 @@ import { Camera, User } from "lucide-react";
 import { useUsuario } from "../hooks/usuarioHook";
 
 interface ProfilePhotoProps {
-    /** Nombre de archivo guardado en el servidor (campo fotoPerfil del usuario) */
-    fotoPerfil?: string;
     /** Tamaño del contenedor (clases Tailwind, default: "w-32 h-32") */
     size?: string;
     /** Modo solo lectura: no muestra botón de carga */
     readOnly?: boolean;
 }
 
-export const ProfilePhoto = ({ fotoPerfil, size = "w-32 h-32", readOnly = false }: ProfilePhotoProps) => {
-    const { subirFotoPerfil, obtenerFotoPerfil, loadingSubirFotoPerfil } = useUsuario();
+export const ProfilePhoto = ({ size = "w-32 h-32", readOnly = false }: ProfilePhotoProps) => {
     const [blobUrl, setBlobUrl] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Cargar imagen cuando exista fotoPerfil
+    const {
+        usuario,
+        recargarUsuarioPorId,
+        subirFotoPerfil, loadingSubirFotoPerfil, errorSubirFotoPerfil,
+        obtenerFotoPerfil, loadingObtenerFotoPerfil
+    } = useUsuario();
+
+    // Cargar imagen cuando el usuario tenga fotoPerfilName
     useEffect(() => {
-        if (!fotoPerfil) return;
+        const fotoPerfilName = usuario?.fotoPerfilName;
+        if (!fotoPerfilName) {
+            setBlobUrl(null);
+            return;
+        }
+
         let objectUrl: string | null = null;
 
         const cargar = async () => {
             try {
-                const blob = await obtenerFotoPerfil(fotoPerfil);
-                if (blob.size > 0) {
+                const blob = await obtenerFotoPerfil(fotoPerfilName);
+                if (blob && blob.size > 0) {
                     objectUrl = URL.createObjectURL(blob);
                     setBlobUrl(objectUrl);
                 }
@@ -40,7 +49,7 @@ export const ProfilePhoto = ({ fotoPerfil, size = "w-32 h-32", readOnly = false 
         };
         // obtenerFotoPerfil es estable (no depende de estado que cambie)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fotoPerfil]);
+    }, [usuario?.fotoPerfilName]);
 
     const handleClick = () => {
         if (!readOnly) inputRef.current?.click();
@@ -70,7 +79,12 @@ export const ProfilePhoto = ({ fotoPerfil, size = "w-32 h-32", readOnly = false 
         });
 
         try {
-            await subirFotoPerfil(file);
+            // Usar DOCUMENTO_IDENTIDAD como tipo (el backend guarda la categoría como FOTO_PERFIL internamente)
+            await subirFotoPerfil(file, "DOCUMENTO_IDENTIDAD");
+            // Recargar usuario para obtener el nuevo fotoPerfilName
+            if (usuario?.id) {
+                await recargarUsuarioPorId(usuario.id);
+            }
         } catch {
             setError("Error al subir la foto. Inténtalo de nuevo.");
         }
@@ -86,7 +100,9 @@ export const ProfilePhoto = ({ fotoPerfil, size = "w-32 h-32", readOnly = false 
                 onClick={handleClick}
                 title={!readOnly ? "Cambiar foto de perfil" : undefined}
             >
-                {blobUrl ? (
+                {loadingObtenerFotoPerfil ? (
+                    <div className="w-8 h-8 border-3 border-[#69AC95] border-t-transparent rounded-full animate-spin" />
+                ) : blobUrl ? (
                     <img src={blobUrl} alt="Foto de perfil" className="w-full h-full object-cover" />
                 ) : (
                     <User size={64} className="text-[#69AC95]" />
@@ -114,8 +130,10 @@ export const ProfilePhoto = ({ fotoPerfil, size = "w-32 h-32", readOnly = false 
                 />
             </div>
 
-            {error && (
-                <p className="text-red-400 text-xs text-center max-w-40">{error}</p>
+            {(error || errorSubirFotoPerfil) && (
+                <p className="text-red-400 text-xs text-center max-w-40">
+                    {error || errorSubirFotoPerfil}
+                </p>
             )}
         </div>
     );

@@ -65,6 +65,8 @@ public class Usuario implements UserDetails{
     private String telefono;
     private String pais;
 
+    private String fotoPerfilName;
+
     private String referenciado;
 
     @OneToMany(mappedBy = "usuario")

@@ -7,7 +7,7 @@ import com.api.payglobal.entity.enums.TipoKycFile;
 import lombok.Data;
 
 @Data
-public class GuardarKycFile {
+public class GuardarFile {
     private TipoKycFile fileType;
     private MultipartFile file;
 }
