@@ -100,7 +100,8 @@
         "user_network": "Organização",
         "go_to_profile": "Ir para a Configuração",
         "log_out": "Sair",
-        "news": "Novidades / Ferramentas"
+        "news": "Novidades / Ferramentas",
+        "menu": "Menu"
 
     },
 
@@ -138,6 +139,8 @@
         "purchase_for_others": "Comprar para outros",
         "important_information": "Informações importantes",
         "info_text": "Todas as licenças são pagas em USDT.",
+        "processing_purchase": "Processando solicitação de compra...",
+        "purchase_requested_successfully": "Solicitação de compra enviada com sucesso!",
         "error_requesting_license_purchase": "Erro ao solicitar a compra da licença:",
         "address_copied": "Endereço copiado para a área de transferência",
         "license_cost": "Custo da licença",

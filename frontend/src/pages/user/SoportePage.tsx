@@ -133,10 +133,10 @@ export const SoportePage = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2 text-[#F0973C]">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">
                         {t("support.support_center")}
                     </h1>
-                    <p className="text-white/40">
+                    <p className="text-white/40 text-lg">
                         {t("support.manage_your_tickets_and_get_help_from_our_team")}
                     </p>
                 </div>

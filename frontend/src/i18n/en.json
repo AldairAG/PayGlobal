@@ -99,7 +99,8 @@
         "user_network": "Organization",
         "go_to_profile": "Go to Configuration",
         "log_out": "Log Out",
-        "news": "News / Tools"
+        "news": "News / Tools",
+        "menu": "Menu"
     },
 
     "home": {
@@ -135,6 +136,8 @@
         "purchase_for_others": "Purchase for others",
         "important_information": "Important Information",
         "info_text": "All licenses are payable in USDT.",
+        "processing_purchase": "Processing purchase request...",
+        "purchase_requested_successfully": "Purchase request sent successfully!",
         "error_requesting_license_purchase": "Error requesting license purchase:",
         "address_copied": "Address copied to clipboard",
         "license_cost": "License cost",

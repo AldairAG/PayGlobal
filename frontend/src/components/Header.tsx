@@ -40,7 +40,7 @@ export default function Header() {
                             {usuario?.nombre || t("header.user")}
                         </span>
                         <span className="text-[#F0973C] text-xs leading-tight hidden sm:block opacity-80">
-                            @{usuario?.username || "usuario"}
+                            {usuario?.username || "usuario"}
                         </span>
                     </div>
                     <div

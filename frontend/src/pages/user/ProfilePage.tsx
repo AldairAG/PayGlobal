@@ -122,8 +122,8 @@ export const ProfilePage = () => {
             {/* Encabezado */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-[#F0973C]">{t("profile.my_profile")}</h1>
-                    <p className="text-white/40 mt-1 text-sm">{t("profile.manage_your_personal_information")}</p>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">{t("profile.my_profile")}</h1>
+                    <p className="text-white/40 text-lg">{t("profile.manage_your_personal_information")}</p>
                 </div>
             </div>
 
@@ -139,7 +139,7 @@ export const ProfilePage = () => {
                                     ? `${usuario.nombre} ${usuario.apellido}`
                                     : usuario?.username || "Usuario"}
                             </h2>
-                            <p className="text-white/40 text-sm mt-1">@{usuario?.username || "usuario"}</p>
+                            <p className="text-white/40 text-sm mt-1">{usuario?.username || "usuario"}</p>
 
                             {/* Estado de verificación */}
                             <div className={`flex items-center gap-2 mt-4 px-4 py-2 rounded-full border ${
@@ -412,26 +412,26 @@ export const ProfilePage = () => {
                                     <div
                                         key={wallet.id}
                                         className={`p-4 rounded-xl border ${
-                                            wallet.tipo === TipoWallets.WALLET_DIVIDENDOS
+                                            wallet.tipo === TipoWallets.WALLET_STAKING
                                                 ? 'border-[#69AC95]/20 bg-[#69AC95]/5'
                                                 : 'border-[#F0973C]/20 bg-[#F0973C]/5'
                                         }`}
                                     >
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                                wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? 'bg-[#69AC95]/20' : 'bg-[#F0973C]/20'
+                                                wallet.tipo === TipoWallets.WALLET_STAKING ? 'bg-[#69AC95]/20' : 'bg-[#F0973C]/20'
                                             }`}>
-                                                {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? (
+                                                {wallet.tipo === TipoWallets.WALLET_STAKING ? (
                                                     <WalletIcon size={16} className="text-[#69AC95]" />
                                                 ) : (
                                                     <Coins size={16} className="text-[#F0973C]" />
                                                 )}
                                             </div>
                                             <h4 className="font-bold text-white/80 text-sm">
-                                                {wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
+                                                {wallet.tipo === TipoWallets.WALLET_STAKING ? t("profile.dividends_wallet") : t("profile.commissions_wallet")}
                                             </h4>
                                         </div>
-                                        <p className={`text-2xl font-bold ${wallet.tipo === TipoWallets.WALLET_DIVIDENDOS ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
+                                        <p className={`text-2xl font-bold ${wallet.tipo === TipoWallets.WALLET_STAKING ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
                                             $ {wallet.saldo?.toFixed(2) || "0.00"}
                                         </p>
                                     </div>

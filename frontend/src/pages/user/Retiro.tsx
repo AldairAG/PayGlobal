@@ -118,7 +118,7 @@ export const RetiroPage = () => {
             if (!walletAddress) return;
 
             const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
-            const walletTipo=wallet?.tipo == TipoWallets.WALLET_DIVIDENDOS ? TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS : TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+            const walletTipo=wallet?.tipo == TipoWallets.WALLET_STAKING ? TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS : TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
 
             solicitarRetiro(values.addresId, values.monto, walletTipo).then(() => {
             resetForm();
@@ -178,10 +178,10 @@ export const RetiroPage = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-2 text-[#F0973C]">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">
                         {t("withdrawal.withdrawal_management")}
                     </h1>
-                    <p className="text-white/40">
+                    <p className="text-white/40 text-lg">
                         {t("withdrawal.manage_your_wallets_and_withdrawal_requests")}
                     </p>
                 </div>

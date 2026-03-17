@@ -114,8 +114,8 @@ const NovedadesPage = () => {
     return (
         <div className="min-h-screen bg-[#000000] text-white p-6 space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-[#F0973C]">Novedades</h1>
-                <p className="text-white/40 mt-1 text-sm">Documentos y recursos institucionales</p>
+                <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">Novedades</h1>
+                <p className="text-white/40 text-lg">Documentos y recursos institucionales</p>
             </div>
 
             {sections.map(section => (

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { TipoCrypto, TipoSolicitud } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { getLicenseImage } from "../../helpers/imgHelpers";
@@ -30,8 +31,24 @@ export default function PurchaseLicenseModal({
     const { solicitarCompraLicencia } = useUsuario(); 
 
     const handleConfirmPurchase = async () => {
+        const promise = solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
+        toast.promise(
+            promise,
+            {
+                pending: t("licenses.processing_purchase"),
+                success: {
+                    render: t("licenses.purchase_requested_successfully"),
+                    autoClose: 5000,
+                },
+                error: {
+                    render: t("licenses.error_requesting_license_purchase"),
+                    autoClose: 5000,
+                },
+            },
+            { autoClose: false }
+        );
         try {
-            await solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
+            await promise;
             onClose();
         } catch (error) {
             console.error(t("licenses.error_requesting_license_purchase"), error);

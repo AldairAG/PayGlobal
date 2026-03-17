@@ -100,7 +100,8 @@
         "user_network": "منظمةك",
         "go_to_profile": "اذهب إلى الإعدادات",
         "log_out": "تسجيل الخروج",
-        "news": "الأخبار / الأدوات"
+        "news": "الأخبار / الأدوات",
+        "menu": "القائمة"
     },
     
     "home": {
@@ -136,6 +137,8 @@
         "purchase_for_others": "شراء للآخرين",
         "important_information": "معلومات مهمة",
         "info_text": "تُدفع جميع التراخيص بعملة USDT.",
+        "processing_purchase": "جارٍ معالجة طلب الشراء...",
+        "purchase_requested_successfully": "تم إرسال طلب الشراء بنجاح!",
         "error_requesting_license_purchase": "خطأ في طلب شراء الترخيص:",
         "address_copied": "تم نسخ العنوان إلى الحافظة",
         "license_cost": "تكلفة الترخيص",
