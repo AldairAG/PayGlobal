@@ -21,7 +21,7 @@ export const TransferenciaInternaPage = () => {
     } = useTransacciones();
 
     // Estados del formulario
-    const [tipoWallet, setTipoWallet] = useState<TipoWallets>(TipoWallets.WALLET_DIVIDENDOS);
+    const [tipoWallet, setTipoWallet] = useState<TipoWallets>(TipoWallets.WALLET_NETWORK);
     const [usernameDestino, setUsernameDestino] = useState('');
     const [cantidad, setCantidad] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -369,7 +369,7 @@ export const TransferenciaInternaPage = () => {
                             <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
                                 <p className="text-sm text-white/40 mb-1">{t("transfers.from_wallet")}</p>
                                 <p className="text-lg font-semibold text-white">
-                                    {tipoWallet === TipoWallets.WALLET_DIVIDENDOS ? t("transfers.dividends") : t("transfers.commissions")}
+                                    {tipoWallet === TipoWallets.WALLET_STAKING ? t("transfers.dividends") : t("transfers.commissions")}
                                 </p>
                             </div>
                         </div>
