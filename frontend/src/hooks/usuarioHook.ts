@@ -95,6 +95,10 @@ export const useUsuario = () => {
     const loadingAprobarRetiroFondos = useSelector((state: RootState) => state.usuario.loadingAprobarRetiroFondos);
     const errorAprobarRetiroFondos = useSelector((state: RootState) => state.usuario.errorAprobarRetiroFondos);
 
+    // Estados de solicitar compra de licencia
+    const loadingSolicitarCompraLicencia = useSelector((state: RootState) => state.usuario.loadingSolicitarCompraLicencia);
+    const errorSolicitarCompraLicencia = useSelector((state: RootState) => state.usuario.errorSolicitarCompraLicencia);
+
 
     /**
      * Función para registrar un nuevo usuario
@@ -393,6 +397,9 @@ export const useUsuario = () => {
         errorEditarPerfil,
         //Metodos de usuario
         solicitarCompraLicencia,
+        loadingSolicitarCompraLicencia,
+        errorSolicitarCompraLicencia,
+
 
         //Estados de solicitudes pendientes
         solicitudes,
@@ -453,5 +460,6 @@ export const useUsuario = () => {
         aprobarRetiroFondos,
         loadingAprobarRetiroFondos,
         errorAprobarRetiroFondos,
+        
     };
 };

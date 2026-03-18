@@ -190,7 +190,7 @@ export const RetiroPage = () => {
                     {/* Sección: Mis Wallets */}
                     <div className="rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold flex items-center gap-2 text-white">
+                            <h2 className="text-xl font-bold flex items-center gap-2 text-[#F0973C]">
                                 <Wallet size={24} className="text-[#F0973C]" />
                                 {t("withdrawal.my_wallets")}
                             </h2>
@@ -428,7 +428,7 @@ export const RetiroPage = () => {
 
                     {/* Sección: Solicitar Retiro */}
                     <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-white">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-[#F0973C]">
                             <ArrowDownToLine size={24} className="text-[#69AC95]" />
                             {t("withdrawal.request_withdrawal")}
                         </h2>

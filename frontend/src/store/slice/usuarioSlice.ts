@@ -165,7 +165,7 @@ export const editarUsuarioAdminThunk = createAsyncThunk<
         return rejectWithValue(message);
     }
 });
-
+/*Ocupar esto*/
 export const solicitarCompraLicenciaThunk = createAsyncThunk<
     ApiResponse<string>,
     { tipoCrypto: TipoCrypto; tipoLicencia: string; tipoSolicitud: TipoSolicitud; pagoMembresia: boolean },
