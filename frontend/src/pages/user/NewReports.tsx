@@ -1,11 +1,19 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Download, FileText, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
+//Arbitraje reports
 import arbitrajeDiciembre from '../../assets/documents/crypto_arbitraje/december_2025_crypto_arbitrage_report.pdf';
 import arbitrajeNoviembre from '../../assets/documents/crypto_arbitraje/november_2025_crypto_arbitrage_report.pdf';
 import arbitrajeOctubre from '../../assets/documents/crypto_arbitraje/october_2025_crypto_arbitrage_report.pdf';
 import arbitrajeEnero from '../../assets/documents/crypto_arbitraje/january_2026_crypto_arbitrage_institutional_report.pdf';
 import arbitrajeFebrero from '../../assets/documents/crypto_arbitraje/february_2026_crypto_arbitrage_reports_pro.pdf';
+
+//forex reports
+import forexDiciembre from '../../assets/documents/forex/Premium_December_2025_Forex.pdf';
+import forexNoviembre from '../../assets/documents/forex/Premium_November_2025_Forex.pdf';
+import forexOctubre from '../../assets/documents/forex/Premium_October_2025_Forex.pdf';
+import forexEnero from '../../assets/documents/forex/Premium_January_2026_Forex.pdf';
+import forexFebrero from '../../assets/documents/forex/Premium_February_2026_Forex.pdf';
 
 interface Document {
     title: string;
@@ -165,7 +173,38 @@ const NewsReports = () => {
             id: 'forex_pool',
             title: t('reports.forex_pool'),
             description: t('reports.forex_pool_desc'),
-            documents: [],
+            documents: [
+                {
+                    title: t('reports.october_2025_report'),
+                    month: t('reports.october_2025'),
+                    description: t('reports.october_description'),
+                    pdfUrl: forexOctubre
+                },
+                {
+                    title: t('reports.november_2025_report'),
+                    month: t('reports.november_2025'),
+                    description: t('reports.november_description'),
+                    pdfUrl: forexNoviembre
+                },
+                {
+                    title: t('reports.december_2025_report'),
+                    month: t('reports.december_2025'),
+                    description: t('reports.december_description'),
+                    pdfUrl: forexDiciembre
+                },
+                {
+                    title: t('reports.january_2026_report'),
+                    month: t('reports.january_2026'),
+                    description: t('reports.january_description'),
+                    pdfUrl: forexEnero
+                },
+                {
+                    title: t('reports.february_2026_report'),
+                    month: t('reports.february_2026'),
+                    description: t('reports.february_description'),
+                    pdfUrl: forexFebrero
+                }
+            ],
             accentColor: '#69AC95'
         },
         {

