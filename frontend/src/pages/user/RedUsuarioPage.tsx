@@ -48,10 +48,15 @@ const NodoUsuario = ({
                     onClick={() => setExpandido(!expandido)}
                 >
                     {/* Badge de nivel */}
-                    <div className="absolute -top-3 -right-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"
-                        style={{ backgroundColor: '#F0973C' }}>
-                        {t("network.level")} {nodo.usuarioRaiz.nivel}
-                    </div>
+                    {
+                        nodo.usuarioRaiz.nivel > 0 && (
+                            <div className="absolute -top-3 -right-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"
+                                style={{ backgroundColor: '#F0973C' }}>
+                                {t("network.level")} {nodo.usuarioRaiz.nivel}
+                            </div>
+                        )
+                    }
+
 
                     {/* Avatar */}
                     <div className="flex items-center justify-center mb-3">
@@ -224,7 +229,7 @@ const RedUsuarioPage = () => {
         );
     }
 
-    const maxNivel = usuario ? TipoRango[usuario.rango as keyof typeof TipoRango].numero  : 0;
+    const maxNivel = usuario ? TipoRango[usuario.rango as keyof typeof TipoRango].numero : 0;
 
 
     return (

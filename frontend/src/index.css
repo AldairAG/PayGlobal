@@ -3,6 +3,7 @@
 * {
     font-family: 'Inter', sans-serif;
 }
+
 /* Reduce scrollbar width to 1px */
 ::-webkit-scrollbar {
     width: 1px;
@@ -22,10 +23,31 @@
 }
 
 @keyframes slide-up {
-    from { transform: translateY(100%); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .animate-slide-up {
     animation: slide-up 0.25s ease-out both;
+}
+
+select {
+    accent-color: #ff8c00;
+}
+
+select option:checked {
+    background-color: #ff8c00;
+    color: white;
+}
+
+select option:hover {
+    background-color: #e67e00;
+    color: white;
 }
