@@ -26,6 +26,7 @@ import RedUsuarioPage from './pages/user/RedUsuarioPage'
 import GestionSoportePage from './pages/admin/GestionSoportePage'
 import RecuperarPassword from './pages/user/RecuperarPassword'
 import NovedadesPage from './pages/user/NovedadesPage'
+import NewsReports from './pages/user/NewReports'
 
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
               <Route path={ROUTES.USER.TRANSFERENCIA_INTERNA} element={<TransferenciaInternaPage />} />
               <Route path={ROUTES.USER.RED_USUARIOS} element={<RedUsuarioPage />} />
               <Route path={ROUTES.USER.TOOLS} element={<NovedadesPage />} />
+              <Route path={ROUTES.USER.NEWS_REPORTS} element={<NewsReports />} />
 
             </Route>
 

@@ -442,28 +442,6 @@ export const ProfilePage = () => {
                         </div>
                     </div>
 
-                    {/* Resumen de Bonos */}
-                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.my_bonuses")}</h3>
-
-                        <div className="space-y-3">
-                            {usuario?.bonos && usuario.bonos.length > 0 ? (
-                                usuario.bonos.map((bono) => (
-                                    <div key={bono.id} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-xl">
-                                        <span className="text-sm font-semibold text-white/70">
-                                            {bono.nombre}
-                                        </span>
-                                        <span className="text-lg font-bold text-[#69AC95]">
-                                            ${bono.acumulado?.toFixed(2) || "0.00"}
-                                        </span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-center text-white/30 py-4">{t("profile.no_bonuses_available")}</p>
-                            )}
-                        </div>
-                    </div>
-
                     {/* Documentos KYC */}
                     {usuario?.id && <KycDocuments usuarioId={usuario.id} />}
                 </div>
