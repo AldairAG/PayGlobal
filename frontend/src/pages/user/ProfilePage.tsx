@@ -134,7 +134,7 @@ export const ProfilePage = () => {
                     <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex flex-col items-center text-center">
                             <ProfilePhoto />
-                            <h2 className="text-2xl font-bold text-white mt-4">
+                            <h2 className="text-2xl font-bold text-[#F0973C] mt-4">
                                 {usuario?.nombre && usuario?.apellido
                                     ? `${usuario.nombre} ${usuario.apellido}`
                                     : usuario?.username || "Usuario"}
@@ -161,7 +161,7 @@ export const ProfilePage = () => {
                     <div className="rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <Award size={24} className="text-[#F0973C]" />
-                            <h3 className="text-lg font-bold text-white/80">{t("profile.current_rank")}</h3>
+                            <h3 className="text-lg font-bold text-[#F0973C]">{t("profile.current_rank")}</h3>
                         </div>
                         <p className="text-2xl font-bold text-[#69AC95]">
                             {!usuario?.rango || usuario.rango === 'SIN_RANGO' ? t("profile.no_rank") : usuario.rango}
@@ -172,7 +172,7 @@ export const ProfilePage = () => {
                     <div className="rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <CreditCard size={24} className="text-[#69AC95]" />
-                            <h3 className="text-lg font-bold text-white/80">{t("profile.license")}</h3>
+                            <h3 className="text-lg font-bold text-[#F0973C]">{t("profile.license")}</h3>
                         </div>
                         <p className="text-2xl font-bold text-[#F0973C]">
                             {usuario?.licencia?.nombre || t("profile.no_license")}
@@ -203,7 +203,7 @@ export const ProfilePage = () => {
                                 <UserPlus size={22} className="text-black" />
                             </div>
                             <div>
-                                <p className="text-white font-bold text-sm">{t('home.invite_members')}</p>
+                                <p className="text-[#F0973C] font-bold text-sm">{t('home.invite_members')}</p>
                                 <p className="text-white/40 text-xs mt-0.5">{t('home.invite_share_text')}</p>
                             </div>
                         </div>
@@ -229,7 +229,7 @@ export const ProfilePage = () => {
                 <div className="lg:col-span-2 space-y-6">
                     {/* Información Personal (Editable) */}
                     <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.personal_information")}</h3>
+                        <h3 className="text-xl font-bold text-[#F0973C] mb-6">{t("profile.personal_information")}</h3>
 
                         {successMessage && (
                             <div className="mb-4 p-4 bg-[#69AC95]/10 border border-[#69AC95]/30 rounded-xl flex items-center gap-3">
@@ -346,7 +346,7 @@ export const ProfilePage = () => {
 
                     {/* Información de Cuenta (No editable) */}
                     <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.account_information")}</h3>
+                        <h3 className="text-xl font-bold text-[#F0973C] mb-6">{t("profile.account_information")}</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
@@ -404,7 +404,7 @@ export const ProfilePage = () => {
 
                     {/* Resumen de Wallets */}
                     <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-                        <h3 className="text-xl font-bold text-white mb-6">{t("profile.my_wallets")}</h3>
+                        <h3 className="text-xl font-bold text-[#F0973C] mb-6">{t("profile.my_wallets")}</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {usuario?.wallets && usuario.wallets.length > 0 ? (

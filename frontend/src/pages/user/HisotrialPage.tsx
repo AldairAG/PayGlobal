@@ -164,7 +164,7 @@ export const HistorialPage = () => {
                     <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_earnings")}</p>
+                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_earnings")}</p>
                                 <p className="text-3xl font-bold text-white">${totalGanancias.toFixed(2)}</p>
                                 <p className="text-[#69AC95] text-xs mt-1 flex items-center">
                                     <TrendingUp className="w-3 h-3 mr-1" />
@@ -180,7 +180,7 @@ export const HistorialPage = () => {
                     <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_bonuses")}</p>
+                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_bonuses")}</p>
                                 <p className="text-3xl font-bold text-white">${totalBonos.toFixed(2)}</p>
                                 <p className="text-[#F0973C] text-xs mt-1">{bonosUsuario.length} {t("reports.bonus_types")}</p>
                             </div>
@@ -193,7 +193,7 @@ export const HistorialPage = () => {
                     <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_withdrawals")}</p>
+                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_withdrawals")}</p>
                                 <p className="text-3xl font-bold text-white">${totalRetiros.toFixed(2)}</p>
                                 <p className="text-white/50 text-xs mt-1">{t("reports.processed")}</p>
                             </div>
@@ -208,7 +208,7 @@ export const HistorialPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {/* Gráfica de Ganancias por Mes */}
                     <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <h3 className="text-xl font-bold text-[#F0973C] mb-4 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-[#69AC95]" />
                             {t("reports.monthly_earnings")}
                         </h3>
@@ -226,7 +226,7 @@ export const HistorialPage = () => {
 
                     {/* Gráfica de Distribución de Bonos */}
                     <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
-                        <h3 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <h3 className="text-xl font-bold text-[#F0973C] mb-4 flex items-center">
                             <Award className="w-5 h-5 mr-2 text-[#F0973C]" />
                             {t("reports.bonus_distribution")}
                         </h3>
@@ -289,7 +289,7 @@ export const HistorialPage = () => {
                             <div>
                                 {/* Filtros */}
                                 <div className="mb-6 p-4 rounded-xl border border-white/5 bg-white/[0.03]">
-                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-white">
+                                    <h3 className="text-lg font-semibold mb-4 flex items-center text-[#F0973C]">
                                         <Filter className="w-5 h-5 mr-2 text-[#F0973C]" />
                                         {t("reports.filters")}
                                     </h3>
@@ -403,7 +403,7 @@ export const HistorialPage = () => {
                                                 {transacciones.map((transaccion) => (
                                                     <tr key={transaccion.id} className="hover:bg-white/5 transition-colors">
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                                            #{transaccion.id}
+                                                            #{Number(transaccion.id) + 5500}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-white/50">
                                                             {new Date(transaccion.fecha).toLocaleDateString('es-ES')}

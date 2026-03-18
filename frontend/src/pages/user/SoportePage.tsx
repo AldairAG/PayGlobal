@@ -146,7 +146,7 @@ export const SoportePage = () => {
                     <div className="lg:col-span-1">
                         <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                <h2 className="text-xl font-bold text-[#F0973C] flex items-center gap-2">
                                     <Ticket size={24} className="text-[#F0973C]" />
                                     {t("support.my_tickets")}
                                 </h2>
