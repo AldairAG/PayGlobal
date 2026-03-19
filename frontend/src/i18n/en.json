@@ -34,7 +34,7 @@
         "because": "Why",
         "PAYGLOBAL": "PAYGLOBAL",
         "?":"?",
-        "an_ecosystem_designed": "An ecosystem designed to multiply your investment at every level",
+        "an_ecosystem_designed": "An ecosystem designed to double your Staking Licenses",
         "exclusive_levels": "Exclusive Levels",
         "the_higher_you_climb": "The higher you climb, the greater your guaranteed daily return.",
         "daily_earnings": "Daily Earnings",
@@ -110,7 +110,8 @@
         "go_to_profile": "Go to Configuration",
         "log_out": "Log Out",
         "news": "News / Reports",
-        "menu": "Menu"
+        "menu": "Menu",
+        "tools": "Tools"
     },
 
     "home": {

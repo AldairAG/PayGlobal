@@ -56,12 +56,12 @@ const Menu = ({ onClose }: MenuProps) => {
         >
             {/* Panel */}
             <div
-                className="w-full max-w-sm rounded-t-2xl text-white p-6 pb-8 animate-slide-up"
-                style={{ backgroundColor: '#111111' }}
+                className="w-full max-w-sm rounded-t-2xl text-white p-6 pb-8 animate-slide-up flex flex-col"
+                style={{ backgroundColor: '#111111', maxHeight: '85dvh' }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header del modal */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-6 shrink-0">
                     <span className="text-[#F0973C] font-semibold text-lg">{t("sidebar.menu")}</span>
                     <button
                         onClick={onClose}
@@ -71,7 +71,7 @@ const Menu = ({ onClose }: MenuProps) => {
                     </button>
                 </div>
 
-                <ul className="space-y-2">
+                <ul className="space-y-2 overflow-y-auto">
                     {menuItems.map((item, index) => (
                         <li
                             key={index}

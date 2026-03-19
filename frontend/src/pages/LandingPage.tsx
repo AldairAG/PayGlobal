@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
-import { Rocket, Gem, Zap, Lock, Crown, BarChart3, Globe, Sprout, Award, Sparkles, ShieldCheck, CheckCircle } from "lucide-react";
+import { Gem, Zap, Lock, Crown, BarChart3, Globe, ShieldCheck, CheckCircle, MapPin } from "lucide-react";
 import LangSelector from "../components/LangSelector";
 import CryptoTicker from "../components/CryptoTicker";
 import LogoA from "../assets/LogoA.png";
@@ -12,17 +12,18 @@ import { ROUTES } from "../routes/routes";
 const ReturnsTable = () => {
     const { t } = useTranslation();
     const tableData = [
-        { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 50.00 },
-        { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 100.00 },
-        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 250.00 },
-        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 500.00 },
-        { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 1000.00 },
-        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 2500.00 },
-        { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 5000.00 },
-        { licenses: 7500, daily: 37.50, weekly: 187.50, monthly: 7500.00 },
-        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 10000.00 },
-        { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 25000.00 },
-        { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 50000.00 },
+        { licenses: 50, daily: 0.25, weekly: 1.25, monthly: 5.00 },
+        { licenses: 100, daily: 0.50, weekly: 2.50, monthly: 10.00 },
+        { licenses: 250, daily: 1.25, weekly: 6.25, monthly: 25.00 },
+        { licenses: 500, daily: 2.50, weekly: 12.50, monthly: 50.00 },
+        { licenses: 1000, daily: 5.00, weekly: 25.00, monthly: 100.00 },
+        { licenses: 2500, daily: 12.50, weekly: 62.50, monthly: 250.00 },
+        { licenses: 5000, daily: 25.00, weekly: 125.00, monthly: 500.00 },
+        { licenses: 7500, daily: 37.50, weekly: 187.50, monthly: 750.00 },
+        { licenses: 10000, daily: 50.00, weekly: 250.00, monthly: 1000.00 },
+        { licenses: 15000, daily: 75.00, weekly: 375.00, monthly: 1500.00 },
+        { licenses: 25000, daily: 125.00, weekly: 625.00, monthly: 2500.00 },
+        { licenses: 50000, daily: 250.00, weekly: 1250.00, monthly: 5000.00 },
     ];
 
     return (
@@ -257,26 +258,38 @@ export default function LandingPage() {
                             {t("landing.access_the_network")}
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 mb-10 fade-up delay-300">
-                            <button
-                                onClick={() => navigate(ROUTES.REGISTER)}
-                                className="group relative px-8 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wide overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
-                            >
-                                <span className="relative z-10 flex items-center justify-center gap-2"><Rocket size={18} /> {t("landing.register")}</span>
-                                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
-                            </button>
-                            <button
-                                onClick={() => navigate(ROUTES.LOGIN)}
-                                className="px-8 py-4 rounded-xl font-semibold text-sm uppercase tracking-wide border border-white/10 text-white/70 hover:border-white/20 hover:text-white transition-all"
-                            >
-                                {t("landing.login")} →
-                            </button>
-                        </div>
+                        <div className="grid grid-cols-3 gap-3 fade-up delay-500">
+                            {/* Address card */}
+                            <div className="flex flex-col px-4 py-4 rounded-xl border border-[#F0973C]/20 backdrop-blur-sm bg-black/40">
+                                <div className="flex items-center gap-1.5 mb-2.5">
+                                    <MapPin size={11} className="text-[#F0973C] shrink-0" />
+                                    <span className="text-[#F0973C] text-[9px] font-bold uppercase tracking-widest">Office</span>
+                                </div>
+                                {[
+                                    "Unit, Almas Tower",
+                                    "Jumeirah Lake Towers (JLT)",
+                                    "DMCC Free Zone",
+                                    "P.O. Box 123456",
+                                    "Dubai",
+                                    "United Arab Emirates",
+                                ].map((line) => (
+                                    <span key={line} className="text-white/55 text-[11px] leading-[1.6]">{line}</span>
+                                ))}
+                            </div>
 
-                        <div className="flex flex-wrap gap-3 fade-up delay-500">
-                            <StatCard value="$2.4M+" label={t("landing.managed_capital")} accent="#F0973C" />
-                            <StatCard value="0.5%" label={t("landing.daily_profit")} accent="#69AC95" />
-                            <StatCard value="18K+" label={t("landing.active_investors")} accent="#F0973C" />
+                            {/* Daily Profit card — centro destacado */}
+                            <div className="flex flex-col items-center justify-center px-4 py-4 rounded-xl border border-[#69AC95]/30 bg-[#69AC95]/5 backdrop-blur-sm text-center">
+                                <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/35 mb-1">{t("landing.daily_profit")}</span>
+                                <span className="text-4xl font-black text-[#69AC95] font-['Playfair_Display'] leading-none">0.5%</span>
+                                <span className="text-[9px] text-white/30 uppercase tracking-widest mt-2">Mon – Fri</span>
+                            </div>
+
+                            {/* Foundation card */}
+                            <div className="flex flex-col items-center justify-center px-4 py-4 rounded-xl border border-[#69AC95]/20 backdrop-blur-sm bg-black/40 text-center gap-1.5">
+                                <Globe size={14} className="text-[#69AC95] mb-0.5" />
+                                <span className="text-white/70 text-[11px] font-semibold leading-snug">PAYGLOBAL MLM FOUNDATION</span>
+                                <span className="text-white/35 text-[9px] uppercase tracking-wider">February 2026</span>
+                            </div>
                         </div>
                     </div>
 
@@ -311,40 +324,6 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* TIERS */}
-            <section className="relative z-10 px-6 md:px-12 py-20 border-t border-white/5">
-                <div className="max-w-5xl mx-auto">
-                    <div className="text-center mb-14">
-                        <h2 className="text-3xl md:text-4xl font-black mb-3" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            {t("landing.levels_of")} <span style={{ color: "#69AC95" }}>{t("landing.investment")}</span>
-                        </h2>
-                    </div>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[
-                            { tier: "P200", licenses: "250", daily: "$1.25", weekly: "$6.25", monthly: "$25.00", desc: t("landing.initial_investment"), color: "#69AC95", icon: Sprout },
-                            { tier: "P500", licenses: "500", daily: "$2.50", weekly: "$12.50", monthly: "$50.00", desc: t("landing.double_your_daily_earnings"), color: "#69AC95", icon: Award },
-                            { tier: "P2000", licenses: "2,500", daily: "$12.50", weekly: "$62.50", monthly: "$250.00", desc: t("landing.significant_returns"), color: "#F0973C", icon: Sparkles },
-                            { tier: "P10000", licenses: "10,000", daily: "$50.00", weekly: "$250.00", monthly: "$1,000.00", desc: t("landing.maximum_performance"), color: "#F0973C", icon: Crown },
-                        ].map((item) => (
-                            <div key={item.tier} className="relative p-6 rounded-2xl border flex flex-col gap-3 hover:scale-[1.02] transition-transform" style={{ borderColor: item.color + "30", background: item.color + "08" }}>
-                                <item.icon size={32} style={{ color: item.color }} />
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest" style={{ color: item.color }}>{item.tier}</p>
-                                    <p className="text-white text-2xl font-black" style={{ fontFamily: "'Playfair Display', serif" }}>{item.daily}</p>
-                                    <p className="text-white/30 text-xs">{t("landing.daily")}</p>
-                                </div>
-                                <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
-                                <div className="mt-auto pt-3 border-t border-white/5 space-y-1">
-                                    <p className="text-white/40 text-xs">{t("landing.licenses")}: <span className="text-white/70 font-semibold">{item.licenses}</span></p>
-                                    <p className="text-white/40 text-xs">{t("landing.weekly")}: <span className="text-[#69AC95] font-semibold">{item.weekly}</span></p>
-                                    <p className="text-white/40 text-xs">{t("landing.monthly")}: <span className="text-[#F0973C] font-semibold">{item.monthly}</span></p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* CTA FINAL */}
             <section className="relative z-10 px-6 md:px-12 py-24 overflow-hidden">
                 <div className="max-w-2xl mx-auto text-center relative">
@@ -357,20 +336,6 @@ export default function LandingPage() {
                     <p className="text-white/40 mb-10 max-w-lg mx-auto text-sm leading-relaxed">
                         {t("landing.join_payglobal")}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button
-                            onClick={() => navigate(ROUTES.REGISTER)}
-                            className="px-10 py-4 rounded-xl font-bold text-black text-sm uppercase tracking-wider transition-all hover:scale-105 hover:shadow-2xl hover:shadow-[#F0973C]/30 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
-                        >
-                            {t("landing.register")} →
-                        </button>
-                        <button
-                            onClick={() => navigate(ROUTES.LOGIN)}
-                            className="px-10 py-4 rounded-xl font-semibold text-sm uppercase tracking-wide border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all"
-                        >
-                            {t("landing.login")}
-                        </button>
-                    </div>
                     <div className="mt-12 flex items-center justify-center gap-6 text-xs text-white/30">
                         <span className="flex items-center gap-1"><ShieldCheck size={14} /> {t("landing.secure_SSL")}</span>
                         <span className="w-px h-4 bg-white/10" />
