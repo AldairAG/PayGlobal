@@ -163,6 +163,10 @@
         "wallet_address": "Adresse du portefeuille",
         "copy": "Copier",
         "transfer_instructions": "Effectuez le transfert à l'adresse du portefeuille affichée. Une fois la transaction confirmée, votre licence sera activée.",
+        "transaction_status": "Statut de la transaction",
+        "transaction_processed": "Transaction traitée",
+        "transaction_failed": "Transaction échouée",
+        "transaction_pending": "En attente de confirmation...",
         "close": "Acheter"
 
     },
@@ -510,6 +514,23 @@
         "back": "Retour",
         "back_to_login": "Retour à l'accueil",
         "fill_fields": "Veuillez remplir ce champ"
+    },
+
+    "novedades": {
+        "institutional_documents": "Documents Institutionnels",
+        "title": "Nouveautés",
+        "subtitle": "Accédez aux documents officiels, cadres juridiques et ressources institutionnelles de la plateforme.",
+        "language_singular": "langue",
+        "language_plural": "langues",
+        "download_pdf": "Télécharger PDF",
+        "marco_legal_title": "CADRE JURIDIQUE MONDIAL POUR LA PLATEFORME",
+        "marco_legal_desc": "Documentation juridique institutionnelle de la plateforme disponible en plusieurs langues.",
+        "faq_title": "QUESTIONS FRÉQUEMMENT POSÉES",
+        "faq_desc": "Guide complet d'assistance et de résolution des questions pour les utilisateurs de la plateforme.",
+        "terms_title": "CONDITIONS GÉNÉRALES INSTITUTIONNELLES",
+        "terms_desc": "Conditions générales officielles régissant l'utilisation de la plateforme.",
+        "info_card_title": "Documents disponibles en plusieurs langues",
+        "info_card_desc": "Tous les documents institutionnels sont disponibles en plusieurs langues pour garantir l'accessibilité mondiale. Sélectionnez la langue souhaitée dans chaque section et visualisez ou téléchargez le document directement."
     }
 
 }

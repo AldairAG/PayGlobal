@@ -41,69 +41,72 @@ const HomePage = () => {
 
             <div className="p-6 space-y-8">
 
-                {/* FILA COMBINADA: izquierda = Fila 1 | derecha = Fila 2 */}
-                <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6">
+                {/* FILA COMBINADA: [progreso + moneda + maxcap] | [info derecha] */}
+                <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
 
-                    
-
-                    {/* COLUMNA DERECHA: Reloj de progreso y Montos */}
+                    {/* BLOQUE IZQUIERDO: reloj + moneda (misma altura) y MAX CAP debajo */}
                     <div className="flex flex-col gap-4">
 
-                        {/* Reloj de progreso */}
-                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center flex-1 min-h-0">
-                            <div
-                                className="w-full aspect-square max-w-[235px] rounded-full flex items-center justify-center"
-                                style={{
-                                    background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
-                                }}>
-                                <div className="w-[85%] aspect-square rounded-full bg-[#0a0a0a] flex flex-col items-center justify-center gap-1">
-                                    <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('home.progress_clock')}</span>
-                                    <span className="text-2xl font-bold text-[#69AC95]">
-                                        {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
-                                    </span>
+                        {/* Fila superior: reloj de progreso y moneda, igual altura */}
+                        <div className="grid grid-cols-2 gap-4">
+
+                            {/* Reloj de progreso */}
+                            <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center">
+                                <div
+                                    className="w-full aspect-square max-w-[235px] rounded-full flex items-center justify-center"
+                                    style={{
+                                        background: `conic-gradient(#69AC95 0% ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}, #1f2937 ${porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)} 100%)`,
+                                    }}>
+                                    <div className="w-[85%] aspect-square rounded-full bg-[#0a0a0a] flex flex-col items-center justify-center gap-1">
+                                        <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">{t('home.progress_clock')}</span>
+                                        <span className="text-2xl font-bold text-[#69AC95]">
+                                            {porcentajeCalculo(usuario?.licencia.saldoAcumulado || 0, usuario?.licencia.limite || 1)}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            {/* Imagen de la licencia */}
+                            <div className="flex items-center justify-center p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                                <img
+                                    src={getLicenseImage(usuario?.licencia.nombre || '')}
+                                    alt={t('home.license')}
+                                    className="w-full max-w-[260px] object-contain drop-shadow-2xl"
+                                />
+                            </div>
+
                         </div>
 
-                        {/* Monto máximo y Total Recaudado */}
+                        {/* MAX CAP y Earnings debajo, ancho completo */}
                         <div className="p-4 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-row justify-around items-center gap-4">
                             <div className="text-center">
-                                <p className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
-                                <p className="text-2xl font-bold text-white">$ {usuario?.licencia.limite}</p>
+                                <p className="text-sm font-semibold text-[#F0973C] uppercase tracking-wider mb-1">{t('home.maximum_amount')}</p>
+                                <p className="text-2xl font-bold text-[#69AC95]">$ {usuario?.licencia.limite}</p>
                             </div>
                             <div className="w-px h-10 bg-[#69AC95]/30" />
                             <div className="text-center">
-                                <p className="text-sm font-semibold text-white/40 uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
+                                <p className="text-sm font-semibold text-[#F0973C] uppercase tracking-wider mb-1">{t('home.total_collected')}</p>
                                 <p className="text-2xl font-bold text-[#69AC95]">$ {usuario?.licencia.saldoAcumulado}</p>
                             </div>
                         </div>
 
                     </div>
 
-                    {/* COLUMNA IZQUIERDA: Licencia, Dividendos, Comisiones */}
+                    {/* COLUMNA DERECHA: Licencia info, Staking, Network */}
                     <div className="flex flex-col gap-4">
 
                         {/* Licencia */}
-                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
-                            <div className="flex items-center gap-4">
-                                <img
-                                    src={getLicenseImage(usuario?.licencia.nombre || '')}
-                                    alt={t('home.license')}
-                                    className="w-20 h-20 object-contain shrink-0"
-                                />
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-white">{t('home.active_license')}</h3>
-                                    <p className="text-sm text-[#F0973C] font-bold mt-1">{usuario?.licencia.nombre || t('home.without_license')}</p>
-                                    <p className="text-xs text-white/40 mt-2">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
-                                </div>
-                            </div>
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex-1">
+                            <h3 className="mt-2 text-2xl font-semibold text-[#F0973C]">{t('home.active_license')}</h3>
+                            <p className="mt-2 text-2xl  text-[#F0973C] font-bold">{usuario?.licencia.nombre || t('home.without_license')}</p>
+                            <p className="mt-2 text-1xl text-white/40">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
                         </div>
 
                         {/* Wallet Dividendos */}
                         <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
                             <div className="flex items-center gap-3">
                                 <Wallet size={30} className="text-[#69AC95]" />
-                                <h3 className="text-xl font-semibold text-white/80">{t('home.staking')}</h3>
+                                <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.staking')}</h3>
                             </div>
                             <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING)?.saldo}</p>
                         </div>
@@ -111,10 +114,10 @@ const HomePage = () => {
                         {/* Wallet Comisiones */}
                         <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
                             <div className="flex items-center gap-3">
-                                <Coins size={30} className="text-[#F0973C]" />
-                                <h3 className="text-xl font-semibold text-white/80">{t('home.network')}</h3>
+                                <Coins size={30} className="text-[#69AC95]" />
+                                <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.network')}</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold text-[#F0973C]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK)?.saldo}</p>
+                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK)?.saldo}</p>
                         </div>
 
                     </div>
@@ -130,12 +133,12 @@ const HomePage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5">
-                            <h3 className="font-semibold text-lg text-white/70 uppercase tracking-wider text-sm">{t('home.my_current_rank')}</h3>
+                            <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.my_current_rank')}</h3>
                             <p className="mt-2 text-2xl font-bold text-[#69AC95]">{!usuario?.rango || usuario.rango === 'SIN_RANGO' ? t('home.no_range') : usuario.rango}</p>
                         </div>
 
                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
-                            <h3 className="font-semibold text-lg text-white/70 uppercase tracking-wider text-sm">{t('home.users_on_my_network')}</h3>
+                            <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.users_on_my_network')}</h3>
                             <p className="mt-2 text-2xl font-bold text-[#F0973C]">{usuarioEnRed || 0} {t('home.affiliates')}</p>
                         </div>
 
@@ -144,7 +147,7 @@ const HomePage = () => {
 
                 {/* GRAFICA DE GANANCIAS */}
                 <div className="p-6 rounded-2xl border border-white/5 bg-white/[0.02]">
-                    <h2 className="text-2xl font-bold flex items-center gap-2 mb-4 text-white">
+                    <h2 className="text-2xl font-bold flex items-center gap-2 mb-4 text-[#F0973C]">
                         <TrendingUp className="text-[#69AC95]" /> {t("home.profit_increase")}
                     </h2>
 

@@ -160,6 +160,10 @@
         "wallet_address": "Wallet Address",
         "copy": "Copy",
         "transfer_instructions": "Complete the transfer to the displayed wallet address. Once the transaction is confirmed, your license will be activated.",
+        "transaction_status": "Transaction status",
+        "transaction_processed": "Transaction processed",
+        "transaction_failed": "Transaction failed",
+        "transaction_pending": "Awaiting confirmation...",
         "close": "Buy"
     },
 
@@ -507,6 +511,23 @@
         "back": "Back",
         "back_to_login": "Back to home",
         "fill_fields": "Please fill this field"
+    },
+
+    "novedades": {
+        "institutional_documents": "Institutional Documents",
+        "title": "Updates",
+        "subtitle": "Access the official documents, legal frameworks and institutional resources of the platform.",
+        "language_singular": "language",
+        "language_plural": "languages",
+        "download_pdf": "Download PDF",
+        "marco_legal_title": "GLOBAL LEGAL FRAMEWORK FOR PLATFORM",
+        "marco_legal_desc": "Institutional legal documentation of the platform available in multiple languages.",
+        "faq_title": "FREQUENTLY ASKED QUESTIONS",
+        "faq_desc": "Complete support guide and troubleshooting for platform users.",
+        "terms_title": "INSTITUTIONAL TERMS AND CONDITIONS",
+        "terms_desc": "Official terms and conditions governing the use of the platform.",
+        "info_card_title": "Documents available in multiple languages",
+        "info_card_desc": "All institutional documents are available in several languages to ensure global accessibility. Select the desired language within each section and view or download the document directly."
     }
 
 }

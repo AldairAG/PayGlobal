@@ -30,7 +30,8 @@ import tcPortuguese from '../../assets/documents/terms/institutional_terms_portu
 import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.pdf';
 
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { ChevronDown, Download, FileText, Globe } from 'lucide-react';
 
 const LANGUAGES = [
     { key: 'es', label: 'Español' },
@@ -44,83 +45,221 @@ const LANGUAGES = [
     { key: 'ar', label: 'العربية' },
 ];
 
-const sections = [
-    {
-        title: 'MARCO LEGAL GLOBAL PARA PLATAFORMA',
-        docs: {
-            es: cgSpanish, en: cgEnglish, fr: cgFrench, de: cgGerman,
-            it: cgItalian, pt: cgPortuguese, ru: cgRussian, zh: cgMandarin, ar: cgArabic,
-        },
-    },
-    {
-        title: 'PREGUNTAS FRECUENTES',
-        docs: {
-            es: hcSpanish, en: hcEnglish, fr: hcFrench, de: hcGerman,
-            it: hcItalian, pt: hcPortuguese, ru: hcRussian, zh: hcMandarin, ar: hcArabic,
-        },
-    },
-    {
-        title: 'TÉRMINOS Y CONDICIONES INSTITUCIONALES',
-        docs: {
-            es: tcSpanish, en: tcEnglish, fr: tcFrench, de: tcGerman,
-            it: tcItalian, pt: tcPortuguese, ar: tcArabic,
-        },
-    },
-];
+interface SectionData {
+    id: string;
+    title: string;
+    description: string;
+    accentColor: string;
+    docs: Partial<Record<string, string>>;
+}
 
-function PdfSection({ title, docs }: { title: string; docs: Partial<Record<string, string>> }) {
-    const available = LANGUAGES.filter(l => docs[l.key]);
-    const [selected, setSelected] = useState(available[0]?.key ?? '');
+interface PdfAccordionProps {
+    section: SectionData;
+    isOpen: boolean;
+    onToggle: () => void;
+}
+
+function PdfAccordion({ section, isOpen, onToggle }: PdfAccordionProps) {
+    const { t } = useTranslation();
+    const available = LANGUAGES.filter(l => section.docs[l.key]);
+
+    const handleDownload = (langKey: string) => {
+        const url = section.docs[langKey];
+        if (!url) return;
+        const lang = LANGUAGES.find(l => l.key === langKey);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${section.title.replace(/\s+/g, '_')}_${lang?.label ?? langKey}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-5">
-            <h2 className="text-xl font-bold text-[#F0973C] flex items-center gap-2">
-                <FileText size={20} className="shrink-0" />
-                {title}
-            </h2>
-
-            {/* Selector de idioma */}
-            <div className="flex flex-wrap gap-2">
-                {available.map(lang => (
-                    <button
-                        key={lang.key}
-                        onClick={() => setSelected(lang.key)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                            selected === lang.key
-                                ? 'bg-[#F0973C] border-[#F0973C] text-black'
-                                : 'border-white/10 bg-white/5 text-white/60 hover:border-[#F0973C]/40 hover:text-white'
-                        }`}
+        <div className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 overflow-hidden backdrop-blur-sm transition-all duration-300 hover:border-white/20">
+            {/* Header */}
+            <button
+                onClick={onToggle}
+                className="w-full px-6 py-5 flex items-center justify-between transition-colors hover:bg-white/5"
+            >
+                <div className="flex items-center gap-4">
+                    <div
+                        className="w-14 h-14 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${section.accentColor}22` }}
                     >
-                        {lang.label}
-                    </button>
-                ))}
-            </div>
+                        <FileText size={26} style={{ color: section.accentColor }} />
+                    </div>
+                    <div className="text-left">
+                        <h3
+                            className="font-black text-xl flex items-center gap-2 mb-1"
+                            style={{ color: section.accentColor }}
+                        >
+                            {section.title}
+                        </h3>
+                        <p className="text-white/50 text-xs max-w-md">{section.description}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white/10 text-white/70">
+                        {available.length} {available.length === 1 ? t('novedades.language_singular') : t('novedades.language_plural')}
+                    </span>
+                    <ChevronDown
+                        size={24}
+                        className={`text-white/70 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                    />
+                </div>
+            </button>
 
-            {/* Visor PDF */}
-            {docs[selected] && (
-                <iframe
-                    key={selected}
-                    src={docs[selected]}
-                    className="w-full rounded-xl border border-white/10"
-                    style={{ height: '70vh' }}
-                    title={`${title} - ${selected}`}
-                />
-            )}
+            {/* Content */}
+            <div
+                className={`overflow-hidden transition-all duration-300 ${
+                    isOpen ? 'max-h-[200vh] opacity-100' : 'max-h-0 opacity-0'
+                }`}
+            >
+                <div className="px-6 pb-6 pt-4 border-t border-white/5 space-y-3">
+                    {available.map(lang => (
+                        <div key={lang.key} className="p-4 rounded-lg bg-black/20 border border-white/5 hover:border-white/10 transition-all flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <div
+                                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                                    style={{ backgroundColor: `${section.accentColor}22` }}
+                                >
+                                    <FileText size={20} style={{ color: section.accentColor }} />
+                                </div>
+                                <div>
+                                    <p className="text-white font-semibold text-sm">{section.title}</p>
+                                    <p className="text-white/40 text-xs">{lang.label}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => handleDownload(lang.key)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:scale-105 hover:shadow-lg shrink-0"
+                                style={{
+                                    background: `linear-gradient(135deg, ${section.accentColor}, ${section.accentColor}dd)`,
+                                    color: '#000',
+                                    boxShadow: `0 2px 10px ${section.accentColor}20`
+                                }}
+                            >
+                                <Download size={14} />
+                                {t('novedades.download_pdf')}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
 
 const NovedadesPage = () => {
-    return (
-        <div className="min-h-screen bg-[#000000] text-white p-6 space-y-8">
-            <div>
-                <h1 className="text-4xl md:text-5xl font-bold mb-2 text-[#F0973C]">Novedades</h1>
-                <p className="text-white/40 text-lg">Documentos y recursos institucionales</p>
-            </div>
+    const { t } = useTranslation();
+    const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
-            {sections.map(section => (
-                <PdfSection key={section.title} title={section.title} docs={section.docs} />
-            ))}
+    const sections: SectionData[] = [
+        {
+            id: 'marco_legal',
+            title: t('novedades.marco_legal_title'),
+            description: t('novedades.marco_legal_desc'),
+            accentColor: '#F0973C',
+            docs: {
+                es: cgSpanish, en: cgEnglish, fr: cgFrench, de: cgGerman,
+                it: cgItalian, pt: cgPortuguese, ru: cgRussian, zh: cgMandarin, ar: cgArabic,
+            },
+        },
+        {
+            id: 'preguntas_frecuentes',
+            title: t('novedades.faq_title'),
+            description: t('novedades.faq_desc'),
+            accentColor: '#69AC95',
+            docs: {
+                es: hcSpanish, en: hcEnglish, fr: hcFrench, de: hcGerman,
+                it: hcItalian, pt: hcPortuguese, ru: hcRussian, zh: hcMandarin, ar: hcArabic,
+            },
+        },
+        {
+            id: 'terminos',
+            title: t('novedades.terms_title'),
+            description: t('novedades.terms_desc'),
+            accentColor: '#F0973C',
+            docs: {
+                es: tcSpanish, en: tcEnglish, fr: tcFrench, de: tcGerman,
+                it: tcItalian, pt: tcPortuguese, ar: tcArabic,
+            },
+        },
+    ];
+
+    const handleToggle = (id: string) => {
+        setOpenAccordion(openAccordion === id ? null : id);
+    };
+
+    return (
+        <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-8">
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes pulse-glow {
+                    0%, 100% { opacity: 0.4; }
+                    50% { opacity: 0.8; }
+                }
+                .fade-up { animation: fadeInUp 0.6s ease forwards; }
+                .delay-100 { animation-delay: 0.1s; opacity: 0; }
+                .delay-200 { animation-delay: 0.2s; opacity: 0; }
+                .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+            `}</style>
+
+            <div className="max-w-5xl mx-auto">
+                {/* Header */}
+                <div className="mb-10 fade-up">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#F0973C]/30 bg-[#F0973C]/10 mb-4">
+                        <span className="w-2 h-2 rounded-full bg-[#F0973C] pulse-glow" />
+                        <span className="text-[#F0973C] text-xs font-semibold uppercase tracking-widest">
+                            {t('novedades.institutional_documents')}
+                        </span>
+                    </div>
+                    <h1
+                        className="text-4xl md:text-5xl font-black mb-3 font-['Playfair_Display']"
+                        style={{ color: '#F0973C' }}
+                    >
+                        {t('novedades.title')}
+                    </h1>
+                    <p className="text-white/50 text-sm max-w-2xl">
+                        {t('novedades.subtitle')}
+                    </p>
+                </div>
+
+                {/* Sections */}
+                <div className="space-y-4 fade-up delay-100">
+                    {sections.map(section => (
+                        <PdfAccordion
+                            key={section.id}
+                            section={section}
+                            isOpen={openAccordion === section.id}
+                            onToggle={() => handleToggle(section.id)}
+                        />
+                    ))}
+                </div>
+
+                {/* Info Card */}
+                <div className="mt-8 p-6 rounded-xl border border-white/5 bg-white/2 backdrop-blur-sm fade-up delay-200">
+                    <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-[#F0973C]/20 flex items-center justify-center shrink-0">
+                            <Globe size={20} className="text-[#F0973C]" />
+                        </div>
+                        <div>
+                            <h3 className="text-[#e07025] font-semibold text-sm mb-2">
+                                {t('novedades.info_card_title')}
+                            </h3>
+                            <p className="text-white/40 text-xs leading-relaxed">
+                                {t('novedades.info_card_desc')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

@@ -163,6 +163,10 @@
         "wallet_address": "Endereço da Carteira",
         "copy": "Copiar",
         "transfer_instructions": "Realize a transferência para o endereço de carteira mostrado. Assim que a transação for confirmada, sua licença será ativada.",
+        "transaction_status": "Estado da transação",
+        "transaction_processed": "Transação processada",
+        "transaction_failed": "Transação falhada",
+        "transaction_pending": "Aguardando confirmação...",
         "close": "Comprar"
 
     },
@@ -510,6 +514,23 @@
         "back": "Voltar",
         "back_to_login": "Voltar ao início",
         "fill_fields": "Preencha este campo"
+    },
+
+    "novedades": {
+        "institutional_documents": "Documentos Institucionais",
+        "title": "Novidades",
+        "subtitle": "Acesse os documentos oficiais, marcos legais e recursos institucionais da plataforma.",
+        "language_singular": "idioma",
+        "language_plural": "idiomas",
+        "download_pdf": "Baixar PDF",
+        "marco_legal_title": "MARCO LEGAL GLOBAL PARA PLATAFORMA",
+        "marco_legal_desc": "Documentação legal institucional da plataforma disponível em múltiplos idiomas.",
+        "faq_title": "PERGUNTAS FREQUENTES",
+        "faq_desc": "Guia completo de suporte e resolução de dúvidas para usuários da plataforma.",
+        "terms_title": "TERMOS E CONDIÇÕES INSTITUCIONAIS",
+        "terms_desc": "Termos e condições oficiais que regem o uso da plataforma.",
+        "info_card_title": "Documentos disponíveis em múltiplos idiomas",
+        "info_card_desc": "Todos os documentos institucionais estão disponíveis em vários idiomas para garantir acessibilidade global. Selecione o idioma desejado em cada seção e visualize ou baixe o documento diretamente."
     }
 
 }

@@ -28,9 +28,11 @@ export default function PurchaseLicenseModal({
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
     const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_BEP20);
-    const { solicitarCompraLicencia,usuario } = useUsuario(); 
+    const [purchaseResult, setPurchaseResult] = useState<"success" | "error" | null>(null);
+    const { solicitarCompraLicencia, usuario, loadingSolicitarCompraLicencia } = useUsuario(); 
 
     const handleConfirmPurchase = async () => {
+        setPurchaseResult(null);
         const promise = solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
         toast.promise(
             promise,
@@ -49,9 +51,11 @@ export default function PurchaseLicenseModal({
         );
         try {
             await promise;
+            setPurchaseResult("success");
             onClose();
         } catch (error) {
             console.error(t("licenses.error_requesting_license_purchase"), error);
+            setPurchaseResult("error");
         }
     };
     
@@ -245,19 +249,58 @@ export default function PurchaseLicenseModal({
                     </div>
                 </div>
 
-                {/* FOOTER: Instrucciones + Botón cerrar */}
-                <div className="flex flex-col md:flex-row items-center gap-4 px-8 pb-8 pt-2">
-                    <div className="flex-1 border-l-4 border-[#F0973C]/60 bg-[#F0973C]/5 p-4 rounded-r-xl">
-                        <p className="text-sm text-[#F0973C]/80">
-                            {t("licenses.transfer_instructions")}
+                {/* FOOTER: Estado de transacción + Botón comprar */}
+                <div className="flex flex-col md:flex-row items-stretch gap-4 px-8 pb-8 pt-2">
+
+                    {/* MITAD IZQUIERDA: Estado automático de transacción */}
+                    <div className="flex-1 flex flex-col justify-center gap-2">
+                        <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-1">
+                            {t("licenses.transaction_status")}
                         </p>
+                        {purchaseResult === null && !loadingSolicitarCompraLicencia && (
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-white/10 bg-white/5">
+                                <div className="w-4 h-4 rounded-full border-2 border-white/20 shrink-0" />
+                                <span className="text-sm text-white/40">{t("licenses.transaction_pending")}</span>
+                            </div>
+                        )}
+                        {loadingSolicitarCompraLicencia && (
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#F0973C]/40 bg-[#F0973C]/5">
+                                <svg className="w-4 h-4 animate-spin text-[#F0973C] shrink-0" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                </svg>
+                                <span className="text-sm text-[#F0973C] font-semibold">{t("licenses.processing_purchase")}</span>
+                            </div>
+                        )}
+                        {purchaseResult === "success" && (
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#69AC95] bg-[#69AC95]/10">
+                                <svg className="w-4 h-4 text-[#69AC95] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span className="text-sm text-[#69AC95] font-semibold">{t("licenses.transaction_processed")}</span>
+                            </div>
+                        )}
+                        {purchaseResult === "error" && (
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-red-500 bg-red-500/10">
+                                <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span className="text-sm text-red-400 font-semibold">{t("licenses.transaction_failed")}</span>
+                            </div>
+                        )}
                     </div>
-                    <button
-                        onClick={handleConfirmPurchase}
-                        className="md:w-36 w-full bg-[#F0973C] text-black py-3 px-6 rounded-xl hover:bg-[#F0973C]/90 transition-colors font-bold shrink-0"
-                    >
-                        {t("licenses.close")}
-                    </button>
+
+                    {/* MITAD DERECHA: Botón comprar */}
+                    <div className="flex-1 flex items-end">
+                        <button
+                            onClick={handleConfirmPurchase}
+                            disabled={loadingSolicitarCompraLicencia}
+                            className="w-full bg-[#F0973C] text-black py-3 px-6 rounded-xl hover:bg-[#F0973C]/90 transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {loadingSolicitarCompraLicencia ? t("licenses.processing_purchase") : t("licenses.close")}
+                        </button>
+                    </div>
+
                 </div>
 
             </div>
