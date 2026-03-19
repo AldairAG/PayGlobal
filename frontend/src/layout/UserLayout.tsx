@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import SideBar from "../components/SideBar";
 import Fotter from "../components/Fotter";
@@ -7,16 +7,19 @@ import Menu from "../components/modal/Menu";
 import { useUsuario } from "../hooks/usuarioHook";
 import { useEffect, useState } from "react";
 import { PiListDuotone } from "react-icons/pi";
+import { ROUTES } from "../routes/routes";
 
 
 export const UserLayout = () => {
     const { recargarUsuarioPorId, loadingUsuarioSeleccionado, errorUsuarioSeleccionado, usuario,obtenerFotoPerfil } = useUsuario();
     const [menuOpen, setMenuOpen] = useState(false);
-
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (usuario) {
+            if(usuario.licencia.precio === 0){
+                navigate(ROUTES.USER.LICENCIAS);
+            }
             recargarUsuarioPorId(usuario.id);
             obtenerFotoPerfil(usuario.fotoPerfilName||"");
         }

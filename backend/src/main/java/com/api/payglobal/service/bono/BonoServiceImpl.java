@@ -56,6 +56,7 @@ public class BonoServiceImpl implements BonoService {
     @Override
     @Transactional
     public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception {
+
         List<UsuarioEnRedResponse> redInversa = uninivelHelper.obtenerRedDeUsuariosInversaRecursiva(usernameReferido, 0,
                 2);
 
@@ -69,6 +70,11 @@ public class BonoServiceImpl implements BonoService {
 
             final Double bonoFinal = bono;
             if (bonoFinal > 0) {
+                // Validar que el usuario tenga licencia activa y no haya superado el límite
+                if (!validarLicencia(usuarioEnRed.getUsername(), bonoFinal)) {
+                    continue;
+                }
+
                 Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
                         .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                         .findFirst()
@@ -85,12 +91,11 @@ public class BonoServiceImpl implements BonoService {
                     Bono nuevoBono = crearOActualizarBono(usuarioEnRed.getUsername(), TipoBono.BONO_INSCRIPCION,
                             bonoFinal);
                     bonoRepository.save(nuevoBono);
-
                     String descripcion = "Bono de inscripción por "
                             + (usuarioEnRed.getNivel() == 1 ? "registro directo" : "registro indirecto") +
                             " de usuario: " + usernameReferido;
 
-                    aumentarSaldoAcumuladoLicencia(usernameReferido, bonoFinal);
+                    aumentarSaldoAcumuladoLicencia(usuarioEnRed.getUsername(), bonoFinal);
 
                     registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, concepto,
                             TipoMetodoPago.WALLET_COMISIONES, descripcion);
@@ -105,6 +110,11 @@ public class BonoServiceImpl implements BonoService {
         List<Wallet> wallets = walletRepository.findByUsuario_Username(usernameReferido);
 
         Double bono = tipoLicencia.getValor() * BONO_RENOVACION;
+
+        // Validar que el usuario tenga licencia activa y no haya superado el límite
+        if (!validarLicencia(usernameReferido, bono)) {
+            return;
+        }
 
         Wallet wallet = wallets.stream()
                 .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
@@ -193,6 +203,11 @@ public class BonoServiceImpl implements BonoService {
 
                 final Double bonoFinal = bono;
                 if (bonoFinal > 0) {
+                    // Validar que el usuario tenga licencia activa y no haya superado el límite
+                    if (!validarLicencia(usuarioEnRed.getUsername(), bonoFinal)) {
+                        continue;
+                    }
+
                     // Actualizar wallet de comisiones
                     Wallet wallet = walletRepository.findByUsuario_Username(usuarioEnRed.getUsername()).stream()
                             .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
@@ -208,15 +223,7 @@ public class BonoServiceImpl implements BonoService {
                     }
 
                     // Actualizar saldoAcumulado en la licencia del usuario que recibe el bono
-                    usuarioRepository.findByUsername(usuarioEnRed.getUsername()).ifPresent(usuario -> {
-                        if (usuario.getLicencia() != null) {
-                            Integer saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
-                                    ? usuario.getLicencia().getSaldoAcumulado()
-                                    : 0;
-                            usuario.getLicencia().setSaldoAcumulado(saldoActual + bonoFinal.intValue());
-                            licenciaRepository.save(usuario.getLicencia());
-                        }
-                    });
+                    aumentarSaldoAcumuladoLicencia(usuarioEnRed.getUsername(), bonoFinal);
                 }
             }
         }
@@ -303,4 +310,33 @@ public class BonoServiceImpl implements BonoService {
             }
         });
     }
+
+    /**
+     * Este metodo valida si el ususario puede recibir el bono, es decir, si tiene una licencia activa o no, y si el bono que se le va a asignar no supera el limite de la licencia
+     * si el bono supera el limite de la licencia, se asigna el bono hasta el limite y se desactiva la licencia, si el bono no supera el limite, se asigna el bono normalmente
+     * @param username el username del usuario a validar
+     * @return true si el usuario puede recibir el bono, false en caso contrario
+     */
+    private Boolean validarLicencia(String username, Double monto) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (usuario.getLicencia() == null || usuario.getLicencia().getPrecio() <= 0) {
+            return false;
+        }
+
+        Integer saldoAcumulado = usuario.getLicencia().getSaldoAcumulado() != null
+                ? usuario.getLicencia().getSaldoAcumulado()
+                : 0;
+
+        if (saldoAcumulado + monto > usuario.getLicencia().getPrecio()) {
+            usuario.getLicencia().setSaldoAcumulado(usuario.getLicencia().getPrecio());
+            usuario.getLicencia().setActivo(false);
+            licenciaRepository.save(usuario.getLicencia());
+            return false;
+        }
+
+        return true;
+    }
 }
+
