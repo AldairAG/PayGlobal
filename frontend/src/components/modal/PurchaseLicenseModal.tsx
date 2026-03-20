@@ -52,7 +52,6 @@ export default function PurchaseLicenseModal({
         try {
             await promise;
             setPurchaseResult("success");
-            onClose();
         } catch (error) {
             console.error(t("licenses.error_requesting_license_purchase"), error);
             setPurchaseResult("error");
@@ -264,20 +263,20 @@ export default function PurchaseLicenseModal({
                             </div>
                         )}
                         {loadingSolicitarCompraLicencia && (
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#F0973C]/40 bg-[#F0973C]/5">
-                                <svg className="w-4 h-4 animate-spin text-[#F0973C] shrink-0" fill="none" viewBox="0 0 24 24">
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#69AC95]/40 bg-[#69AC95]/5">
+                                <svg className="w-4 h-4 animate-spin text-[#69AC95] shrink-0" fill="none" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                                 </svg>
-                                <span className="text-sm text-[#F0973C] font-semibold">{t("licenses.processing_purchase")}</span>
+                                <span className="text-sm text-[#69AC95] font-semibold">{t("licenses.processing_purchase")}</span>
                             </div>
                         )}
                         {purchaseResult === "success" && (
-                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#69AC95] bg-[#69AC95]/10">
-                                <svg className="w-4 h-4 text-[#69AC95] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#F0973C] bg-[#F0973C]/10">
+                                <svg className="w-4 h-4 text-[#F0973C] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span className="text-sm text-[#69AC95] font-semibold">{t("licenses.transaction_processed")}</span>
+                                <span className="text-sm text-[#F0973C] font-semibold">{t("licenses.transaction_processed")}</span>
                             </div>
                         )}
                         {purchaseResult === "error" && (
@@ -294,8 +293,12 @@ export default function PurchaseLicenseModal({
                     <div className="flex-1 flex items-end">
                         <button
                             onClick={handleConfirmPurchase}
-                            disabled={loadingSolicitarCompraLicencia}
-                            className="w-full bg-[#F0973C] text-black py-3 px-6 rounded-xl hover:bg-[#F0973C]/90 transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={loadingSolicitarCompraLicencia || purchaseResult !== null}
+                            className={`w-full py-3 px-6 rounded-xl transition-colors font-bold disabled:cursor-not-allowed ${
+                                purchaseResult !== null
+                                    ? 'bg-white/10 text-white/30'
+                                    : 'bg-[#F0973C] text-black hover:bg-[#F0973C]/90 disabled:opacity-50'
+                            }`}
                         >
                             {loadingSolicitarCompraLicencia ? t("licenses.processing_purchase") : t("licenses.close")}
                         </button>

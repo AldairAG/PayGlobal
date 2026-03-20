@@ -99,22 +99,7 @@ export const HistorialPage = () => {
 
     const COLORS = ['#F0973C', '#69AC95', '#e8841f', '#5a9a84', '#F0973C99', '#69AC9599'];
 
-    // Calcular estadísticas
-    const totalGanancias = useMemo(() => {
-        return transacciones
-            .filter(t => t.monto > 0 && t.estado === EstadoOperacion.COMPLETADA)
-            .reduce((sum, t) => sum + t.monto, 0);
-    }, [transacciones]);
-    
-    const totalRetiros = useMemo(() => {
-        return Math.abs(transacciones
-            .filter(t => t.monto < 0 && t.estado === EstadoOperacion.COMPLETADA)
-            .reduce((sum, t) => sum + t.monto, 0));
-    }, [transacciones]);
-    
-    const totalBonos = useMemo(() => {
-        return bonosUsuario.reduce((sum, b) => sum + b.acumulado, 0);
-    }, [bonosUsuario]);
+
 
     const obtenerColorEstado = (estado: EstadoOperacion) => {
         switch (estado) {
@@ -157,51 +142,6 @@ export const HistorialPage = () => {
                     <p className="text-white/40 text-lg">
                         {t("reports.view_your_transaction_history_and_generate_reports")}
                     </p>
-                </div>
-
-                {/* Estadísticas Rápidas */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_earnings")}</p>
-                                <p className="text-3xl font-bold text-white">${totalGanancias.toFixed(2)}</p>
-                                <p className="text-[#69AC95] text-xs mt-1 flex items-center">
-                                    <TrendingUp className="w-3 h-3 mr-1" />
-                                    {t("reports.completed")}
-                                </p>
-                            </div>
-                            <div className="bg-[#69AC95]/20 p-3 rounded-full border border-[#69AC95]/30">
-                                <DollarSign className="w-8 h-8 text-[#69AC95]" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_bonuses")}</p>
-                                <p className="text-3xl font-bold text-white">${totalBonos.toFixed(2)}</p>
-                                <p className="text-[#F0973C] text-xs mt-1">{bonosUsuario.length} {t("reports.bonus_types")}</p>
-                            </div>
-                            <div className="bg-[#F0973C]/20 p-3 rounded-full border border-[#F0973C]/30">
-                                <Award className="w-8 h-8 text-[#F0973C]" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-[#F0973C] text-xs font-semibold uppercase tracking-wider mb-1">{t("reports.total_withdrawals")}</p>
-                                <p className="text-3xl font-bold text-white">${totalRetiros.toFixed(2)}</p>
-                                <p className="text-white/50 text-xs mt-1">{t("reports.processed")}</p>
-                            </div>
-                            <div className="bg-white/10 p-3 rounded-full border border-white/10">
-                                <DollarSign className="w-8 h-8 text-white/50" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Gráficas */}

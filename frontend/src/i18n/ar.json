@@ -34,7 +34,7 @@
         "because": "لماذا",
         "PAYGLOBAL": "PAYGLOBAL",
         "?":"؟",
-        "an_ecosystem_designed": "نظام بيئي مصمم لمضاعفة استثمارك على كل مستوى",
+        "an_ecosystem_designed": "نظام بيئي مصمم لمضاعفة تراخيص الـ Staking الخاصة بك",
         "exclusive_levels": "مستويات حصرية",
         "the_higher_you_climb": "كلما ارتفعت، زاد عائدك اليومي المضمون.",
         "daily_earnings": "الأرباح اليومية",
@@ -111,7 +111,8 @@
         "go_to_profile": "اذهب إلى الإعدادات",
         "log_out": "تسجيل الخروج",
         "news": "الأخبار / الأدوات",
-        "menu": "القائمة"
+        "menu": "القائمة",
+        "tools": "الأدوات"
     },
     
     "home": {
