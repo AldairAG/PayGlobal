@@ -29,6 +29,12 @@ import tcItalian from '../../assets/documents/terms/institutional_terms_italian.
 import tcPortuguese from '../../assets/documents/terms/institutional_terms_portuguese.pdf';
 import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.pdf';
 
+//presentacion
+import presentationSpanish from '../../assets/documents/presentation/presentation_spanish.pdf';
+import presentationEnglish from '../../assets/documents/presentation/presentation_english.pdf';
+import presentationFrench from '../../assets/documents/presentation/presentation_french.pdf';
+import presentationGerman from '../../assets/documents/presentation/presentation_german.pdf';
+
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Download, FileText, Globe } from 'lucide-react';
@@ -156,6 +162,15 @@ const NovedadesPage = () => {
     const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
     const sections: SectionData[] = [
+        {
+            id: 'presentacion',
+            title: t('novedades.presentation_title'),
+            description: t('novedades.presentation_desc'),
+            accentColor: '#3B82F6',
+            docs: {
+                es: presentationSpanish, en: presentationEnglish, fr: presentationFrench, de: presentationGerman,
+            },
+        },
         {
             id: 'marco_legal',
             title: t('novedades.marco_legal_title'),
