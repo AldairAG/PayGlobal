@@ -86,18 +86,6 @@ const ReturnsTable = () => {
     );
 };
 
-const StatCard = ({ value, label, accent }: { value: string; label: string; accent: string }) => {
-    const borderColor = accent === '#F0973C' ? 'border-[#F0973C33]' : 'border-[#69AC9533]';
-    const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
-
-    return (
-        <div className={`flex flex-col items-center px-6 py-4 rounded-xl border backdrop-blur-sm bg-black/40 ${borderColor}`}>
-            <span className={`text-2xl font-black font-['Playfair_Display'] ${textColor}`}>{value}</span>
-            <span className="text-white/50 text-xs mt-1 uppercase tracking-widest">{label}</span>
-        </div>
-    );
-};
-
 const FeatureRow = ({ icon: Icon, title, desc, accent }: { icon: React.ElementType; title: string; desc: string; accent: string }) => {
     const bgColor = accent === '#F0973C' ? 'bg-[#F0973C22]' : 'bg-[#69AC9522]';
     const textColor = accent === '#F0973C' ? 'text-[#F0973C]' : 'text-[#69AC95]';
