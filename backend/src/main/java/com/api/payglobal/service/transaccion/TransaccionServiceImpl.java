@@ -2,6 +2,8 @@ package com.api.payglobal.service.transaccion;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class TransaccionServiceImpl implements TransaccionService {
                 Transaccion transaccion = Transaccion.builder()
                                 .concepto(concepto)
                                 .metodoPago(metodoPago)
-                                .fecha(LocalDateTime.now())
+                                .fecha(ZonedDateTime.now(ZoneId.of("Asia/Dubai")).toLocalDateTime())
                                 .monto(new BigDecimal(monto))
                                 .estado(estado)
                                 .tipoCrypto(tipoCrypto)
