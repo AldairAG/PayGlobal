@@ -340,7 +340,12 @@ public class UsuarioController {
             @RequestParam(required = false) String filtro,
             Pageable pageable) {
         try {
-            Page<UsuarioExplorerResponseDTO> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, pageable);
+            Pageable sortedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "fechaRegistro"));
+            
+            Page<UsuarioExplorerResponseDTO> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, sortedPageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuarios,
                     "Usuarios obtenidos correctamente"));
         } catch (Exception e) {

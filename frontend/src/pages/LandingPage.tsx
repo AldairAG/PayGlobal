@@ -212,12 +212,6 @@ export default function LandingPage() {
                     >
                         {t("landing.login")}
                     </button>
-                    <button
-                        onClick={() => navigate(ROUTES.REGISTER)}
-                        className="text-sm font-bold px-5 py-2 rounded-lg text-black transition-all hover:shadow-lg hover:shadow-[#F0973C]/20 hover:scale-105 bg-linear-to-br from-[#F0973C] to-[#e8841f]"
-                    >
-                        {t("landing.register")}
-                    </button>
                 </div>
             </nav>
 
@@ -254,9 +248,10 @@ export default function LandingPage() {
                                     <span className="text-[#F0973C] text-[9px] font-bold uppercase tracking-widest">Office</span>
                                 </div>
                                 {[
-                                    "Unit, Almas Tower",
-                                    "Jumeirah Lake Towers (JLT)",
-                                    "DMCC Free Zone",
+                                    "Almas Tower",
+                                    "Jumeirah Lake Towers",
+                                    "(JLT)",
+                                    "DMCC Zone",
                                     "P.O. Box 123456",
                                     "Dubai",
                                     "United Arab Emirates",
@@ -276,7 +271,6 @@ export default function LandingPage() {
                             <div className="flex flex-col items-center justify-center px-4 py-4 rounded-xl border border-[#69AC95]/20 backdrop-blur-sm bg-black/40 text-center gap-1.5">
                                 <Globe size={14} className="text-[#69AC95] mb-0.5" />
                                 <span className="text-white/70 text-[11px] font-semibold leading-snug">PAYGLOBAL MLM FOUNDATION</span>
-                                <span className="text-white/35 text-[9px] uppercase tracking-wider">February 2026</span>
                             </div>
                         </div>
                     </div>
