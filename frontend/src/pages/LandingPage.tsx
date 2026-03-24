@@ -63,7 +63,7 @@ const ReturnsTable = () => {
                         >
                             <div className="text-center">
                                 <p className="text-sm font-bold text-white">
-                                    {row.licenses >= 1000 ? `${(row.licenses / 1000).toFixed(0)}K` : row.licenses}
+                                    ${row.licenses}
                                 </p>
 
                             </div>
@@ -75,7 +75,7 @@ const ReturnsTable = () => {
                             </div>
                             <div className="text-center">
                                 <p className="text-sm text-[#F0973C] font-semibold">
-                                    ${row.monthly >= 1000 ? `${(row.monthly / 1000).toFixed(1)}K` : row.monthly.toFixed(2)}
+                                    ${row.monthly.toFixed(2)}
                                 </p>
                             </div>
                         </div>

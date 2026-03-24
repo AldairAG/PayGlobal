@@ -252,6 +252,10 @@
         "concept": "Concept",
         "all": "All",
         "status": "Status",
+        "id": "ID",
+        "date": "Date",
+        "description": "Description",
+        "amount": "Amount",
         "start_date": "Start Date",
         "end_date": "End Date",
         "no_transactions_found": "No transactions found",
@@ -458,7 +462,13 @@
         "write_a_comment": "Write a comment...",
         "ticket_is_closed": "This ticket is closed. No further comments can be added.",
         "select_ticket_to_view_details": "Select a ticket to view details",
-        "or_create_a_new_one_for_help": "or create a new one to get help"
+        "or_create_a_new_one_for_help": "or create a new one to get help",
+        "created": "Created",
+        "page": "Page",
+        "tickets": "tickets",
+        "previous_page_title": "Previous page",
+        "next_page_title": "Next page",
+        "no_tickets_yet": "You don't have any tickets yet"
 
     },
 

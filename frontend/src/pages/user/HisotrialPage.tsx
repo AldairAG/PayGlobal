@@ -320,22 +320,22 @@ export const HistorialPage = () => {
                                             <thead className="bg-white/5">
                                                 <tr>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        ID
+                                                        {t("reports.id")}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        Fecha
+                                                        {t("reports.date")}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        Concepto
+                                                        {t("reports.concept")}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        Descripción
+                                                        {t("reports.description")}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        Monto
+                                                        {t("reports.amount")}
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-xs font-semibold text-white/50 uppercase tracking-wider">
-                                                        Estado
+                                                        {t("reports.status")}
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -350,15 +350,15 @@ export const HistorialPage = () => {
                                                         </td>
                                                         <td className="px-6 py-4 text-sm text-white">
                                                             <span className="font-medium">
-                                                                {transaccion.concepto.replace(/_/g, ' ')}
+                                                                {TraducirConcepto(transaccion.concepto.toString(), idiomaActual)}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 text-sm text-white/50">
-                                                            {transaccion.descripcion}
+                                                             {/* {transaccion.descripcion} */}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
                                                             <span className={transaccion.monto >= 0 ? "text-[#69AC95]" : "text-red-400"}>
-                                                                {transaccion.monto >= 0 ? '+' : ''}{transaccion.monto.toFixed(2)} USD
+                                                                {transaccion.monto >= 0 ? '+' : ''}{transaccion.monto.toFixed(2)} USDT
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm">

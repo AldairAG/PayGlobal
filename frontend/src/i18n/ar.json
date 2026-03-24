@@ -253,6 +253,10 @@
         "concept": "المفهوم",
         "all": "الكل",
         "status": "الحالة",
+        "id": "المعرف",
+        "date": "التاريخ",
+        "description": "الوصف",
+        "amount": "المبلغ",
         "start_date": "تاريخ البدء",
         "end_date": "تاريخ الانتهاء",
         "no_transactions_found": "لم يتم العثور على معاملات",
@@ -459,7 +463,13 @@
         "write_a_comment": "اكتب تعليقًا...",
         "ticket_is_closed": "هذه التذكرة مغلقة. لا يمكن إضافة المزيد من التعليقات.",
         "select_ticket_to_view_details": "اختر تذكرة لعرض التفاصيل",
-        "or_create_a_new_one_for_help": "أو أنشئ تذكرة جديدة للحصول على المساعدة"
+        "or_create_a_new_one_for_help": "أو أنشئ واحدة جديدة للحصول على المساعدة",
+        "created": "تم الإنشاء",
+        "page": "صفحة",
+        "tickets": "تذاكر",
+        "previous_page_title": "الصفحة السابقة",
+        "next_page_title": "الصفحة التالية",
+        "no_tickets_yet": "ليس لديك تذاكر بعد"
 
     },
 

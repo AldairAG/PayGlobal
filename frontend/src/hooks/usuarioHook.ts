@@ -152,7 +152,7 @@ export const useUsuario = () => {
      */
     const cerrarSesion = () => {
         dispatch(logout());
-        navigate(ROUTES.LANDING); // Redirigir a la página de inicio después de cerrar sesión
+        navigate(ROUTES.LOGIN); // Redirigir a la página de inicio después de cerrar sesión
     };
 
     /**

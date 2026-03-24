@@ -3,8 +3,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { LogIn, Lock, User, ArrowLeft } from "lucide-react";
+import { LogIn, Lock, User, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useUsuario } from "../hooks/usuarioHook";
+import { useState } from "react";
 import LangSelector from "../components/LangSelector";
 import LogoA from "../assets/LogoA.png";
 import { ROUTES } from "../routes/routes";
@@ -13,6 +14,7 @@ export default function LoginPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { login, loadingLogin, errorLogin } = useUsuario();
+    const [showPassword, setShowPassword] = useState(false);
 
     const validationSchema = Yup.object({
         username: Yup.string().required(t("landing.fill_fields") || "Complete este campo"),
@@ -197,14 +199,21 @@ export default function LoginPage() {
                             </label>
                             <div className="relative">
                                 <input
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#F0973C] focus:ring-2 focus:ring-[#F0973C]/20 transition-all"
+                                    className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 pr-20 text-white placeholder-white/30 outline-none focus:border-[#F0973C] focus:ring-2 focus:ring-[#F0973C]/20 transition-all"
                                     placeholder={t("landing.password")}
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formik.values.password}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-12 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
                                 {isPasswordComplete && (
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
                                         ✓

@@ -96,14 +96,13 @@ const HomePage = () => {
                     <div className="flex flex-col gap-4">
 
                         {/* Licencia */}
-                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex-1">
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex-1 flex items-center justify-center gap-6">
                             <h3 className="mt-2 text-2xl font-semibold text-[#F0973C]">{t('home.active_license')}</h3>
-                            <p className="mt-2 text-2xl  text-[#F0973C] font-bold">{usuario?.licencia.nombre || t('home.without_license')}</p>
                             <p className="mt-2 text-1xl text-white/40">{t('home.renewed')}: {usuario?.licencia.fechaCompra ? formatearFechaDate(new Date(usuario.licencia.fechaCompra)) : 'N/A'}</p>
                         </div>
 
                         {/* Wallet Dividendos */}
-                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
+                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex justify-center items-center gap-6">
                             <div className="flex items-center gap-3">
                                 <Wallet size={30} className="text-[#69AC95]" />
                                 <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.staking')}</h3>
@@ -112,7 +111,7 @@ const HomePage = () => {
                         </div>
 
                         {/* Wallet Comisiones */}
-                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex justify-center items-center gap-6">
                             <div className="flex items-center gap-3">
                                 <Coins size={30} className="text-[#69AC95]" />
                                 <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.network')}</h3>
@@ -139,7 +138,7 @@ const HomePage = () => {
 
                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
                             <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.users_on_my_network')}</h3>
-                            <p className="mt-2 text-2xl font-bold text-[#F0973C]">{usuarioEnRed || 0} {t('home.affiliates')}</p>
+                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">{usuarioEnRed || 0} {t('home.affiliates')}</p>
                         </div>
 
                     </div>

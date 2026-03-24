@@ -262,6 +262,10 @@
         "concept": "Concepto",
         "all": "Todos",
         "status": "Estado",
+        "id": "ID",
+        "date": "Fecha",
+        "description": "Descripción",
+        "amount": "Monto",
         "start_date": "Fecha Inicio",
         "end_date": "Fecha Fin",
         "no_transactions_found": "No se encontraron transacciones",
@@ -471,7 +475,13 @@
         "write_a_comment": "Escribe un comentario...",
         "ticket_is_closed": "Este ticket está cerrado. No se pueden agregar más comentarios.",
         "select_ticket_to_view_details": "Selecciona un ticket para ver los detalles",
-        "or_create_a_new_one_for_help": "o crea uno nuevo para obtener ayuda"
+        "or_create_a_new_one_for_help": "o crea uno nuevo para obtener ayuda",
+        "created": "Creado",
+        "page": "Página",
+        "tickets": "tickets",
+        "previous_page_title": "Página anterior",
+        "next_page_title": "Página siguiente",
+        "no_tickets_yet": "No tienes tickets aún"
 
     },
 

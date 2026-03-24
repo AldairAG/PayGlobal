@@ -168,7 +168,7 @@ export const SoportePage = () => {
                                 ) : misTikets.length === 0 ? (
                                     <div className="text-center py-8 text-white/30">
                                         <Ticket size={48} className="mx-auto mb-2 opacity-30" />
-                                        <p>No tienes tickets aún</p>
+                                        <p>{t("support.no_tickets_yet")}</p>
                                     </div>
                                 ) : (
                                     misTikets.map((ticket) => (
@@ -188,7 +188,7 @@ export const SoportePage = () => {
                                                     className={`px-2 py-1 rounded text-xs font-semibold text-white ${ticket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"
                                                         }`}
                                                 >
-                                                    {ticket.estado === EstadoTicketEnum.ABIERTO ? "Abierto" : "Cerrado"}
+                                                    {ticket.estado === EstadoTicketEnum.ABIERTO ? t("support.open") : t("support.closed")}
                                                 </span>
                                             </div>
                                             <p className="text-xs text-white/40 mb-2 line-clamp-2">
@@ -215,9 +215,9 @@ export const SoportePage = () => {
                                     <div className="flex items-center justify-between">
                                         {/* Información de página */}
                                         <div className="text-sm text-white/40">
-                                            Página {currentPage + 1} de {totalPaginasMisTikets}
+                                            {t("support.page")} {currentPage + 1} {t("reports.of")} {totalPaginasMisTikets}
                                             <span className="ml-2 text-white/30">
-                                                ({totalElementosMisTikets} tickets)
+                                                ({totalElementosMisTikets} {t("support.tickets")})
                                             </span>
                                         </div>
 
@@ -227,7 +227,7 @@ export const SoportePage = () => {
                                                 onClick={handlePreviousPage}
                                                 disabled={currentPage === 0}
                                                 className="p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                                title="Página anterior"
+                                                title={t("support.previous_page_title")}
                                             >
                                                 <ChevronLeft size={18} />
                                             </button>
@@ -265,7 +265,7 @@ export const SoportePage = () => {
                                                 onClick={handleNextPage}
                                                 disabled={currentPage === totalPaginasMisTikets - 1}
                                                 className="p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                                                title="Página siguiente"
+                                                title={t("support.next_page_title")}
                                             >
                                                 <ChevronRight size={18} />
                                             </button>
@@ -382,7 +382,7 @@ export const SoportePage = () => {
                                                 <div className="flex items-center gap-4 text-sm text-white/50">
                                                     <span className="flex items-center gap-1">
                                                         <Clock size={16} />
-                                                        Creado: {new Date(selectedTicket.fechaCreacion).toLocaleDateString()}
+                                                        {t("support.created")}: {new Date(selectedTicket.fechaCreacion).toLocaleDateString()}
                                                     </span>
                                                     <span
                                                         className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-white ${selectedTicket.estado === EstadoTicketEnum.ABIERTO ? "bg-[#69AC95]" : "bg-red-600"

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import { UserPlus, Mail, Phone, Lock, User, ArrowLeft, Users } from "lucide-react";
+import { UserPlus, Mail, Phone, Lock, User, ArrowLeft, Users, Eye, EyeOff } from "lucide-react";
 import { useUsuario } from "../hooks/usuarioHook";
 import LangSelector from "../components/LangSelector";
 import LogoA from "../assets/LogoA.png";
@@ -62,6 +62,8 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [referenced, setReferenced] = useState(ref ?? "");
     const [localError, setLocalError] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const { registrar, loadingRegistro, errorRegistro } = useUsuario();
 
@@ -120,9 +122,6 @@ export default function RegisterPage() {
             setPassword("");
             setConfirmPassword("");
             setReferenced("");
-
-            // Redirigir a login
-            navigate(ROUTES.LOGIN);
         } catch (err) {
             console.error('Registro fallido', err);
             if (errorRegistro) {
@@ -361,12 +360,19 @@ export default function RegisterPage() {
                                 </label>
                                 <div className="relative">
                                     <input
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 pr-20 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
                                         placeholder={t("landing.password")}
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-12 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                     {isPasswordComplete && (
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
                                             ✓
@@ -383,12 +389,19 @@ export default function RegisterPage() {
                                 </label>
                                 <div className="relative">
                                     <input
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 pr-20 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
                                         placeholder={t("landing.confirm_password")}
-                                        type="password"
+                                        type={showConfirmPassword ? "text" : "password"}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-12 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
                                     {isConfirmPasswordComplete && (
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
                                             ✓
