@@ -77,7 +77,7 @@ public class Usuario implements UserDetails{
     @JsonManagedReference
     private List<Transaccion> transacciones;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Wallet> wallets;
 

@@ -30,10 +30,10 @@ import tcPortuguese from '../../assets/documents/terms/institutional_terms_portu
 import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.pdf';
 
 //presentacion
-import presentationSpanish from '../../assets/documents/presentation/presentation_spanish.pdf';
-import presentationEnglish from '../../assets/documents/presentation/presentation_english.pdf';
-import presentationFrench from '../../assets/documents/presentation/presentation_french.pdf';
-import presentationGerman from '../../assets/documents/presentation/presentation_german.pdf';
+import presentationSpanish from '../../assets/documents/presentacion/payglobal_spanish.pdf';
+import presentationEnglish from '../../assets/documents/presentacion/payglobal_english.pdf';
+import presentationFrench from '../../assets/documents/presentacion/payglobal_french.pdf';
+import presentationPortuges from '../../assets/documents/presentacion/payglobal_portuguese.pdf';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -168,7 +168,7 @@ const NovedadesPage = () => {
             description: t('novedades.presentation_desc'),
             accentColor: '#3B82F6',
             docs: {
-                es: presentationSpanish, en: presentationEnglish, fr: presentationFrench, de: presentationGerman,
+                es: presentationSpanish, en: presentationEnglish, fr: presentationFrench, de: presentationPortuges,
             },
         },
         {
