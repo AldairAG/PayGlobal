@@ -338,5 +338,22 @@ public class BonoServiceImpl implements BonoService {
 
         return true;
     }
+
+    /**
+     * Obtiene la suma de todas las licencias de el total de la red de un usuario hasta el nivel 10
+     * @param username
+     * @return volumen total de la red del usuario, es decir, la suma de todas las licencias de su red
+     */
+    private Integer obtenerVolumenRed(String username) {
+        List<Usuario> redDeUsuario = uninivelHelper.obtenerRedDeUsuario(username);
+
+        Integer volumenTotal = redDeUsuario.stream()
+                .map(u -> u.getLicencia())
+                .filter(licencia -> licencia != null)
+                .map(licencia -> licencia.getPrecio())
+                .reduce(0, Integer::sum);
+
+        return volumenTotal;
+    }
 }
 
