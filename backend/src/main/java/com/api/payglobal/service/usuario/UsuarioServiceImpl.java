@@ -497,8 +497,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         licencia.setPrecio(precioTotal);
         licencia.setLimite(licenciaCorrespondiente.getValor() * 2);
         licencia.setActivo(true);
-        // Resetear el saldo acumulado al renovar/actualizar
-        licencia.setSaldoAcumulado(0);
 
         return licencia;
     }
