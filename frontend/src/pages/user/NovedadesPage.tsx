@@ -31,7 +31,7 @@ import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.
 
 //presentacion
 import presentationSpanish from '../../assets/documents/presentacion/PAYGLOBAL_SPANISH.pdf';
-import presentationEnglish from '../../assets/documents/presentacion/PAYGLOBAL_ENGLISH.pdf';
+import presentationEnglish from '../../assets/documents/presentacion/payglobal_english.pdf';
 import presentationFrench from '../../assets/documents/presentacion/PAYGLOBAL_FRENCH.pdf';
 import presentationPortuges from '../../assets/documents/presentacion/PAYGLOBAL_PORTUGUESE.pdf';
 
