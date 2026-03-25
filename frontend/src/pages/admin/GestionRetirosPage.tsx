@@ -2,14 +2,14 @@
 import { useEffect, useState } from "react";
 import SolicitudItem from "../../components/items/SolcitudItem";
 import { EstadoOperacion, TipoSolicitud } from "../../type/enum";
-import { Filter, RefreshCw, FileText, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Filter, RefreshCw, Wallet, Loader2, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { toast } from "react-toastify";
 
-export const GestionPagosPage = () => {
+export const GestionRetirosPage = () => {
     const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerSolicitudes,
-        aprobarSolicitud, loadingAprobarSolicitud, errorAprobarSolicitud, rechazarSolicitud, loadingRechazarSolicitud,
-        errorRechazarSolicitud } = useUsuario();
+        aprobarRetiroFondos, loadingAprobarRetiroFondos, errorAprobarRetiroFondos, 
+        rechazarSolicitud, loadingRechazarSolicitud, errorRechazarSolicitud } = useUsuario();
 
     const [filtroEstado, setFiltroEstado] = useState<EstadoOperacion | "TODOS">("TODOS");
     const [filtroTipo, setFiltroTipo] = useState<TipoSolicitud | "TODOS">("TODOS");
@@ -20,12 +20,12 @@ export const GestionPagosPage = () => {
         obtenerSolicitudes(paginaActual, tamanioPagina);    
     }, [paginaActual, tamanioPagina]);
 
-    // Efecto para mostrar errores de aprobación
+    // Efecto para mostrar errores de aprobación de retiros
     useEffect(() => {
-        if (errorAprobarSolicitud) {
-            toast.error(`Error al aprobar: ${errorAprobarSolicitud}`);
+        if (errorAprobarRetiroFondos) {
+            toast.error(`Error al aprobar retiro: ${errorAprobarRetiroFondos}`);
         }
-    }, [errorAprobarSolicitud]);
+    }, [errorAprobarRetiroFondos]);
 
     // Efecto para mostrar errores de rechazo
     useEffect(() => {
@@ -34,21 +34,19 @@ export const GestionPagosPage = () => {
         }
     }, [errorRechazarSolicitud]);
 
-    // Efecto para refrescar después de aprobar exitosamente
+    // Efecto para refrescar después de aprobar retiro exitosamente
     useEffect(() => {
-        if (!loadingAprobarSolicitud && !errorAprobarSolicitud) {
-            // Si ya no está cargando y no hay error, significa que fue exitoso
+        if (!loadingAprobarRetiroFondos && !errorAprobarRetiroFondos) {
             const timer = setTimeout(() => {
                 obtenerSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
-    }, [loadingAprobarSolicitud, errorAprobarSolicitud]);
+    }, [loadingAprobarRetiroFondos, errorAprobarRetiroFondos]);
 
     // Efecto para refrescar después de rechazar exitosamente
     useEffect(() => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
-            // Si ya no está cargando y no hay error, significa que fue exitoso
             const timer = setTimeout(() => {
                 obtenerSolicitudes(paginaActual, tamanioPagina);
             }, 500);
@@ -56,11 +54,24 @@ export const GestionPagosPage = () => {
         }
     }, [loadingRechazarSolicitud, errorRechazarSolicitud]);
 
+    // Filtrar solo retiros
+    const solicitudesRetiros = (solicitudes?.content ?? []).filter(sol => {
+        return sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS ||
+               sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+    });
+
+    // Aplicar filtros adicionales
+    const solicitudesFiltradas = solicitudesRetiros.filter(sol => {
+        const cumpleFiltroEstado = filtroEstado === "TODOS" || sol.estado === filtroEstado;
+        const cumpleFiltroTipo = filtroTipo === "TODOS" || sol.tipoSolicitud === filtroTipo;
+        return cumpleFiltroEstado && cumpleFiltroTipo;
+    });
+
     // Handlers para aprobar/rechazar
     const handleAprobar = async (solicitudId: number) => {
         try {
-            await aprobarSolicitud(solicitudId);
-            toast.success('Pago aprobado exitosamente');
+            await aprobarRetiroFondos(solicitudId);
+            toast.success('Retiro de fondos aprobado exitosamente');
         } catch (error) {
             console.log(error);
         }
@@ -69,29 +80,15 @@ export const GestionPagosPage = () => {
     const handleRechazar = async (solicitudId: number) => {
         try {
             await rechazarSolicitud(solicitudId);
-            toast.success('Pago rechazado exitosamente');
+            toast.success('Retiro rechazado exitosamente');
         } catch (error) {
             console.log(error);
         }
     };
 
-    // Filtrar solo pagos (sin retiros)
-    const solicitudesPagos = (solicitudes?.content ?? []).filter(sol => {
-        return sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA ||
-               sol.tipoSolicitud === TipoSolicitud.TRANFERENCIA_USUARIO ||
-               sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO;
-    });
-
-    // Aplicar filtros adicionales
-    const solicitudesFiltradas = solicitudesPagos.filter(sol => {
-        const cumpleFiltroEstado = filtroEstado === "TODOS" || sol.estado === filtroEstado;
-        const cumpleFiltroTipo = filtroTipo === "TODOS" || sol.tipoSolicitud === filtroTipo;
-        return cumpleFiltroEstado && cumpleFiltroTipo;
-    });
-
-    // Contar por estado (solo pagos)
+    // Contar por estado (solo retiros)
     const contarPorEstado = (estado: EstadoOperacion) => {
-        return solicitudesPagos.filter(sol => sol.estado === estado).length;
+        return solicitudesRetiros.filter(sol => sol.estado === estado).length;
     };
 
     return (
@@ -100,11 +97,11 @@ export const GestionPagosPage = () => {
             <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-5 mb-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <FileText size={32} className="text-[#69AC95]" />
+                        <Wallet size={32} className="text-[#69AC95]" />
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-800">Gestión de Pagos</h1>
+                            <h1 className="text-3xl font-bold text-gray-800">Gestión de Retiros</h1>
                             <p className="text-sm text-gray-600 mt-1">
-                                Administra y procesa las solicitudes de pago
+                                Administra y procesa las solicitudes de retiro de fondos
                             </p>
                         </div>
                     </div>
@@ -121,13 +118,13 @@ export const GestionPagosPage = () => {
 
             <div className="px-6">
                 {/* Alertas de Error */}
-                {(errorAprobarSolicitud || errorRechazarSolicitud) && (
+                {(errorAprobarRetiroFondos || errorRechazarSolicitud) && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
                         <AlertTriangle size={20} className="text-red-600 mt-0.5" />
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-red-800">Error en la operación</p>
                             <p className="text-sm text-red-700 mt-1">
-                                {errorAprobarSolicitud || errorRechazarSolicitud}
+                                {errorAprobarRetiroFondos || errorRechazarSolicitud}
                             </p>
                         </div>
                     </div>
@@ -136,8 +133,8 @@ export const GestionPagosPage = () => {
                 {/* Estadísticas */}
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                        <p className="text-sm text-gray-600 mb-1">Total Pagos</p>
-                        <p className="text-2xl font-bold text-gray-800">{solicitudesPagos.length}</p>
+                        <p className="text-sm text-gray-600 mb-1">Total Retiros</p>
+                        <p className="text-2xl font-bold text-gray-800">{solicitudesRetiros.length}</p>
                     </div>
                     <div className="bg-yellow-50 rounded-lg shadow-sm border border-yellow-200 p-4">
                         <p className="text-sm text-yellow-700 mb-1">Pendientes</p>
@@ -173,17 +170,17 @@ export const GestionPagosPage = () => {
                             >
                                 <option value="TODOS">Todos los estados</option>
                                 <option value={EstadoOperacion.PENDIENTE}>Pendientes</option>
-                                <option value={EstadoOperacion.APROBADA}>Aprobadas</option>
-                                <option value={EstadoOperacion.COMPLETADA}>Completadas</option>
-                                <option value={EstadoOperacion.RECHAZADA}>Rechazadas</option>
+                                <option value={EstadoOperacion.APROBADA}>Aprobados</option>
+                                <option value={EstadoOperacion.COMPLETADA}>Completados</option>
+                                <option value={EstadoOperacion.RECHAZADA}>Rechazados</option>
                             </select>
                         </div>
 
-                        {/* Filtro por tipo */}
+                        {/* Filtro por tipo de retiro */}
                         <div>
                             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                                <FileText size={16} />
-                                Filtrar por Tipo de Pago
+                                <Wallet size={16} />
+                                Filtrar por Tipo de Retiro
                             </label>
                             <select
                                 value={filtroTipo}
@@ -191,9 +188,8 @@ export const GestionPagosPage = () => {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#69AC95] focus:border-transparent outline-none"
                             >
                                 <option value="TODOS">Todos los tipos</option>
-                                <option value={TipoSolicitud.COMPRA_LICENCIA}>Compra de Licencia</option>
-                                <option value={TipoSolicitud.TRANFERENCIA_USUARIO}>Transferencia a Usuario</option>
-                                <option value={TipoSolicitud.PAGO_DELEGADO}>Pago Delegado</option>
+                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS}>Retiro de Dividendos</option>
+                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES}>Retiro de Comisiones</option>
                             </select>
                         </div>
                     </div>
@@ -205,14 +201,14 @@ export const GestionPagosPage = () => {
                         // Estado de carga
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                             <Loader2 size={48} className="text-[#69AC95] mx-auto mb-4 animate-spin" />
-                            <p className="text-gray-600 text-lg">Cargando pagos...</p>
+                            <p className="text-gray-600 text-lg">Cargando retiros...</p>
                             <p className="text-gray-500 text-sm mt-2">Por favor espera un momento</p>
                         </div>
                     ) : errorSolicitudes ? (
                         // Estado de error
                         <div className="bg-red-50 rounded-lg shadow-sm border border-red-200 p-12 text-center">
                             <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
-                            <p className="text-red-700 text-lg font-semibold">Error al cargar los pagos</p>
+                            <p className="text-red-700 text-lg font-semibold">Error al cargar los retiros</p>
                             <p className="text-red-600 text-sm mt-2">{errorSolicitudes}</p>
                             <button
                                 onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
@@ -231,14 +227,14 @@ export const GestionPagosPage = () => {
                                 isAdmin={true}
                                 onAprobar={handleAprobar}
                                 onRechazar={handleRechazar}
-                                isLoading={loadingAprobarSolicitud || loadingRechazarSolicitud}
+                                isLoading={loadingAprobarRetiroFondos || loadingRechazarSolicitud}
                             />
                         ))
                     ) : (
                         // Sin resultados
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                            <FileText size={48} className="text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-600 text-lg">No se encontraron pagos</p>
+                            <Wallet size={48} className="text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600 text-lg">No se encontraron retiros</p>
                             <p className="text-gray-500 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
                         </div>
                     )}
@@ -250,7 +246,7 @@ export const GestionPagosPage = () => {
                         <div className="flex items-center justify-between">
                             {/* Información de paginación */}
                             <div className="text-sm text-gray-600">
-                                Mostrando <span className="font-semibold">{solicitudesPagos.length}</span> pagos
+                                Mostrando <span className="font-semibold">{solicitudesRetiros.length}</span> retiros
                                 {' '}(Página <span className="font-semibold">{paginaActual + 1}</span> de{' '}
                                 <span className="font-semibold">{solicitudes.page.totalPages}</span>)
                             </div>

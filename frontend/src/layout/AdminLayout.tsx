@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation, NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { LayoutDashboard, Users, ShieldCheck, CreditCard, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, ShieldCheck, CreditCard, Wallet, LogOut } from "lucide-react";
 import logo from '../assets/Logo.png';
 import { ROUTES } from "../routes/routes";
 import { logout } from "../store/slice/authSlice";
@@ -9,7 +9,8 @@ const menuOptions = {
     dashboard: {name: 'Dashboard', ruta: ROUTES.ADMIN.DASHBOARD, Icon: LayoutDashboard},
     users: {name: 'Explorador de usuarios', ruta: ROUTES.ADMIN.USERS_EXPLORER, Icon: Users},
     kyc: {name: 'KYC', ruta: ROUTES.ADMIN.GESTION_KYC, Icon: ShieldCheck},
-    pagos: {name: 'Gestión de Pagos', ruta: ROUTES.ADMIN.GESTION_PAGOS, Icon: CreditCard},  
+    pagos: {name: 'Gestión de Pagos', ruta: ROUTES.ADMIN.GESTION_PAGOS, Icon: CreditCard},
+    retiros: {name: 'Gestión de Retiros', ruta: ROUTES.ADMIN.GESTION_RETIROS, Icon: Wallet},
     soporte: {name: 'Gestión de Soporte', ruta: ROUTES.ADMIN.GESTION_SOPORTE, Icon: ShieldCheck},
 }
 

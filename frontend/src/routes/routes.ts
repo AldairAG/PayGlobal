@@ -4,6 +4,7 @@ export const ROUTES = {
         DASHBOARD: '/admin/dashboard',
         USERS_EXPLORER: '/admin/users',
         GESTION_PAGOS: '/admin/gestion-pagos',
+        GESTION_RETIROS: '/admin/gestion-retiros',
         GESTION_KYC: '/admin/gestion-kyc',
         EDITAR_USUARIO: `/admin/editar-usuario`,
         GESTION_SOPORTE: '/admin/gestion-soporte'

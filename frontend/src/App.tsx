@@ -17,6 +17,7 @@ import { SoportePage } from './pages/user/SoportePage'
 import { TransferenciaInternaPage } from './pages/user/TransferenciaInternaPage'
 import { DashboardPage } from './pages/admin/DashboardPage'
 import { GestionPagosPage } from './pages/admin/GestionPagosPage'
+import { GestionRetirosPage } from './pages/admin/GestionRetirosPage'
 import { GestionKycPage } from './pages/admin/GestionKycPage'
 import { EditarUsuarioPage } from './pages/admin/EditarUsuarioPage'
 import { ExploradorUsuarioPage } from './pages/admin/ExploradorUsuarioPage'
@@ -61,6 +62,7 @@ function App() {
             <Route path={ROUTES.ADMIN.LAYOUT} element={<AdminLayout />} >
               <Route path={ROUTES.ADMIN.DASHBOARD} element={<DashboardPage />} />
               <Route path={ROUTES.ADMIN.GESTION_PAGOS} element={<GestionPagosPage />} />
+              <Route path={ROUTES.ADMIN.GESTION_RETIROS} element={<GestionRetirosPage />} />
               <Route path={ROUTES.ADMIN.GESTION_KYC} element={<GestionKycPage />} />
               <Route path={`${ROUTES.ADMIN.EDITAR_USUARIO}/:userId`} element={<EditarUsuarioPage />} />
               <Route path={ROUTES.ADMIN.USERS_EXPLORER} element={<ExploradorUsuarioPage />} />
