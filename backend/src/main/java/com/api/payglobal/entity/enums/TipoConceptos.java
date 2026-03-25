@@ -6,6 +6,7 @@ public enum TipoConceptos {
     BONO_REONOVACION_LICENCIA("Bono por renovación de licencia", false),
     BONO_UNINIVEL("Bono uninivel", true),
     BONO_RANGO("Bono rango", false),
+    BONO_AUTO("Bono de auto", false),
     INGRESO_PASIVO("Ingreso pasivo", false),
     BONO_ANUAL("Bono anual", false),
     BONO_FUNDADOR("Bono fundador", false),

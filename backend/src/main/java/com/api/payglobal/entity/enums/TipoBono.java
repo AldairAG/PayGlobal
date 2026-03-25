@@ -6,5 +6,6 @@ public enum TipoBono {
     BONO_UNINIVEL,
     BONO_POOL_ANUAL,
     BONO_FUNDADOR,
-    BONO_RANGO
+    BONO_RANGO,
+    BONO_AUTO
 }

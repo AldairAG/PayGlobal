@@ -30,7 +30,6 @@ import com.api.payglobal.service.transaccion.TransaccionService;
 public class BonoServiceImpl implements BonoService {
 
     private final Double BONO_INSCRIPCION_NIVEL_1 = 0.1;
-    private final Double BONO_INSCRIPCION_NIVEL_2 = 0.05;
     private final Double BONO_RENOVACION = 0.05;
 
     private final Double[] BONO_UNINIVEL = { 0.10, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.03 };
@@ -58,20 +57,14 @@ public class BonoServiceImpl implements BonoService {
     public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception {
 
         List<UsuarioEnRedResponse> redInversa = uninivelHelper.obtenerRedDeUsuariosInversaRecursiva(usernameReferido, 0,
-                2);
+                1);
 
         for (UsuarioEnRedResponse usuarioEnRed : redInversa) {
-            Double bono = 0.0;
             if (usuarioEnRed.getNivel() == 1) {
-                bono = tipoLicencia.getValor() * BONO_INSCRIPCION_NIVEL_1;
-            } else if (usuarioEnRed.getNivel() == 2) {
-                bono = tipoLicencia.getValor() * BONO_INSCRIPCION_NIVEL_2;
-            }
+                Double bono = tipoLicencia.getValor() * BONO_INSCRIPCION_NIVEL_1;
 
-            final Double bonoFinal = bono;
-            if (bonoFinal > 0) {
                 // Validar que el usuario tenga licencia activa y no haya superado el límite
-                if (!validarLicencia(usuarioEnRed.getUsername(), bonoFinal)) {
+                if (!validarLicencia(usuarioEnRed.getUsername(), bono)) {
                     continue;
                 }
 
@@ -81,23 +74,18 @@ public class BonoServiceImpl implements BonoService {
                         .orElse(null);
 
                 if (wallet != null) {
-                    wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoFinal)));
+                    wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
                     walletRepository.save(wallet);
 
-                    TipoConceptos concepto = usuarioEnRed.getNivel() == 1
-                            ? TipoConceptos.BONO_REGISTRO_DIRECTO
-                            : TipoConceptos.BONO_REGISTRO_INDIRECTO;
-
                     Bono nuevoBono = crearOActualizarBono(usuarioEnRed.getUsername(), TipoBono.BONO_INSCRIPCION,
-                            bonoFinal);
+                            bono);
                     bonoRepository.save(nuevoBono);
-                    String descripcion = "Bono de inscripción por "
-                            + (usuarioEnRed.getNivel() == 1 ? "registro directo" : "registro indirecto") +
-                            " de usuario: " + usernameReferido;
+                    
+                    String descripcion = "Bono de inscripción por registro directo de usuario: " + usernameReferido;
 
-                    aumentarSaldoAcumuladoLicencia(usuarioEnRed.getUsername(), bonoFinal);
+                    aumentarSaldoAcumuladoLicencia(usuarioEnRed.getUsername(), bono);
 
-                    registrarTransaccion(usuarioEnRed.getUsername(), bonoFinal, concepto,
+                    registrarTransaccion(usuarioEnRed.getUsername(), bono, TipoConceptos.BONO_REGISTRO_DIRECTO,
                             TipoMetodoPago.WALLET_COMISIONES, descripcion);
                 }
             }
@@ -138,8 +126,42 @@ public class BonoServiceImpl implements BonoService {
 
     @Override
     @Transactional
-    public Wallet bonoRango(Wallet wallet, String usernameReferido) throws Exception {
-        return null;
+    public void bonoRango(String usernameReferido) throws Exception {
+
+        Usuario usuario = usuarioRepository.findByUsername(usernameReferido)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con username: " + usernameReferido));
+
+        //Obtener el volumen de la red del usuario
+
+        Integer volumenRed = obtenerVolumenRed(usernameReferido);
+
+        //Obtener el rango actual del usuario
+
+        TipoRango rangoActual = usuario.getRango();
+
+        //Determinar el nuevo rango del usuario
+
+        if(volumenRed >rangoActual.getCapitalNecesario()){
+            usuario.setRango(determinarRangoPorVolumen(volumenRed));
+        }
+
+        //Calcular el bono por rango
+
+        if(usuario.getRango().getNumero() > rangoActual.getNumero()) {
+            Double bono = usuario.getRango().getBono(); 
+            Wallet wallet = walletRepository.findByUsuario_Username(usernameReferido).stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
+                    .findFirst()
+                    .orElse(null);
+            wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
+            walletRepository.save(wallet);
+
+            registrarTransaccion(usernameReferido, bono, TipoConceptos.BONO_RANGO,
+                    null, null);
+        }
+
+        //Guardar cambios
+        usuarioRepository.save(usuario);
     }
 
     @Override
@@ -192,6 +214,10 @@ public class BonoServiceImpl implements BonoService {
     @Override
     @Transactional
     public void bonoUninivel(String usernameReferido, Double monto, TipoRango tipoRango) throws Exception {
+        if(tipoRango == null || tipoRango.getNumero() <= 0) {
+            return;
+        }
+
         List<UsuarioEnRedResponse> redInversa = uninivelHelper.obtenerRedDeUsuariosInversaRecursiva(usernameReferido, 0,
                 tipoRango.getNumero());
 
@@ -355,5 +381,49 @@ public class BonoServiceImpl implements BonoService {
 
         return volumenTotal;
     }
+
+    private TipoRango determinarRangoPorVolumen(Integer volumen) {
+        for (TipoRango rango : TipoRango.values()) {
+            if (volumen >= rango.getCapitalNecesario()) {
+                return rango;
+            }
+        }
+        return TipoRango.SIN_RANGO;
+    }
+
+    @Override
+    @Transactional
+    public void bonoAuto() throws Exception {
+        // Buscar usuarios con rango superior a TRIPLE_DIAMOND (numero > 5)
+        List<Usuario> usuariosConBonoAuto = usuarioRepository.findAll().stream()
+                .filter(usuario -> usuario.getRango() != null)
+                .filter(usuario -> usuario.getRango().getNumero() > TipoRango.TRIPLE_DIAMOND.getNumero())
+                .filter(usuario -> usuario.getRango().getBonoAuto() != null)
+                .toList();
+
+        for (Usuario usuario : usuariosConBonoAuto) {
+            Integer bonoAuto = usuario.getRango().getBonoAuto();
+            
+            // Buscar wallet de comisiones del usuario
+            Wallet wallet = walletRepository.findByUsuario_Username(usuario.getUsername()).stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
+                    .findFirst()
+                    .orElse(null);
+
+            if (wallet != null) {
+                // Agregar el bono al wallet
+                wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoAuto)));
+                walletRepository.save(wallet);
+
+                // Registrar transacción
+                String descripcion = "Bono de auto por rango " + usuario.getRango().getNombre();
+                registrarTransaccion(usuario.getUsername(), bonoAuto.doubleValue(), 
+                        TipoConceptos.BONO_AUTO, TipoMetodoPago.WALLET_COMISIONES, descripcion);
+
+                crearOActualizarBono(usuario.getUsername(), TipoBono.BONO_AUTO, bonoAuto.doubleValue());
+            }
+        }
+    }
+
 }
 

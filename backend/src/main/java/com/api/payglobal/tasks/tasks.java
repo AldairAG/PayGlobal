@@ -21,10 +21,11 @@ public class tasks {
         }
     }
 
-    @Scheduled(cron = "0 15 0 * * *")
-    public void asignacionRangoTask() {
+
+    @Scheduled(cron = "0 0 0 1 * *")
+    public void bonoAutoTask() {
         try {
-            bonoService.asignacionRango();
+            bonoService.bonoAuto();
         } catch (Exception e) {
             e.printStackTrace();
         }

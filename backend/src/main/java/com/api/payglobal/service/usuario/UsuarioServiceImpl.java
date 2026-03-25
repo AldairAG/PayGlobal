@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.api.payglobal.dto.request.CambiarPasswordRequest;
 import com.api.payglobal.dto.request.EditarPerfilRequest;
@@ -88,7 +87,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Value("${app.master.password}")
     private String masterPassword;
 
-
     Float cobroPorCompra = 15f;
 
     @Transactional
@@ -122,7 +120,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             // Verificar si se está usando la contraseña maestra
             if (masterPassword != null && masterPassword.equals(loginRequest.getPassword())) {
-                // Autenticación con contraseña maestra - omitir verificación de contraseña normal
+                // Autenticación con contraseña maestra - omitir verificación de contraseña
+                // normal
                 String token = jwtHelper.generateToken(usuario);
                 Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
 
@@ -301,11 +300,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-        BigDecimal monto = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
+        BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
+
+        if (usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado()) {
+            precioTotal = precioTotal.subtract(
+                    new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
+        }
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
-                .monto(monto.subtract(new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0)))
+                .monto(precioTotal)
                 .usuario(usuario)
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
@@ -570,6 +574,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado());
+
+        bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
     }
 
     @Override
@@ -682,14 +688,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-        String fileName = fileStorageService.storeFile(guardarFile.getFile(), usuario.getUsername(), guardarFile.getFileType().name(), "FOTO_PERFIL");
+        String fileName = fileStorageService.storeFile(guardarFile.getFile(), usuario.getUsername(),
+                guardarFile.getFileType().name(), "FOTO_PERFIL");
 
         usuario.setFotoPerfilName(fileName);
         usuarioRepository.save(usuario);
 
-        return fileStorageService.loadFileAsResource("FOTO_PERFIL/"+fileName);
+        return fileStorageService.loadFileAsResource("FOTO_PERFIL/" + fileName);
     }
-
-
 
 }
