@@ -2,7 +2,7 @@
 import {useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle, Pencil, Trash2 } from "lucide-react";
+import { Wallet, Plus, ArrowDownToLine, Filter, ChevronLeft, ChevronRight, Calendar, CheckCircle, Clock, XCircle, AlertCircle, Pencil, Trash2, Lock, Shield } from "lucide-react";
 import { toast } from "react-toastify";
 import type { SolicitudRetiro } from "../../type/entityTypes";
 import { TipoCrypto, EstadoOperacion, TipoWallets, TipoSolicitud } from "../../type/enum";
@@ -11,12 +11,19 @@ import type { CreateWalletAddress } from "../../type/requestTypes";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { TraducirWalletType } from '../../helpers/idiomaHelpers';
+import GuardarClaveSeguridadModal from "../../components/modal/GuardarClaveSeguridadModal";
+import VerificarClaveSeguridadModal from "../../components/modal/VerificarClaveSeguridadModal";
 
 
 export const RetiroPage = () => {
     const { t, i18n } = useTranslation();
 
-    const { usuario, solicitarRetiro, loadingSolicitarRetiroFondos, errorSolicitarRetiroFondos } = useUsuario();
+    const { 
+        usuario, 
+        solicitarRetiro, 
+        loadingSolicitarRetiroFondos, 
+        errorSolicitarRetiroFondos
+    } = useUsuario();
 
     const {
         getMyWalletAddresses,
@@ -33,6 +40,11 @@ export const RetiroPage = () => {
         loadingUpdate,
         errorUpdate
     } = useWalletAddress();
+
+    // Estado para modales de clave de seguridad
+    const [showGuardarClaveModal, setShowGuardarClaveModal] = useState(false);
+    const [showVerificarClaveModal, setShowVerificarClaveModal] = useState(false);
+    const [pendingRetiroData, setPendingRetiroData] = useState<{walletId: number, monto: number, addressId: number} | null>(null);
 
     // Estado para solicitudes de retiro
     // Estados de UI
@@ -113,21 +125,46 @@ export const RetiroPage = () => {
             addresId: 0
         },
         validationSchema: retiroValidationSchema,
-        onSubmit: (values, { resetForm }) => {
-            const walletAddress = walletAddresses.find(w => w.id === Number(values.addresId));
-            if (!walletAddress) return;
+        onSubmit: (values) => {
+            // Verificar si el usuario tiene clave de seguridad configurada
+            if (!usuario?.claveSeguridad) {
+                toast.warning(t("withdrawal.security_key_required"));
+                setShowGuardarClaveModal(true);
+                return;
+            }
 
-            const wallet = usuario?.wallets.find(w => w.id === Number(retiroFormik.values.walletId));
-            const walletTipo=wallet?.tipo == TipoWallets.WALLET_STAKING ? TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS : TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+            // Guardar los datos del retiro temporalmente y mostrar modal de verificación
+            setPendingRetiroData({
+                walletId: values.walletId,
+                monto: values.monto,
+                addressId: values.addresId
+            });
+            setShowVerificarClaveModal(true);
+        }
+    });
 
-            solicitarRetiro(values.addresId, values.monto, walletTipo).then(() => {
-            resetForm();
-            toast.success(t("withdrawal.withdrawal_request_sent"));
-            }).catch(() => {
-                toast.error(t("withdrawal.error_requesting_withdrawal") + (errorSolicitarRetiroFondos || t("withdrawal.error_unknown")));
+    // Función para procesar el retiro después de verificar la clave
+    const procesarRetiro = () => {
+        if (!pendingRetiroData) return;
+
+        const walletAddress = walletAddresses.find(w => w.id === pendingRetiroData.addressId);
+        if (!walletAddress) return;
+
+        const wallet = usuario?.wallets.find(w => w.id === pendingRetiroData.walletId);
+        const walletTipo = wallet?.tipo == TipoWallets.WALLET_STAKING 
+            ? TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS 
+            : TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+
+        solicitarRetiro(pendingRetiroData.addressId, pendingRetiroData.monto, walletTipo)
+            .then(() => {
+                retiroFormik.resetForm();
+                setPendingRetiroData(null);
+                toast.success(t("withdrawal.withdrawal_request_sent"));
             })
-
-    }});
+            .catch(() => {
+                toast.error(t("withdrawal.error_requesting_withdrawal") + (errorSolicitarRetiroFondos || t("withdrawal.error_unknown")));
+            });
+    };
 
     // Filtrar solicitudes por fecha
     const solicitudesFiltradas = solicitarRetiroHard.filter((sol) => {
@@ -579,11 +616,37 @@ export const RetiroPage = () => {
                                 <li>• {t("withdrawal.network_fees_will_apply")}</li>
                             </ul>
                         </div>
+
+                        {/* Sección de clave de seguridad */}
+                        <div className="mt-4 p-4 rounded-xl bg-[#69AC95]/10 border border-[#69AC95]/30">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Shield size={20} className="text-[#69AC95]" />
+                                    <div>
+                                        <h3 className="font-semibold text-sm text-white">
+                                            {t("withdrawal.security_key")}
+                                        </h3>
+                                        <p className="text-xs text-white/50">
+                                            {usuario?.claveSeguridad 
+                                                ? t("withdrawal.security_key_configured")
+                                                : t("withdrawal.security_key_not_configured")}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowGuardarClaveModal(true)}
+                                    className="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-[#69AC95] hover:bg-[#5a9a84] text-black text-sm flex items-center gap-2"
+                                >
+                                    <Lock size={16} />
+                                    {usuario?.claveSeguridad ? t("withdrawal.update_key") : t("withdrawal.configure_key")}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Historial de Solicitudes */}
-                <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+                <div className="rounded-2xl border border-white/5 bg-white/2 p-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <h2 className="text-xl font-bold flex items-center gap-2 text-white">
                             <Calendar size={24} className="text-[#F0973C]" />
@@ -719,6 +782,28 @@ export const RetiroPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modales de Clave de Seguridad */}
+            <GuardarClaveSeguridadModal
+                open={showGuardarClaveModal}
+                onClose={() => setShowGuardarClaveModal(false)}
+                onSuccess={() => {
+                    setShowGuardarClaveModal(false);
+                    toast.success(t("withdrawal.security_key_saved_successfully"));
+                }}
+            />
+
+            <VerificarClaveSeguridadModal
+                open={showVerificarClaveModal}
+                onClose={() => {
+                    setShowVerificarClaveModal(false);
+                    setPendingRetiroData(null);
+                }}
+                onVerified={() => {
+                    setShowVerificarClaveModal(false);
+                    procesarRetiro();
+                }}
+            />
         </div>
     );
 }

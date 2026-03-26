@@ -44,3 +44,11 @@ export interface EvaluarKycFileRequest {
     comentario?: string;
     razonRechazo?: TipoRechazos;
 }
+
+export interface GuardarClaveSeguridadRequest {
+    claveSeguridad: number;
+}
+
+export interface VerificarClaveSeguridadRequest {
+    claveSeguridad: number;
+}

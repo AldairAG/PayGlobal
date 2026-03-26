@@ -43,7 +43,7 @@ public class TiketSoporte {
     private Integer numeroComentarios;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", unique = false)
     @JsonBackReference
     @JsonIgnore
     private Usuario usuario;

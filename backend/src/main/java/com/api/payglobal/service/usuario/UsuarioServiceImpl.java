@@ -695,4 +695,24 @@ public class UsuarioServiceImpl implements UsuarioService {
         return fileStorageService.loadFileAsResource("FOTO_PERFIL/" + fileName);
     }
 
+    @Override
+    public void guardarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        usuario.setClaveSeguridad(passwordEncoder.encode(claveSeguridad));
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public Boolean verificarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+        if (usuario.getClaveSeguridad() == null) {
+            throw new Exception("El usuario no ha establecido una clave de seguridad");
+        }
+
+        return passwordEncoder.matches(claveSeguridad, usuario.getClaveSeguridad());
+    }
+
 }

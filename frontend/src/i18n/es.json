@@ -238,7 +238,14 @@
         "amount_required": "El monto es requerido",
         "amount_min": "El monto mínimo es 1",
         "withdrawal_request_sent": "Solicitud de retiro enviada",
-        "error_requesting_withdrawal": "Error al solicitar retiro: "
+        "error_requesting_withdrawal": "Error al solicitar retiro: ",
+        "security_key": "Clave de Seguridad",
+        "security_key_configured": "Clave de seguridad configurada",
+        "security_key_not_configured": "Clave de seguridad no configurada",
+        "configure_key": "Configurar",
+        "update_key": "Actualizar",
+        "security_key_saved_successfully": "Clave de seguridad guardada exitosamente",
+        "security_key_required": "Debe configurar una clave de seguridad antes de solicitar un retiro"
     },
 
     "reports": {
@@ -502,7 +509,12 @@
         "level_0": "nivel 0",
         "always_your_user": "siempre es tu usuario. Los niveles subsiguientes representan tus referidos directos e indirectos. A mayor rango, más niveles podrás visualizar de tu red.",
         "level": "Nivel ",
-        "referrals": "Referidos"
+        "referrals": "Referidos",
+        "direct_referrals": "Referidos Directos",
+        "total_capital": "QV",
+        "total_network": "Red Total",
+        "level_1_users": "Usuarios en Nivel 1",
+        "sum_of_all_licenses": "Suma de todas las licencias"
 
     },
 

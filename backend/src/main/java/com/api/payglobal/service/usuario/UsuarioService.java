@@ -68,4 +68,8 @@ public interface UsuarioService extends UserDetailsService {
         void aprobarRetiroFondos(Long idSolicitud) throws Exception;
 
         Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception;
+
+        void guardarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
+
+        Boolean verificarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
 }

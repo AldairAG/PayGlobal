@@ -181,6 +181,24 @@ const aprobarRetiroFondos = async (idSolicitud: number): Promise<ApiResponse<str
     return api.put<string>(`${BASE_PATH}/admin/aprobar-retiro/${idSolicitud}`);
 };
 
+const guardarClaveSeguridad = async (claveSeguridad: string, idUsuario: number): Promise<ApiResponse<string>> => {
+    return api.post<string>(`${BASE_PATH}/guardar-clave-seguridad`, null, {
+        params: {
+            claveSeguridad,
+            idUsuario
+        }
+    });
+};
+
+const verificarClaveSeguridad = async (claveSeguridad: string, idUsuario: number): Promise<ApiResponse<boolean>> => {
+    return api.post<boolean>(`${BASE_PATH}/verificar-clave-seguridad`, null, {
+        params: {
+            claveSeguridad,
+            idUsuario
+        }
+    });
+};
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -200,4 +218,6 @@ export const usuarioService = {
     obtenerFotoPerfil,
     eliminarUsuarioPorId,
     aprobarRetiroFondos,
+    guardarClaveSeguridad,
+    verificarClaveSeguridad,
 };

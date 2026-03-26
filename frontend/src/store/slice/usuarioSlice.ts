@@ -75,6 +75,12 @@ interface UsuarioState {
     loadingAprobarRetiroFondos: boolean;
     errorAprobarRetiroFondos: string | null;
 
+    loadingGuardarClaveSeguridad: boolean;
+    errorGuardarClaveSeguridad: string | null;
+
+    loadingVerificarClaveSeguridad: boolean;
+    errorVerificarClaveSeguridad: string | null;
+
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -127,6 +133,11 @@ const loadInitialState = (): UsuarioState => {
         errorEliminarUsuario: null,
         loadingAprobarRetiroFondos: false,
         errorAprobarRetiroFondos: null,
+        loadingGuardarClaveSeguridad: false,
+        errorGuardarClaveSeguridad: null,
+        loadingVerificarClaveSeguridad: false,
+        errorVerificarClaveSeguridad: null,
+
     };
 };
 
@@ -439,6 +450,41 @@ export const aprobarRetiroFondosThunk = createAsyncThunk<
     }
 });
 
+export const guardarClaveSeguridadThunk = createAsyncThunk<
+    ApiResponse<string>,
+    { claveSeguridad: string; idUsuario: number },
+    { rejectValue: string }
+>("usuario/guardarClaveSeguridad", async ({ claveSeguridad, idUsuario }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.guardarClaveSeguridad(claveSeguridad, idUsuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al guardar clave de seguridad");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al guardar clave de seguridad";
+        return rejectWithValue(message);
+    }
+});
+
+export const verificarClaveSeguridadThunk = createAsyncThunk<
+    ApiResponse<boolean>,
+    { claveSeguridad: string; idUsuario: number },
+    { rejectValue: string }
+>("usuario/verificarClaveSeguridad", async ({ claveSeguridad, idUsuario }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.verificarClaveSeguridad(claveSeguridad, idUsuario);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al verificar clave de seguridad");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al verificar clave de seguridad";
+        return rejectWithValue(message);
+    }
+});
+
+
 const usuarioSlice = createSlice({
     name: 'usuario',
     initialState,
@@ -673,6 +719,30 @@ const usuarioSlice = createSlice({
                 state.loadingEliminarUsuario = false;
                 state.errorEliminarUsuario = action.payload || "Error al eliminar usuario";
             })
+            .addCase(guardarClaveSeguridadThunk.pending, (state) => {
+                state.loadingGuardarClaveSeguridad = true;
+                state.errorGuardarClaveSeguridad = null;
+            })
+            .addCase(guardarClaveSeguridadThunk.fulfilled, (state) => {
+                state.loadingGuardarClaveSeguridad = false;
+                state.errorGuardarClaveSeguridad = null;
+            })
+            .addCase(guardarClaveSeguridadThunk.rejected, (state, action) => {
+                state.loadingGuardarClaveSeguridad = false;
+                state.errorGuardarClaveSeguridad = action.payload || "Error al guardar clave de seguridad";
+            })
+            .addCase(verificarClaveSeguridadThunk.pending, (state) => {
+                state.loadingVerificarClaveSeguridad = true;
+                state.errorVerificarClaveSeguridad = null;
+            })
+            .addCase(verificarClaveSeguridadThunk.fulfilled, (state) => {
+                state.loadingVerificarClaveSeguridad = false;
+                state.errorVerificarClaveSeguridad = null;
+            })
+            .addCase(verificarClaveSeguridadThunk.rejected, (state, action) => {
+                state.loadingVerificarClaveSeguridad = false;
+                state.errorVerificarClaveSeguridad = action.payload || "Error al verificar clave de seguridad";
+            });
     },
 });
 

@@ -228,7 +228,14 @@
         "amount_required": "Amount is required",
         "amount_min": "Amount must be at least 1",
         "withdrawal_request_sent": "Withdrawal request sent",
-        "error_requesting_withdrawal": "Error requesting withdrawal: "
+        "error_requesting_withdrawal": "Error requesting withdrawal: ",
+        "security_key": "Security Key",
+        "security_key_configured": "Security key configured",
+        "security_key_not_configured": "Security key not configured",
+        "configure_key": "Configure",
+        "update_key": "Update",
+        "security_key_saved_successfully": "Security key saved successfully",
+        "security_key_required": "You must configure a security key before requesting a withdrawal"
     },
 
     "reports": {
@@ -489,7 +496,12 @@
         "level_0": "level 0",
         "always_your_user": "is always your user. Subsequent levels represent your direct and indirect referrals. The higher your rank, the more levels of your network you can view.",
         "level": "Level ",
-        "referrals": "Referrals"
+        "referrals": "Referrals",
+        "direct_referrals": "Direct Referrals",
+        "total_capital": "QV",
+        "total_network": "Total Network",
+        "level_1_users": "Level 1 Users",
+        "sum_of_all_licenses": "Sum of all licenses"
 
     },
 

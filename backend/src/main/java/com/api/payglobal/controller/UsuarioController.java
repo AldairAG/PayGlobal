@@ -425,6 +425,31 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    
+
+    @PostMapping("/guardar-clave-seguridad")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<Void>> guardarClaveSeguridad(@RequestParam String claveSeguridad,
+            @AuthenticationPrincipal Usuario usuario) {
+        try {
+            usuarioService.guardarClaveSeguridad(claveSeguridad, usuario.getId());
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, null, "Clave de seguridad guardada correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+     @PostMapping("/verificar-clave-seguridad")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<Boolean>> verificarClaveSeguridad(@RequestParam String claveSeguridad,
+            @AuthenticationPrincipal Usuario usuario) {
+        try {
+            Boolean esValida = usuarioService.verificarClaveSeguridad(claveSeguridad, usuario.getId());
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, esValida, "Clave de seguridad verificada correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
 
 }

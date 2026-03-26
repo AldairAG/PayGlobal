@@ -231,6 +231,10 @@ const RedUsuarioPage = () => {
 
     const maxNivel = usuario ? TipoRango[usuario.rango as keyof typeof TipoRango].numero : 0;
 
+    // Calcular estadísticas
+    const referidosDirectos = usuariosEnRed?.filter(u => u.nivel === 1).length || 0;
+    const capitalTotal = usuariosEnRed?.reduce((sum, u) => sum + (u.licencia?.precio || 0), 0) || 0;
+    const totalReferidos = usuariosEnRed?.length || 0;
 
     return (
         <div className="min-h-screen bg-[#000000] text-white p-6 overflow-x-auto">
@@ -256,23 +260,42 @@ const RedUsuarioPage = () => {
                     </div>
                 </div>
 
-                {/* Leyenda */}
-                <div className="rounded-xl p-4 mb-8 max-w-2xl mx-auto border" style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }}>
-                    <div className="flex items-center justify-around text-xs">
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-white/50">{t("network.user")}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#69AC95' }}></div>
-                            <span className="text-white/50">{t("network.main_user")} (Nivel 0)</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <svg className="w-4 h-4" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                {/* Estadísticas de la red */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
+                    {/* Total de referidos */}
+                    <div className="rounded-xl p-6 border" style={{ backgroundColor: 'rgba(240,151,60,0.08)', borderColor: 'rgba(240,151,60,0.3)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-white/50 text-sm font-semibold">{t("network.total_network")}</span>
+                            <svg className="w-6 h-6" style={{ color: '#F0973C' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span className="text-white/50">{t("network.click_to_expand")}</span>
                         </div>
+                        <p className="text-3xl font-bold" style={{ color: '#F0973C' }}>{totalReferidos}</p>
+                        <p className="text-xs text-white/40 mt-1">{t("network.referrals")}</p>
+                    </div>
+
+                    {/* Referidos directos */}
+                    <div className="rounded-xl p-6 border" style={{ backgroundColor: 'rgba(105,172,149,0.08)', borderColor: 'rgba(105,172,149,0.3)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-white/50 text-sm font-semibold">{t("network.direct_referrals")}</span>
+                            <svg className="w-6 h-6" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <p className="text-3xl font-bold" style={{ color: '#69AC95' }}>{referidosDirectos}</p>
+                        <p className="text-xs text-white/40 mt-1">{t("network.level_1_users")}</p>
+                    </div>
+
+                    {/* Capital total */}
+                    <div className="rounded-xl p-6 border" style={{ backgroundColor: 'rgba(105,172,149,0.08)', borderColor: 'rgba(105,172,149,0.3)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-white/50 text-sm font-semibold">{t("network.total_capital")}</span>
+                            <svg className="w-6 h-6" style={{ color: '#69AC95' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p className="text-3xl font-bold" style={{ color: '#69AC95' }}>${capitalTotal.toFixed(2)}</p>
+                        <p className="text-xs text-white/40 mt-1">{t("network.sum_of_all_licenses")}</p>
                     </div>
                 </div>
 

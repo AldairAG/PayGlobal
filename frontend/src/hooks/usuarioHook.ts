@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -98,6 +98,12 @@ export const useUsuario = () => {
     // Estados de solicitar compra de licencia
     const loadingSolicitarCompraLicencia = useSelector((state: RootState) => state.usuario.loadingSolicitarCompraLicencia);
     const errorSolicitarCompraLicencia = useSelector((state: RootState) => state.usuario.errorSolicitarCompraLicencia);
+
+    const loadingGuardarClaveSeguridad = useSelector((state: RootState) => state.usuario.loadingGuardarClaveSeguridad);
+    const errorGuardarClaveSeguridad = useSelector((state: RootState) => state.usuario.errorGuardarClaveSeguridad);
+
+    const loadingVerificarClaveSeguridad = useSelector((state: RootState) => state.usuario.loadingVerificarClaveSeguridad);
+    const errorVerificarClaveSeguridad = useSelector((state: RootState) => state.usuario.errorVerificarClaveSeguridad);
 
 
     /**
@@ -362,6 +368,26 @@ export const useUsuario = () => {
         }
     };
 
+    const guardarClaveSeguridad = async (claveSeguridad: string) => {
+        try {
+            const result = await dispatch(guardarClaveSeguridadThunk({ claveSeguridad, idUsuario: usuario?.id || 0 }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al guardar clave de seguridad:', error);
+            throw error;
+        }
+    };
+
+    const verificarClaveSeguridad = async (claveSeguridad: string) => {
+        try {
+            const result = await dispatch(verificarClaveSeguridadThunk({ claveSeguridad, idUsuario: usuario?.id || 0 }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al verificar clave de seguridad:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -460,6 +486,14 @@ export const useUsuario = () => {
         aprobarRetiroFondos,
         loadingAprobarRetiroFondos,
         errorAprobarRetiroFondos,
+
+        guardarClaveSeguridad,
+        loadingGuardarClaveSeguridad,
+        errorGuardarClaveSeguridad,
+
+        verificarClaveSeguridad,
+        loadingVerificarClaveSeguridad,
+        errorVerificarClaveSeguridad,
         
     };
 };

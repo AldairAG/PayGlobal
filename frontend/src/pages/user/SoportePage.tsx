@@ -101,7 +101,7 @@ export const SoportePage = () => {
                 listarMisTikets(currentPage, pageSize);
                 setSelectedTicket(null);
                 toast.success("Respuesta agregada exitosamente");
-            })  
+            })
             .catch((error) => {
                 console.error("Error al agregar respuesta:", error);
                 toast.error(errorAgregarComentario || "Error al agregar la respuesta. Por favor, intenta nuevamente.");
@@ -201,7 +201,7 @@ export const SoportePage = () => {
                                                 </span>
                                                 <span className="flex items-center gap-1">
                                                     <MessageSquare size={12} />
-                                                    {ticket.respuestaTikect.length}
+                                                    {(ticket.respuestaTikect?.length || 0)}
                                                 </span>
                                             </div>
                                         </div>
@@ -312,9 +312,8 @@ export const SoportePage = () => {
                                                 value={formik.values.asunto}
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
-                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all ${
-                                                    formik.touched.asunto && formik.errors.asunto ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
-                                                }`}
+                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all ${formik.touched.asunto && formik.errors.asunto ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
+                                                    }`}
                                                 placeholder={t("support.describe_briefly_the_problem")}
                                             />
                                             {formik.touched.asunto && formik.errors.asunto && (
@@ -335,9 +334,8 @@ export const SoportePage = () => {
                                                 onChange={formik.handleChange}
                                                 onBlur={formik.handleBlur}
                                                 rows={8}
-                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all resize-none ${
-                                                    formik.touched.descripcion && formik.errors.descripcion ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
-                                                }`}
+                                                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/20 focus:outline-none transition-all resize-none ${formik.touched.descripcion && formik.errors.descripcion ? "border-red-500" : "border-[#F0973C]/40 focus:border-[#F0973C]/70"
+                                                    }`}
                                                 placeholder={t("support.describe_your_problem_in_detail")}
                                             />
                                             {formik.touched.descripcion && formik.errors.descripcion && (
@@ -409,7 +407,7 @@ export const SoportePage = () => {
                                                     onClick={handleCloseTicket}
                                                     className="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105 bg-red-600 text-white"
                                                 >
-                                                        {t("support.close_ticket")}
+                                                    {t("support.close_ticket")}
                                                 </button>
                                             )}
                                         </div>
@@ -461,7 +459,7 @@ export const SoportePage = () => {
                                                 <textarea
                                                     value={newResponse}
                                                     onChange={(e) => setNewResponse(e.target.value)}
-                                                        placeholder={t("support.write_a_comment")}
+                                                    placeholder={t("support.write_a_comment")}
                                                     rows={3}
                                                     className="flex-1 px-4 py-3 bg-white/5 border border-[#F0973C]/40 rounded-xl text-white placeholder-white/20 focus:outline-none focus:border-[#F0973C]/70 transition-all resize-none"
                                                 />
@@ -490,7 +488,7 @@ export const SoportePage = () => {
                                 <div className="flex flex-col items-center justify-center h-full text-white/30">
                                     <Ticket size={64} className="mb-4 opacity-30" />
                                     <p className="text-lg font-semibold mb-2">
-                                                {t("support.select_ticket_to_view_details")}
+                                        {t("support.select_ticket_to_view_details")}
                                     </p>
                                     <p className="text-sm">
                                         {t("support.or_create_a_new_one_for_help")}
