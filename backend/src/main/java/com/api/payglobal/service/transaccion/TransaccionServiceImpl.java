@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.api.payglobal.dto.response.GananciaDiaDTO;
 import com.api.payglobal.dto.response.GananciaMesDTO;
 import com.api.payglobal.entity.Transaccion;
 import com.api.payglobal.entity.Usuario;
@@ -127,4 +128,59 @@ public class TransaccionServiceImpl implements TransaccionService {
                 return gananciasPorMes;
         }
 
+        @Override
+        @Transactional(readOnly = true)
+        public List<GananciaDiaDTO> obtenerGananciasUltimos30Dias(Long usuarioId) throws Exception {
+                usuarioRepository.findById(usuarioId)
+                                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + usuarioId));
+
+                // Obtener fecha de hace 30 días
+                LocalDateTime hace30Dias = LocalDateTime.now().minusDays(30);
+
+                // Conceptos que se consideran como ganancias
+                List<TipoConceptos> conceptos = List.of(
+                                TipoConceptos.BONO_ANUAL,
+                                TipoConceptos.BONO_FUNDADOR,
+                                TipoConceptos.BONO_RANGO,
+                                TipoConceptos.BONO_REGISTRO_DIRECTO,
+                                TipoConceptos.BONO_REONOVACION_LICENCIA,
+                                TipoConceptos.INGRESO_PASIVO,
+                                TipoConceptos.BONO_UNINIVEL);
+
+                // Obtener transacciones de los últimos 30 días
+                List<Transaccion> transacciones = transaccionRepository
+                                .findByUsuarioIdAndEstadoAndConceptoInAndFechaAfter(
+                                                usuarioId,
+                                                EstadoOperacion.COMPLETADA,
+                                                conceptos,
+                                                hace30Dias);
+
+                // Agrupar por día
+                java.util.Map<String, Double> gananciasPorDia = new java.util.HashMap<>();
+
+                // Inicializar los últimos 30 días con ganancia 0
+                for (int i = 29; i >= 0; i--) {
+                        LocalDateTime fecha = LocalDateTime.now().minusDays(i);
+                        String diaKey = fecha.toLocalDate().toString(); // Formato yyyy-MM-dd
+                        gananciasPorDia.put(diaKey, 0.0);
+                }
+
+                // Sumar las transacciones a su día correspondiente
+                for (Transaccion transaccion : transacciones) {
+                        String diaKey = transaccion.getFecha().toLocalDate().toString();
+                        gananciasPorDia.put(diaKey,
+                                        gananciasPorDia.getOrDefault(diaKey, 0.0)
+                                                        + transaccion.getMonto().doubleValue());
+                }
+
+                // Convertir el mapa a lista de DTOs ordenada por fecha
+                List<GananciaDiaDTO> resultado = gananciasPorDia.entrySet().stream()
+                                .sorted(java.util.Map.Entry.comparingByKey())
+                                .map(entry -> new GananciaDiaDTO(entry.getKey(), entry.getValue()))
+                                .collect(java.util.stream.Collectors.toList());
+
+                return resultado;
+        }
+
 }
+

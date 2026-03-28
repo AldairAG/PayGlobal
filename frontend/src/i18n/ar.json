@@ -137,8 +137,9 @@
         "invite_share_text": "شارك رابط الدعوة الخاص بك مع أصدقائك واكسب المكافآت.",
         "copy_invite_link": "نسخ رابط الدعوة",
         "copied": "تم النسخ",
-        "staking": "Staking",
-        "network": "Network"
+        "staking": "محفظة الستاكينغ",
+        "network": "محفظة الشبكة",
+        "last_30_days": "آخر 30 يومًا"
     },
 
     "licenses": {

@@ -141,9 +141,9 @@
         "invite_share_text": "Comparte tu enlace de invitación con tus amigos y gana recompensas.",
         "copy_invite_link": "Copiar enlace de invitación",
         "copied": "Copiado",
-        "staking": "Staking",
-        "network": "Network"
-
+        "staking": "Billetera de Staking",
+        "network": "Billetera de Red",
+        "last_30_days": "Últimos 30 días"
     },
 
     "licenses": {
@@ -259,6 +259,7 @@
         "total_withdrawals": "Total Retiros",
         "processed": "Procesados",
         "monthly_earnings": "Ganancias Mensuales",
+        "last_30_days_earnings": "Ganancias Últimos 30 Días",
         "bonus_distribution": "Distribución de Bonos",
         "month": "mes",
         "earnings": "ganancias",
@@ -298,6 +299,7 @@
         "january_2026": "Enero 2026",
         "january_description": "Análisis completo del mercado de arbitraje cripto institucional durante enero 2026. Incluye estrategias, rendimientos y oportunidades identificadas.",
         "february_2026_report": "Reporte Profesional de Arbitraje - Febrero 2026",
+        "no_data_available": "No hay datos disponibles",
         "february_2026": "Febrero 2026",
         "february_description": "Reporte profesional con análisis detallado de oportunidades de arbitraje cripto, tendencias del mercado y proyecciones para febrero 2026.",
         "about_reports_title": "Acerca de estos Reportes",

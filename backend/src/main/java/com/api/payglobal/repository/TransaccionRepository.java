@@ -1,5 +1,6 @@
 package com.api.payglobal.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,12 @@ public interface TransaccionRepository extends JpaRepository<Transaccion, Long>,
             Long usuarioId,
             EstadoOperacion estado,
             List<TipoConceptos> conceptos
+    );
+        
+        List<Transaccion> findByUsuarioIdAndEstadoAndConceptoInAndFechaAfter(
+            Long usuarioId,
+            EstadoOperacion estado,
+            List<TipoConceptos> conceptos,
+            LocalDateTime fecha
     );
 }

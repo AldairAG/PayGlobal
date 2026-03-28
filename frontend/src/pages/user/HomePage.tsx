@@ -5,7 +5,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { formatearFechaDate } from "../../helpers/formatHelpers";
 import { TipoWallets } from "../../type/enum";
 import { useEffect, useMemo } from 'react';
-import { getLicenseImage } from "../../helpers/imgHelpers";
+import { getLicenseImage, getRankImage } from "../../helpers/imgHelpers";
 import { useTransacciones } from "../../hooks/useTransacciones";
 import { useTranslation } from 'react-i18next';
 import CryptoTicker from '../../components/CryptoTicker';
@@ -14,10 +14,15 @@ import ForexTicker from '../../components/ForexTicker';
 const HomePage = () => {
     const { t } = useTranslation();
     const { usuario, usuarioEnRed } = useUsuario();
-    const { cargarGananciasPorMes, gananciasPorMes, loadingGanancias, errorGanancias } = useTransacciones();
+    const { 
+        cargarGananciasUltimos30Dias, 
+        gananciasUltimos30Dias, 
+        loadingGanancias30Dias, 
+        errorGanancias30Dias 
+    } = useTransacciones();
 
     useEffect(() => {
-        cargarGananciasPorMes();
+        cargarGananciasUltimos30Dias();
     }, []);
 
     const porcentajeCalculo = useMemo(() => {
@@ -131,9 +136,14 @@ const HomePage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5">
-                            <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.my_current_rank')}</h3>
-                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">{!usuario?.rango || usuario.rango === 'SIN_RANGO' ? t('home.no_range') : usuario.rango}</p>
+                        <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center">
+                            <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm mb-3">{t('home.my_current_rank')}</h3>
+                           
+                                <img
+                                    src={getRankImage(usuario?.rango || "SIN RANGO")}
+                                    alt={usuario?.rango}
+                                    className="w-32 h-32 object-contain drop-shadow-2xl"
+                                />
                         </div>
 
                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
@@ -147,24 +157,41 @@ const HomePage = () => {
                 {/* GRAFICA DE GANANCIAS */}
                 <div className="p-6 rounded-2xl border border-white/5 bg-white/[0.02]">
                     <h2 className="text-2xl font-bold flex items-center gap-2 mb-4 text-[#F0973C]">
-                        <TrendingUp className="text-[#69AC95]" /> {t("home.profit_increase")}
+                        <TrendingUp className="text-[#69AC95]" /> {t("home.profit_increase")} - {t("home.last_30_days")}
                     </h2>
 
                     <div className="w-full h-64">
-                        {loadingGanancias ? (
+                        {loadingGanancias30Dias ? (
                             <p className="text-center text-white/40">{t("home.loading_monthly_earnings...")}</p>
-                        ) : errorGanancias ? (
-                            <p className="text-center text-red-400">Error: {errorGanancias}</p>
-                        ) : gananciasPorMes.length === 0 ? (
+                        ) : errorGanancias30Dias ? (
+                            <p className="text-center text-red-400">Error: {errorGanancias30Dias}</p>
+                        ) : gananciasUltimos30Dias.length === 0 ? (
                             <p className="text-center text-white/40">{t("home.no_earnings_data_available.")}</p>
                         ) : (
                             <ResponsiveContainer>
-                                <LineChart data={gananciasPorMes}>
+                                <LineChart data={gananciasUltimos30Dias}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis dataKey="mes" stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
+                                    <XAxis 
+                                        dataKey="fecha" 
+                                        stroke="rgba(255,255,255,0.3)" 
+                                        tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
+                                        tickFormatter={(value) => {
+                                            // Mostrar solo día/mes para evitar saturación
+                                            const fecha = new Date(value);
+                                            return `${fecha.getDate()}/${fecha.getMonth() + 1}`;
+                                        }}
+                                        interval="preserveStartEnd"
+                                    />
                                     <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
-                                    <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.2)', borderRadius: '0.75rem', color: '#fff' }} />
-                                    <Line type="monotone" dataKey="ganancia" stroke="#69AC95" strokeWidth={3} dot={{ fill: '#69AC95', strokeWidth: 0 }} />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.2)', borderRadius: '0.75rem', color: '#fff' }}
+                                        labelFormatter={(label) => {
+                                            const fecha = new Date(label);
+                                            return fecha.toLocaleDateString('es-ES');
+                                        }}
+                                        formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, 'Ganancia'] : ['$ 0.00', 'Ganancia']}
+                                    />
+                                    <Line type="monotone" dataKey="ganancia" stroke="#69AC95" strokeWidth={2} dot={{ fill: '#69AC95', strokeWidth: 0, r: 2 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         )}

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { AppDispatch, RootState } from '../store';
-import { obtenerGananciasPorMes, obtenerTransacciones } from '../store/slice/transaccionesSlice';
+import { obtenerGananciasPorMes, obtenerGananciasUltimos30Dias, obtenerTransacciones } from '../store/slice/transaccionesSlice';
 import type { TipoConceptos, EstadoOperacion } from '../type/enum';
 
 /**
@@ -22,6 +22,10 @@ export const useTransacciones = () => {
     const gananciasPorMes = useSelector((state: RootState) => state.transacciones.gananciasPorMes);
     const loadingGanancias = useSelector((state: RootState) => state.transacciones.loadingGanancias);
     const errorGanancias = useSelector((state: RootState) => state.transacciones.errorGanancias);
+
+    const gananciasUltimos30Dias = useSelector((state: RootState) => state.transacciones.gananciasUltimos30Dias);
+    const loadingGanancias30Dias = useSelector((state: RootState) => state.transacciones.loadingGanancias30Dias);
+    const errorGanancias30Dias = useSelector((state: RootState) => state.transacciones.errorGanancias30Dias);
 
     /**
      * Función para obtener transacciones con filtros
@@ -117,6 +121,16 @@ export const useTransacciones = () => {
         }
     };
 
+    const cargarGananciasUltimos30Dias = async () => {
+        try {
+            const result = await dispatch(obtenerGananciasUltimos30Dias());
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al cargar ganancias de los últimos 30 días:', error);
+            throw error;
+        }
+    };
+
     return {
         // Estados
         transacciones,
@@ -128,9 +142,13 @@ export const useTransacciones = () => {
         gananciasPorMes,
         loadingGanancias,
         errorGanancias,
+        gananciasUltimos30Dias,
+        loadingGanancias30Dias,
+        errorGanancias30Dias,
         // Métodos
         cargarTransacciones,
         cargarGananciasPorMes,
+        cargarGananciasUltimos30Dias,
         cargarTransaccionesPorUsuario,
         filtrarPorFechas,
         filtrarPorConceptoYEstado,

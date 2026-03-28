@@ -5,6 +5,11 @@ export interface GananciaMesDTO {
     ganancia: number;
 }
 
+export interface GananciaDiaDTO {
+    fecha: string; // Formato: yyyy-MM-dd
+    ganancia: number;
+}
+
 export interface UsuarioEnRedResponse { 
     id: number;
     username: string;

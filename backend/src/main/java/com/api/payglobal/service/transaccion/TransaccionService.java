@@ -1,5 +1,6 @@
 package com.api.payglobal.service.transaccion;
 
+import com.api.payglobal.dto.response.GananciaDiaDTO;
 import com.api.payglobal.dto.response.GananciaMesDTO;
 import com.api.payglobal.entity.enums.EstadoOperacion;
 import com.api.payglobal.entity.enums.TipoConceptos;
@@ -23,4 +24,6 @@ public interface TransaccionService {
             EstadoOperacion estado, Pageable pageable);
     
     List<GananciaMesDTO> obtenerGananciasPorMes(Long usuarioId) throws Exception;
+    
+    List<GananciaDiaDTO> obtenerGananciasUltimos30Dias(Long usuarioId) throws Exception;
 }

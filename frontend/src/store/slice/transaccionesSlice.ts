@@ -3,7 +3,7 @@ import type { Transaccion } from "../../type/entityTypes";
 import { transaccionesService } from "../../service/transaccionesService";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { EstadoOperacion, TipoConceptos } from "../../type/enum";
-import type { GananciaMesDTO } from "../../type/responseType";
+import type { GananciaDiaDTO, GananciaMesDTO } from "../../type/responseType";
 
 interface TransaccionesState {
     transacciones: Transaccion[];
@@ -16,6 +16,10 @@ interface TransaccionesState {
     gananciasPorMes: GananciaMesDTO[];
     loadingGanancias: boolean;
     errorGanancias: string | null;
+
+    gananciasUltimos30Dias: GananciaDiaDTO[];
+    loadingGanancias30Dias: boolean;
+    errorGanancias30Dias: string | null;
 }
 
 const initialState: TransaccionesState = {
@@ -29,6 +33,10 @@ const initialState: TransaccionesState = {
     gananciasPorMes: [],
     loadingGanancias: false,
     errorGanancias: null,
+
+    gananciasUltimos30Dias: [],
+    loadingGanancias30Dias: false,
+    errorGanancias30Dias: null,
 };
 
 
@@ -67,6 +75,26 @@ export const obtenerGananciasPorMes = createAsyncThunk<
             return response;
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Error al obtener ganancias por mes';
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const obtenerGananciasUltimos30Dias = createAsyncThunk<
+    ApiResponse<GananciaDiaDTO[]>,
+    void,
+    { rejectValue: string }
+>(
+    'transacciones/obtenerGananciasUltimos30Dias',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await transaccionesService.obtenerGananciasUltimos30Dias();
+            if (!response.success) {
+                return rejectWithValue(response.message);
+            }
+            return response;
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Error al obtener ganancias de los últimos 30 días';
             return rejectWithValue(message);
         }
     }
@@ -121,6 +149,18 @@ export const transaccionesSlice = createSlice({
             .addCase(obtenerGananciasPorMes.rejected, (state, action) => {
                 state.loadingGanancias = false;
                 state.errorGanancias = action.payload || 'Error al cargar ganancias por mes';
+            })
+            .addCase(obtenerGananciasUltimos30Dias.pending, (state) => {
+                state.loadingGanancias30Dias = true;
+                state.errorGanancias30Dias = null;
+            })
+            .addCase(obtenerGananciasUltimos30Dias.fulfilled, (state, action) => {
+                state.loadingGanancias30Dias = false;
+                state.gananciasUltimos30Dias = action.payload.data;
+            })
+            .addCase(obtenerGananciasUltimos30Dias.rejected, (state, action) => {
+                state.loadingGanancias30Dias = false;
+                state.errorGanancias30Dias = action.payload || 'Error al cargar ganancias de los últimos 30 días';
             });
     }
 });

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.payglobal.dto.response.GananciaDiaDTO;
 import com.api.payglobal.dto.response.GananciaMesDTO;
 import com.api.payglobal.entity.Transaccion;
 import com.api.payglobal.entity.Usuario;
@@ -95,6 +96,23 @@ public class TransaccionController {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			Long usuarioId = ((Usuario) auth.getPrincipal()).getId();
 			List<GananciaMesDTO> ganancias = transaccionService.obtenerGananciasPorMes(usuarioId);
+			return ResponseEntity.ok(new ApiResponseWrapper<>(true, ganancias, null));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+		}
+	}
+
+	/**
+	 * Obtener ganancias de los últimos 30 días para un usuario específico
+	 */
+	@GetMapping("/ganancias-ultimos-30-dias")
+	@PreAuthorize("hasRole('USUARIO')")
+	public ResponseEntity<ApiResponseWrapper<List<GananciaDiaDTO>>> obtenerGananciasUltimos30Dias() {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			Long usuarioId = ((Usuario) auth.getPrincipal()).getId();
+			List<GananciaDiaDTO> ganancias = transaccionService.obtenerGananciasUltimos30Dias(usuarioId);
 			return ResponseEntity.ok(new ApiResponseWrapper<>(true, ganancias, null));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -136,8 +136,9 @@
         "invite_share_text": "Share your invitation link with your friends and earn rewards.",
         "copy_invite_link": "Copy invitation link",
         "copied": "Copied",
-        "staking": "Staking",
-        "network": "Network"
+        "staking": "Staking Wallet",
+        "network": "Network Wallet",
+        "last_30_days": "Last 30 days"
     },
 
     "licenses": {
@@ -249,6 +250,7 @@
         "total_withdrawals": "Total Withdrawals",
         "processed": "Processed",
         "monthly_earnings": "Monthly Earnings",
+        "last_30_days_earnings": "Last 30 Days Earnings",
         "bonus_distribution": "Bonus Distribution",
         "month": "Month",
         "earnings": "Earnings",
@@ -288,6 +290,7 @@
         "january_2026": "January 2026",
         "january_description": "Complete analysis of the institutional crypto arbitrage market during January 2026. Includes strategies, returns and identified opportunities.",
         "february_2026_report": "Professional Arbitrage Report - February 2026",
+        "no_data_available": "No data available",
         "february_2026": "February 2026",
         "february_description": "Professional report with detailed analysis of crypto arbitrage opportunities, market trends and projections for February 2026.",
         "about_reports_title": "About These Reports",

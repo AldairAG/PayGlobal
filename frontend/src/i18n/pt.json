@@ -138,8 +138,9 @@
         "invite_share_text": "Compartilhe seu link de convite com seus amigos e ganhe recompensas.",
         "copy_invite_link": "Copiar link de convite",
         "copied": "Copiado",
-        "staking": "Staking",
-        "network": "Network"
+        "staking": "Carteira de Staking",
+        "network": "Carteira de Rede",
+        "last_30_days": "Últimos 30 dias"
 
     },
 

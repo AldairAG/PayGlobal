@@ -21,7 +21,11 @@ export const HistorialPage = () => {
         totalElementos, 
         cargando, 
         error,
-        cargarTransacciones 
+        cargarTransacciones,
+        cargarGananciasUltimos30Dias,
+        gananciasUltimos30Dias,
+        loadingGanancias30Dias,
+        errorGanancias30Dias
     } = useTransacciones();
 
     const [activeTab, setActiveTab] = useState<"transacciones" | "bonos">("transacciones");
@@ -52,6 +56,14 @@ export const HistorialPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usuario?.id, filtroConcepto, filtroEstado, fechaInicio, fechaFin, paginaActualRedux]);
 
+    // Cargar ganancias de los últimos 30 días al montar el componente
+    useEffect(() => {
+        cargarGananciasUltimos30Dias().catch(err => {
+            console.error('Error al cargar ganancias de los últimos 30 días:', err);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Función para cambiar de página
     const cambiarPagina = (nuevaPagina: number) => {
         if (!usuario?.id) return;
@@ -74,21 +86,13 @@ export const HistorialPage = () => {
         return usuario?.bonos || [];
     }, [usuario?.bonos]);
 
-    // Datos para gráficas
+    // Formatear los datos de ganancias para la gráfica
     const datosGanancias = useMemo(() => {
-        const gananciasPorMes = transacciones.reduce((acc: Record<string, number>, trans) => {
-            if (trans.monto > 0 && trans.estado === EstadoOperacion.COMPLETADA) {
-                const mes = new Date(trans.fecha).toLocaleDateString('es', { month: 'short', year: '2-digit' });
-                acc[mes] = (acc[mes] || 0) + trans.monto;
-            }
-            return acc;
-        }, {});
-        
-        return Object.entries(gananciasPorMes).map(([mes, monto]) => ({
-            mes,
-            ganancias: monto
+        return gananciasUltimos30Dias.map(item => ({
+            fecha: new Date(item.fecha).toLocaleDateString('es', { day: 'numeric', month: 'short' }),
+            ganancia: item.ganancia
         }));
-    }, [transacciones]);
+    }, [gananciasUltimos30Dias]);
 
     const datosBonosChart = useMemo(() => {
         return bonosUsuario.map(bono => ({
@@ -146,22 +150,44 @@ export const HistorialPage = () => {
 
                 {/* Gráficas */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    {/* Gráfica de Ganancias por Mes */}
+                    {/* Gráfica de Ganancias de los Últimos 30 Días */}
                     <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <h3 className="text-xl font-bold text-[#F0973C] mb-4 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-[#69AC95]" />
-                            {t("reports.monthly_earnings")}
+                            {t("reports.last_30_days_earnings")}
                         </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={datosGanancias}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey={t("reports.month")} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
-                                <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
-                                <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(105,172,149,0.3)', borderRadius: '12px', color: '#fff' }} />
-                                <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
-                                <Line type="monotone" dataKey={t("reports.earnings")} stroke="#69AC95" strokeWidth={3} dot={{ fill: '#69AC95' }} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        {loadingGanancias30Dias ? (
+                            <div className="flex items-center justify-center h-[300px]">
+                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#69AC95]"></div>
+                            </div>
+                        ) : errorGanancias30Dias ? (
+                            <div className="flex items-center justify-center h-[300px] text-red-400">
+                                <p>Error: {errorGanancias30Dias}</p>
+                            </div>
+                        ) : datosGanancias.length === 0 ? (
+                            <div className="flex items-center justify-center h-[300px] text-white/40">
+                                <p>{t("reports.no_data_available")}</p>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={300}>
+                                <LineChart data={datosGanancias}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                    <XAxis 
+                                        dataKey="fecha" 
+                                        stroke="rgba(255,255,255,0.3)" 
+                                        tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }} 
+                                        interval="preserveStartEnd"
+                                    />
+                                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(105,172,149,0.3)', borderRadius: '12px', color: '#fff' }}
+                                        formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, t("reports.earnings")] : ['$ 0.00', t("reports.earnings")]}
+                                    />
+                                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
+                                    <Line type="monotone" dataKey="ganancia" name={t("reports.earnings")} stroke="#69AC95" strokeWidth={2} dot={{ fill: '#69AC95', r: 2 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
 
                     {/* Gráfica de Distribución de Bonos */}
@@ -364,7 +390,7 @@ export const HistorialPage = () => {
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${obtenerColorEstado(transaccion.estado)}`}>
                                                                 {obtenerIconoEstado(transaccion.estado)}
-                                                                <span className="ml-1">{transaccion.estado}</span>
+                                                                <span className="ml-1">{TraducirEstadoOperacion(transaccion.estado, idiomaActual)}</span>
                                                             </span>
                                                         </td>
                                                     </tr>
