@@ -30,10 +30,10 @@ import tcPortuguese from '../../assets/documents/terms/institutional_terms_portu
 import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.pdf';
 
 //presentacion
-import presentationSpanish from '../../assets/documents/presentacion/payglobal_spanish.pdf';
-import presentationEnglish from '../../assets/documents/presentacion/payglobal_english.pdf';
-import presentationFrench from '../../assets/documents/presentacion/payglobal_french.pdf';
-import presentationArab from '../../assets/documents/presentacion/payglobal_arab.pdf';
+import presentationSpanish from '../../assets/documents/presentacion/pdf_spanish.pdf';
+import presentationEnglish from '../../assets/documents/presentacion/pdf_english.pdf';
+import presentationFrench from '../../assets/documents/presentacion/pdf_french.pdf';
+import presentationArab from '../../assets/documents/presentacion/pdf_ara.pdf';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
