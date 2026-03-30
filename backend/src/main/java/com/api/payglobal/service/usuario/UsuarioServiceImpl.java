@@ -287,8 +287,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         if (usuario.getBonos() != null && !usuario.getBonos().isEmpty()) {
-            usuario.getBonos().forEach(bono -> bono.setUsuario(usuarioExistente));
-            usuarioExistente.setBonos(usuario.getBonos());
+            // limpiar los bonos actuales
+            usuarioExistente.getBonos().clear();
+
+            // agregar los nuevos
+            usuario.getBonos().forEach(bono -> {
+                bono.setUsuario(usuarioExistente); // mantener relación
+                usuarioExistente.getBonos().add(bono);
+            });
         }
 
         if (usuario.getLicencia() != null) {
