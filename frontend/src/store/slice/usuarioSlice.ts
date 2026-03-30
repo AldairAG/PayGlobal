@@ -81,6 +81,9 @@ interface UsuarioState {
     loadingVerificarClaveSeguridad: boolean;
     errorVerificarClaveSeguridad: string | null;
 
+    loadingCambiarPasswordAdmin: boolean;
+    errorCambiarPasswordAdmin: string | null;
+
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -137,6 +140,8 @@ const loadInitialState = (): UsuarioState => {
         errorGuardarClaveSeguridad: null,
         loadingVerificarClaveSeguridad: false,
         errorVerificarClaveSeguridad: null,
+        loadingCambiarPasswordAdmin: false,
+        errorCambiarPasswordAdmin: null,
 
     };
 };
@@ -484,6 +489,23 @@ export const verificarClaveSeguridadThunk = createAsyncThunk<
     }
 });
 
+export const cambiarPasswordAdminThunk = createAsyncThunk<
+    ApiResponse<string>,
+    { idUsuario: number; nuevoPassword: string },
+    { rejectValue: string }
+>("usuario/cambiarPasswordAdmin", async ({ idUsuario, nuevoPassword }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.cambiarPasswordAdmin(idUsuario, nuevoPassword);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al cambiar contraseña");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al cambiar contraseña";
+        return rejectWithValue(message);
+    }
+});
+
 
 const usuarioSlice = createSlice({
     name: 'usuario',
@@ -742,6 +764,18 @@ const usuarioSlice = createSlice({
             .addCase(verificarClaveSeguridadThunk.rejected, (state, action) => {
                 state.loadingVerificarClaveSeguridad = false;
                 state.errorVerificarClaveSeguridad = action.payload || "Error al verificar clave de seguridad";
+            })
+            .addCase(cambiarPasswordAdminThunk.pending, (state) => {
+                state.loadingCambiarPasswordAdmin = true;
+                state.errorCambiarPasswordAdmin = null;
+            })
+            .addCase(cambiarPasswordAdminThunk.fulfilled, (state) => {
+                state.loadingCambiarPasswordAdmin = false;
+                state.errorCambiarPasswordAdmin = null;
+            })
+            .addCase(cambiarPasswordAdminThunk.rejected, (state, action) => {
+                state.loadingCambiarPasswordAdmin = false;
+                state.errorCambiarPasswordAdmin = action.payload || "Error al cambiar contraseña";
             });
     },
 });

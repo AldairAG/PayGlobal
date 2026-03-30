@@ -235,6 +235,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
+    public void cambiarPasswordAdmin(Long idUsuario, String nuevoPassword) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        // Encriptar la nueva contraseña
+        String passwordEncriptado = passwordEncoder.encode(nuevoPassword);
+        usuario.setPassword(passwordEncriptado);
+
+        // Guardar el usuario actualizado
+        usuarioRepository.save(usuario);
+    }
+
+    @Override
     public void verificacionDosPasos(String codigoVerificacion, Long idUsuario) throws Exception {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'verificacionDosPasos'");

@@ -160,6 +160,24 @@ public class UsuarioController {
             usuarioService.editarUsuario(usuario);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Usuario actualizado correctamente", null));
         } catch (Exception e) {
+            System.out.println("Error al editar usuario: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Cambiar contraseña de un usuario (Admin)
+     */
+    @PatchMapping("/admin/cambiar-password/{idUsuario}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<String>> cambiarPasswordAdmin(
+            @PathVariable Long idUsuario,
+            @RequestParam String nuevoPassword) {
+        try {
+            usuarioService.cambiarPasswordAdmin(idUsuario, nuevoPassword);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Contraseña actualizada correctamente", null));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
         }

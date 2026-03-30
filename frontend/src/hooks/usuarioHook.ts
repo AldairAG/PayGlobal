@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk } from '../store/slice/usuarioSlice';
+import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -105,6 +105,9 @@ export const useUsuario = () => {
     const loadingVerificarClaveSeguridad = useSelector((state: RootState) => state.usuario.loadingVerificarClaveSeguridad);
     const errorVerificarClaveSeguridad = useSelector((state: RootState) => state.usuario.errorVerificarClaveSeguridad);
 
+    const loadingCambiarPasswordAdmin = useSelector((state: RootState) => state.usuario.loadingCambiarPasswordAdmin);
+    const errorCambiarPasswordAdmin = useSelector((state: RootState) => state.usuario.errorCambiarPasswordAdmin);
+
 
     /**
      * Función para registrar un nuevo usuario
@@ -136,9 +139,9 @@ export const useUsuario = () => {
     const login = async (loginData: LoginRequestDTO) => {
         try {
             const result = await dispatch(loginThunk(loginData));
-            const data= unwrapResult(result).data;
+            const data = unwrapResult(result).data;
             if (data) {
-                dispatch(setUsuario(data.user)); 
+                dispatch(setUsuario(data.user));
                 dispatch(setUsuarioEnRed(data.usuarioEnRed)); // Guardar datos del usuario en el estado
             }
 
@@ -211,7 +214,7 @@ export const useUsuario = () => {
 
     const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: string, tipoSolicitud: TipoSolicitud) => {
         try {
-            await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud,pagoMembresia: usuario?.membresia || false }));
+            await dispatch(solicitarCompraLicenciaThunk({ tipoCrypto, tipoLicencia, tipoSolicitud, pagoMembresia: usuario?.membresia || false }));
         } catch (error) {
             console.error('Error al solicitar compra de licencia:', error);
         }
@@ -280,7 +283,7 @@ export const useUsuario = () => {
 
     const obtenerUsuariosEnRed = async (username: string) => {
         try {
-            const result =await dispatch(obtenerUsuariosEnRedThunk({ username }));
+            const result = await dispatch(obtenerUsuariosEnRedThunk({ username }));
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al obtener usuarios en red:', error);
@@ -290,7 +293,7 @@ export const useUsuario = () => {
 
     const solicitarRetiro = async (walletAddressId: number, monto: number, tipoSolicitud: string) => {
         try {
-            await dispatch(solicitarRetiroFondosThunk({ walletAddressId, monto, tipoSolicitud }));   
+            await dispatch(solicitarRetiroFondosThunk({ walletAddressId, monto, tipoSolicitud }));
         } catch (error) {
             console.error('Error al solicitar retiro:', error);
             throw error;
@@ -346,9 +349,9 @@ export const useUsuario = () => {
 
     const handleSetUsuarioSeleccionado = (usuario: Usuario | null) => {
         dispatch(setUsuarioSeleccionado(usuario));
-     };
+    };
 
-     const eliminarUsuarioPorId = async (idUsuario: number) => {
+    const eliminarUsuarioPorId = async (idUsuario: number) => {
         try {
             const result = await dispatch(eliminarUsuarioPorIdThunk({ idUsuario }));
             return unwrapResult(result);
@@ -384,6 +387,16 @@ export const useUsuario = () => {
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al verificar clave de seguridad:', error);
+            throw error;
+        }
+    };
+
+    const cambiarPasswordAdmin = async (idUsuario: number, nuevoPassword: string) => {
+        try {
+            const result = await dispatch(cambiarPasswordAdminThunk({ idUsuario, nuevoPassword }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al cambiar contraseña (Admin):', error);
             throw error;
         }
     };
@@ -478,12 +491,16 @@ export const useUsuario = () => {
         errorObtenerFotoPerfil,
 
         handleSetUsuarioSeleccionado,
-        
+
         eliminarUsuarioPorId,
         loadingEliminarUsuario,
         errorEliminarUsuario,
 
         aprobarRetiroFondos,
+
+        cambiarPasswordAdmin,
+        loadingCambiarPasswordAdmin,
+        errorCambiarPasswordAdmin,
         loadingAprobarRetiroFondos,
         errorAprobarRetiroFondos,
 
@@ -494,6 +511,6 @@ export const useUsuario = () => {
         verificarClaveSeguridad,
         loadingVerificarClaveSeguridad,
         errorVerificarClaveSeguridad,
-        
+
     };
 };

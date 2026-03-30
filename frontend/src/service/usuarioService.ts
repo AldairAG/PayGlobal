@@ -199,6 +199,16 @@ const verificarClaveSeguridad = async (claveSeguridad: string, idUsuario: number
     });
 };
 
+// Cambiar contraseña de un usuario (Admin)
+// PATCH /api/usuarios/admin/cambiar-password/{idUsuario}
+const cambiarPasswordAdmin = async (idUsuario: number, nuevoPassword: string): Promise<ApiResponse<string>> => {
+    return api.patch<string>(`${BASE_PATH}/admin/cambiar-password/${idUsuario}`, null, {
+        params: {
+            nuevoPassword
+        }
+    });
+};
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -220,4 +230,5 @@ export const usuarioService = {
     aprobarRetiroFondos,
     guardarClaveSeguridad,
     verificarClaveSeguridad,
+    cambiarPasswordAdmin,
 };

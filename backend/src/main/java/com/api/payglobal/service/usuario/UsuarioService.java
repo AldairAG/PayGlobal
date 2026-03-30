@@ -33,6 +33,8 @@ public interface UsuarioService extends UserDetailsService {
 
         void cambiarPasswordUsuario(CambiarPasswordRequest cambiarPasswordRequest, Long idUsuario) throws Exception;
 
+        void cambiarPasswordAdmin(Long idUsuario, String nuevoPassword) throws Exception;
+
         void verificacionDosPasos(String codigoVerificacion, Long idUsuario) throws Exception;
 
         List<UsuarioEnRedResponse> obtenerUsuariosEnRed(String username) throws Exception;
