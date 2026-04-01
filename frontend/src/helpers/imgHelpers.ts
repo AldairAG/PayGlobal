@@ -16,6 +16,7 @@ import l15 from "../assets/licencias/l15.webp";
 
 
 //Imagenes de rangos
+import rango0 from "../assets/rangos/rango0.png";
 import rango1 from "../assets/rangos/rango1.png";
 import rango2 from "../assets/rangos/rango2.png";
 import rango3 from "../assets/rangos/rango3.png";
@@ -28,7 +29,7 @@ import rango9 from "../assets/rangos/rango9.png";
 import rango10 from "../assets/rangos/rango10.png";
 
 const RANKS = {
-    rango0: {nombre:"SIN RANGO",imagen:rango1},
+    rango0: {nombre:"SIN RANGO",imagen:rango0},
     rango1: {nombre:"SENIOR MANAGER",imagen:rango1},
     rango2: {nombre:"EXECUTIVE DIRECTOR",imagen:rango2},
     rango3: {nombre:"DIAMOND TEAM",imagen:rango3},

@@ -4,7 +4,6 @@ import {
     PiChartBarDuotone,
     PiSealCheckDuotone,
     PiWalletDuotone,
-    PiArrowsLeftRightDuotone,
     PiBellRingingDuotone,
     PiUsersThreeDuotone,
     PiHeadsetDuotone,
@@ -35,7 +34,7 @@ const Menu = ({ onClose }: MenuProps) => {
         { name: t("sidebar.reports"), icon: <PiChartBarDuotone size={22} />, route: ROUTES.USER.HISTORIAL, requiresLicense: true },
         { name: t("sidebar.licenses"), icon: <PiSealCheckDuotone size={22} />, route: ROUTES.USER.LICENCIAS, requiresLicense: false },
         { name: t("sidebar.withdrawal"), icon: <PiWalletDuotone size={22} />, route: ROUTES.USER.RETIRO, requiresLicense: true },
-        { name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA, requiresLicense: true },
+        /* { name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA, requiresLicense: true }, */
         { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NEWS_REPORTS, requiresLicense: true },
         { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS, requiresLicense: true },
         { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE, requiresLicense: true },

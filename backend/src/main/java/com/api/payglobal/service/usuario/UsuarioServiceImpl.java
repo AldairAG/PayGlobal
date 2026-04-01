@@ -464,13 +464,8 @@ public class UsuarioServiceImpl implements UsuarioService {
             return TipoLicencia.P250;
         } else if (precioTotal >= TipoLicencia.P100.getValor()) {
             return TipoLicencia.P100;
-        } else if (precioTotal >= TipoLicencia.P50.getValor()) {
-            return TipoLicencia.P50;
-        } else if (precioTotal >= TipoLicencia.P25.getValor()) {
-            return TipoLicencia.P25;
         } else {
-            return TipoLicencia.P10; // Si el precio total es menor a la licencia más baja, asignar la licencia más
-                                     // básica (P10)
+            return TipoLicencia.P50; // Si el precio total es menor a la licencia más baja, asignar la licencia más básica (P50)
         }
     }
 
@@ -498,7 +493,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         // Sumar el nuevo valor al precio existente
-        int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
+        //int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
+        int precioTotal = tipoLicencia.getValor();
 
         // Determinar la licencia correspondiente según el precio total
         TipoLicencia licenciaCorrespondiente = determinarTipoLicenciaPorPrecio(precioTotal);
@@ -573,7 +569,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
-        BigDecimal precioTotal = solicitud.getMonto().subtract(BigDecimal.valueOf(cobroPorCompra));
+        BigDecimal precioTotal = solicitud.getMonto().add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue())).subtract(BigDecimal.valueOf(cobroPorCompra));
+
 
         Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
                 determinarTipoLicenciaPorPrecio(precioTotal.intValue()));
