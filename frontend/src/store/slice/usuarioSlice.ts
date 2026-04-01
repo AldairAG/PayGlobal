@@ -319,6 +319,24 @@ export const obtenerSolicitudesThunk = createAsyncThunk<
     }
 });
 
+export const obtenerMisSolicitudesThunk = createAsyncThunk<
+    ApiResponse<Page<Solicitud>>,
+    { page?: number; size?: number; sort?: string },
+    { rejectValue: string }
+>("usuario/obtenerMisSolicitudes", async ({ page = 0, size = 25, sort }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.obtenerMisSolicitudes(page, size, sort);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al obtener mis solicitudes");
+        }
+        return response;
+
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener mis solicitudes";
+        return rejectWithValue(message);
+    }
+});
+
 export const obtenerTodosLosUsuariosThunk = createAsyncThunk<
     ApiResponse<Page<Usuario>>,
     { filtro?: string; page?: number; size?: number; sort?: string },
@@ -668,6 +686,19 @@ const usuarioSlice = createSlice({
             .addCase(obtenerSolicitudesThunk.rejected, (state, action) => {
                 state.loadingSolicitudes = false;
                 state.errorSolicitudes = action.payload || "Error al obtener solicitudes pendientes";
+            })
+            .addCase(obtenerMisSolicitudesThunk.pending, (state) => {
+                state.loadingSolicitudes = true;
+                state.errorSolicitudes = null;
+            })
+            .addCase(obtenerMisSolicitudesThunk.fulfilled, (state, action) => {
+                state.loadingSolicitudes = false;
+                state.errorSolicitudes = null;
+                state.solicitudes = action.payload.data || null;
+            })
+            .addCase(obtenerMisSolicitudesThunk.rejected, (state, action) => {
+                state.loadingSolicitudes = false;
+                state.errorSolicitudes = action.payload || "Error al obtener mis solicitudes";
             })
             .addCase(obtenerTodosLosUsuariosThunk.pending, (state) => {
                 state.loadingUsuarios = true;

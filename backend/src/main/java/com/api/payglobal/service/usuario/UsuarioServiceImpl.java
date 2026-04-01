@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -355,7 +357,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .findFirst()
                 .orElseThrow(() -> new Exception("Wallet Address no encontrado con id: " + walletAddressId));
 
-        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS) {
+        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
             Wallet walletDividendo = usuario.getWallets().stream()
                     .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                     .findFirst()
@@ -366,7 +368,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             }
         }
 
-        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES) {
+        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK) {
             Wallet walletComisiones = usuario.getWallets().stream()
                     .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                     .findFirst()
@@ -465,7 +467,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         } else if (precioTotal >= TipoLicencia.P100.getValor()) {
             return TipoLicencia.P100;
         } else {
-            return TipoLicencia.P50; // Si el precio total es menor a la licencia más baja, asignar la licencia más básica (P50)
+            return TipoLicencia.P50; // Si el precio total es menor a la licencia más baja, asignar la licencia más
+                                     // básica (P50)
         }
     }
 
@@ -493,7 +496,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
 
         // Sumar el nuevo valor al precio existente
-        //int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
+        // int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
         int precioTotal = tipoLicencia.getValor();
 
         // Determinar la licencia correspondiente según el precio total
@@ -574,8 +577,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
-        BigDecimal precioTotal = solicitud.getMonto().add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue())).subtract(BigDecimal.valueOf(cobroPorCompra));
-
+        BigDecimal precioTotal = solicitud.getMonto()
+                .add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue()))
+                .subtract(BigDecimal.valueOf(cobroPorCompra));
 
         Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
                 determinarTipoLicenciaPorPrecio(precioTotal.intValue()));
@@ -592,7 +596,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 solicitud.getTipoCrypto(),
                 null);
 
-        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()), 
+        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
         bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
@@ -631,6 +635,21 @@ public class UsuarioServiceImpl implements UsuarioService {
         return solicitudRepository.findByTipoSolicitudIn(tipos, pageable);
     }
 
+    @Override
+    public Page<Solicitud> obtenerSolicitudesPorUsuario(Long usuarioId, Pageable pageable) throws Exception {
+        if (usuarioId == null) {
+            throw new Exception("El ID de usuario es requerido");
+        }
+        
+        // Aplicar ordenamiento por fecha descendente
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "fecha"));
+        
+        return solicitudRepository.findByUsuarioId(usuarioId, sortedPageable);
+    }
+
     /**
      * Obtener todos los usuarios con filtro de búsqueda (Admin)
      * Permite filtrar por username, email, nombre o apellido
@@ -667,8 +686,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         Solicitud solicitud = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
 
-        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES
-                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS) {
+        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
+                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
             throw new Exception("La solicitud no es de tipo retiro de fondos");
         }
 
@@ -677,9 +696,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitudRepository.save(solicitud);
 
         Wallet wallet = solicitud.getUsuario().getWallets().stream()
-                .filter(w -> (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES
+                .filter(w -> (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
                         && w.getTipo() == TipoWallets.WALLET_NETWORK)
-                        || (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS
+                        || (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING
                                 && w.getTipo() == TipoWallets.WALLET_STAKING))
                 .findFirst()
                 .orElseThrow(() -> new Exception(

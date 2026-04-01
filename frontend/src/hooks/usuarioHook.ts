@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
+import { obtenerMisSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -222,10 +222,10 @@ export const useUsuario = () => {
 
     const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: string) => {
         try {
-            const result = await dispatch(obtenerSolicitudesThunk({ page, size, sort }));
+            const result = await dispatch(obtenerMisSolicitudesThunk({ page, size, sort }));
             return unwrapResult(result);
         } catch (error) {
-            console.error('Error al obtener solicitudes:', error);
+            console.error('Error al obtener mis solicitudes:', error);
             throw error;
         }
     };

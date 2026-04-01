@@ -175,9 +175,9 @@ public class BonoServiceImpl implements BonoService {
         licenciaRepository.findByActivoTrue().forEach(licencia -> {
             try {
                 Wallet wallet = walletRepository.findByUsuario_Username(licencia.getUsuario().getUsername()).stream()
-                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
+                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                         .findFirst()
-                        .orElseThrow(() -> new Exception("Wallet de staking no encontrada para el usuario: "
+                        .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
 
                 Double ingresoPasivo = licencia.getPrecio() * 0.005; // 0.5% de ingreso pasivo diario
@@ -194,7 +194,7 @@ public class BonoServiceImpl implements BonoService {
                     walletRepository.save(wallet);
 
                     registrarTransaccion(licencia.getUsuario().getUsername(), ingresoPasivo,
-                            TipoConceptos.INGRESO_PASIVO, TipoMetodoPago.WALLET_DIVIDENDOS, null);
+                            TipoConceptos.INGRESO_PASIVO, TipoMetodoPago.WALLET_COMISIONES, null);
                     return;
                 }
 
@@ -204,7 +204,7 @@ public class BonoServiceImpl implements BonoService {
 
                 registrarTransaccion(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
                         TipoConceptos.INGRESO_PASIVO,
-                        TipoMetodoPago.WALLET_DIVIDENDOS, null);
+                        TipoMetodoPago.WALLET_COMISIONES, null);
 
                 bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
                         nuevaLicencia.getUsuario().getRango());

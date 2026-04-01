@@ -34,8 +34,8 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
                     toast.success("Clave verificada correctamente");
                     formik.resetForm();
                     setIntentosFallidos(0);
+                    // Solo llamar a onVerified, que ya manejará el cierre del modal
                     onVerified();
-                    onClose();
                 } else {
                     setIntentosFallidos(prev => prev + 1);
                     toast.error("Clave de seguridad incorrecta");

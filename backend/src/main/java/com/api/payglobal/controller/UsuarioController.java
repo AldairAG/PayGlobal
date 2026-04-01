@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -342,6 +343,24 @@ public class UsuarioController {
             Page<Solicitud> solicitudes = usuarioService.obtenerSolicitudesPorTipos(tipos, pageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudes,
                     "Solicitudes obtenidas correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener solicitudes del usuario autenticado (Usuario)
+     */
+    @GetMapping("/mis-solicitudes")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<Page<Solicitud>>> obtenerMisSolicitudes(
+            @AuthenticationPrincipal Usuario usuario,
+            Pageable pageable) {
+        try {
+            Page<Solicitud> solicitudes = usuarioService.obtenerSolicitudesPorUsuario(usuario.getId(), pageable);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudes,
+                    "Solicitudes del usuario obtenidas correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));

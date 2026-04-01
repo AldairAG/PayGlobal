@@ -73,6 +73,18 @@ const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: st
     });
 };
 
+// Obtener solicitudes del usuario autenticado
+// GET /api/usuarios/mis-solicitudes
+const obtenerMisSolicitudes = async (page: number = 0, size: number = 25, sort?: string): Promise<ApiResponse<Page<Solicitud>>> => {
+    return api.get<Page<Solicitud>>(`${BASE_PATH}/mis-solicitudes`, {
+        params: {
+            page,
+            size,
+            ...(sort && { sort })
+        }
+    });
+};
+
 // Obtener todos los usuarios con filtro (Admin)
 // GET /api/usuarios/admin/usuarios
 const obtenerTodosLosUsuarios = async (filtro?: string, page: number = 0, size: number = 10, sort?: string): Promise<ApiResponse<Page<Usuario>>> => {
@@ -217,6 +229,7 @@ export const usuarioService = {
     editarUsuarioAdmin,
     solicitarCompraLicencia,
     obtenerSolicitudes,
+    obtenerMisSolicitudes,
     obtenerTodosLosUsuarios,
     obtenerUsuarioPorId,
     solicitarRetiroFondos,
