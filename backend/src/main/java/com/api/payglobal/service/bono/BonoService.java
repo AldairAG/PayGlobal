@@ -1,11 +1,12 @@
 package com.api.payglobal.service.bono;
 
+import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoRango;
 
 public interface BonoService {
     
-    void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception;
+    void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido,Double precioLicenciaAnterior) throws Exception;
 
     void bonoRenovacion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception;
 

@@ -565,6 +565,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         Solicitud solicitud = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
 
+        // Guardar una copia de los valores de la licencia anterior ANTES de modificarla
+        Double precioLicenciaAnterior = solicitud.getUsuario().getLicencia() != null
+                ? solicitud.getUsuario().getLicencia().getPrecio().doubleValue()
+                : 0.0;
+
         // Lógica para aprobar la solicitud de compra de licencia
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
@@ -587,8 +592,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 solicitud.getTipoCrypto(),
                 null);
 
-        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
-                solicitud.getUsuario().getReferenciado());
+        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()), 
+                solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
         bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
     }
