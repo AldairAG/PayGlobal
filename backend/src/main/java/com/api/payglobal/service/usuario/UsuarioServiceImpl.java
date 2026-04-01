@@ -446,12 +446,13 @@ public class UsuarioServiceImpl implements UsuarioService {
      */
     private TipoLicencia determinarTipoLicenciaPorPrecio(int precioTotal) {
         // Recorrer las licencias de mayor a menor para encontrar la que corresponde
-        if (precioTotal >= TipoLicencia.P10000.getValor()) {
-            return TipoLicencia.P10000;
-        } else if (precioTotal >= TipoLicencia.P50000.getValor()) {
+
+        if (precioTotal >= TipoLicencia.P50000.getValor()) {
             return TipoLicencia.P50000;
         } else if (precioTotal >= TipoLicencia.P25000.getValor()) {
             return TipoLicencia.P25000;
+        } else if (precioTotal >= TipoLicencia.P15000.getValor()) {
+            return TipoLicencia.P15000;
         } else if (precioTotal >= TipoLicencia.P10000.getValor()) {
             return TipoLicencia.P10000;
         } else if (precioTotal >= TipoLicencia.P7500.getValor()) {
