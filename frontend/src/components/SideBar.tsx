@@ -9,6 +9,7 @@ import {
     PiHeadsetDuotone,
     PiSignOutDuotone,
     PiCompassToolBold,
+    PiCurrencyBtcDuotone,
 } from "react-icons/pi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUsuario } from "../hooks/usuarioHook";
@@ -34,6 +35,7 @@ const SideBar = () => {
         { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NEWS_REPORTS, requiresLicense: true },
         /*{ name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA, requiresLicense: true },*/        
         { name: t("sidebar.tools"), icon: <PiCompassToolBold size={22} />, route: ROUTES.USER.TOOLS, requiresLicense: true },
+        { name: "BTC mining loading...", icon: <PiCurrencyBtcDuotone size={22} />, route: "#", requiresLicense: true, disabled: true },
         { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS, requiresLicense: true },
         { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE, requiresLicense: true },
     ];
@@ -52,11 +54,11 @@ const SideBar = () => {
         >
             <ul className="space-y-4">
                 {menuItems.map((item, index) => {
-                    const isDisabled = item.requiresLicense && !tieneLicenciaActiva;
+                    const isDisabled = item.requiresLicense && !tieneLicenciaActiva || item.disabled;
                     return (
                         <li
                             key={index}
-                            onClick={() => handleNavigate(item.route, item.requiresLicense)}
+                            onClick={() => !item.disabled && handleNavigate(item.route, item.requiresLicense)}
                             className={`group flex items-center gap-4 p-3 rounded-lg transition ${
                                 isDisabled 
                                     ? 'opacity-50 cursor-not-allowed' 
