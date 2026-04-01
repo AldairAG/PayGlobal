@@ -275,7 +275,7 @@ const GestionSoportePage = () => {
                                                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                                                     <span className="flex items-center gap-1">
                                                         <User size={16} />
-                                                        Usuario: <span className="font-semibold">Usuario #{tiketSeleccionado.id}</span>
+                                                        Usuario: <span className="font-semibold">Usuario: {tiketSeleccionado.usuarioString}</span>
                                                     </span>
                                                     <span className="flex items-center gap-1">
                                                         <Calendar size={16} />

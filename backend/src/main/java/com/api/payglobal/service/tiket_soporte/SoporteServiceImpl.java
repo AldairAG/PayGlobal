@@ -38,6 +38,7 @@ public class SoporteServiceImpl implements SoporteService {
                 .descripcion(request.getDescripcion())
                 .estado(EstadoTiket.ABIERTO)
                 .usuario(usuario)
+                .usuarioString(usuario.getUsername())
                 .fechaCreacion(LocalDateTime.now())
                 .build();
         // Aquí podrías agregar lógica para asociar el tiket con un usuario específico

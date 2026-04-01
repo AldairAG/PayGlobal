@@ -40,6 +40,7 @@ public class TiketSoporte {
     @Enumerated(EnumType.STRING)
     private EstadoTiket estado;
     private String descripcion;
+    private String usuarioString;
     private Integer numeroComentarios;
 
     @ManyToOne

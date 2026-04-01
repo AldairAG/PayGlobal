@@ -94,6 +94,7 @@ export interface Ticket {
     estado: EstadoTicket;
     descripcion: string;
     numeroComentarios: number;
+    usuarioString: string;
     respuestaTikect: RespuestaTicket[];
 }
 
