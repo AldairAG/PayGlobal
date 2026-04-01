@@ -56,12 +56,18 @@ public class BonoServiceImpl implements BonoService {
     @Transactional
     public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido) throws Exception {
 
+        Usuario usuarioReferido = usuarioRepository.findByUsername(usernameReferido)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con username: " + usernameReferido));
+
         List<UsuarioEnRedResponse> redInversa = uninivelHelper.obtenerRedDeUsuariosInversaRecursiva(usernameReferido, 0,
                 1);
 
         for (UsuarioEnRedResponse usuarioEnRed : redInversa) {
             if (usuarioEnRed.getNivel() == 1) {
-                Double bono = tipoLicencia.getValor() * BONO_INSCRIPCION_NIVEL_1;
+                Double bonoBase = usuarioReferido.getLicencia() != null && usuarioReferido.getLicencia().getPrecio() > 0 
+                    ? usuarioReferido.getLicencia().getPrecio().doubleValue() 
+                    : tipoLicencia.getValor();
+                Double bono = bonoBase * BONO_INSCRIPCION_NIVEL_1;
 
                 // Validar que el usuario tenga licencia activa y no haya superado el límite
                 if (!validarLicencia(usuarioEnRed.getUsername(), bono)) {
@@ -100,7 +106,7 @@ public class BonoServiceImpl implements BonoService {
         Double bono = tipoLicencia.getValor() * BONO_RENOVACION;
 
         // Validar que el usuario tenga licencia activa y no haya superado el límite
-        if (!validarLicencia(usernameReferido, bono)) {
+        if (validarLicencia(usernameReferido, bono)) {
             return;
         }
 
