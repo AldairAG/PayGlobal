@@ -67,7 +67,7 @@ public class BonoServiceImpl implements BonoService {
                 Double diferencia = (usuarioReferido.getLicencia() == null || usuarioReferido.getLicencia().getPrecio() <= 0) 
                     ? tipoLicencia.getValor() 
                     : tipoLicencia.getValor() - usuarioReferido.getLicencia().getPrecio().doubleValue();
-                Double bono = diferencia * BONO_INSCRIPCION_NIVEL_1;
+                Double bono = Math.max(0, diferencia * BONO_INSCRIPCION_NIVEL_1);
 
                 // Validar que el usuario tenga licencia activa y no haya superado el límite
                 if (!validarLicencia(usuarioEnRed.getUsername(), bono)) {
