@@ -159,6 +159,8 @@ public class BonoServiceImpl implements BonoService {
             wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bono)));
             walletRepository.save(wallet);
 
+            aumentarSaldoAcumuladoLicencia(usernameReferido, bono);
+
             registrarTransaccion(usernameReferido, bono, TipoConceptos.BONO_RANGO,
                     null, null);
         }
@@ -182,8 +184,7 @@ public class BonoServiceImpl implements BonoService {
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
                 // Actualizar saldoAcumulado en la licencia
-                Integer saldoActual = licencia.getSaldoAcumulado() != null ? licencia.getSaldoAcumulado() : 0;
-                licencia.setSaldoAcumulado(saldoActual + ingresoPasivo.intValue());
+                aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
 
                 if (nuevoSaldo.compareTo(BigDecimal.valueOf(licencia.getLimite())) >= 0) {
                     licencia.setActivo(false);
@@ -417,6 +418,9 @@ public class BonoServiceImpl implements BonoService {
                 // Agregar el bono al wallet
                 wallet.setSaldo(wallet.getSaldo().add(BigDecimal.valueOf(bonoAuto)));
                 walletRepository.save(wallet);
+
+                // Actualizar saldo acumulado de la licencia
+                aumentarSaldoAcumuladoLicencia(usuario.getUsername(), bonoAuto.doubleValue());
 
                 // Registrar transacción
                 String descripcion = "Bono de auto por rango " + usuario.getRango().getNombre();
