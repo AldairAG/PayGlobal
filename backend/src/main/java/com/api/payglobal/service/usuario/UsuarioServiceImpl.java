@@ -454,6 +454,8 @@ public class UsuarioServiceImpl implements UsuarioService {
             return TipoLicencia.P25000;
         } else if (precioTotal >= TipoLicencia.P10000.getValor()) {
             return TipoLicencia.P10000;
+        } else if (precioTotal >= TipoLicencia.P7500.getValor()) {
+            return TipoLicencia.P7500;
         } else if (precioTotal >= TipoLicencia.P5000.getValor()) {
             return TipoLicencia.P5000;
         } else if (precioTotal >= TipoLicencia.P2500.getValor()) {
