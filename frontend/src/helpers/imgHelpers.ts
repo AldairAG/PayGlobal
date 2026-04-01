@@ -18,15 +18,15 @@ import l15 from "../assets/licencias/l15.webp";
 //Imagenes de rangos
 import rango0 from "../assets/rangos/rango0.png";
 import rango1 from "../assets/rangos/rango1.png";
-import rango2 from "../assets/rangos/rango2.png";
-import rango3 from "../assets/rangos/rango3.png";
-import rango4 from "../assets/rangos/rango4.png";
-import rango5 from "../assets/rangos/rango5.png";
+import rango2 from "../assets/rangos/rango10.png";
+import rango3 from "../assets/rangos/rango9.png";
+import rango4 from "../assets/rangos/rango8.png";
+import rango5 from "../assets/rangos/rango7.png";
 import rango6 from "../assets/rangos/rango6.png";
-import rango7 from "../assets/rangos/rango7.png";
-import rango8 from "../assets/rangos/rango8.png";
-import rango9 from "../assets/rangos/rango9.png";
-import rango10 from "../assets/rangos/rango10.png";
+import rango7 from "../assets/rangos/rango5.png";
+import rango8 from "../assets/rangos/rango4.png";
+import rango9 from "../assets/rangos/rango3.png";
+import rango10 from "../assets/rangos/rango2.png";
 
 const RANKS = {
     rango0: {nombre:"SIN RANGO",imagen:rango0},
