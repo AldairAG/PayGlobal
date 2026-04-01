@@ -7,7 +7,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { toast } from "react-toastify";
 
 export const GestionPagosPage = () => {
-    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerSolicitudes,
+    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerTodasLasSolicitudes,
         aprobarSolicitud, loadingAprobarSolicitud, errorAprobarSolicitud, rechazarSolicitud, loadingRechazarSolicitud,
         errorRechazarSolicitud } = useUsuario();
 
@@ -17,7 +17,7 @@ export const GestionPagosPage = () => {
     const [tamanioPagina, setTamanioPagina] = useState(25);
 
     useEffect(() => {
-        obtenerSolicitudes(paginaActual, tamanioPagina);    
+        obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);    
     }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación
@@ -39,7 +39,7 @@ export const GestionPagosPage = () => {
         if (!loadingAprobarSolicitud && !errorAprobarSolicitud) {
             // Si ya no está cargando y no hay error, significa que fue exitoso
             const timer = setTimeout(() => {
-                obtenerSolicitudes(paginaActual, tamanioPagina);
+                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -50,7 +50,7 @@ export const GestionPagosPage = () => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
             // Si ya no está cargando y no hay error, significa que fue exitoso
             const timer = setTimeout(() => {
-                obtenerSolicitudes(paginaActual, tamanioPagina);
+                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -109,7 +109,7 @@ export const GestionPagosPage = () => {
                         </div>
                     </div>
                     <button
-                        onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
+                        onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
                         disabled={loadingSolicitudes}
                         className="flex items-center gap-2 px-4 py-2 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -215,7 +215,7 @@ export const GestionPagosPage = () => {
                             <p className="text-red-700 text-lg font-semibold">Error al cargar los pagos</p>
                             <p className="text-red-600 text-sm mt-2">{errorSolicitudes}</p>
                             <button
-                                onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
+                                onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
                                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200 mx-auto"
                             >
                                 <RefreshCw size={16} />

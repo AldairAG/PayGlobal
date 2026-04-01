@@ -7,7 +7,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { toast } from "react-toastify";
 
 export const GestionRetirosPage = () => {
-    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerSolicitudes,
+    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerTodasLasSolicitudes,
         aprobarRetiroFondos, loadingAprobarRetiroFondos, errorAprobarRetiroFondos, 
         rechazarSolicitud, loadingRechazarSolicitud, errorRechazarSolicitud } = useUsuario();
 
@@ -17,7 +17,7 @@ export const GestionRetirosPage = () => {
     const [tamanioPagina, setTamanioPagina] = useState(25);
 
     useEffect(() => {
-        obtenerSolicitudes(paginaActual, tamanioPagina);    
+        obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);    
     }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación de retiros
@@ -38,7 +38,7 @@ export const GestionRetirosPage = () => {
     useEffect(() => {
         if (!loadingAprobarRetiroFondos && !errorAprobarRetiroFondos) {
             const timer = setTimeout(() => {
-                obtenerSolicitudes(paginaActual, tamanioPagina);
+                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -48,7 +48,7 @@ export const GestionRetirosPage = () => {
     useEffect(() => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
             const timer = setTimeout(() => {
-                obtenerSolicitudes(paginaActual, tamanioPagina);
+                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -56,8 +56,8 @@ export const GestionRetirosPage = () => {
 
     // Filtrar solo retiros
     const solicitudesRetiros = (solicitudes?.content ?? []).filter(sol => {
-        return sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS ||
-               sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES;
+        return sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING ||
+               sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK;
     });
 
     // Aplicar filtros adicionales
@@ -106,7 +106,7 @@ export const GestionRetirosPage = () => {
                         </div>
                     </div>
                     <button
-                        onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
+                        onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
                         disabled={loadingSolicitudes}
                         className="flex items-center gap-2 px-4 py-2 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -188,8 +188,8 @@ export const GestionRetirosPage = () => {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#69AC95] focus:border-transparent outline-none"
                             >
                                 <option value="TODOS">Todos los tipos</option>
-                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS}>Retiro de Dividendos</option>
-                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES}>Retiro de Comisiones</option>
+                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK}>Retiro de Network</option>
+                                <option value={TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING}>Retiro de Staking</option>
                             </select>
                         </div>
                     </div>
@@ -211,7 +211,7 @@ export const GestionRetirosPage = () => {
                             <p className="text-red-700 text-lg font-semibold">Error al cargar los retiros</p>
                             <p className="text-red-600 text-sm mt-2">{errorSolicitudes}</p>
                             <button
-                                onClick={() => obtenerSolicitudes(paginaActual, tamanioPagina)}
+                                onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
                                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200 mx-auto"
                             >
                                 <RefreshCw size={16} />

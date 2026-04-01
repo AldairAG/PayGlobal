@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerMisSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
+import { obtenerMisSolicitudesThunk, obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -230,6 +230,16 @@ export const useUsuario = () => {
         }
     };
 
+    const obtenerTodasLasSolicitudes = async (page: number = 0, size: number = 25, sort?: string) => {
+        try {
+            const result = await dispatch(obtenerSolicitudesThunk({ page, size, sort }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener todas las solicitudes:', error);
+            throw error;
+        }
+    };
+
     const obtenerTodosLosUsuarios = async (filtro?: string, page: number = 0, size: number = 10, sort?: string) => {
         try {
             const result = await dispatch(obtenerTodosLosUsuariosThunk({ filtro, page, size, sort }));
@@ -445,6 +455,7 @@ export const useUsuario = () => {
         loadingSolicitudes,
         errorSolicitudes,
         obtenerSolicitudes,
+        obtenerTodasLasSolicitudes,
 
         // aprobarSolicitud
         aprobarSolicitud,
