@@ -65,10 +65,10 @@ const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAproba
         switch (tipo) {
             case TipoSolicitud.COMPRA_LICENCIA:
                 return "Compra de Licencia";
-            case TipoSolicitud.SOLICITUD_RETIRO_WALLET_DIVIDENDOS:
-                return "Retiro de Dividendos";
-            case TipoSolicitud.SOLICITUD_RETIRO_WALLET_COMISIONES:
-                return "Retiro de Comisiones";
+            case TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING:
+                return "Retiro de Staking";
+            case TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK:
+                return "Retiro de Network";
             case TipoSolicitud.TRANFERENCIA_USUARIO:
                 return "Transferencia a Usuario";
             case TipoSolicitud.PAGO_DELEGADO:
