@@ -103,7 +103,6 @@ export interface WalletRetiro {
     address: string;
     tipoCrypto: TipoCrypto;
     nombre: string;
-    balanceRetirado: number;
     usuario: string;
 }
 
@@ -121,7 +120,6 @@ export interface WalletAddress {
     address: string;
     tipoCrypto: TipoCrypto;
     nombre: string;
-    balanceRetirado: number;
 }
 
 

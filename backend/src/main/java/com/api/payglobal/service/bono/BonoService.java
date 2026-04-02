@@ -1,6 +1,5 @@
 package com.api.payglobal.service.bono;
 
-import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoRango;
 

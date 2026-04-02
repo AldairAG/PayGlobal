@@ -1,6 +1,5 @@
 package com.api.payglobal.service.walletAddresses;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ public class walletAddressesImpl implements walletAddressesService {
             .address(walletAddress.getAddress())
             .tipoCrypto(walletAddress.getTipoCrypto())
             .nombre(walletAddress.getNombre())
-            .balanceRetirado(BigDecimal.ZERO)
             .usuario(usuario)
             .build();
 
@@ -72,15 +70,4 @@ public class walletAddressesImpl implements walletAddressesService {
         Usuario usuario = usuarioRepository.findById(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return walletAddressesRepository.findByUsuario_Id(usuario.getId());
     }
-
-    @Override
-    public WalletAddress aumentarTotalRetirado(Long addressId, BigDecimal monto) throws Exception {
-        WalletAddress walletAddress = walletAddressesRepository.findById(addressId)
-            .orElseThrow(() -> new RuntimeException("WalletAddress no encontrado"));
-
-        walletAddress.setBalanceRetirado(walletAddress.getBalanceRetirado().add(monto));
-        walletAddressesRepository.save(walletAddress);
-        return walletAddress;
-    }
-    
 }

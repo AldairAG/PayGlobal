@@ -50,7 +50,7 @@ public class SoporteController {
      * Actualizar el estado de un tiket (solo admins)
      */
     @PatchMapping("/{id}/estado")
-    @PreAuthorize("hasRole('USUARIO', 'ADMINISTRADOR')")
+    @PreAuthorize("hasAnyRole('USUARIO', 'ADMINISTRADOR')")
     public ResponseEntity<ApiResponseWrapper<TiketSoporte>> actualizarEstadoTiket(
             @PathVariable Long id,
             @RequestBody CrearTiketRequest request) {

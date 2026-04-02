@@ -12,5 +12,4 @@ public interface walletAddressesService {
     WalletAddress updateWalletAddress(Long id, CreateWalletAddress walletAddress) throws Exception;
     void deleteWalletAddress(Long id) throws Exception;
     List<WalletAddress> getAllWalletAddressesByUserId(Long userId) throws Exception;
-    WalletAddress aumentarTotalRetirado(Long addressId, BigDecimal monto) throws Exception;
 }

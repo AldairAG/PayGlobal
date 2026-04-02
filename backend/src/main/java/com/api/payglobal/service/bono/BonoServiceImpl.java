@@ -144,8 +144,24 @@ public class BonoServiceImpl implements BonoService {
 
         //Determinar el nuevo rango del usuario
 
-        if(volumenRed >rangoActual.getCapitalNecesario()){
-            usuario.setRango(determinarRangoPorVolumen(volumenRed));
+        if(volumenRed > rangoActual.getCapitalNecesario()){
+            TipoRango nuevoRango = determinarRangoPorVolumen(volumenRed);
+            
+            // Validar requisitos para calificar al nuevo rango
+            if(nuevoRango.getNumero() > rangoActual.getNumero()) {
+                // Validación 1: Al menos 5 referidos directos con licencia activa
+                if(!validarRequerimientoReferidosDirectos(usernameReferido)) {
+                    return; // No cumple con el requisito de referidos directos
+                }
+                
+                // Validación 2: Al menos 2 usuarios del rango anterior al nuevo rango
+                if(!validarRequerimientoRangoAnterior(usernameReferido, nuevoRango)) {
+                    return; // No cumple con el requisito de usuarios en rango anterior
+                }
+                
+                // Si pasa todas las validaciones, asignar el nuevo rango
+                usuario.setRango(nuevoRango);
+            }
         }
 
         //Calcular el bono por rango
@@ -168,6 +184,8 @@ public class BonoServiceImpl implements BonoService {
         //Guardar cambios
         usuarioRepository.save(usuario);
     }
+
+ 
 
     @Override
     @Transactional
@@ -430,6 +448,51 @@ public class BonoServiceImpl implements BonoService {
                 crearOActualizarBono(usuario.getUsername(), TipoBono.BONO_AUTO, bonoAuto.doubleValue());
             }
         }
+    }
+
+    /**
+     * Valida que el usuario tenga al menos 5 referidos directos con licencia activa (precio > 0)
+     * @param username el username del usuario a validar
+     * @return true si el usuario tiene al menos 5 referidos directos con licencia activa, false en caso contrario
+     */
+    private Boolean validarRequerimientoReferidosDirectos(String username) {
+        List<Usuario> referidosDirectos = usuarioRepository.findByReferenciado(username);
+        
+        // Contar referidos directos con licencia activa (precio > 0)
+        long referidosConLicenciaActiva = referidosDirectos.stream()
+                .filter(usuario -> usuario.getLicencia() != null)
+                .filter(usuario -> usuario.getLicencia().getPrecio() > 0)
+                .count();
+        
+        return referidosConLicenciaActiva >= 5;
+    }
+
+    /**
+     * Valida que el usuario tenga al menos 2 usuarios del rango anterior al nuevo rango en su red directa
+     * Por ejemplo: para subir a rango 2, necesita 2 usuarios de rango 1
+     * @param username el username del usuario a validar
+     * @param nuevoRango el rango al que el usuario quiere calificar
+     * @return true si el usuario tiene al menos 2 usuarios del rango anterior, false en caso contrario
+     */
+    private Boolean validarRequerimientoRangoAnterior(String username, TipoRango nuevoRango) {
+        // Si el nuevo rango es SIN_RANGO o SENIOR_MANAGER (rango 1), no necesita usuarios de rango anterior
+        if (nuevoRango.getNumero() <= 1) {
+            return true;
+        }
+        
+        // Obtener el número del rango anterior
+        final int numeroRangoAnterior = nuevoRango.getNumero() - 1;
+        
+        // Obtener todos los usuarios de su red (hasta nivel 10)
+        List<Usuario> redDeUsuario = uninivelHelper.obtenerRedDeUsuario(username);
+        
+        // Contar usuarios que tienen el rango anterior
+        long usuariosConRangoAnterior = redDeUsuario.stream()
+                .filter(usuario -> usuario.getRango() != null)
+                .filter(usuario -> usuario.getRango().getNumero() == numeroRangoAnterior)
+                .count();
+        
+        return usuariosConRangoAnterior >= 2;
     }
 
 }

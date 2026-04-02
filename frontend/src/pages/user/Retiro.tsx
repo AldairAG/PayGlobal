@@ -57,6 +57,24 @@ export const RetiroPage = () => {
     const [paginaActual, setPaginaActual] = useState(1);
     const solicitudesPorPagina = 5;
 
+    // Función para verificar si estamos en horario de retiros (Martes y Jueves 12 PM - 5 PM hora Dubai)
+    const isWithdrawalAllowed = (): boolean => {
+        // Obtener la hora actual en zona horaria de Dubai (UTC+4)
+        const now = new Date();
+        const dubaiTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
+        
+        const dayOfWeek = dubaiTime.getDay(); // 0 = Domingo, 2 = Martes, 4 = Jueves
+        const hours = dubaiTime.getHours();
+        
+        // Solo martes (2) y jueves (4)
+        const isAllowedDay = dayOfWeek === 2 || dayOfWeek === 4;
+        
+        // Entre 12 PM (12) y 5 PM (17) - 5 PM no incluida, así que < 17
+        const isAllowedTime = hours >= 12 && hours < 17;
+        
+        return isAllowedDay && isAllowedTime;
+    };
+
     useEffect(() => {
         getMyWalletAddresses();
         obtenerSolicitudes();
@@ -117,7 +135,7 @@ export const RetiroPage = () => {
             .min(1, t("withdrawal.select_a_wallet")),
         monto: Yup.number()
             .required(t("withdrawal.amount_required"))
-            .min(1, t("withdrawal.amount_min"))
+            .min(50, t("withdrawal.amount_min"))
     });
 
     // Formik para retiro
@@ -461,9 +479,6 @@ export const RetiroPage = () => {
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#69AC95]/20 border border-[#69AC95]/30 text-[#69AC95]">
-                                                ${wallet.balanceRetirado.toFixed(2)}
-                                            </span>
                                             <button
                                                 title={t("withdrawal.edit_wallet")}
                                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-[#69AC95]/10 border border-[#69AC95]/30 text-[#69AC95] hover:bg-[#69AC95]/20"
@@ -532,8 +547,6 @@ export const RetiroPage = () => {
                                     </p>
                                 )}
                             </div>
-                            {/* PROBLEMA CON LA TRADUCCION AQUI */}
-                            {/* Información de la wallet seleccionada 2 */}
                             {retiroFormik.values.walletId > 0 && (
                                 <div className="p-4 rounded-xl bg-[#69AC95]/10 border border-[#69AC95]/30">
                                     {(() => {
@@ -543,7 +556,7 @@ export const RetiroPage = () => {
                                                 <p className="text-sm font-semibold mb-2 text-white">{t("withdrawal.selected_wallet:")}</p>
                                                 <p className="text-xs font-mono text-white/50 break-all mb-2">{TraducirWalletType(wallet.tipo, i18n.language)}</p>
                                                 <p className="text-sm">
-                                                    {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
+                                                    {t("withdrawal.available_balance:")} <span className="font-bold text-[#69AC95]">
                                                         ${wallet.saldo.toFixed(2)}
                                                     </span>
                                                 </p>
@@ -580,7 +593,6 @@ export const RetiroPage = () => {
                                     </p>
                                 )}
                             </div>
-                            {/* Información de la wallet seleccionada */}
                             {retiroFormik && retiroFormik.values.addresId > 0 && (
                                 <div className="p-4 rounded-xl bg-[#69AC95]/10 border border-[#69AC95]/30">
                                     {(() => {
@@ -588,12 +600,7 @@ export const RetiroPage = () => {
                                         return wallet ? (
                                             <>
                                                 <p className="text-sm font-semibold mb-2 text-white">{t("withdrawal.selected_wallet:")}</p>
-                                                <p className="text-xs font-mono text-white/50 break-all mb-2">{wallet.address}</p>
-                                                <p className="text-sm">
-                                                    {t("withdrawal.withdrawn_balance:")} <span className="font-bold text-[#69AC95]">
-                                                        ${wallet.balanceRetirado.toFixed(2)}
-                                                    </span>
-                                                </p>
+                                                <p className="text-xs font-mono text-white/50 break-all">{wallet.address}</p>
                                             </>
                                         ) : null;
                                     })()}
@@ -630,11 +637,20 @@ export const RetiroPage = () => {
 
                             <button
                                 type="submit"
-                                disabled={loadingSolicitarRetiroFondos}
+                                disabled={loadingSolicitarRetiroFondos || !isWithdrawalAllowed()}
                                 className="w-full py-3 rounded-xl font-bold transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 bg-[#69AC95] hover:bg-[#5a9a84] text-black"
                             >
                                 {t("withdrawal.request_withdrawal")}
                             </button>
+                            
+                            {/* Mensaje de horario de retiros */}
+                            {!isWithdrawalAllowed() && (
+                                <div className="mt-4 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">
+                                    <p className="text-xs text-yellow-500 text-center">
+                                        ⚠️ {t("withdrawal.withdrawal_outside_schedule")}
+                                    </p>
+                                </div>
+                            )}
                         </form>
 
                         {/* ERROR AL TRADUCIR */}
@@ -644,6 +660,7 @@ export const RetiroPage = () => {
                                 ℹ️ {t("withdrawal.important_information")}
                             </h3>
                             <ul className="text-xs text-white/50 space-y-1">
+                                <li>• {t("withdrawal.withdrawal_schedule")}</li>
                                 <li>• {t("withdrawal.requests_processed_within_24_48_hours")}</li>
                                 <li>• {t("withdrawal.minimum_withdrawal_amount")} $30 USD</li>
                                 <li>• {t("withdrawal.network_fees_will_apply")}</li>

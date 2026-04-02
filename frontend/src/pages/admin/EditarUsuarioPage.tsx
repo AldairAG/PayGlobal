@@ -22,6 +22,7 @@ export const EditarUsuarioPage = () => {
     const [editedLicencia, setEditedLicencia] = useState<Licencia | null>(null);
     const [nuevoPassword, setNuevoPassword] = useState("");
     const [mostrarPassword, setMostrarPassword] = useState(false);
+    const [mostrarPasswordActual, setMostrarPasswordActual] = useState(false);
 
     // Cargar datos del usuario cuando el componente se monte
     useEffect(() => {
@@ -367,38 +368,79 @@ export const EditarUsuarioPage = () => {
                         <h2 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
                             Contraseña
                         </h2>
-                        <div className="space-y-4">
+                        <div className="space-y-6">
+                            {/* Visualizar Contraseña Actual */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Nueva Contraseña
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type={mostrarPassword ? "text" : "password"}
-                                        value={nuevoPassword}
-                                        onChange={(e) => setNuevoPassword(e.target.value)}
-                                        placeholder="Ingrese nueva contraseña"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setMostrarPassword(!mostrarPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                                    >
-                                        {mostrarPassword ? "👁️" : "👁️‍🗨️"}
-                                    </button>
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                                    Contraseña Actual
+                                </h3>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Contraseña
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={mostrarPasswordActual ? "text" : "password"}
+                                            value={usuarioSeleccionado.password}
+                                            disabled
+                                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 cursor-default font-mono text-sm"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setMostrarPasswordActual(!mostrarPasswordActual)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                            title={mostrarPasswordActual ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                        >
+                                            {mostrarPasswordActual ? "👁️" : "👁️‍🗨️"}
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Esta es la contraseña actual del usuario
+                                    </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={handleCambiarPassword}
-                                disabled={loadingCambiarPasswordAdmin || !nuevoPassword}
-                                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                {loadingCambiarPasswordAdmin ? "Cambiando..." : "Cambiar Contraseña"}
-                            </button>
-                            <p className="text-sm text-gray-500 italic">
-                                * Deje el campo vacío si no desea cambiar la contraseña
-                            </p>
+
+                            {/* Divisor */}
+                            <div className="border-t border-gray-200"></div>
+
+                            {/* Cambiar Contraseña */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                                    Cambiar Contraseña
+                                </h3>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Nueva Contraseña
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={mostrarPassword ? "text" : "password"}
+                                            value={nuevoPassword}
+                                            onChange={(e) => setNuevoPassword(e.target.value)}
+                                            placeholder="Ingrese nueva contraseña"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setMostrarPassword(!mostrarPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                            title={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                                        >
+                                            {mostrarPassword ? "👁️" : "👁️‍🗨️"}
+                                        </button>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleCambiarPassword}
+                                    disabled={loadingCambiarPasswordAdmin || !nuevoPassword}
+                                    className="w-full mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                >
+                                    {loadingCambiarPasswordAdmin ? "Cambiando..." : "Cambiar Contraseña"}
+                                </button>
+                                <p className="text-sm text-gray-500 italic mt-2">
+                                    * Deje el campo vacío si no desea cambiar la contraseña
+                                </p>
+                            </div>
                         </div>
                     </div>
 

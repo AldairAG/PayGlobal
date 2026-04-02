@@ -33,8 +33,6 @@ public class WalletAddress {
 
     private String nombre;
 
-    private BigDecimal balanceRetirado;
-
     @ManyToOne
     @JsonBackReference
     private Usuario usuario;

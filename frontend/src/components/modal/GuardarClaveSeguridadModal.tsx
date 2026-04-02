@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useState } from "react";
 import { Eye, EyeOff, Lock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface GuardarClaveSeguridadModalProps {
     open: boolean;
@@ -14,14 +15,15 @@ interface GuardarClaveSeguridadModalProps {
 export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }: GuardarClaveSeguridadModalProps) {
     const { guardarClaveSeguridad, loadingGuardarClaveSeguridad } = useUsuario();
     const [showClave, setShowClave] = useState(false);
+    const { t } = useTranslation();
 
     const validationSchema = Yup.object({
         claveSeguridad: Yup.string()
-            .required("La clave de seguridad es obligatoria")
-            .matches(/^\d{6}$/, "La clave debe ser de 6 dígitos"),
+            .required(t("user.security_key_required_validation"))
+            .matches(/^\d{6}$/, t("user.security_key_format")),
         confirmarClave: Yup.string()
-            .required("Debe confirmar la clave de seguridad")
-            .oneOf([Yup.ref('claveSeguridad')], "Las claves no coinciden"),
+            .required(t("user.confirm_security_key_required"))
+            .oneOf([Yup.ref('claveSeguridad')], t("user.keys_mismatch")),
     });
 
     const formik = useFormik({
@@ -33,7 +35,7 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
         onSubmit: async (values) => {
             try {
                 await guardarClaveSeguridad(values.claveSeguridad);
-                toast.success("Clave de seguridad guardada correctamente");
+                toast.success(t("user.security_key_saved_successfully"));
                 formik.resetForm();
                 onClose();
                 if (onSuccess) {
@@ -41,7 +43,7 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
                 }
             } catch (err) {
                 console.error('Error al guardar clave de seguridad', err);
-                toast.error("No se pudo guardar la clave de seguridad");
+                toast.error(t("user.error_saving_security_key"));
             }
         },
     });
@@ -72,7 +74,7 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
                         <Lock className="text-[#F0973C]" size={28} />
-                        <h2 className="text-2xl font-bold text-white">Configurar Clave de Seguridad</h2>
+                        <h2 className="text-2xl font-bold text-white">{t("user.configure_security_key_title")}</h2>
                     </div>
                     <button 
                         onClick={onClose} 
@@ -88,13 +90,13 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
                 <form onSubmit={formik.handleSubmit} className="space-y-6">
                     <div className="space-y-2 bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
                         <p className="text-sm text-blue-300">
-                            ℹ️ La clave de seguridad es un código de 6 dígitos que se solicitará cada vez que realices un retiro de fondos.
+                            ℹ️ {t("user.security_key_info")}
                         </p>
                     </div>
 
                     <div>
                         <label htmlFor="claveSeguridad" className="block text-sm font-semibold text-gray-300 mb-2">
-                            Clave de Seguridad (6 dígitos)
+                            {t("user.security_key_6_digits_label")}
                         </label>
                         <div className="relative">
                             <input
@@ -129,7 +131,7 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
 
                     <div>
                         <label htmlFor="confirmarClave" className="block text-sm font-semibold text-gray-300 mb-2">
-                            Confirmar Clave
+                            {t("user.confirm_key")}
                         </label>
                         <input
                             id="confirmarClave"
@@ -159,14 +161,14 @@ export default function GuardarClaveSeguridadModal({ open, onClose, onSuccess }:
                             onClick={onClose}
                             className="px-6 py-3 text-gray-300 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors font-semibold"
                         >
-                            Cancelar
+                            {t("user.cancel")}
                         </button>
                         <button
                             type="submit"
                             disabled={loadingGuardarClaveSeguridad || !formik.isValid}
                             className="px-6 py-3 text-black bg-[#69AC95] rounded-xl hover:bg-[#5a9b84] disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all font-semibold"
                         >
-                            {loadingGuardarClaveSeguridad ? "Guardando..." : "Guardar Clave"}
+                            {loadingGuardarClaveSeguridad ? t("user.saving") : t("user.save_key")}
                         </button>
                     </div>
                 </form>

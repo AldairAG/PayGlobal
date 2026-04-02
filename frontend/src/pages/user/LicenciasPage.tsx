@@ -24,7 +24,18 @@ export const LicenciasPage = () => {
 
     // Función para verificar si una licencia está deshabilitada
     const isLicenseDisabled = (licenseValue: number) => {
-        return licenseValue <= userLicenseValue;
+        if(licenseValue === userLicenseValue) {
+            return activarLicenciacConLimiteAlcanzado(); // La licencia actual del usuario siempre está habilitada
+        }
+
+        return licenseValue < userLicenseValue;
+    };
+
+    const activarLicenciacConLimiteAlcanzado = () => {
+        if (usuario?.licencia && usuario.licencia.saldoAcumulado >= usuario.licencia.limite) {
+            return false;
+        }
+        return true;
     };
 
     const handlePurchase = (name: string, value: number, type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO) => {

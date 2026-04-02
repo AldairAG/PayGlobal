@@ -648,13 +648,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuarioId == null) {
             throw new Exception("El ID de usuario es requerido");
         }
-        
+
         // Aplicar ordenamiento por fecha descendente
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "fecha"));
-        
+
         return solicitudRepository.findByUsuarioId(usuarioId, sortedPageable);
     }
 
@@ -665,12 +665,12 @@ public class UsuarioServiceImpl implements UsuarioService {
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "fecha"));
-        
+
         // Obtener todas las solicitudes de retiro
         Page<Solicitud> solicitudes = solicitudRepository.findByTipoSolicitudIn(
                 List.of(TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK, TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING),
                 sortedPageable);
-        
+
         // Mapear a DTO
         return solicitudes.map(solicitud -> SolicitudRetiroDTO.builder()
                 .id(solicitud.getId())
@@ -752,24 +752,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Restar el monto de la wallet del usuario
         wallet.setSaldo(wallet.getSaldo().subtract(solicitud.getMonto()));
 
-        // Buscar la WalletAddress de destino y sumar el monto al balance retirado
-        WalletAddress walletAddress = solicitud.getUsuario().getWalletAddresses().stream()
-                .filter(wa -> wa.getAddress().equals(solicitud.getWalletAddress()))
-                .findFirst()
-                .orElseThrow(() -> new Exception(
-                        "WalletAddress no encontrada con dirección: " + solicitud.getWalletAddress()));
-
-        // Sumar el monto al balance retirado de la wallet address
-        BigDecimal balanceActual = walletAddress.getBalanceRetirado() != null 
-                ? walletAddress.getBalanceRetirado() 
-                : BigDecimal.ZERO;
-        walletAddress.setBalanceRetirado(balanceActual.add(solicitud.getMonto()));
-
         usuarioRepository.save(solicitud.getUsuario());
 
         transaccionService.procesarTransaccion(
                 solicitud.getUsuario().getId(),
-                solicitud.getMonto().doubleValue(),
+                (solicitud.getMonto().doubleValue() - (solicitud.getMonto().doubleValue() * .10)), // Aplicar un cargo
+                                                                                                   // del 10% por retiro
+                                                                                                   // de fondos
                 TipoConceptos.RETIRO_FONDOS,
                 null,
                 EstadoOperacion.APROBADA,
