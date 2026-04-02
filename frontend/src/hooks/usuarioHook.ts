@@ -5,7 +5,7 @@ import type { AppDispatch, RootState } from '../store';
 import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerMisSolicitudesThunk, obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
+import { obtenerMisSolicitudesThunk, obtenerSolicitudesRetiroThunk, obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -44,6 +44,11 @@ export const useUsuario = () => {
     const solicitudes = useSelector((state: RootState) => state.usuario.solicitudes);
     const loadingSolicitudes = useSelector((state: RootState) => state.usuario.loadingSolicitudes);
     const errorSolicitudes = useSelector((state: RootState) => state.usuario.errorSolicitudes);
+
+    // Estados de solicitudes de retiro con DTO
+    const solicitudesRetiro = useSelector((state: RootState) => state.usuario.solicitudesRetiro);
+    const loadingSolicitudesRetiro = useSelector((state: RootState) => state.usuario.loadingSolicitudesRetiro);
+    const errorSolicitudesRetiro = useSelector((state: RootState) => state.usuario.errorSolicitudesRetiro);
 
     // Estados de usuarios
     const usuarios = useSelector((state: RootState) => state.usuario.usuarios);
@@ -236,6 +241,16 @@ export const useUsuario = () => {
             return unwrapResult(result);
         } catch (error) {
             console.error('Error al obtener todas las solicitudes:', error);
+            throw error;
+        }
+    };
+
+    const obtenerSolicitudesRetiro = async (page: number = 0, size: number = 25, sort?: string) => {
+        try {
+            const result = await dispatch(obtenerSolicitudesRetiroThunk({ page, size, sort }));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al obtener solicitudes de retiro:', error);
             throw error;
         }
     };
@@ -456,6 +471,12 @@ export const useUsuario = () => {
         errorSolicitudes,
         obtenerSolicitudes,
         obtenerTodasLasSolicitudes,
+
+        // Solicitudes de retiro con DTO
+        solicitudesRetiro,
+        loadingSolicitudesRetiro,
+        errorSolicitudesRetiro,
+        obtenerSolicitudesRetiro,
 
         // aprobarSolicitud
         aprobarSolicitud,

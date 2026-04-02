@@ -7,7 +7,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { toast } from "react-toastify";
 
 export const GestionRetirosPage = () => {
-    const { solicitudes, loadingSolicitudes, errorSolicitudes, obtenerTodasLasSolicitudes,
+    const { solicitudesRetiro, loadingSolicitudesRetiro, errorSolicitudesRetiro, obtenerSolicitudesRetiro,
         aprobarRetiroFondos, loadingAprobarRetiroFondos, errorAprobarRetiroFondos, 
         rechazarSolicitud, loadingRechazarSolicitud, errorRechazarSolicitud } = useUsuario();
 
@@ -17,7 +17,7 @@ export const GestionRetirosPage = () => {
     const [tamanioPagina, setTamanioPagina] = useState(25);
 
     useEffect(() => {
-        obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);    
+        obtenerSolicitudesRetiro(paginaActual, tamanioPagina);    
     }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación de retiros
@@ -38,7 +38,7 @@ export const GestionRetirosPage = () => {
     useEffect(() => {
         if (!loadingAprobarRetiroFondos && !errorAprobarRetiroFondos) {
             const timer = setTimeout(() => {
-                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
+                obtenerSolicitudesRetiro(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
@@ -48,17 +48,14 @@ export const GestionRetirosPage = () => {
     useEffect(() => {
         if (!loadingRechazarSolicitud && !errorRechazarSolicitud) {
             const timer = setTimeout(() => {
-                obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
+                obtenerSolicitudesRetiro(paginaActual, tamanioPagina);
             }, 500);
             return () => clearTimeout(timer);
         }
     }, [loadingRechazarSolicitud, errorRechazarSolicitud]);
 
-    // Filtrar solo retiros
-    const solicitudesRetiros = (solicitudes?.content ?? []).filter(sol => {
-        return sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING ||
-               sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK;
-    });
+    // Ya no es necesario filtrar solo retiros porque el backend ya los filtra
+    const solicitudesRetiros = solicitudesRetiro?.content ?? [];
 
     // Aplicar filtros adicionales
     const solicitudesFiltradas = solicitudesRetiros.filter(sol => {
@@ -106,11 +103,11 @@ export const GestionRetirosPage = () => {
                         </div>
                     </div>
                     <button
-                        onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
-                        disabled={loadingSolicitudes}
+                        onClick={() => obtenerSolicitudesRetiro(paginaActual, tamanioPagina)}
+                        disabled={loadingSolicitudesRetiro}
                         className="flex items-center gap-2 px-4 py-2 bg-[#69AC95] hover:bg-[#5a9a82] text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <RefreshCw size={18} className={loadingSolicitudes ? "animate-spin" : ""} />
+                        <RefreshCw size={18} className={loadingSolicitudesRetiro ? "animate-spin" : ""} />
                         <span>Actualizar</span>
                     </button>
                 </div>
@@ -197,21 +194,21 @@ export const GestionRetirosPage = () => {
 
                 {/* Lista de solicitudes */}
                 <div className="space-y-4">
-                    {loadingSolicitudes ? (
+                    {loadingSolicitudesRetiro ? (
                         // Estado de carga
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                             <Loader2 size={48} className="text-[#69AC95] mx-auto mb-4 animate-spin" />
                             <p className="text-gray-600 text-lg">Cargando retiros...</p>
                             <p className="text-gray-500 text-sm mt-2">Por favor espera un momento</p>
                         </div>
-                    ) : errorSolicitudes ? (
+                    ) : errorSolicitudesRetiro ? (
                         // Estado de error
                         <div className="bg-red-50 rounded-lg shadow-sm border border-red-200 p-12 text-center">
                             <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
                             <p className="text-red-700 text-lg font-semibold">Error al cargar los retiros</p>
-                            <p className="text-red-600 text-sm mt-2">{errorSolicitudes}</p>
+                            <p className="text-red-600 text-sm mt-2">{errorSolicitudesRetiro}</p>
                             <button
-                                onClick={() => obtenerTodasLasSolicitudes(paginaActual, tamanioPagina)}
+                                onClick={() => obtenerSolicitudesRetiro(paginaActual, tamanioPagina)}
                                 className="mt-4 flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors duration-200 mx-auto"
                             >
                                 <RefreshCw size={16} />
@@ -241,14 +238,14 @@ export const GestionRetirosPage = () => {
                 </div>
 
                 {/* Controles de paginación */}
-                {solicitudes && solicitudes.page.totalPages > 1 && (
+                {solicitudesRetiro && solicitudesRetiro.page.totalPages > 1 && (
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-6">
                         <div className="flex items-center justify-between">
                             {/* Información de paginación */}
                             <div className="text-sm text-gray-600">
                                 Mostrando <span className="font-semibold">{solicitudesRetiros.length}</span> retiros
                                 {' '}(Página <span className="font-semibold">{paginaActual + 1}</span> de{' '}
-                                <span className="font-semibold">{solicitudes.page.totalPages}</span>)
+                                <span className="font-semibold">{solicitudesRetiro.page.totalPages}</span>)
                             </div>
 
                             {/* Controles de navegación */}
@@ -256,7 +253,7 @@ export const GestionRetirosPage = () => {
                                 {/* Botón Primera página */}
                                 <button
                                     onClick={() => setPaginaActual(0)}
-                                    disabled={paginaActual === 0 || loadingSolicitudes}
+                                    disabled={paginaActual === 0 || loadingSolicitudesRetiro}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Primera página"
                                 >
@@ -266,7 +263,7 @@ export const GestionRetirosPage = () => {
                                 {/* Botón Anterior */}
                                 <button
                                     onClick={() => setPaginaActual(prev => Math.max(0, prev - 1))}
-                                    disabled={paginaActual === 0 || loadingSolicitudes}
+                                    disabled={paginaActual === 0 || loadingSolicitudesRetiro}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página anterior"
                                 >
@@ -275,14 +272,14 @@ export const GestionRetirosPage = () => {
 
                                 {/* Números de página */}
                                 <div className="flex items-center gap-1">
-                                    {Array.from({ length: Math.min(5, solicitudes.page.totalPages) }, (_, i) => {
+                                    {Array.from({ length: Math.min(5, solicitudesRetiro.page.totalPages) }, (_, i) => {
                                         let pageNum;
-                                        if (solicitudes.page.totalPages <= 5) {
+                                        if (solicitudesRetiro.page.totalPages <= 5) {
                                             pageNum = i;
                                         } else if (paginaActual < 3) {
                                             pageNum = i;
-                                        } else if (paginaActual > solicitudes.page.totalPages - 4) {
-                                            pageNum = solicitudes.page.totalPages - 5 + i;
+                                        } else if (paginaActual > solicitudesRetiro.page.totalPages - 4) {
+                                            pageNum = solicitudesRetiro.page.totalPages - 5 + i;
                                         } else {
                                             pageNum = paginaActual - 2 + i;
                                         }
@@ -291,7 +288,7 @@ export const GestionRetirosPage = () => {
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setPaginaActual(pageNum)}
-                                                disabled={loadingSolicitudes}
+                                                disabled={loadingSolicitudesRetiro}
                                                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                                                     paginaActual === pageNum
                                                         ? 'bg-[#69AC95] text-white'
@@ -306,8 +303,8 @@ export const GestionRetirosPage = () => {
 
                                 {/* Botón Siguiente */}
                                 <button
-                                    onClick={() => setPaginaActual(prev => Math.min(solicitudes.page.totalPages - 1, prev + 1))}
-                                    disabled={paginaActual === solicitudes.page.totalPages - 1 || loadingSolicitudes}
+                                    onClick={() => setPaginaActual(prev => Math.min(solicitudesRetiro.page.totalPages - 1, prev + 1))}
+                                    disabled={paginaActual === solicitudesRetiro.page.totalPages - 1 || loadingSolicitudesRetiro}
                                     className="p-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Página siguiente"
                                 >
@@ -316,8 +313,8 @@ export const GestionRetirosPage = () => {
 
                                 {/* Botón Última página */}
                                 <button
-                                    onClick={() => setPaginaActual(solicitudes.page.totalPages - 1)}
-                                    disabled={paginaActual === solicitudes.page.totalPages - 1 || loadingSolicitudes}
+                                    onClick={() => setPaginaActual(solicitudesRetiro.page.totalPages - 1)}
+                                    disabled={paginaActual === solicitudesRetiro.page.totalPages - 1 || loadingSolicitudesRetiro}
                                     className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     title="Última página"
                                 >
@@ -331,7 +328,7 @@ export const GestionRetirosPage = () => {
                                         setTamanioPagina(Number(e.target.value));
                                         setPaginaActual(0);
                                     }}
-                                    disabled={loadingSolicitudes}
+                                    disabled={loadingSolicitudesRetiro}
                                     className="ml-4 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <option value={5}>5 por página</option>

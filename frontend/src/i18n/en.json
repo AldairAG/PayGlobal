@@ -236,7 +236,21 @@
         "configure_key": "Configure",
         "update_key": "Update",
         "security_key_saved_successfully": "Security key saved successfully",
-        "security_key_required": "You must configure a security key before requesting a withdrawal"
+        "security_key_required": "You must configure a security key before requesting a withdrawal",
+        "verify_security_key_title": "Verify Security Key",
+        "verify_security_key_description": "Please enter your 6-digit security key to authorize this withdrawal.",
+        "failed_attempts": "Failed attempts:",
+        "security_key_label": "Security Key",
+        "verifying": "Verifying...",
+        "verify": "Verify",
+        "security_key_required_validation": "Security key is required",
+        "security_key_format": "Key must be 6 digits",
+        "security_key_verified": "Security key verified successfully",
+        "security_key_incorrect": "Incorrect security key",
+        "too_many_attempts": "Too many failed attempts. Please try again later.",
+        "loading_requests": "Loading requests...",
+        "error_loading_requests": "Error loading requests",
+        "wallet_not_found": "Wallet not found"
     },
 
     "reports": {

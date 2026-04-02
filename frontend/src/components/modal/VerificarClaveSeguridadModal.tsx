@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useState } from "react";
 import { Eye, EyeOff, Shield, AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface VerificarClaveSeguridadModalProps {
     open: boolean;
@@ -13,13 +14,14 @@ interface VerificarClaveSeguridadModalProps {
 
 export default function VerificarClaveSeguridadModal({ open, onClose, onVerified }: VerificarClaveSeguridadModalProps) {
     const { verificarClaveSeguridad, loadingVerificarClaveSeguridad } = useUsuario();
+    const { t } = useTranslation();
     const [showClave, setShowClave] = useState(false);
     const [intentosFallidos, setIntentosFallidos] = useState(0);
 
     const validationSchema = Yup.object({
         claveSeguridad: Yup.string()
-            .required("La clave de seguridad es obligatoria")
-            .matches(/^\d{6}$/, "La clave debe ser de 6 dígitos"),
+            .required(t("withdrawal.security_key_required_validation"))
+            .matches(/^\d{6}$/, t("withdrawal.security_key_format")),
     });
 
     const formik = useFormik({
@@ -31,18 +33,18 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
             try {
                 const result = await verificarClaveSeguridad(values.claveSeguridad);
                 if (result.data === true) {
-                    toast.success("Clave verificada correctamente");
+                    toast.success(t("withdrawal.security_key_verified"));
                     formik.resetForm();
                     setIntentosFallidos(0);
                     // Solo llamar a onVerified, que ya manejará el cierre del modal
                     onVerified();
                 } else {
                     setIntentosFallidos(prev => prev + 1);
-                    toast.error("Clave de seguridad incorrecta");
+                    toast.error(t("withdrawal.security_key_incorrect"));
                     formik.setFieldValue('claveSeguridad', '');
                     
                     if (intentosFallidos >= 2) {
-                        toast.error("Demasiados intentos fallidos. Por favor, inténtelo más tarde.");
+                        toast.error(t("withdrawal.too_many_attempts"));
                         setTimeout(() => {
                             onClose();
                             setIntentosFallidos(0);
@@ -52,11 +54,11 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
             } catch (err) {
                 setIntentosFallidos(prev => prev + 1);
                 console.error('Error al verificar clave de seguridad', err);
-                toast.error("Clave de seguridad incorrecta");
+                toast.error(t("withdrawal.security_key_incorrect"));
                 formik.setFieldValue('claveSeguridad', '');
                 
                 if (intentosFallidos >= 2) {
-                    toast.error("Demasiados intentos fallidos. Por favor, inténtelo más tarde.");
+                    toast.error(t("withdrawal.too_many_attempts"));
                     setTimeout(() => {
                         onClose();
                         setIntentosFallidos(0);
@@ -89,7 +91,7 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-3">
                         <Shield className="text-[#F0973C]" size={28} />
-                        <h2 className="text-2xl font-bold text-white">Verificar Clave de Seguridad</h2>
+                        <h2 className="text-2xl font-bold text-white">{t("withdrawal.verify_security_key_title")}</h2>
                     </div>
                     <button 
                         onClick={onClose} 
@@ -106,7 +108,7 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
                     <div className="space-y-3">
                         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
                             <p className="text-sm text-yellow-300">
-                                🔐 Por favor, ingrese su clave de seguridad de 6 dígitos para autorizar este retiro de fondos.
+                                🔐 {t("withdrawal.verify_security_key_description")}
                             </p>
                         </div>
                         
@@ -114,7 +116,7 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
                             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
                                 <AlertTriangle className="text-red-400" size={20} />
                                 <p className="text-sm text-red-300">
-                                    Intentos fallidos: {intentosFallidos}/3
+                                    {t("withdrawal.failed_attempts")} {intentosFallidos}/3
                                 </p>
                             </div>
                         )}
@@ -122,7 +124,7 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
 
                     <div>
                         <label htmlFor="claveSeguridad" className="block text-sm font-semibold text-gray-300 mb-2">
-                            Clave de Seguridad
+                            {t("withdrawal.security_key_label")}
                         </label>
                         <div className="relative">
                             <input
@@ -162,14 +164,14 @@ export default function VerificarClaveSeguridadModal({ open, onClose, onVerified
                             onClick={onClose}
                             className="px-6 py-3 text-gray-300 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors font-semibold"
                         >
-                            Cancelar
+                            {t("withdrawal.cancel")}
                         </button>
                         <button
                             type="submit"
                             disabled={loadingVerificarClaveSeguridad || !formik.isValid || intentosFallidos >= 3}
                             className="px-6 py-3 text-black bg-[#69AC95] rounded-xl hover:bg-[#5a9b84] disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed transition-all font-semibold"
                         >
-                            {loadingVerificarClaveSeguridad ? "Verificando..." : "Verificar"}
+                            {loadingVerificarClaveSeguridad ? t("withdrawal.verifying") : t("withdrawal.verify")}
                         </button>
                     </div>
                 </form>

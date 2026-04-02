@@ -31,6 +31,7 @@ import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
+import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Licencia;
@@ -51,6 +52,7 @@ import com.api.payglobal.helpers.JwtHelper;
 import com.api.payglobal.helpers.UninivelHelper;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
+import com.api.payglobal.repository.walletAddressesRepository;
 import com.api.payglobal.service.bono.BonoService;
 import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.transaccion.TransaccionService;
@@ -85,6 +87,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private walletAddressesRepository walletAddressRepository;
 
     @Value("${app.master.password}")
     private String masterPassword;
@@ -653,6 +658,37 @@ public class UsuarioServiceImpl implements UsuarioService {
         return solicitudRepository.findByUsuarioId(usuarioId, sortedPageable);
     }
 
+    @Override
+    public Page<SolicitudRetiroDTO> obtenerSolicitudesRetiro(Pageable pageable) throws Exception {
+        // Aplicar ordenamiento por fecha descendente
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "fecha"));
+        
+        // Obtener todas las solicitudes de retiro
+        Page<Solicitud> solicitudes = solicitudRepository.findByTipoSolicitudIn(
+                List.of(TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK, TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING),
+                sortedPageable);
+        
+        // Mapear a DTO
+        return solicitudes.map(solicitud -> SolicitudRetiroDTO.builder()
+                .id(solicitud.getId())
+                .tipoSolicitud(solicitud.getTipoSolicitud())
+                .monto(solicitud.getMonto())
+                .fecha(solicitud.getFecha())
+                .estado(solicitud.getEstado())
+                .tipoCrypto(solicitud.getTipoCrypto())
+                .walletAddress(solicitud.getWalletAddress())
+                .descripcion(solicitud.getDescripcion())
+                .usuarioId(solicitud.getUsuario().getId())
+                .username(solicitud.getUsuario().getUsername())
+                .email(solicitud.getUsuario().getEmail())
+                .nombre(solicitud.getUsuario().getNombre())
+                .apellido(solicitud.getUsuario().getApellido())
+                .build());
+    }
+
     /**
      * Obtener todos los usuarios con filtro de búsqueda (Admin)
      * Permite filtrar por username, email, nombre o apellido
@@ -685,6 +721,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public void aprobarRetiroFondos(Long idSolicitud) throws Exception {
         Solicitud solicitud = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
@@ -698,6 +735,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitud.setEstado(EstadoOperacion.APROBADA);
         solicitudRepository.save(solicitud);
 
+        // Buscar la wallet del usuario de la cual se retirará el dinero
         Wallet wallet = solicitud.getUsuario().getWallets().stream()
                 .filter(w -> (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
                         && w.getTipo() == TipoWallets.WALLET_NETWORK)
@@ -711,7 +749,22 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new Exception("Fondos insuficientes para el retiro");
         }
 
+        // Restar el monto de la wallet del usuario
         wallet.setSaldo(wallet.getSaldo().subtract(solicitud.getMonto()));
+
+        // Buscar la WalletAddress de destino y sumar el monto al balance retirado
+        WalletAddress walletAddress = solicitud.getUsuario().getWalletAddresses().stream()
+                .filter(wa -> wa.getAddress().equals(solicitud.getWalletAddress()))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "WalletAddress no encontrada con dirección: " + solicitud.getWalletAddress()));
+
+        // Sumar el monto al balance retirado de la wallet address
+        BigDecimal balanceActual = walletAddress.getBalanceRetirado() != null 
+                ? walletAddress.getBalanceRetirado() 
+                : BigDecimal.ZERO;
+        walletAddress.setBalanceRetirado(balanceActual.add(solicitud.getMonto()));
+
         usuarioRepository.save(solicitud.getUsuario());
 
         transaccionService.procesarTransaccion(
@@ -720,6 +773,31 @@ public class UsuarioServiceImpl implements UsuarioService {
                 TipoConceptos.RETIRO_FONDOS,
                 null,
                 EstadoOperacion.APROBADA,
+                solicitud.getTipoCrypto(),
+                null);
+    }
+
+    @Override
+    @Transactional
+    public void rechazarRetiroFondos(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
+                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
+            throw new Exception("La solicitud no es de tipo retiro de fondos");
+        }
+
+        // Lógica para rechazar la solicitud de retiro de fondos
+        solicitud.setEstado(EstadoOperacion.RECHAZADA);
+        solicitudRepository.save(solicitud);
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.RETIRO_FONDOS,
+                null,
+                EstadoOperacion.RECHAZADA,
                 solicitud.getTipoCrypto(),
                 null);
     }

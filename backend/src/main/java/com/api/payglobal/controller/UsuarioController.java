@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +34,7 @@ import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
+import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Solicitud;
@@ -329,6 +329,22 @@ public class UsuarioController {
     }
 
     /**
+     * Obtener solicitudes de retiro con información del usuario (Admin)
+     */
+    @GetMapping("/admin/solicitudes-retiro")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<Page<SolicitudRetiroDTO>>> obtenerSolicitudesRetiro(Pageable pageable) {
+        try {
+            Page<SolicitudRetiroDTO> solicitudesRetiro = usuarioService.obtenerSolicitudesRetiro(pageable);
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, solicitudesRetiro,
+                    "Solicitudes de retiro obtenidas correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
      * Obtener solicitudes filtradas por uno o más tipos (Admin)
      * Permite filtrar solicitudes por COMPRA_LICENCIA,
      * SOLICITUD_RETIRO_WALLET_DIVIDENDOS,
@@ -415,6 +431,38 @@ public class UsuarioController {
         try {
             usuarioService.eliminarUsuarioPorId(idUsuario);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, null, "Usuario eliminado correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Aprobar retiro de fondos (Admin)
+     */
+    @PutMapping("/admin/aprobar-retiro/{idSolicitud}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<String>> aprobarRetiroFondos(@PathVariable Long idSolicitud) {
+        try {
+            usuarioService.aprobarRetiroFondos(idSolicitud);
+            return ResponseEntity
+                    .ok(new ApiResponseWrapper<>(true, "Retiro de fondos aprobado correctamente", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    /**
+     * Rechazar retiro de fondos (Admin)
+     */
+    @PutMapping("/admin/rechazar-retiro/{idSolicitud}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    public ResponseEntity<ApiResponseWrapper<String>> rechazarRetiroFondos(@PathVariable Long idSolicitud) {
+        try {
+            usuarioService.rechazarRetiroFondos(idSolicitud);
+            return ResponseEntity
+                    .ok(new ApiResponseWrapper<>(true, "Retiro de fondos rechazado correctamente", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));

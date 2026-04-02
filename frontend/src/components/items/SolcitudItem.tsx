@@ -1,9 +1,10 @@
 import { type Solicitud } from "../../type/entityTypes";
+import type { SolicitudRetiroDTO } from "../../type/responseType";
 import { EstadoOperacion, TipoSolicitud, TipoCrypto } from "../../type/enum";
-import { Calendar, DollarSign, Hash, Wallet, FileText, CheckCircle, XCircle, Clock, AlertCircle, ThumbsUp, ThumbsDown, Loader2 } from "lucide-react";
+import { Calendar, DollarSign, Hash, Wallet, FileText, CheckCircle, XCircle, Clock, AlertCircle, ThumbsUp, ThumbsDown, Loader2, User } from "lucide-react";
 
 interface SolicitudItemProps {
-    solicitud: Solicitud;
+    solicitud: Solicitud | SolicitudRetiroDTO;
     isAdmin?: boolean;
     isLoading?: boolean;
     onAprobar?: (solicitudId: number) => void;
@@ -11,6 +12,11 @@ interface SolicitudItemProps {
 }
 
 const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAprobar, onRechazar }: SolicitudItemProps) => {
+    
+    // Type guard para verificar si es SolicitudRetiroDTO
+    const isSolicitudRetiroDTO = (sol: Solicitud | SolicitudRetiroDTO): sol is SolicitudRetiroDTO => {
+        return 'username' in sol;
+    };
     
     const handleAprobar = () => {
         if (onAprobar) {
@@ -146,6 +152,17 @@ const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAproba
 
             {/* Grid con información */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                {/* Usuario (solo para retiros) */}
+                {isSolicitudRetiroDTO(solicitud) && (
+                    <div className="flex items-center gap-2">
+                        <User size={16} className="text-purple-600" />
+                        <div>
+                            <p className="text-xs text-gray-500">Usuario</p>
+                            <p className="text-sm font-semibold text-gray-800">{solicitud.username}</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Monto */}
                 <div className="flex items-center gap-2">
                     <DollarSign size={16} className="text-green-600" />
@@ -165,7 +182,7 @@ const SolicitudItem = ({ solicitud, isAdmin = false, isLoading = false, onAproba
                 </div>
 
                 {/* Fecha */}
-                <div className="flex items-center gap-2 col-span-2">
+                <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-blue-600" />
                     <div>
                         <p className="text-xs text-gray-500">Fecha</p>

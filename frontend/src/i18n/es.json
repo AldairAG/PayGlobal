@@ -245,7 +245,21 @@
         "configure_key": "Configurar",
         "update_key": "Actualizar",
         "security_key_saved_successfully": "Clave de seguridad guardada exitosamente",
-        "security_key_required": "Debe configurar una clave de seguridad antes de solicitar un retiro"
+        "security_key_required": "Debe configurar una clave de seguridad antes de solicitar un retiro",
+        "verify_security_key_title": "Verificar Clave de Seguridad",
+        "verify_security_key_description": "Por favor, ingrese su clave de seguridad de 6 dígitos para autorizar este retiro de fondos.",
+        "failed_attempts": "Intentos fallidos:",
+        "security_key_label": "Clave de Seguridad",
+        "verifying": "Verificando...",
+        "verify": "Verificar",
+        "security_key_required_validation": "La clave de seguridad es obligatoria",
+        "security_key_format": "La clave debe ser de 6 dígitos",
+        "security_key_verified": "Clave verificada correctamente",
+        "security_key_incorrect": "Clave de seguridad incorrecta",
+        "too_many_attempts": "Demasiados intentos fallidos. Por favor, inténtelo más tarde.",
+        "loading_requests": "Cargando solicitudes...",
+        "error_loading_requests": "Error al cargar solicitudes",
+        "wallet_not_found": "Monedero no encontrado"
     },
 
     "reports": {

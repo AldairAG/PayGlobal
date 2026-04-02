@@ -14,6 +14,7 @@ import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
 import com.api.payglobal.dto.response.JwtResponse;
+import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Solicitud;
@@ -63,6 +64,8 @@ public interface UsuarioService extends UserDetailsService {
 
         Page<Solicitud> obtenerSolicitudesPorUsuario(Long usuarioId, Pageable pageable) throws Exception;
 
+        Page<SolicitudRetiroDTO> obtenerSolicitudesRetiro(Pageable pageable) throws Exception;
+
         Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception;
 
         Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception;
@@ -70,6 +73,8 @@ public interface UsuarioService extends UserDetailsService {
         void eliminarUsuarioPorId(Long idUsuario) throws Exception;
 
         void aprobarRetiroFondos(Long idSolicitud) throws Exception;
+
+        void rechazarRetiroFondos(Long idSolicitud) throws Exception;
 
         Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception;
 

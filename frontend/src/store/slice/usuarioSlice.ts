@@ -6,7 +6,7 @@ import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
 import { logout } from "./authSlice";
-import type { UsuarioEnRedResponse } from "../../type/responseType";
+import type { SolicitudRetiroDTO, UsuarioEnRedResponse } from "../../type/responseType";
 
 interface UsuarioState {
     usuario: Usuario | null;
@@ -46,6 +46,10 @@ interface UsuarioState {
     solicitudes: Page<Solicitud> | null;
     loadingSolicitudes: boolean;
     errorSolicitudes: string | null;
+
+    solicitudesRetiro: Page<SolicitudRetiroDTO> | null;
+    loadingSolicitudesRetiro: boolean;
+    errorSolicitudesRetiro: string | null;
 
     usuarios: Page<Usuario> | null;
     loadingUsuarios: boolean;
@@ -116,6 +120,9 @@ const loadInitialState = (): UsuarioState => {
         solicitudes: null,
         loadingSolicitudes: false,
         errorSolicitudes: null,
+        solicitudesRetiro: null,
+        loadingSolicitudesRetiro: false,
+        errorSolicitudesRetiro: null,
         usuarios: null,
         loadingUsuarios: false,
         errorUsuarios: null,
@@ -315,6 +322,24 @@ export const obtenerSolicitudesThunk = createAsyncThunk<
 
     } catch (error) {
         const message = error instanceof Error ? error.message : "Error al obtener solicitudes pendientes";
+        return rejectWithValue(message);
+    }
+});
+
+export const obtenerSolicitudesRetiroThunk = createAsyncThunk<
+    ApiResponse<Page<SolicitudRetiroDTO>>,
+    { page?: number; size?: number; sort?: string },
+    { rejectValue: string }
+>("usuario/obtenerSolicitudesRetiro", async ({ page = 0, size = 25, sort }, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.obtenerSolicitudesRetiro(page, size, sort);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al obtener solicitudes de retiro");
+        }
+        return response;
+
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al obtener solicitudes de retiro";
         return rejectWithValue(message);
     }
 });
@@ -686,6 +711,20 @@ const usuarioSlice = createSlice({
             .addCase(obtenerSolicitudesThunk.rejected, (state, action) => {
                 state.loadingSolicitudes = false;
                 state.errorSolicitudes = action.payload || "Error al obtener solicitudes pendientes";
+            })
+            // Obtener solicitudes de retiro con DTO
+            .addCase(obtenerSolicitudesRetiroThunk.pending, (state) => {
+                state.loadingSolicitudesRetiro = true;
+                state.errorSolicitudesRetiro = null;
+            })
+            .addCase(obtenerSolicitudesRetiroThunk.fulfilled, (state, action) => {
+                state.loadingSolicitudesRetiro = false;
+                state.errorSolicitudesRetiro = null;
+                state.solicitudesRetiro = action.payload.data || null;
+            })
+            .addCase(obtenerSolicitudesRetiroThunk.rejected, (state, action) => {
+                state.loadingSolicitudesRetiro = false;
+                state.errorSolicitudesRetiro = action.payload || "Error al obtener solicitudes de retiro";
             })
             .addCase(obtenerMisSolicitudesThunk.pending, (state) => {
                 state.loadingSolicitudes = true;

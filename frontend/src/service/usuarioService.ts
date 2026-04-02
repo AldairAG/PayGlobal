@@ -5,7 +5,7 @@ import type {
 } from '../type/requestTypes';
 import type { Solicitud, Usuario } from '../type/entityTypes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
-import type { UsuarioEnRedResponse } from '../type/responseType';
+import type { SolicitudRetiroDTO, UsuarioEnRedResponse } from '../type/responseType';
 
 // Response types
 export interface JwtResponse {
@@ -65,6 +65,18 @@ const solicitarCompraLicencia = async (tipoCrypto: TipoCrypto, tipoLicencia: str
 // GET /api/usuarios/admin/solicitudes
 const obtenerSolicitudes = async (page: number = 0, size: number = 25, sort?: string): Promise<ApiResponse<Page<Solicitud>>> => {
     return api.get<Page<Solicitud>>(`${BASE_PATH}/admin/solicitudes`, {
+        params: {
+            page,
+            size,
+            ...(sort && { sort })
+        }
+    });
+};
+
+// Obtener solicitudes de retiro con información del usuario (Admin)
+// GET /api/usuarios/admin/solicitudes-retiro
+const obtenerSolicitudesRetiro = async (page: number = 0, size: number = 25, sort?: string): Promise<ApiResponse<Page<SolicitudRetiroDTO>>> => {
+    return api.get<Page<SolicitudRetiroDTO>>(`${BASE_PATH}/admin/solicitudes-retiro`, {
         params: {
             page,
             size,
@@ -193,6 +205,10 @@ const aprobarRetiroFondos = async (idSolicitud: number): Promise<ApiResponse<str
     return api.put<string>(`${BASE_PATH}/admin/aprobar-retiro/${idSolicitud}`);
 };
 
+const rechazarRetiroFondos = async (idSolicitud: number): Promise<ApiResponse<string>> => {
+    return api.put<string>(`${BASE_PATH}/admin/rechazar-retiro/${idSolicitud}`);
+};
+
 const guardarClaveSeguridad = async (claveSeguridad: string, idUsuario: number): Promise<ApiResponse<string>> => {
     return api.post<string>(`${BASE_PATH}/guardar-clave-seguridad`, null, {
         params: {
@@ -229,6 +245,7 @@ export const usuarioService = {
     editarUsuarioAdmin,
     solicitarCompraLicencia,
     obtenerSolicitudes,
+    obtenerSolicitudesRetiro,
     obtenerMisSolicitudes,
     obtenerTodosLosUsuarios,
     obtenerUsuarioPorId,
@@ -244,4 +261,5 @@ export const usuarioService = {
     guardarClaveSeguridad,
     verificarClaveSeguridad,
     cambiarPasswordAdmin,
+    rechazarRetiroFondos,
 };
