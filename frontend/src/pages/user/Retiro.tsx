@@ -57,7 +57,7 @@ export const RetiroPage = () => {
     const [paginaActual, setPaginaActual] = useState(1);
     const solicitudesPorPagina = 5;
 
-    // Función para verificar si estamos en horario de retiros (Martes y Jueves 12 PM - 5 PM hora Dubai)
+    // Función para verificar si estamos en horario de retiros (Martes y Jueves 12 AM - 5 PM hora Dubai)
     const isWithdrawalAllowed = (): boolean => {
         // Obtener la hora actual en zona horaria de Dubai (UTC+4)
         const now = new Date();
@@ -69,8 +69,8 @@ export const RetiroPage = () => {
         // Solo martes (2) y jueves (4)
         const isAllowedDay = dayOfWeek === 2 || dayOfWeek === 4;
         
-        // Entre 12 PM (12) y 5 PM (17) - 5 PM no incluida, así que < 17
-        const isAllowedTime = hours >= 12 && hours < 17;
+        // Entre 12 AM (00:00) y 5 PM (17:00) - 5 PM no incluida, así que < 17
+        const isAllowedTime = hours >= 0 && hours < 17;
         
         return isAllowedDay && isAllowedTime;
     };
