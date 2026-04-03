@@ -37,3 +37,31 @@ export interface SolicitudRetiroDTO {
     nombre: string;
     apellido: string;
 }
+
+// Estadísticas
+export interface UsuariosNuevosDTO {
+    fecha: string; // Fecha en formato "YYYY-MM-DD"
+    cantidad: number;
+}
+
+export interface GananciasLicenciasDTO {
+    totalComprasAceptadas: number;
+    totalGanancias: number;
+}
+
+export interface ComisionesRetirosDTO {
+    totalRetiros: number;
+    totalComisiones: number;
+}
+
+export interface UsuariosPorLicenciaDTO {
+    licencia: string; // Nombre de la licencia (P0, P10, P25, etc.)
+    cantidad: number;
+}
+
+export interface EstadisticasDTO {
+    usuariosNuevosMes: UsuariosNuevosDTO[];
+    gananciasLicencias: GananciasLicenciasDTO;
+    comisionesRetiros: ComisionesRetirosDTO;
+    usuariosPorLicencia: UsuariosPorLicenciaDTO[];
+}
