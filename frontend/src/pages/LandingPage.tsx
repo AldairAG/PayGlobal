@@ -252,7 +252,6 @@ export default function LandingPage() {
                                     "Jumeirah Lake Towers",
                                     "(JLT)",
                                     "DMCC Zone",
-                                    "P.O. Box 123456",
                                     "Dubai",
                                     "United Arab Emirates",
                                 ].map((line) => (
@@ -271,6 +270,7 @@ export default function LandingPage() {
                             <div className="flex flex-col items-center justify-center px-4 py-4 rounded-xl border border-[#69AC95]/20 backdrop-blur-sm bg-black/40 text-center gap-1.5">
                                 <Globe size={14} className="text-[#69AC95] mb-0.5" />
                                 <span className="text-white/70 text-[11px] font-semibold leading-snug">PAYGLOBAL MLM FOUNDATION</span>
+                                <span className="text-white/70 text-[11px] font-semibold leading-snug">2026</span>
                             </div>
                         </div>
                     </div>

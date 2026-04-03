@@ -374,18 +374,50 @@ export const EditarUsuarioPage = () => {
                                 <span className="text-blue-500 text-xl mr-3">🔒</span>
                                 <div>
                                     <p className="text-sm font-medium text-blue-900 mb-1">
-                                        Contraseña Encriptada
+                                        Contraseña Encriptada con BCrypt
                                     </p>
                                     <p className="text-xs text-blue-700">
-                                        La contraseña está protegida con BCrypt y no puede ser visualizada. 
-                                        Por seguridad, solo puedes establecer una nueva contraseña.
+                                        La contraseña está protegida con hash BCrypt (no reversible). 
+                                        Puedes ver el hash encriptado o establecer una nueva contraseña.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
+                        {/* Visualización del Hash */}
+                        <div className="mb-6 pb-6 border-b border-gray-200">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Hash BCrypt (Solo lectura)
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={usuarioSeleccionado.password}
+                                    disabled
+                                    className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-xs font-mono text-gray-600 break-all"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(usuarioSeleccionado.password);
+                                        toast.success("Hash copiado al portapapeles");
+                                    }}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs transition"
+                                    title="Copiar hash"
+                                >
+                                    📋
+                                </button>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1 italic">
+                                Este hash no puede ser revertido a la contraseña original por diseño de seguridad
+                            </p>
+                        </div>
+
                         {/* Cambiar Contraseña */}
                         <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                                Establecer Nueva Contraseña
+                            </h3>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Nueva Contraseña
