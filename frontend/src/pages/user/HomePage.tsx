@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { TrendingUp, Coins, Wallet, Award } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { formatearFechaDate } from "../../helpers/formatHelpers";
 import { TipoWallets } from "../../type/enum";
@@ -160,7 +160,7 @@ const HomePage = () => {
                         <TrendingUp className="text-[#69AC95]" /> {t("home.profit_increase")} - {t("home.last_30_days")}
                     </h2>
 
-                    <div className="w-full h-64">
+                    <div className="w-full h-96">
                         {loadingGanancias30Dias ? (
                             <p className="text-center text-white/40">{t("home.loading_monthly_earnings...")}</p>
                         ) : errorGanancias30Dias ? (
@@ -169,30 +169,69 @@ const HomePage = () => {
                             <p className="text-center text-white/40">{t("home.no_earnings_data_available.")}</p>
                         ) : (
                             <ResponsiveContainer>
-                                <LineChart data={gananciasUltimos30Dias}>
+                                <BarChart 
+                                    data={gananciasUltimos30Dias}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="barGradientHome" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#69AC95" stopOpacity={0.9}/>
+                                            <stop offset="95%" stopColor="#69AC95" stopOpacity={0.3}/>
+                                        </linearGradient>
+                                        <filter id="shadowHome" height="200%">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                            <feOffset dx="2" dy="3" result="offsetblur"/>
+                                            <feComponentTransfer>
+                                                <feFuncA type="linear" slope="0.3"/>
+                                            </feComponentTransfer>
+                                            <feMerge>
+                                                <feMergeNode/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                     <XAxis 
                                         dataKey="fecha" 
                                         stroke="rgba(255,255,255,0.3)" 
                                         tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
                                         tickFormatter={(value) => {
-                                            // Mostrar solo día/mes para evitar saturación
                                             const fecha = new Date(value);
                                             return `${fecha.getDate()}/${fecha.getMonth() + 1}`;
                                         }}
-                                        interval="preserveStartEnd"
+                                        angle={-45}
+                                        textAnchor="end"
+                                        height={70}
                                     />
-                                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} />
+                                    <YAxis 
+                                        stroke="rgba(255,255,255,0.3)" 
+                                        tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
+                                        domain={[0, 'auto']}
+                                        tickFormatter={(value) => `$${value.toFixed(2)}`}
+                                    />
                                     <Tooltip 
-                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.2)', borderRadius: '0.75rem', color: '#fff' }}
+                                        contentStyle={{ 
+                                            backgroundColor: '#111', 
+                                            border: '1px solid rgba(105,172,149,0.3)', 
+                                            borderRadius: '12px', 
+                                            color: '#fff',
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+                                        }}
                                         labelFormatter={(label) => {
                                             const fecha = new Date(label);
                                             return fecha.toLocaleDateString('es-ES');
                                         }}
-                                        formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, 'Ganancia'] : ['$ 0.00', 'Ganancia']}
+                                        formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, t("home.earnings")] : ['$ 0.00', t("home.earnings")]}
                                     />
-                                    <Line type="monotone" dataKey="ganancia" stroke="#69AC95" strokeWidth={2} dot={{ fill: '#69AC95', strokeWidth: 0, r: 2 }} />
-                                </LineChart>
+                                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)', paddingTop: '10px' }} />
+                                    <Bar 
+                                        dataKey="ganancia" 
+                                        name={t("home.earnings")} 
+                                        fill="url(#barGradientHome)" 
+                                        radius={[8, 8, 0, 0]}
+                                        filter="url(#shadowHome)"
+                                    />
+                                </BarChart>
                             </ResponsiveContainer>
                         )}
                     </div>

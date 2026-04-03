@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import type { Bono } from "../../type/entityTypes";
 import { TipoConceptos, EstadoOperacion } from "../../type/enum";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Filter, TrendingUp, DollarSign, Award, Clock, CheckCircle2, XCircle, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTransacciones } from "../../hooks/useTransacciones";
@@ -101,9 +101,6 @@ export const HistorialPage = () => {
         }));
     }, [bonosUsuario]);
 
-    const COLORS = ['#F0973C', '#69AC95', '#e8841f', '#5a9a84', '#F0973C99', '#69AC9599'];
-
-
 
     const obtenerColorEstado = (estado: EstadoOperacion) => {
         switch (estado) {
@@ -149,72 +146,84 @@ export const HistorialPage = () => {
                 </div>
 
                 {/* Gráficas */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    {/* Gráfica de Ganancias de los Últimos 30 Días */}
+                <div className="mb-8">
+                    {/* Gráfica de Ganancias de los Últimos 30 Días - Barras 3D */}
                     <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-6">
                         <h3 className="text-xl font-bold text-[#F0973C] mb-4 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-[#69AC95]" />
                             {t("reports.last_30_days_earnings")}
                         </h3>
                         {loadingGanancias30Dias ? (
-                            <div className="flex items-center justify-center h-[300px]">
+                            <div className="flex items-center justify-center h-[400px]">
                                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#69AC95]"></div>
                             </div>
                         ) : errorGanancias30Dias ? (
-                            <div className="flex items-center justify-center h-[300px] text-red-400">
+                            <div className="flex items-center justify-center h-[400px] text-red-400">
                                 <p>Error: {errorGanancias30Dias}</p>
                             </div>
                         ) : datosGanancias.length === 0 ? (
-                            <div className="flex items-center justify-center h-[300px] text-white/40">
+                            <div className="flex items-center justify-center h-[400px] text-white/40">
                                 <p>{t("reports.no_data_available")}</p>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={datosGanancias}>
+                            <ResponsiveContainer width="100%" height={400}>
+                                <BarChart 
+                                    data={datosGanancias}
+                                    margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#69AC95" stopOpacity={0.9}/>
+                                            <stop offset="95%" stopColor="#69AC95" stopOpacity={0.3}/>
+                                        </linearGradient>
+                                        <filter id="shadow" height="200%">
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                                            <feOffset dx="2" dy="3" result="offsetblur"/>
+                                            <feComponentTransfer>
+                                                <feFuncA type="linear" slope="0.3"/>
+                                            </feComponentTransfer>
+                                            <feMerge>
+                                                <feMergeNode/>
+                                                <feMergeNode in="SourceGraphic"/>
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                                     <XAxis 
                                         dataKey="fecha" 
                                         stroke="rgba(255,255,255,0.3)" 
                                         tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 10 }} 
-                                        interval="preserveStartEnd"
+                                        angle={-45}
+                                        textAnchor="end"
+                                        height={70}
                                     />
-                                    <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                    <YAxis 
+                                        stroke="rgba(255,255,255,0.3)" 
+                                        tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }}
+                                        domain={[0, 'auto']}
+                                        tickFormatter={(value) => `$${value.toFixed(2)}`}
+                                    />
                                     <Tooltip 
-                                        contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(105,172,149,0.3)', borderRadius: '12px', color: '#fff' }}
+                                        contentStyle={{ 
+                                            backgroundColor: '#111', 
+                                            border: '1px solid rgba(105,172,149,0.3)', 
+                                            borderRadius: '12px', 
+                                            color: '#fff',
+                                            boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+                                        }}
                                         formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, t("reports.earnings")] : ['$ 0.00', t("reports.earnings")]}
                                     />
-                                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
-                                    <Line type="monotone" dataKey="ganancia" name={t("reports.earnings")} stroke="#69AC95" strokeWidth={2} dot={{ fill: '#69AC95', r: 2 }} />
-                                </LineChart>
+                                    <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)', paddingTop: '10px' }} />
+                                    <Bar 
+                                        dataKey="ganancia" 
+                                        name={t("reports.earnings")} 
+                                        fill="url(#barGradient)" 
+                                        radius={[8, 8, 0, 0]}
+                                        filter="url(#shadow)"
+                                    />
+                                </BarChart>
                             </ResponsiveContainer>
                         )}
-                    </div>
-
-                    {/* Gráfica de Distribución de Bonos */}
-                    <div className="rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 p-6">
-                        <h3 className="text-xl font-bold text-[#F0973C] mb-4 flex items-center">
-                            <Award className="w-5 h-5 mr-2 text-[#F0973C]" />
-                            {t("reports.bonus_distribution")}
-                        </h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <PieChart>
-                                <Pie
-                                    data={datosBonosChart}
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={80}
-                                    fill="#F0973C"
-                                    dataKey={t("reports.accumulated")}
-                                    label
-                                >
-                                    {datosBonosChart.map((_entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.3)', borderRadius: '12px', color: '#fff' }} formatter={(value: number | undefined) => value ? `$${value.toFixed(2)}` : '$0.00'} />
-                                <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
-                            </PieChart>
-                        </ResponsiveContainer>
                     </div>
                 </div>
 
@@ -576,11 +585,11 @@ export const HistorialPage = () => {
                                             <ResponsiveContainer width="100%" height={400}>
                                                 <BarChart data={datosBonosChart}>
                                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                                    <XAxis dataKey={t("reports.name")} stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
+                                                    <XAxis dataKey="nombre" stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
                                                     <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 11 }} />
                                                     <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid rgba(240,151,60,0.3)', borderRadius: '12px', color: '#fff' }} />
                                                     <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)' }} />
-                                                    <Bar dataKey={t("reports.accumulated")} fill="#F0973C" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="acumulado" name={t("reports.accumulated")} fill="#F0973C" radius={[4, 4, 0, 0]} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
