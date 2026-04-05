@@ -107,21 +107,21 @@ const HomePage = () => {
                         </div>
 
                         {/* Wallet Dividendos */}
-                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex justify-center items-center gap-6">
+                        <div className="p-5 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col justify-center items-center gap-4">
                             <div className="flex items-center gap-3">
                                 <Wallet size={30} className="text-[#69AC95]" />
                                 <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.staking')}</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING)?.saldo}</p>
+                            <p className="text-2xl font-bold text-[#69AC95] break-words text-center">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING)?.saldo}</p>
                         </div>
 
                         {/* Wallet Comisiones */}
-                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex justify-center items-center gap-6">
+                        <div className="p-5 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5 flex flex-col justify-center items-center gap-4">
                             <div className="flex items-center gap-3">
                                 <Coins size={30} className="text-[#69AC95]" />
                                 <h3 className="text-xl font-semibold text-[#F0973C]">{t('home.network')}</h3>
                             </div>
-                            <p className="mt-2 text-2xl font-bold text-[#69AC95]">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK)?.saldo}</p>
+                            <p className="text-2xl font-bold text-[#69AC95] break-words text-center">$ {usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK)?.saldo}</p>
                         </div>
 
                     </div>
