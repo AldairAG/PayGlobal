@@ -33,7 +33,7 @@ import tcSpanish from '../../assets/documents/terms/institutional_terms_spanish.
 import presentationSpanish from '../../assets/documents/presentacion/SPANISH .pdf';
 import presentationEnglish from '../../assets/documents/presentacion/ENGLISH.pdf';
 import presentationFrench from '../../assets/documents/presentacion/FRENCH.pdf';
-import presentationArab from '../../assets/documents/presentacion/ARABIC.pdf';
+import presentationArab from '../../assets/documents/presentacion/ARAB.pdf';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

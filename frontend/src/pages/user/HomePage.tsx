@@ -146,11 +146,11 @@ const HomePage = () => {
                                 />
                         </div>
 
-                        <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+{/*                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
                             <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.users_on_my_network')}</h3>
                             <p className="mt-2 text-2xl font-bold text-[#69AC95]">{usuarioEnRed || 0} {t('home.affiliates')}</p>
                         </div>
-
+ */}
                     </div>
                 </div>
 

@@ -263,7 +263,10 @@
         "too_many_attempts": "محاولات كثيرة فاشلة. يرجى المحاولة لاحقًا.",
         "loading_requests": "جارٍ تحميل الطلبات...",
         "error_loading_requests": "خطأ في تحميل الطلبات",
-        "wallet_not_found": "المحفظة غير موجودة"
+        "wallet_not_found": "المحفظة غير موجودة",
+        "confirm_delete_wallet_title": "تأكيد حذف المحفظة",
+        "confirm_delete_wallet_message": "هل أنت متأكد أنك تريد حذف هذه المحفظة؟ لا يمكن التراجع عن هذا الإجراء.",
+        "delete": "حذف"
     },
 
     "reports": {

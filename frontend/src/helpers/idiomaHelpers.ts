@@ -301,4 +301,91 @@ export const TraducirWalletType = (tipo: string, idioma: string): string => {
         default:
             return tipo;
     }
-}    
+}   
+
+const TraducirDescripcionEs = (descripcion: string | null): string => {
+    if (!descripcion) return "";
+    
+    if (descripcion.startsWith("Bono de inscripción por registro directo de usuario: ")) {
+        const usuario = descripcion.replace("Bono de inscripción por registro directo de usuario: ", "");
+        return "Bono de inscripción por registro directo de usuario: " + usuario;
+    }
+    if (descripcion.startsWith("Bono de auto por rango ")) {
+        const usuario = descripcion.replace("Bono de auto por rango ", "");
+        return "Bono de auto por rango " + usuario;
+    }
+    return descripcion;
+};
+
+const TraducirDescripcionFr = (descripcion: string | null): string => {
+    if (!descripcion) return "";
+    
+    if (descripcion.startsWith("Bono de inscripción por registro directo de usuario: ")) {
+        const usuario = descripcion.replace("Bono de inscripción por registro directo de usuario: ", "");
+        return "Bonus d'inscription pour l'enregistrement direct de l'utilisateur: " + usuario;
+    }
+    if (descripcion.startsWith("Bono de auto por rango ")) {
+        const usuario = descripcion.replace("Bono de auto por rango ", "");
+        return "Bonus d'auto pour le rang " + usuario;
+    }
+    return descripcion;
+};
+
+const TraducirDescripcionPt = (descripcion: string | null): string => {
+    if (!descripcion) return "";
+    
+    if (descripcion.startsWith("Bono de inscripción por registro directo de usuario: ")) {
+        const usuario = descripcion.replace("Bono de inscripción por registro directo de usuario: ", "");
+        return "Bônus de inscrição por registro direto de usuário: " + usuario;
+    }
+    if (descripcion.startsWith("Bono de auto por rango ")) {
+        const usuario = descripcion.replace("Bono de auto por rango ", "");
+        return "Bônus de faixa " + usuario;
+    }
+    return descripcion;
+};
+
+const TraducirDescripcionAr = (descripcion: string | null): string => {
+    if (!descripcion) return "";
+    
+    if (descripcion.startsWith("Bono de inscripción por registro directo de usuario: ")) {
+        const usuario = descripcion.replace("Bono de inscripción por registro directo de usuario: ", "");
+        return "مكافأة التسجيل للتسجيل المباشر للمستخدم: " + usuario;
+    }
+    if (descripcion.startsWith("Bono de auto por rango ")) {
+        const usuario = descripcion.replace("Bono de auto por rango ", "");
+        return "مكافأة السيارات حسب التصنيف: " + usuario;
+    }
+    return descripcion;
+};
+
+const TraducirDescripcionEn = (descripcion: string | null): string => {
+    if (!descripcion) return "";
+    
+    if (descripcion.startsWith("Bono de inscripción por registro directo de usuario: ")) {
+        const usuario = descripcion.replace("Bono de inscripción por registro directo de usuario: ", "");
+        return "Registration Bonus for Direct User Registration: " + usuario;
+    }
+    if (descripcion.startsWith("Bono de auto por rango ")) {
+        const usuario = descripcion.replace("Bono de auto por rango ", "");
+        return "Auto Bonus by Rank: " + usuario;
+    }
+    return descripcion;
+};
+
+export const TraducirDescripcion = (descripcion: string | null, idioma: string): string => {
+    switch (idioma) {
+        case "es":
+            return TraducirDescripcionEs(descripcion);
+        case "fr":
+            return TraducirDescripcionFr(descripcion);
+        case "pt":
+            return TraducirDescripcionPt(descripcion);
+        case "ar":
+            return TraducirDescripcionAr(descripcion);
+        case "en":
+            return TraducirDescripcionEn(descripcion);
+        default:
+            return descripcion ?? "";
+    }
+}  

@@ -266,7 +266,10 @@
         "too_many_attempts": "Muitas tentativas falhadas. Por favor, tente novamente mais tarde.",
         "loading_requests": "Carregando solicitações...",
         "error_loading_requests": "Erro ao carregar solicitações",
-        "wallet_not_found": "Carteira não encontrada"
+        "wallet_not_found": "Carteira não encontrada",
+        "confirm_delete_wallet_title": "Confirmar Exclusão de Carteira",
+        "confirm_delete_wallet_message": "Tem certeza de que deseja excluir esta carteira? Esta ação não pode ser desfeita.",
+        "delete": "Excluir"
     },
 
     "reports": {

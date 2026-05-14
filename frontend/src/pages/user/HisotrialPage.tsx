@@ -7,7 +7,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { useTransacciones } from "../../hooks/useTransacciones";
 import { useTranslation } from 'react-i18next';
 import i18n from "../../i18n";
-import { TraducirEstadoOperacion, TraducirConcepto } from "../../helpers/idiomaHelpers";
+import { TraducirEstadoOperacion, TraducirConcepto, TraducirDescripcion } from "../../helpers/idiomaHelpers";
 
 
 export const HistorialPage = () => {
@@ -389,7 +389,7 @@ export const HistorialPage = () => {
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 text-sm text-white/50">
-                                                             {/* {transaccion.descripcion} */}
+                                                            {TraducirDescripcion((transaccion.descripcion || null), idiomaActual)}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
                                                             <span className={transaccion.monto >= 0 ? "text-[#69AC95]" : "text-red-400"}>

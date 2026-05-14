@@ -67,6 +67,9 @@ export default function RegisterPage() {
 
     const { registrar, loadingRegistro, errorRegistro } = useUsuario();
 
+    const sanitizeNoSpaces = (value: string) => value.replace(/\s+/g, "");
+    const containsSpaces = (value: string) => /\s/.test(value);
+
     const isUsernameComplete = username.trim().length > 0;
     const isEmailComplete = email.trim().length > 0;
     const isPhoneCodeComplete = phoneCode.trim().length > 0;
@@ -89,6 +92,20 @@ export default function RegisterPage() {
 
         if (!username.trim() || !email.trim() || !password.trim()) {
             toast.error(t("landing.fill_all_fields") || "Por favor, completa todos los campos obligatorios.");
+            return;
+        }
+
+        if (
+            containsSpaces(username) ||
+            containsSpaces(email) ||
+            containsSpaces(phoneNumber) ||
+            containsSpaces(referenced) ||
+            containsSpaces(password) ||
+            containsSpaces(confirmPassword)
+        ) {
+            const noSpacesError = t("landing.no_spaces_allowed") || "No se permiten espacios en los campos.";
+            setLocalError(noSpacesError);
+            toast.error(noSpacesError);
             return;
         }
 
@@ -258,7 +275,7 @@ export default function RegisterPage() {
                                         className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
                                         placeholder={t("landing.username")}
                                         value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
+                                        onChange={(e) => setUsername(sanitizeNoSpaces(e.target.value))}
                                     />
                                     {isUsernameComplete && (
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
@@ -280,7 +297,7 @@ export default function RegisterPage() {
                                         placeholder={t("landing.email")}
                                         type="email"
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) => setEmail(sanitizeNoSpaces(e.target.value))}
                                     />
                                     {isEmailComplete && (
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
@@ -318,7 +335,7 @@ export default function RegisterPage() {
                                         placeholder={t("landing.phone_number") || "Número de teléfono"}
                                         type="tel"
                                         value={phoneNumber}
-                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        onChange={(e) => setPhoneNumber(sanitizeNoSpaces(e.target.value))}
                                     />
                                     {isPhoneCodeComplete && isPhoneNumberComplete && (
                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#69AC95] text-xl">
@@ -340,7 +357,7 @@ export default function RegisterPage() {
                                     className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/30 outline-none focus:border-[#69AC95] focus:ring-2 focus:ring-[#69AC95]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     placeholder={t("landing.referenced")}
                                     value={referenced}
-                                    onChange={(e) => setReferenced(e.target.value)}
+                                    onChange={(e) => setReferenced(sanitizeNoSpaces(e.target.value))}
                                     disabled={!!ref}
                                 />
                                 {isReferencedComplete && (
@@ -364,7 +381,7 @@ export default function RegisterPage() {
                                         placeholder={t("landing.password")}
                                         type={showPassword ? "text" : "password"}
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        onChange={(e) => setPassword(sanitizeNoSpaces(e.target.value))}
                                     />
                                     <button
                                         type="button"
@@ -393,7 +410,7 @@ export default function RegisterPage() {
                                         placeholder={t("landing.confirm_password")}
                                         type={showConfirmPassword ? "text" : "password"}
                                         value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        onChange={(e) => setConfirmPassword(sanitizeNoSpaces(e.target.value))}
                                     />
                                     <button
                                         type="button"

@@ -264,7 +264,10 @@
         "too_many_attempts": "Trop de tentatives échouées. Veuillez réessayer plus tard.",
         "loading_requests": "Chargement des demandes...",
         "error_loading_requests": "Erreur lors du chargement des demandes",
-        "wallet_not_found": "Portefeuille introuvable"
+        "wallet_not_found": "Portefeuille introuvable",
+        "confirm_delete_wallet_title": "Confirmer la suppression du portefeuille",
+        "confirm_delete_wallet_message": "Êtes-vous sûr de vouloir supprimer ce portefeuille ? Cette action est irréversible.",
+        "delete": "Supprimer"
     },
 
     "reports": {

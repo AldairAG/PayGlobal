@@ -262,7 +262,10 @@
         "too_many_attempts": "Too many failed attempts. Please try again later.",
         "loading_requests": "Loading requests...",
         "error_loading_requests": "Error loading requests",
-        "wallet_not_found": "Wallet not found"
+        "wallet_not_found": "Wallet not found",
+        "confirm_delete_wallet_title": "Confirm Delete Wallet",
+        "confirm_delete_wallet_message": "Are you sure you want to delete this wallet? This action cannot be undone.",
+        "delete": "Delete"
     },
 
     "reports": {

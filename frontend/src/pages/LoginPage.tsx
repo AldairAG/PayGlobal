@@ -16,12 +16,19 @@ export default function LoginPage() {
     const { login, loadingLogin, errorLogin } = useUsuario();
     const [showPassword, setShowPassword] = useState(false);
 
+    const noSpacesError = t("landing.no_spaces_allowed") || "No se permiten espacios en este campo.";
+
     const validationSchema = Yup.object({
-        username: Yup.string().required(t("landing.fill_fields") || "Complete este campo"),
+        username: Yup.string()
+            .required(t("landing.fill_fields") || "Complete este campo")
+            .matches(/^\S+$/, noSpacesError),
         password: Yup.string()
             .required(t("landing.fill_fields") || "Complete este campo")
-            .min(6, t("landing.password_min_length") || "Mínimo 6 caracteres"),
+            .min(6, t("landing.password_min_length") || "Mínimo 6 caracteres")
+            .matches(/^\S+$/, noSpacesError),
     });
+
+    const sanitizeNoSpaces = (value: string) => value.replace(/\s+/g, "");
 
     const formik = useFormik({
         initialValues: {
@@ -177,7 +184,7 @@ export default function LoginPage() {
                                     placeholder={t("landing.username") || "Username"}
                                     name="username"
                                     value={formik.values.username}
-                                    onChange={formik.handleChange}
+                                    onChange={(e) => formik.setFieldValue("username", sanitizeNoSpaces(e.target.value))}
                                     onBlur={formik.handleBlur}
                                 />
                                 {isUsernameComplete && (
@@ -204,7 +211,7 @@ export default function LoginPage() {
                                     type={showPassword ? "text" : "password"}
                                     name="password"
                                     value={formik.values.password}
-                                    onChange={formik.handleChange}
+                                    onChange={(e) => formik.setFieldValue("password", sanitizeNoSpaces(e.target.value))}
                                     onBlur={formik.handleBlur}
                                 />
                                 <button

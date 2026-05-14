@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { TipoCrypto, EstadoOperacion, TipoWallets, TipoSolicitud } from "../../type/enum";
 import { useWalletAddress } from "../../hooks/useWalletAddress";
 import type { CreateWalletAddress } from "../../type/requestTypes";
+import type { WalletAddress } from "../../type/entityTypes";
 import { useUsuario } from "../../hooks/usuarioHook";
 import { useTranslation } from 'react-i18next';
 import { TraducirWalletType } from '../../helpers/idiomaHelpers';
@@ -48,6 +49,8 @@ export const RetiroPage = () => {
     const [showGuardarClaveModal, setShowGuardarClaveModal] = useState(false);
     const [showVerificarClaveModal, setShowVerificarClaveModal] = useState(false);
     const [pendingRetiroData, setPendingRetiroData] = useState<{ walletId: number, monto: number, addressId: number } | null>(null);
+    const [showDeleteWalletModal, setShowDeleteWalletModal] = useState(false);
+    const [walletToDelete, setWalletToDelete] = useState<WalletAddress | null>(null);
 
     // Estado para solicitudes de retiro
     // Estados de UI
@@ -79,6 +82,30 @@ export const RetiroPage = () => {
         getMyWalletAddresses();
         obtenerSolicitudes();
     }, []);
+
+    const handleDeleteWallet = (wallet: WalletAddress) => {
+        setWalletToDelete(wallet);
+        setShowDeleteWalletModal(true);
+    };
+
+    const confirmDeleteWallet = async () => {
+        if (!walletToDelete) return;
+
+        try {
+            await deleteWalletAddress(walletToDelete.id);
+            setShowDeleteWalletModal(false);
+            setWalletToDelete(null);
+            toast.success(t("withdrawal.wallet_deleted_successfully") || "Wallet eliminada correctamente.");
+        } catch (error) {
+            console.error("Error eliminando wallet:", error);
+            toast.error(t("withdrawal.error_deleting_wallet") || "No se pudo eliminar la wallet. Intenta de nuevo.");
+        }
+    };
+
+    const cancelDeleteWallet = () => {
+        setShowDeleteWalletModal(false);
+        setWalletToDelete(null);
+    };
 
     // Validación para nueva wallet
     const walletValidationSchema = Yup.object({
@@ -497,7 +524,7 @@ export const RetiroPage = () => {
                                             <button
                                                 title={t("withdrawal.delete_wallet")}
                                                 className="p-2 rounded-lg transition-all hover:scale-105 bg-red-500 text-white"
-                                                onClick={() => deleteWalletAddress(wallet.id)}
+                                                onClick={() => handleDeleteWallet(wallet)}
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -855,6 +882,45 @@ export const RetiroPage = () => {
                 }}
             />
 
+            {showDeleteWalletModal && walletToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+                    <div className="absolute inset-0 bg-black/70"></div>
+                    <div className="relative z-10 w-full max-w-lg rounded-3xl border border-white/10 bg-[#0d0d0d] p-8 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/15 text-red-400">
+                                <Trash2 size={20} />
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-bold text-white">{t("withdrawal.confirm_delete_wallet_title") || "Confirmar eliminación"}</h3>
+                                <p className="text-sm text-white/50">{t("withdrawal.confirm_delete_wallet_message") || "Esta acción eliminará permanentemente la wallet seleccionada."}</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-6 rounded-3xl border border-white/10 bg-white/5 p-4">
+                            <p className="text-xs uppercase tracking-widest text-white/40 mb-2">{t("withdrawal.wallet")}</p>
+                            <p className="text-lg font-semibold text-white">{walletToDelete.nombre}</p>
+                            <p className="text-xs font-mono text-white/50 break-all">{walletToDelete.address}</p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                                type="button"
+                                onClick={confirmDeleteWallet}
+                                className="w-full rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-400"
+                            >
+                                {t("withdrawal.delete") || "Eliminar"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={cancelDeleteWallet}
+                                className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                            >
+                                {t("withdrawal.cancel") || "Cancelar"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <VerificarClaveSeguridadModal
                 open={showVerificarClaveModal}
                 onClose={() => {
