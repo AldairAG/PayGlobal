@@ -13,7 +13,7 @@ import ForexTicker from '../../components/ForexTicker';
 
 const HomePage = () => {
     const { t } = useTranslation();
-    const { usuario, usuarioEnRed } = useUsuario();
+    const { usuario } = useUsuario();
     const { 
         cargarGananciasUltimos30Dias, 
         gananciasUltimos30Dias, 

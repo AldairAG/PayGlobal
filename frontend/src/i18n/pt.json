@@ -269,7 +269,9 @@
         "wallet_not_found": "Carteira não encontrada",
         "confirm_delete_wallet_title": "Confirmar Exclusão de Carteira",
         "confirm_delete_wallet_message": "Tem certeza de que deseja excluir esta carteira? Esta ação não pode ser desfeita.",
-        "delete": "Excluir"
+        "delete": "Excluir",
+        "wallet_deleted_successfully": "Carteira excluída com sucesso",
+        "error_deleting_wallet": "Erro ao excluir carteira: "
     },
 
     "reports": {

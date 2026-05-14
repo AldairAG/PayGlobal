@@ -274,7 +274,9 @@
         "wallet_not_found": "Monedero no encontrado",
         "confirm_delete_wallet_title": "Confirmar eliminación de monedero",
         "confirm_delete_wallet_message": "¿Está seguro de que desea eliminar este monedero? Esta acción no se puede deshacer.",
-        "delete": "Eliminar"
+        "delete": "Eliminar",
+        "wallet_deleted_successfully": "Monedero eliminado exitosamente",   
+        "error_deleting_wallet": "Error al eliminar monedero: "
     },
 
     "reports": {
