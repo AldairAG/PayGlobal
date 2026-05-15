@@ -22,7 +22,8 @@ export const ROUTES = {
         TRANSFERENCIA_INTERNA: '/c/internal-transfer',
         RED_USUARIOS: '/c/red-usuarios',
         TOOLS: '/c/tools',
-        NEWS_REPORTS: '/c/news-reports'
+        NEWS_REPORTS: '/c/news-reports',
+        MINING: '/c/mining'
     },
 
     RECUPERAR_PASSWORD: '/recuperar-password',
