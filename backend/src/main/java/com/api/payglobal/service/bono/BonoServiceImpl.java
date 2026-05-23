@@ -190,44 +190,54 @@ public class BonoServiceImpl implements BonoService {
     @Override
     @Transactional
     public void ingresoPasivo() throws Exception {
+        // Procesa el ingreso pasivo para todas las licencias activas
         licenciaRepository.findByActivoTrue().forEach(licencia -> {
             try {
+                // Obtiene la wallet de comisiones del usuario asociado a la licencia
                 Wallet wallet = walletRepository.findByUsuario_Username(licencia.getUsuario().getUsername()).stream()
-                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
+                        .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                         .findFirst()
                         .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
 
+                // Calcula el ingreso pasivo como el 0.5% del precio de la licencia
                 Double ingresoPasivo = licencia.getPrecio() * 0.005; // 0.5% de ingreso pasivo diario
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
-                // Actualizar saldoAcumulado en la licencia
+                // Actualiza el saldo acumulado en la licencia
                 aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
 
+                // Verifica si se alcanzó el límite de la licencia
                 if (nuevoSaldo.compareTo(BigDecimal.valueOf(licencia.getLimite())) >= 0) {
+                    // Desactiva la licencia al alcanzar el límite
                     licencia.setActivo(false);
                     BigDecimal diferencia = nuevoSaldo.subtract(BigDecimal.valueOf(licencia.getPrecio()));
                     wallet.setSaldo(wallet.getSaldo().add(diferencia));
                     licenciaRepository.save(licencia);
                     walletRepository.save(wallet);
 
+                    // Registra la transacción de ingreso pasivo
                     registrarTransaccion(licencia.getUsuario().getUsername(), ingresoPasivo,
-                            TipoConceptos.INGRESO_PASIVO, TipoMetodoPago.WALLET_COMISIONES, null);
+                            TipoConceptos.INGRESO_PASIVO, TipoMetodoPago.WALLET_DIVIDENDOS, null);
                     return;
                 }
 
+                // Actualiza el saldo de la wallet con el nuevo ingreso pasivo
                 wallet.setSaldo(nuevoSaldo);
                 Licencia nuevaLicencia = licenciaRepository.save(licencia);
                 walletRepository.save(wallet);
 
+                // Registra la transacción de ingreso pasivo
                 registrarTransaccion(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
                         TipoConceptos.INGRESO_PASIVO,
-                        TipoMetodoPago.WALLET_COMISIONES, null);
+                        TipoMetodoPago.WALLET_DIVIDENDOS, null);
 
+                // Calcula y distribuye el bono uninivel basado en el rango del usuario
                 bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
                         nuevaLicencia.getUsuario().getRango());
-
+                System.out.println("Ingreso pasivo procesado para la licencia con ID: " + licencia.getId() + ", Usuario: " + nuevaLicencia.getUsuario().getUsername() + ", Monto: " + ingresoPasivo);
             } catch (Exception e) {
+                System.out.println("Error procesando ingreso pasivo para la licencia con ID: " + licencia.getId());
                 e.printStackTrace();
             }
         });
