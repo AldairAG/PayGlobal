@@ -1,22 +1,24 @@
 import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft } from 'lucide-react';
 import { getLicenseImage } from '../../helpers/imgHelpers';
-import type { Licencia } from '../../type/entityTypes';
+import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
+import { TipoSolicitud } from '../../type/enum';
+import { LICENCIAS, type Licencia } from '../../type/entityTypes';
 
 // Configuración de tasas de interés compuesto (rendimiento diario)
 const INTEREST_RATES = {
-    P50: { name: "P50", value: 50 ,rendimientoDiario: 0.01},
-    P100: { name: "P100", value: 100 ,rendimientoDiario: 0.01},
-    P250: { name: "P250", value: 250 ,rendimientoDiario: 0.01},
-    P500: { name: "P500", value: 500 ,rendimientoDiario: 0.01},
-    P1000: { name: "P1000", value: 1000 ,rendimientoDiario: 0.015},
-    P2500: { name: "P2500", value: 2500 ,rendimientoDiario: 0.015},
-    P5000: { name: "P5000", value: 5000 ,rendimientoDiario: 0.02},
-    P7500: { name: "P7500", value: 7500 ,rendimientoDiario: 0.02},
-    P10000: { name: "P10000", value: 10000 ,rendimientoDiario: 0.025},
-    P15000: { name: "P15000", value: 15000 ,rendimientoDiario: 0.025},
-    P25000: { name: "P25000", value: 25000 ,rendimientoDiario: 0.03},
-    P50000: { name: "P50000", value: 50000 ,rendimientoDiario: 0.03},
+  P50: { name: "P50", value: 50, rendimientoDiario: 0.01 },
+  P100: { name: "P100", value: 100, rendimientoDiario: 0.01 },
+  P250: { name: "P250", value: 250, rendimientoDiario: 0.01 },
+  P500: { name: "P500", value: 500, rendimientoDiario: 0.01 },
+  P1000: { name: "P1000", value: 1000, rendimientoDiario: 0.015 },
+  P2500: { name: "P2500", value: 2500, rendimientoDiario: 0.015 },
+  P5000: { name: "P5000", value: 5000, rendimientoDiario: 0.02 },
+  P7500: { name: "P7500", value: 7500, rendimientoDiario: 0.02 },
+  P10000: { name: "P10000", value: 10000, rendimientoDiario: 0.025 },
+  P15000: { name: "P15000", value: 15000, rendimientoDiario: 0.025 },
+  P25000: { name: "P25000", value: 25000, rendimientoDiario: 0.03 },
+  P50000: { name: "P50000", value: 50000, rendimientoDiario: 0.03 },
 };
 
 const MiningPage = () => {
@@ -27,14 +29,15 @@ const MiningPage = () => {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [miningActive, setMiningActive] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [licenseToPurchase, setLicenseToPurchase] = useState<Licencia | null>(null);
+  const [showPurchaseLicenseModal, setShowPurchaseLicenseModal] = useState(false);
+  const [licenseToPurchase, setLicenseToPurchase] = useState<{ name: string; value: number } | null>(null);
   const [miningWalletBalance, setMiningWalletBalance] = useState(0);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [transferAmount, setTransferAmount] = useState('');
 
   // Licencias disponibles (simuladas basadas en el patrón de la app)
 
-  const licenses:Licencia[] = [
+  const licenses: Licencia[] = [
     { id: 1, nombre: 'P50', precio: 50, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
     { id: 2, nombre: 'P100', precio: 100, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
     { id: 3, nombre: 'P250', precio: 250, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
@@ -42,21 +45,21 @@ const MiningPage = () => {
     { id: 5, nombre: 'P1000', precio: 1000, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
   ];
 
-/*   const licenses = [
-    { name: 'Basic', value: 100, color: '#4B5563' },
-    { name: 'Standard', value: 500, color: '#3B82F6' },
-    { name: 'Premium', value: 1000, color: '#8B5CF6' },
-    { name: 'Platinum', value: 2500, color: '#F59E0B' },
-    { name: 'Diamond', value: 5000, color: '#10B981' },
-    { name: 'Master', value: 10000, color: '#EF4444' },
-  ]; */
-    
+  /*   const licenses = [
+      { name: 'Basic', value: 100, color: '#4B5563' },
+      { name: 'Standard', value: 500, color: '#3B82F6' },
+      { name: 'Premium', value: 1000, color: '#8B5CF6' },
+      { name: 'Platinum', value: 2500, color: '#F59E0B' },
+      { name: 'Diamond', value: 5000, color: '#10B981' },
+      { name: 'Master', value: 10000, color: '#EF4444' },
+    ]; */
+
   const [selectedLicense, setSelectedLicense] = useState(licenses[0]);
 
   // Calcular interés compuesto
   const calculations = useMemo(() => {
     const principal = selectedLicense.precio;
-    const rate = INTEREST_RATES[selectedLicense.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario*30 || 0.05;
+    const rate = INTEREST_RATES[selectedLicense.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
 
     // Fórmula: A = P(1 + r)^t
     const totalAmount = principal * Math.pow(1 + rate, selectedPeriod);
@@ -137,18 +140,19 @@ const MiningPage = () => {
   const timeElapsed = formatTime(elapsedSeconds);
 
   // Función para abrir el modal de compra
-  const handleOpenPurchaseModal = (license: Licencia) => {
-    setLicenseToPurchase(license);
+  const handleOpenPurchaseModal = () => {
     setShowPurchaseModal(true);
   };
 
-  // Función para confirmar la compra
-  const handleConfirmPurchase = () => {
-    // Aquí iría la lógica de compra real
-    if (licenseToPurchase) {
-      alert(`Compra de licencia ${licenseToPurchase.nombre} por $${licenseToPurchase.precio} USDT confirmada!`);
-    }
+  // Función para seleccionar licencia y abrir modal de compra real
+  const handleSelectPurchaseLicense = (licenseName: string, licenseValue: number) => {
+    setLicenseToPurchase({ name: licenseName, value: licenseValue });
     setShowPurchaseModal(false);
+    setShowPurchaseLicenseModal(true);
+  };
+
+  const handleClosePurchaseLicenseModal = () => {
+    setShowPurchaseLicenseModal(false);
     setLicenseToPurchase(null);
   };
 
@@ -178,10 +182,10 @@ const MiningPage = () => {
     <div className="min-h-screen bg-[#000000] text-white px-4 py-8">
       <div className="container mx-auto max-w-7xl space-y-8">
 
-        {/* Modal de Compra de Licencia */}
-        {/*         {showPurchaseModal && licenseToPurchase && (
+        {/* Modal de selección de licencia para compra */}
+        {showPurchaseModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-            <div className="relative w-full max-w-md mx-4 p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#F0973C]/30 shadow-2xl shadow-[#F0973C]/20">
+            <div className="relative w-full max-w-4xl mx-4 p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#F0973C]/30 shadow-2xl shadow-[#F0973C]/20 max-h-[85vh] overflow-y-auto">
               <button
                 onClick={() => setShowPurchaseModal(false)}
                 className="absolute top-4 right-4 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
@@ -197,72 +201,67 @@ const MiningPage = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-white">
-                  Comprar Licencia
+                  Selecciona una Licencia
                 </h2>
                 <p className="text-white/60 mb-6">
-                  Estás a punto de adquirir una nueva licencia de minería
+                  Primero elige una licencia existente para continuar con el proceso de compra
                 </p>
 
-                <div className="p-6 rounded-xl bg-black/40 border border-[#F0973C]/20 mb-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <img
-                      src={getLicenseImage(licenseToPurchase.name)}
-                      alt={licenseToPurchase.name}
-                      className="w-20 h-20 object-contain"
-                    />
-                    <div className="text-left flex-1">
-                      <h3 className="text-xl font-bold text-white mb-1">
-                        {licenseToPurchase.name}
-                      </h3>
-                      <p className="text-sm text-white/60">
-                        Tasa: {(INTEREST_RATES[licenseToPurchase.name as keyof typeof INTEREST_RATES] * 100).toFixed(0)}% mensual
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
-                      <span className="text-white/60">Precio</span>
-                      <span className="text-xl font-bold text-[#69AC95]">
-                        ${licenseToPurchase.value.toLocaleString()} USDT
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
-                      <span className="text-white/60">Comisión de red</span>
-                      <span className="text-white/80">$5.00 USDT</span>
-                    </div>
-                    <div className="h-px bg-gradient-to-r from-transparent via-[#F0973C]/30 to-transparent"></div>
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-[#F0973C]/10">
-                      <span className="font-semibold text-white">Total</span>
-                      <span className="text-2xl font-bold text-[#F0973C]">
-                        ${(licenseToPurchase.value + 5).toLocaleString()} USDT
-                      </span>
-                    </div>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {Object.entries(LICENCIAS).map(([key, license]) => (
+                    <button
+                      key={key}
+                      onClick={() => handleSelectPurchaseLicense(license.name, license.value)}
+                      className="text-left p-4 rounded-xl border border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/10 transition-all"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <img
+                          src={getLicenseImage(license.name)}
+                          alt={license.name}
+                          className="w-12 h-12 object-contain"
+                        />
+                        <div>
+                          <h3 className="text-lg font-bold text-white">{license.name}</h3>
+                          <p className="text-xs text-white/60">
+                            {(INTEREST_RATES[license.name as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100 || 0).toFixed(1)}% diario
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-white/50">Precio</span>
+                        <span className="text-lg font-bold text-[#69AC95]">
+                          ${license.value.toLocaleString()} USDT
+                        </span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowPurchaseModal(false)}
-                    className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleConfirmPurchase}
-                    className="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-bold shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 transition-all"
-                  >
-                    Confirmar Compra
-                  </button>
-                </div>
+                <button
+                  onClick={() => setShowPurchaseModal(false)}
+                  className="px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
+                >
+                  Cancelar
+                </button>
 
                 <p className="mt-4 text-xs text-white/40">
-                  Al confirmar, aceptas los términos y condiciones de la plataforma
+                  Al continuar, se abrirá el modal de compra para la licencia seleccionada
                 </p>
               </div>
             </div>
           </div>
-        )} */}
+        )}
+
+        {/* Modal de compra real */}
+        {licenseToPurchase && (
+          <PurchaseLicenseModal
+            open={showPurchaseLicenseModal}
+            onClose={handleClosePurchaseLicenseModal}
+            licenseName={licenseToPurchase.name}
+            licenseValue={licenseToPurchase.value}
+            purchaseType={TipoSolicitud.COMPRA_LICENCIA}
+          />
+        )}
 
         {/* Sección explicativa superior */}
         <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 backdrop-blur-sm">
@@ -293,7 +292,7 @@ const MiningPage = () => {
                 Selecciona tu Licencia
               </h3>
               <button
-                onClick={() => handleOpenPurchaseModal(selectedLicense)}
+                onClick={handleOpenPurchaseModal}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
               >
                 <ShoppingCart className="w-4 h-4" />
@@ -305,10 +304,10 @@ const MiningPage = () => {
               <div
                 key={license.id}
                 className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense.nombre === license.nombre
-                    ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
-                    : index === 0
-                      ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
-                      : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
+                  ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
+                  : index === 0
+                    ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
+                    : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
                   }`}
               >
                 {/* Badge de destacado para la primera licencia */}
@@ -340,18 +339,6 @@ const MiningPage = () => {
                     <div className="w-3 h-3 rounded-full bg-[#F0973C] animate-pulse" />
                   )}
                 </div>
-
-                {/* Botón de compra individual */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenPurchaseModal(license);
-                  }}
-                  className="w-full px-4 py-2 rounded-lg bg-gradient-to-r from-[#69AC95]/20 to-[#4d8a73]/20 hover:from-[#69AC95]/30 hover:to-[#4d8a73]/30 text-[#69AC95] font-semibold text-sm border border-[#69AC95]/30 transition-all flex items-center justify-center gap-2"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  Comprar Licencia
-                </button>
               </div>
             ))}
           </div>
@@ -385,9 +372,11 @@ const MiningPage = () => {
                   }}
                 />
                 <div className="flex justify-between text-xs text-white/50 mt-2">
-                  <span>1 mes</span>
                   <span>18 meses</span>
+                  <span>24 meses</span>
                   <span>36 meses</span>
+                  <span>48 meses</span>
+                  <span>60 meses</span>
                 </div>
               </div>
             </div>
@@ -449,8 +438,8 @@ const MiningPage = () => {
                 <button
                   onClick={() => setMiningActive(!miningActive)}
                   className={`flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${miningActive
-                      ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                      : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
+                    ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
+                    : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
                     }`}
                 >
                   {miningActive ? '⚡ MINERÍA ACTIVA' : '⛏️ ACTIVAR MINERÍA'}
@@ -551,11 +540,10 @@ const MiningPage = () => {
                 <button
                   onClick={() => setShowTransferModal(true)}
                   disabled={miningWalletBalance <= 0}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${
-                    miningWalletBalance > 0
+                  className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${miningWalletBalance > 0
                       ? 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 hover:scale-105'
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                  }`}
+                    }`}
                 >
                   <ArrowRightLeft className="w-5 h-5" />
                   Transferir a Staking
@@ -695,11 +683,10 @@ const MiningPage = () => {
                   <button
                     onClick={handleTransferToStaking}
                     disabled={!transferAmount || parseFloat(transferAmount) <= 0 || parseFloat(transferAmount) > miningWalletBalance}
-                    className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${
-                      transferAmount && parseFloat(transferAmount) > 0 && parseFloat(transferAmount) <= miningWalletBalance
+                    className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${transferAmount && parseFloat(transferAmount) > 0 && parseFloat(transferAmount) <= miningWalletBalance
                         ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
                         : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                    }`}
+                      }`}
                   >
                     Transferir
                   </button>
