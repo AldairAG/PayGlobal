@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.api.payglobal.entity.enums.RolesUsuario;
 import com.api.payglobal.entity.enums.TipoRango;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -102,6 +103,10 @@ public class Usuario implements UserDetails{
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<KycFile> kycFiles;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<LicenciaMineria> licenciasMineria;
 
 
     public void addSolicitud(Solicitud solicitud) {

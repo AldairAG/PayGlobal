@@ -33,6 +33,9 @@ public class Licencia {
     private LocalDate fechaCompra;
     private Integer saldoAcumulado;
 
+    @OneToOne(mappedBy = "licencia")
+    private LicenciaMineria licenciaMineria;
+
     @OneToOne
     @JsonBackReference
     private Usuario usuario;
