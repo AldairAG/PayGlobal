@@ -259,7 +259,7 @@ const MiningPage = () => {
             onClose={handleClosePurchaseLicenseModal}
             licenseName={licenseToPurchase.name}
             licenseValue={licenseToPurchase.value}
-            purchaseType={TipoSolicitud.COMPRA_LICENCIA}
+            purchaseType={TipoSolicitud.COMPRA_LICENCIA_MINERIA}
           />
         )}
 

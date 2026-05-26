@@ -334,6 +334,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
 
+        String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA ?"Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
+                + tipoLicencia.name() : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
+                + tipoLicencia.name();
+
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
                 .monto(precioTotal)
@@ -341,8 +345,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .fecha(LocalDateTime.now())
                 .tipoCrypto(tipoCrypto)
                 .usuario(usuario)
-                .descripcion("Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
-                        + tipoLicencia.name())
+                .descripcion(descripcion)
                 .estado(EstadoOperacion.PENDIENTE)
                 .build();
 

@@ -2,6 +2,7 @@ package com.api.payglobal.entity.enums;
 
 public enum TipoSolicitud {
     COMPRA_LICENCIA,
+    COMPRA_LICENCIA_MINERIA,
     SOLICITUD_RETIRO_WALLET_STAKING,
     SOLICITUD_RETIRO_WALLET_NETWORK,
     TRANFERENCIA_USUARIO,

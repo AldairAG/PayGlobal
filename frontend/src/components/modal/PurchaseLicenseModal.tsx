@@ -15,21 +15,21 @@ interface PurchaseLicenseModalProps {
     onClose: () => void;
     licenseName: string;
     licenseValue: number;
-    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO;
+    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA;
 }
 
-export default function PurchaseLicenseModal({ 
-    open, 
-    onClose, 
-    licenseName, 
-    licenseValue, 
-    purchaseType 
+export default function PurchaseLicenseModal({
+    open,
+    onClose,
+    licenseName,
+    licenseValue,
+    purchaseType
 }: PurchaseLicenseModalProps) {
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
     const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_BEP20);
     const [purchaseResult, setPurchaseResult] = useState<"success" | "error" | null>(null);
-    const { solicitarCompraLicencia, usuario, loadingSolicitarCompraLicencia } = useUsuario(); 
+    const { solicitarCompraLicencia, usuario, loadingSolicitarCompraLicencia } = useUsuario();
 
     const handleConfirmPurchase = async () => {
         setPurchaseResult(null);
@@ -57,7 +57,7 @@ export default function PurchaseLicenseModal({
             setPurchaseResult("error");
         }
     };
-    
+
     // Wallets diferentes para cada tipo de criptomoneda - esto debería venir del backend
     const cryptoWallets = {
         [TipoCrypto.USDT_BEP20]: {
@@ -143,18 +143,38 @@ export default function PurchaseLicenseModal({
                             />
                             <div className="flex-1">
                                 <p className="text-xs text-white/40 mb-2">{licenseName}</p>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
-                                    <span className="text-xs font-semibold text-white">${licenseValue-(usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
-                                    <span className="text-xs font-semibold text-[#F0973C]">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
-                                </div>
-                                <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
-                                    <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
-                                    <span className="text-lg font-black text-[#69AC95]">${totalAmount-(usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
-                                </div>
+
+                                {purchaseType === TipoSolicitud.COMPRA_LICENCIA_MINERIA ? (
+                                    <>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
+                                            <span className="text-xs font-semibold text-white">${licenseValue} {currentWallet.symbol}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
+                                            <span className="text-xs font-semibold text-[#F0973C]">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
+                                        </div>
+                                        <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
+                                            <span className="text-lg font-black text-[#69AC95]">${totalAmount} {currentWallet.symbol}</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
+                                            <span className="text-xs font-semibold text-white">${licenseValue - (usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
+                                            <span className="text-xs font-semibold text-[#F0973C]">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
+                                        </div>
+                                        <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
+                                            <span className="text-lg font-black text-[#69AC95]">${totalAmount - (usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -198,11 +218,10 @@ export default function PurchaseLicenseModal({
                                     <button
                                         key={key}
                                         onClick={() => setSelectedCrypto(wallet.tipo)}
-                                        className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-3 ${
-                                            selectedCrypto === wallet.tipo
-                                                ? 'border-[#F0973C] bg-[#F0973C]/10 text-[#F0973C]'
-                                                : 'border-white/10 bg-white/5 text-white/70 hover:border-[#F0973C]/40 hover:bg-[#F0973C]/5'
-                                        }`}
+                                        className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-3 ${selectedCrypto === wallet.tipo
+                                            ? 'border-[#F0973C] bg-[#F0973C]/10 text-[#F0973C]'
+                                            : 'border-white/10 bg-white/5 text-white/70 hover:border-[#F0973C]/40 hover:bg-[#F0973C]/5'
+                                            }`}
                                     >
                                         {/* Icono doble: USDT + red */}
                                         <div className="relative w-14 h-14">
@@ -294,11 +313,10 @@ export default function PurchaseLicenseModal({
                         <button
                             onClick={handleConfirmPurchase}
                             disabled={loadingSolicitarCompraLicencia || purchaseResult !== null}
-                            className={`w-full py-3 px-6 rounded-xl transition-colors font-bold disabled:cursor-not-allowed ${
-                                purchaseResult !== null
-                                    ? 'bg-white/10 text-white/30'
-                                    : 'bg-[#F0973C] text-black hover:bg-[#F0973C]/90 disabled:opacity-50'
-                            }`}
+                            className={`w-full py-3 px-6 rounded-xl transition-colors font-bold disabled:cursor-not-allowed ${purchaseResult !== null
+                                ? 'bg-white/10 text-white/30'
+                                : 'bg-[#F0973C] text-black hover:bg-[#F0973C]/90 disabled:opacity-50'
+                                }`}
                         >
                             {loadingSolicitarCompraLicencia ? t("licenses.processing_purchase") : t("licenses.close")}
                         </button>
