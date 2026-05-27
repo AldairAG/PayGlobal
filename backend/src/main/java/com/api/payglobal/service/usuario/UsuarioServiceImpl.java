@@ -35,10 +35,12 @@ import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Licencia;
+import com.api.payglobal.entity.LicenciaMineria;
 import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.WalletAddress;
+import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 import com.api.payglobal.entity.enums.EstadoOperacion;
 import com.api.payglobal.entity.enums.RolesUsuario;
 import com.api.payglobal.entity.enums.TipoConceptos;
@@ -50,6 +52,7 @@ import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.JwtHelper;
 import com.api.payglobal.helpers.UninivelHelper;
+import com.api.payglobal.repository.LicenciaMineriaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.walletAddressesRepository;
@@ -87,6 +90,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private LicenciaMineriaRepository licenciaMineriaRepository;
 
     @Autowired
     private walletAddressesRepository walletAddressRepository;
@@ -334,9 +340,11 @@ public class UsuarioServiceImpl implements UsuarioService {
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
 
-        String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA ?"Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
-                + tipoLicencia.name() : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
-                + tipoLicencia.name();
+        String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA
+                ? "Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
+                        + tipoLicencia.name()
+                : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
+                        + tipoLicencia.name();
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
@@ -579,6 +587,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         Solicitud solicitud = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
 
+        if (solicitud.getTipoSolicitud() == TipoSolicitud.COMPRA_LICENCIA_MINERIA) {
+            aprobarLicenciaMineria(idSolicitud);
+             return; 
+        }
+
         // Guardar una copia de los valores de la licencia anterior ANTES de modificarla
         Double precioLicenciaAnterior = solicitud.getUsuario().getLicencia() != null
                 ? solicitud.getUsuario().getLicencia().getPrecio().doubleValue()
@@ -611,6 +624,41 @@ public class UsuarioServiceImpl implements UsuarioService {
                 solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
         bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
+    }
+
+    @Override
+    @Transactional
+    public void aprobarLicenciaMineria(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        solicitud.setEstado(EstadoOperacion.APROBADA);
+        solicitudRepository.save(solicitud);
+
+        BigDecimal precioTotal = solicitud.getMonto()
+                .add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue()))
+                .subtract(BigDecimal.valueOf(cobroPorCompra));
+
+        Licencia licencia = Licencia.builder()
+                .nombre(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).name())
+                .fechaCompra(LocalDate.now())
+                .precio(precioTotal.intValue())
+                .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
+                .activo(true)
+                .saldoAcumulado(0)
+                .usuario(solicitud.getUsuario())
+                .build();
+
+        LicenciaMineria licenciaMineria = LicenciaMineria.builder()
+                .fechaCompra(LocalDate.now())
+                .usuario(solicitud.getUsuario())
+                .estado(EstadoLicenciaMineria.INACTIVA)
+                .gananciaActual(BigDecimal.ZERO)
+                .tasaMineria(TipoLicencia.getTasaMineriaByNombre(licencia.getNombre()))
+                .plazo(0)
+                .build();
+
+        licenciaMineriaRepository.save(licenciaMineria);
     }
 
     @Override

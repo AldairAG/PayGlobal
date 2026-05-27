@@ -81,4 +81,6 @@ public interface UsuarioService extends UserDetailsService {
         void guardarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
 
         Boolean verificarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
+
+        void aprobarLicenciaMineria(Long idSolicitud) throws Exception; 
 }

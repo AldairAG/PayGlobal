@@ -1,5 +1,9 @@
 package com.api.payglobal.service.mineria;
 
+import java.util.List;
+
+import com.api.payglobal.entity.LicenciaMineria;
+
 public interface MineriaService {
     void iniciarMineria(Long usuarioId);
 
@@ -12,4 +16,6 @@ public interface MineriaService {
     void retirarGanancias(Long usuarioId);
 
     void retirarGananciasWalletStaking(Long usuarioId);
+
+    List<LicenciaMineria> obtenerLicenciasMineriaByUsuarioId(Long usuarioId);
 }

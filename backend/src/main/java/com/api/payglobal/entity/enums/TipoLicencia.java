@@ -31,4 +31,13 @@ public enum TipoLicencia {
     public double getRendimientoMineria() {
         return rendimientoMineria;
     }
+
+    public static double getTasaMineriaByNombre(String nombre) {
+        for (TipoLicencia tipo : TipoLicencia.values()) {
+            if (tipo.name().equalsIgnoreCase(nombre)) {
+                return tipo.getRendimientoMineria();
+            }
+        }
+        throw new IllegalArgumentException("No se encontró el tipo de licencia: " + nombre);
+    }
 }

@@ -2,6 +2,7 @@ package com.api.payglobal.entity;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 
@@ -13,10 +14,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LicenciaMineria {
     
     @Id
@@ -34,9 +41,11 @@ public class LicenciaMineria {
     @OneToOne
     private Licencia licencia;
 
-    private Float tasaMineria;
+    private Double tasaMineria;
 
     private Integer plazo; 
+
+    private LocalDate fechaCompra;
 
     @ManyToOne
     private Usuario usuario;
