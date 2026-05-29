@@ -1,8 +1,7 @@
 package com.api.payglobal.entity;
 
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 
@@ -30,8 +29,9 @@ public class LicenciaMineria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private Date fechaInicio;
-    private Date fechaExpiracion;
+    private boolean activa;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaExpiracion;
 
     @Enumerated(EnumType.STRING)
     private EstadoLicenciaMineria estado;
@@ -44,8 +44,6 @@ public class LicenciaMineria {
     private Double tasaMineria;
 
     private Integer plazo; 
-
-    private LocalDate fechaCompra;
 
     @ManyToOne
     private Usuario usuario;

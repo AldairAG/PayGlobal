@@ -5,17 +5,15 @@ import java.util.List;
 import com.api.payglobal.entity.LicenciaMineria;
 
 public interface MineriaService {
-    void iniciarMineria(Long usuarioId);
+    void iniciarMineria(Long licenciaId, Integer plazo);
 
-    void detenerMineria(Long usuarioId);
+    void detenerMineria(Long mineriaLicenciaId);
 
     void asignarRendimentoDiario();
 
     void verificarExpiracionLicencias();
 
     void retirarGanancias(Long usuarioId);
-
-    void retirarGananciasWalletStaking(Long usuarioId);
 
     List<LicenciaMineria> obtenerLicenciasMineriaByUsuarioId(Long usuarioId);
 }

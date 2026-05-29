@@ -131,3 +131,10 @@ export enum TipoRechazos {
     DOCUMENTO_VENCIDO = "DOCUMENTO_VENCIDO",
     DOCUMENTO_NO_VALIDO = "DOCUMENTO_NO_VALIDO"
 }
+
+
+export enum EstadoLicenciaMineria {
+    ACTIVA = "ACTIVA",
+    INACTIVA = "INACTIVA",
+    SUSPENDIDA = "SUSPENDIDA"
+}

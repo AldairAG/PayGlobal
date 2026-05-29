@@ -1,4 +1,4 @@
-import { EstadoTicket, TipoAutorTiket, TipoConceptos, TipoKycFile, TipoMetodoPago, TipoRechazos, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
+import { EstadoLicenciaMineria, EstadoTicket, TipoAutorTiket, TipoConceptos, TipoKycFile, TipoMetodoPago, TipoRechazos, TipoSolicitud, type CodigoTipoBono, type CodigoTipoWallets, type EstadoOperacion, type TipoBono, type TipoCrypto, type TipoWallets } from "./enum";
 
 export interface Usuario {
     id: number;
@@ -142,4 +142,16 @@ export interface KycFile {
     razonRechazo?: TipoRechazos;
     comentarioRechazo?: string;
     usuario?: Usuario;
+}
+
+export interface LicenciaMineria {
+    id: number;
+    activa: boolean;
+    fechaInicio: Date;
+    fechaExpiracion: Date;
+    estado: EstadoLicenciaMineria;
+    gananciaActual: number;
+    licencia: Licencia;
+    tasaMineria: number;
+    plazo: number; 
 }

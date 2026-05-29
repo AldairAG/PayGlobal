@@ -641,7 +641,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Licencia licencia = Licencia.builder()
                 .nombre(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).name())
-                .fechaCompra(LocalDate.now())
                 .precio(precioTotal.intValue())
                 .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
                 .activo(true)
@@ -650,7 +649,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .build();
 
         LicenciaMineria licenciaMineria = LicenciaMineria.builder()
-                .fechaCompra(LocalDate.now())
+                .fechaInicio(LocalDateTime.now())
                 .usuario(solicitud.getUsuario())
                 .estado(EstadoLicenciaMineria.INACTIVA)
                 .gananciaActual(BigDecimal.ZERO)

@@ -29,6 +29,7 @@ public class Wallet {
     private Long id;
 
     private TipoWallets tipo;
+    @Deprecated
     private CodigoTipoWallets codigo;
     private BigDecimal saldo;
 
