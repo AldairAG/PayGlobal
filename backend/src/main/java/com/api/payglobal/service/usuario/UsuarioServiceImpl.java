@@ -335,7 +335,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
 
-        if (usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado()) {
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado()) {
             precioTotal = precioTotal.subtract(
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }

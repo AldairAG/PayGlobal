@@ -17,7 +17,7 @@ export const GestionPagosPage = () => {
     const [tamanioPagina, setTamanioPagina] = useState(25);
 
     useEffect(() => {
-        obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);    
+        obtenerTodasLasSolicitudes(paginaActual, tamanioPagina);
     }, [paginaActual, tamanioPagina]);
 
     // Efecto para mostrar errores de aprobación
@@ -64,7 +64,7 @@ export const GestionPagosPage = () => {
         } catch (error) {
             console.log(error);
         }
-    };
+    };  
 
     const handleRechazar = async (solicitudId: number) => {
         try {
@@ -78,8 +78,9 @@ export const GestionPagosPage = () => {
     // Filtrar solo pagos (sin retiros)
     const solicitudesPagos = (solicitudes?.content ?? []).filter(sol => {
         return sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA ||
-               sol.tipoSolicitud === TipoSolicitud.TRANFERENCIA_USUARIO ||
-               sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO;
+            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_MINERIA ||
+            sol.tipoSolicitud === TipoSolicitud.TRANFERENCIA_USUARIO ||
+            sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO;
     });
 
     // Aplicar filtros adicionales
@@ -296,11 +297,10 @@ export const GestionPagosPage = () => {
                                                 key={pageNum}
                                                 onClick={() => setPaginaActual(pageNum)}
                                                 disabled={loadingSolicitudes}
-                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                    paginaActual === pageNum
+                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${paginaActual === pageNum
                                                         ? 'bg-[#69AC95] text-white'
                                                         : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                    } disabled:opacity-50 disabled:cursor-not-allowed`}
                                             >
                                                 {pageNum + 1}
                                             </button>

@@ -3,7 +3,8 @@ import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Walle
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
 import { TipoSolicitud } from '../../type/enum';
-import { LICENCIAS, type Licencia } from '../../type/entityTypes';
+import { LICENCIAS, type LicenciaMineria } from '../../type/entityTypes';
+import { useMineria } from '../../hooks/useMineria';
 
 // Configuración de tasas de interés compuesto (rendimiento diario)
 const INTEREST_RATES = {
@@ -22,6 +23,10 @@ const INTEREST_RATES = {
 };
 
 const MiningPage = () => {
+
+  //Hooks personalizados para manejar la lógica de minería y licencias
+  const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario } = useMineria();
+
   // Estados
   const [selectedPeriod, setSelectedPeriod] = useState(12); // meses
   const [currentEarnings, setCurrentEarnings] = useState(0);
@@ -37,29 +42,12 @@ const MiningPage = () => {
 
   // Licencias disponibles (simuladas basadas en el patrón de la app)
 
-  const licenses: Licencia[] = [
-    { id: 1, nombre: 'P50', precio: 50, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
-    { id: 2, nombre: 'P100', precio: 100, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
-    { id: 3, nombre: 'P250', precio: 250, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
-    { id: 4, nombre: 'P500', precio: 500, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
-    { id: 5, nombre: 'P1000', precio: 1000, limite: 0, activo: true, fechaCompra: new Date(), saldoAcumulado: 0 },
-  ];
-
-  /*   const licenses = [
-      { name: 'Basic', value: 100, color: '#4B5563' },
-      { name: 'Standard', value: 500, color: '#3B82F6' },
-      { name: 'Premium', value: 1000, color: '#8B5CF6' },
-      { name: 'Platinum', value: 2500, color: '#F59E0B' },
-      { name: 'Diamond', value: 5000, color: '#10B981' },
-      { name: 'Master', value: 10000, color: '#EF4444' },
-    ]; */
-
-  const [selectedLicense, setSelectedLicense] = useState(licenses[0]);
+  const [selectedLicense, setSelectedLicense] = useState(null as LicenciaMineria | null);
 
   // Calcular interés compuesto
   const calculations = useMemo(() => {
-    const principal = selectedLicense.precio;
-    const rate = INTEREST_RATES[selectedLicense.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
+    const principal = selectedLicense?.licencia?.precio || 0;
+    const rate = INTEREST_RATES[selectedLicense?.licencia?.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
 
     // Fórmula: A = P(1 + r)^t
     const totalAmount = principal * Math.pow(1 + rate, selectedPeriod);
@@ -123,6 +111,11 @@ const MiningPage = () => {
     }, 50);
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Función para obtener licencias del usuario
+  useEffect(() => {
+    obtenerLicenciasUsuario();
   }, []);
 
   // Progreso actual (0-100%)
@@ -282,308 +275,325 @@ const MiningPage = () => {
           </div>
         </div>
 
-        {/* Grid principal: Licencias (izquierda) + Panel de minería (derecha) */}
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
 
-          {/* Panel izquierdo: Licencias */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-[#F0973C]">
-                Selecciona tu Licencia
-              </h3>
-              <button
-                onClick={handleOpenPurchaseModal}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                Comprar Más
-              </button>
-            </div>
-
-            {licenses.map((license, index) => (
-              <div
-                key={license.id}
-                className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense.nombre === license.nombre
-                  ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
-                  : index === 0
-                    ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
-                    : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
-                  }`}
-              >
-                {/* Badge de destacado para la primera licencia */}
-                {index === 0 && (
-                  <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg">
-                    Recomendada
-                  </div>
-                )}
-
-                <div
-                  onClick={() => setSelectedLicense(license)}
-                  className="flex items-center gap-4 mb-3"
-                >
-                  <img
-                    src={getLicenseImage(license.nombre)}
-                    alt={license.nombre}
-                    className="w-16 h-16 object-contain"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-bold text-white">{license.nombre}</h4>
-                    <p className="text-sm text-[#69AC95]">
-                      ${license.precio.toLocaleString()} USDT
-                    </p>
-                    <p className="text-xs text-white/50 mt-1">
-                      {(INTEREST_RATES[license.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(0)}% mensual
-                    </p>
-                  </div>
-                  {selectedLicense.nombre === license.nombre && (
-                    <div className="w-3 h-3 rounded-full bg-[#F0973C] animate-pulse" />
-                  )}
-                </div>
-              </div>
-            ))}
+        {loadingLicenciasUsuario ? (
+          <div className="text-center py-10">
+            <p className="text-white/60">Cargando tus licencias...</p>
           </div>
+        ) : errorLicenciasUsuario ? (
+          <div className="text-center py-10">
+            <p className="text-white/60">Error al cargar tus licencias.</p>
+          </div>
+        ) : licenciasUsuario?.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-white/60">No tienes licencias de minería. Compra una para comenzar a minar!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
 
-          {/* Panel derecho: Controles y visualización */}
-          <div className="space-y-6">
-
-            {/* Selector de plazo */}
-            <div className="p-6 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
+            {/* Panel izquierdo: Licencias */}
+            <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-[#69AC95]" />
-                  Selecciona el Plazo
+                <h3 className="text-lg font-semibold text-[#F0973C]">
+                  Selecciona tu Licencia
                 </h3>
-                <span className="text-2xl font-bold text-[#F0973C]">
-                  {selectedPeriod} {selectedPeriod === 1 ? 'mes' : 'meses'}
-                </span>
-              </div>
-
-              {/* Slider personalizado */}
-              <div className="relative pt-8 pb-4">
-                <input
-                  type="range"
-                  min="1"
-                  max="36"
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(parseInt(e.target.value))}
-                  className="w-full h-2 rounded-full appearance-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #F0973C 0%, #F0973C ${(selectedPeriod / 36) * 100}%, #1f2937 ${(selectedPeriod / 36) * 100}%, #1f2937 100%)`,
-                  }}
-                />
-                <div className="flex justify-between text-xs text-white/50 mt-2">
-                  <span>18 meses</span>
-                  <span>24 meses</span>
-                  <span>36 meses</span>
-                  <span>48 meses</span>
-                  <span>60 meses</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Estadísticas de ganancias */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 text-center">
-                <div className="flex justify-center mb-2">
-                  <TrendingUp className="w-6 h-6 text-[#69AC95]" />
-                </div>
-                <p className="text-sm text-white/60 mb-1">Ganancia Diaria</p>
-                <p className="text-2xl font-bold text-[#69AC95]">
-                  ${calculations.dailyProfit}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 text-center">
-                <div className="flex justify-center mb-2">
-                  <Calendar className="w-6 h-6 text-[#F0973C]" />
-                </div>
-                <p className="text-sm text-white/60 mb-1">Ganancia Mensual</p>
-                <p className="text-2xl font-bold text-[#F0973C]">
-                  ${calculations.monthlyProfit}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 text-center">
-                <div className="flex justify-center mb-2">
-                  <DollarSign className="w-6 h-6 text-[#69AC95]" />
-                </div>
-                <p className="text-sm text-white/60 mb-1">Ganancia Anual</p>
-                <p className="text-2xl font-bold text-[#69AC95]">
-                  ${calculations.annualProfit}
-                </p>
-              </div>
-            </div>
-
-            {/* Barra de progreso con animación de pico */}
-            <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/5 to-[#69AC95]/5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  Progreso de Minería
-                  <span className="text-xs text-[#69AC95] animate-pulse">
-                    ● En vivo
-                  </span>
-                </h3>
-                <div className="text-right">
-                  <div className="text-sm text-white/60">
-                    ${currentEarnings.toFixed(6)} / ${calculations.totalProfit}
-                  </div>
-                  <div className="text-xs text-white/40">
-                    {timeElapsed.days}d {timeElapsed.hours}h {timeElapsed.minutes}m {timeElapsed.seconds}s
-                  </div>
-                </div>
-              </div>
-
-              {/* Botón de activar minería */}
-              <div className="flex gap-2 mb-4">
                 <button
-                  onClick={() => setMiningActive(!miningActive)}
-                  className={`flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${miningActive
-                    ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                    : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
+                  onClick={handleOpenPurchaseModal}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Comprar Más
+                </button>
+              </div>
+
+              {licenciasUsuario?.map((license, index) => (
+                <div
+                  key={license.id}
+                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense?.licencia?.nombre === license.licencia.nombre
+                    ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
+                    : index === 0
+                      ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
+                      : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
                     }`}
                 >
-                  {miningActive ? '⚡ MINERÍA ACTIVA' : '⛏️ ACTIVAR MINERÍA'}
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentEarnings(0);
-                    setElapsedSeconds(0);
-                    setMiningActive(false);
-                  }}
-                  className="px-4 py-2 rounded-lg bg-gray-700 text-white font-semibold hover:bg-gray-600 transition-all"
-                >
-                  Reiniciar
-                </button>
-              </div>
+                  {/* Badge de destacado para la primera licencia */}
+                  {index === 0 && (
+                    <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg">
+                      Recomendada
+                    </div>
+                  )}
 
-              {/* Barra de progreso animada */}
-              <div className="relative h-12 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full overflow-hidden border border-white/10">
-                {/* Progreso */}
-                <div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F0973C] to-[#69AC95] transition-all duration-1000 ease-out"
-                  style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                  <div
+                    onClick={() => setSelectedLicense(license)}
+                    className="flex items-center gap-4 mb-3"
+                  >
+                    <img
+                      src={getLicenseImage(license.licencia.nombre)}
+                      alt={license.licencia.nombre}
+                      className="w-16 h-16 object-contain"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-bold text-white">{license.licencia.nombre}</h4>
+                      <p className="text-sm text-[#69AC95]">
+                        ${license.licencia.precio.toLocaleString()} USDT
+                      </p>
+                      <p className="text-xs text-white/50 mt-1">
+                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(0)}% mensual
+                      </p>
+                    </div>
+                    {/* {selectedLicense.licencia.nombre === license.licencia.nombre && (
+                    <div className="w-3 h-3 rounded-full bg-[#F0973C] animate-pulse" />
+                  )} */}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Panel derecho: Controles y visualización */}
+            <div className="space-y-6">
+
+              {/* Selector de plazo */}
+              <div className="p-6 rounded-2xl border border-[#69AC95]/20 bg-[#69AC95]/5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-[#69AC95]" />
+                    Selecciona el Plazo
+                  </h3>
+                  <span className="text-2xl font-bold text-[#F0973C]">
+                    {selectedPeriod} {selectedPeriod === 1 ? 'mes' : 'meses'}
+                  </span>
                 </div>
 
-                {/* Pico animado - solo visible cuando está activo */}
-                {miningActive && (
-                  <div
-                    className="absolute top-1/2 -translate-y-1/2 transition-all duration-100"
-                    style={{ left: `${Math.min(progressPercentage, 100)}%` }}
-                  >
-                    <div className="relative -ml-6 animate-bounce">
-                      <Pickaxe
-                        className="w-8 h-8 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"
-                        style={{
-                          transform: `rotate(${Math.sin(pickaxePosition / 10) * 30 - 45}deg)`,
-                          filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.6))'
-                        }}
-                      />
+                {/* Slider personalizado */}
+                <div className="relative pt-8 pb-4">
+                  <input
+                    type="range"
+                    min="1"
+                    max="36"
+                    value={selectedPeriod}
+                    onChange={(e) => setSelectedPeriod(parseInt(e.target.value))}
+                    className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #F0973C 0%, #F0973C ${(selectedPeriod / 36) * 100}%, #1f2937 ${(selectedPeriod / 36) * 100}%, #1f2937 100%)`,
+                    }}
+                  />
+                  <div className="flex justify-between text-xs text-white/50 mt-2">
+                    <span>18 meses</span>
+                    <span>24 meses</span>
+                    <span>36 meses</span>
+                    <span>48 meses</span>
+                    <span>60 meses</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Estadísticas de ganancias */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 text-center">
+                  <div className="flex justify-center mb-2">
+                    <TrendingUp className="w-6 h-6 text-[#69AC95]" />
+                  </div>
+                  <p className="text-sm text-white/60 mb-1">Ganancia Diaria</p>
+                  <p className="text-2xl font-bold text-[#69AC95]">
+                    ${calculations.dailyProfit}
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5 text-center">
+                  <div className="flex justify-center mb-2">
+                    <Calendar className="w-6 h-6 text-[#F0973C]" />
+                  </div>
+                  <p className="text-sm text-white/60 mb-1">Ganancia Mensual</p>
+                  <p className="text-2xl font-bold text-[#F0973C]">
+                    ${calculations.monthlyProfit}
+                  </p>
+                </div>
+
+                <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/10 to-[#69AC95]/10 text-center">
+                  <div className="flex justify-center mb-2">
+                    <DollarSign className="w-6 h-6 text-[#69AC95]" />
+                  </div>
+                  <p className="text-sm text-white/60 mb-1">Ganancia Anual</p>
+                  <p className="text-2xl font-bold text-[#69AC95]">
+                    ${calculations.annualProfit}
+                  </p>
+                </div>
+              </div>
+
+              {/* Barra de progreso con animación de pico */}
+              <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/5 to-[#69AC95]/5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    Progreso de Minería
+                    <span className="text-xs text-[#69AC95] animate-pulse">
+                      ● En vivo
+                    </span>
+                  </h3>
+                  <div className="text-right">
+                    <div className="text-sm text-white/60">
+                      ${currentEarnings.toFixed(6)} / ${calculations.totalProfit}
+                    </div>
+                    <div className="text-xs text-white/40">
+                      {timeElapsed.days}d {timeElapsed.hours}h {timeElapsed.minutes}m {timeElapsed.seconds}s
                     </div>
                   </div>
-                )}
+                </div>
 
-                {/* Porcentaje */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white drop-shadow-lg">
-                    {Math.min(progressPercentage, 100).toFixed(4)}%
-                  </span>
+                {/* Botón de activar minería */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setMiningActive(!miningActive)}
+                    className={`flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${miningActive
+                      ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
+                      : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
+                      }`}
+                  >
+                    {miningActive ? '⚡ MINERÍA ACTIVA' : '⛏️ ACTIVAR MINERÍA'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrentEarnings(0);
+                      setElapsedSeconds(0);
+                      setMiningActive(false);
+                    }}
+                    className="px-4 py-2 rounded-lg bg-gray-700 text-white font-semibold hover:bg-gray-600 transition-all"
+                  >
+                    Reiniciar
+                  </button>
                 </div>
-              </div>
 
-              {/* Estado de minería */}
-              <div className="mt-4 p-3 rounded-lg bg-black/30 border border-white/5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-white/50">Estado:</span>
-                  <span className={`text-sm font-bold ${miningActive ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
-                    {miningActive ? '🟢 Minería Activa' : '🟠 Inactiva'}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-white/50">Ganancia/segundo:</span>
-                  <span className="text-sm font-bold text-[#69AC95]">
-                    ${calculations.profitPerSecond.toFixed(8)} USDT
-                  </span>
-                </div>
-              </div>
-
-              {/* Detalles adicionales */}
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                  <p className="text-xs text-white/50 mb-1">Inversión Inicial</p>
-                  <p className="text-xl font-bold text-white">
-                    ${selectedLicense.precio.toLocaleString()}
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                  <p className="text-xs text-white/50 mb-1">Retorno Total</p>
-                  <p className="text-xl font-bold text-[#69AC95]">
-                    ${calculations.totalAmount}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Wallet de Minería */}
-            <div className="p-6 rounded-2xl border border-[#69AC95]/20 bg-gradient-to-br from-[#69AC95]/10 to-[#F0973C]/10 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-[#69AC95]/20">
-                    <Wallet className="w-6 h-6 text-[#69AC95]" />
+                {/* Barra de progreso animada */}
+                <div className="relative h-12 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full overflow-hidden border border-white/10">
+                  {/* Progreso */}
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F0973C] to-[#69AC95] transition-all duration-1000 ease-out"
+                    style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white">Wallet de Minería</h3>
-                    <p className="text-sm text-white/50">Ganancias acumuladas de minería</p>
+
+                  {/* Pico animado - solo visible cuando está activo */}
+                  {miningActive && (
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 transition-all duration-100"
+                      style={{ left: `${Math.min(progressPercentage, 100)}%` }}
+                    >
+                      <div className="relative -ml-6 animate-bounce">
+                        <Pickaxe
+                          className="w-8 h-8 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"
+                          style={{
+                            transform: `rotate(${Math.sin(pickaxePosition / 10) * 30 - 45}deg)`,
+                            filter: 'drop-shadow(0 0 6px rgba(250, 204, 21, 0.6))'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Porcentaje */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-sm font-bold text-white drop-shadow-lg">
+                      {Math.min(progressPercentage, 100).toFixed(4)}%
+                    </span>
                   </div>
                 </div>
-                <button
-                  onClick={() => setShowTransferModal(true)}
-                  disabled={miningWalletBalance <= 0}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${miningWalletBalance > 0
+
+                {/* Estado de minería */}
+                <div className="mt-4 p-3 rounded-lg bg-black/30 border border-white/5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-white/50">Estado:</span>
+                    <span className={`text-sm font-bold ${miningActive ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
+                      {miningActive ? '🟢 Minería Activa' : '🟠 Inactiva'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-white/50">Ganancia/segundo:</span>
+                    <span className="text-sm font-bold text-[#69AC95]">
+                      ${calculations.profitPerSecond.toFixed(8)} USDT
+                    </span>
+                  </div>
+                </div>
+
+                {/* Detalles adicionales */}
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-black/30 border border-white/5">
+                    <p className="text-xs text-white/50 mb-1">Inversión Inicial</p>
+                    <p className="text-xl font-bold text-white">
+                      ${selectedLicense?.licencia?.precio.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-black/30 border border-white/5">
+                    <p className="text-xs text-white/50 mb-1">Retorno Total</p>
+                    <p className="text-xl font-bold text-[#69AC95]">
+                      ${calculations.totalAmount}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet de Minería */}
+              <div className="p-6 rounded-2xl border border-[#69AC95]/20 bg-gradient-to-br from-[#69AC95]/10 to-[#F0973C]/10 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-xl bg-[#69AC95]/20">
+                      <Wallet className="w-6 h-6 text-[#69AC95]" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">Wallet de Minería</h3>
+                      <p className="text-sm text-white/50">Ganancias acumuladas de minería</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowTransferModal(true)}
+                    disabled={miningWalletBalance <= 0}
+                    className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${miningWalletBalance > 0
                       ? 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 hover:scale-105'
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                    }`}
-                >
-                  <ArrowRightLeft className="w-5 h-5" />
-                  Transferir a Staking
-                </button>
-              </div>
+                      }`}
+                  >
+                    <ArrowRightLeft className="w-5 h-5" />
+                    Transferir a Staking
+                  </button>
+                </div>
 
-              {/* Balance de la wallet */}
-              <div className="p-8 rounded-xl bg-gradient-to-br from-[#69AC95]/20 to-[#F0973C]/20 border border-[#69AC95]/30 text-center">
-                <p className="text-sm text-white/60 mb-2">Balance Disponible</p>
-                <p className="text-5xl font-bold text-[#69AC95] mb-1">
-                  ${miningWalletBalance.toFixed(2)}
-                </p>
-                <p className="text-lg text-white/50">USDT</p>
-              </div>
+                {/* Balance de la wallet */}
+                <div className="p-8 rounded-xl bg-gradient-to-br from-[#69AC95]/20 to-[#F0973C]/20 border border-[#69AC95]/30 text-center">
+                  <p className="text-sm text-white/60 mb-2">Balance Disponible</p>
+                  <p className="text-5xl font-bold text-[#69AC95] mb-1">
+                    ${miningWalletBalance.toFixed(2)}
+                  </p>
+                  <p className="text-lg text-white/50">USDT</p>
+                </div>
 
-              {/* Información adicional */}
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                  <p className="text-xs text-white/50 mb-1">Ganancias Actuales</p>
-                  <p className="text-xl font-bold text-[#F0973C]">
-                    ${currentEarnings.toFixed(2)}
+                {/* Información adicional */}
+                <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-black/30 border border-white/5">
+                    <p className="text-xs text-white/50 mb-1">Ganancias Actuales</p>
+                    <p className="text-xl font-bold text-[#F0973C]">
+                      ${currentEarnings.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-black/30 border border-white/5">
+                    <p className="text-xs text-white/50 mb-1">Total Esperado</p>
+                    <p className="text-xl font-bold text-[#69AC95]">
+                      ${calculations.totalProfit}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-4 rounded-lg bg-[#69AC95]/10 border border-[#69AC95]/20">
+                  <p className="text-xs text-white/60 leading-relaxed">
+                    💡 <span className="font-semibold">Nota:</span> Las ganancias se depositarán automáticamente en tu Wallet de Minería al finalizar el plazo seleccionado. Puedes transferirlas a tu Wallet Staking para generar intereses adicionales.
                   </p>
                 </div>
-                <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                  <p className="text-xs text-white/50 mb-1">Total Esperado</p>
-                  <p className="text-xl font-bold text-[#69AC95]">
-                    ${calculations.totalProfit}
-                  </p>
-                </div>
               </div>
 
-              <div className="mt-4 p-4 rounded-lg bg-[#69AC95]/10 border border-[#69AC95]/20">
-                <p className="text-xs text-white/60 leading-relaxed">
-                  💡 <span className="font-semibold">Nota:</span> Las ganancias se depositarán automáticamente en tu Wallet de Minería al finalizar el plazo seleccionado. Puedes transferirlas a tu Wallet Staking para generar intereses adicionales.
-                </p>
-              </div>
             </div>
 
           </div>
-        </div>
+        )}
+
+
 
         {/* Modal de Transferencia a Wallet Staking */}
         {showTransferModal && (
@@ -684,8 +694,8 @@ const MiningPage = () => {
                     onClick={handleTransferToStaking}
                     disabled={!transferAmount || parseFloat(transferAmount) <= 0 || parseFloat(transferAmount) > miningWalletBalance}
                     className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${transferAmount && parseFloat(transferAmount) > 0 && parseFloat(transferAmount) <= miningWalletBalance
-                        ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                        : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
+                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                       }`}
                   >
                     Transferir
@@ -701,8 +711,9 @@ const MiningPage = () => {
         )}
 
       </div>
-    </div>
-  );
-};
+    </div >
+  )
+}
+
 
 export default MiningPage;
