@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
 import { TipoSolicitud } from '../../type/enum';
 import { LICENCIAS, type LicenciaMineria } from '../../type/entityTypes';
 import { useMineria } from '../../hooks/useMineria';
+import type { RootState } from '../../store';
 
 // Configuración de tasas de interés compuesto (rendimiento diario)
 const INTEREST_RATES = {
@@ -26,6 +28,7 @@ const MiningPage = () => {
 
   //Hooks personalizados para manejar la lógica de minería y licencias
   const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario } = useMineria();
+  const usuario = useSelector((state: RootState) => state.usuario.usuario);
 
   // Estados
   const [selectedPeriod, setSelectedPeriod] = useState(12); // meses
@@ -46,8 +49,21 @@ const MiningPage = () => {
 
   // Calcular interés compuesto
   const calculations = useMemo(() => {
-    const principal = selectedLicense?.licencia?.precio || 0;
-    const rate = INTEREST_RATES[selectedLicense?.licencia?.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
+    if (!selectedLicense?.licencia?.precio) {
+      return {
+        totalAmount: '0.00',
+        totalProfit: '0.00',
+        dailyProfit: '0.00',
+        monthlyProfit: '0.00',
+        annualProfit: '0.00',
+        profitPerSecond: 0,
+        totalDays: 0,
+        totalSeconds: 0,
+      };
+    }
+
+    const principal = selectedLicense.licencia.precio;
+    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
 
     // Fórmula: A = P(1 + r)^t
     const totalAmount = principal * Math.pow(1 + rate, selectedPeriod);
@@ -117,6 +133,28 @@ const MiningPage = () => {
   useEffect(() => {
     obtenerLicenciasUsuario();
   }, []);
+
+  useEffect(() => {
+    if (!licenciasUsuario?.length) {
+      setSelectedLicense(null);
+      return;
+    }
+
+    setSelectedLicense((prevSelected) => {
+      if (prevSelected && licenciasUsuario.some((licencia) => licencia.id === prevSelected.id)) {
+        return prevSelected;
+      }
+
+      const licenciaUsuario = usuario?.licencia;
+      const licenciaSeleccionada = licenciaUsuario
+        ? licenciasUsuario.find((licencia) => licencia.licencia.id === licenciaUsuario.id)
+          ?? licenciasUsuario.find((licencia) => licencia.licencia.nombre === licenciaUsuario.nombre)
+          ?? licenciasUsuario.find((licencia) => licencia.licencia.precio === licenciaUsuario.precio)
+        : null;
+
+      return licenciaSeleccionada ?? licenciasUsuario[0] ?? null;
+    });
+  }, [licenciasUsuario, usuario]);
 
   // Progreso actual (0-100%)
   const progressPercentage = (currentEarnings / parseFloat(calculations.totalProfit)) * 100;
@@ -309,9 +347,9 @@ const MiningPage = () => {
               {licenciasUsuario?.map((license, index) => (
                 <div
                   key={license.id}
-                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense?.licencia?.nombre === license.licencia.nombre
+                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense && selectedLicense?.licencia?.nombre === license.licencia.nombre
                     ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
-                    : index === 0
+                    : !selectedLicense && index === 0
                       ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
                       : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
                     }`}
@@ -328,8 +366,8 @@ const MiningPage = () => {
                     className="flex items-center gap-4 mb-3"
                   >
                     <img
-                      src={getLicenseImage(license.licencia.nombre)}
-                      alt={license.licencia.nombre}
+                      src={getLicenseImage(license.licencia.nombre||"")}
+                      alt={license.licencia.nombre||"licencia"} 
                       className="w-16 h-16 object-contain"
                     />
                     <div className="flex-1">
@@ -442,7 +480,13 @@ const MiningPage = () => {
                 {/* Botón de activar minería */}
                 <div className="flex gap-2 mb-4">
                   <button
-                    onClick={() => setMiningActive(!miningActive)}
+                    onClick={() => {
+                      if (!selectedLicense) {
+                        alert('❌ Error: Debes seleccionar una licencia antes de activar la minería.');
+                        return;
+                      }
+                      setMiningActive(!miningActive);
+                    }}
                     className={`flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${miningActive
                       ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
                       : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'

@@ -2,7 +2,7 @@ import { api } from './apiBase';
 import type { ApiResponse } from '../type/apiTypes';
 import type { LicenciaMineria } from '../type/entityTypes';
 
-const BASE_PATH = '/api/mineria';
+const BASE_PATH = '/mineria';
 
 // Obtener todas las licencias de minería del usuario autenticado
 // GET /api/mineria/licencias
