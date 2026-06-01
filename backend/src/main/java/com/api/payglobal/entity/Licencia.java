@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,9 +35,11 @@ public class Licencia {
     private Integer saldoAcumulado;
 
     @OneToOne(mappedBy = "licencia")
+    @JsonBackReference
     private LicenciaMineria licenciaMineria;
 
     @OneToOne
     @JsonBackReference
+    @Null
     private Usuario usuario;
 }

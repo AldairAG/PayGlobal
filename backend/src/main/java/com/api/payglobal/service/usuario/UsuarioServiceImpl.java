@@ -53,6 +53,7 @@ import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.JwtHelper;
 import com.api.payglobal.helpers.UninivelHelper;
 import com.api.payglobal.repository.LicenciaMineriaRepository;
+import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.walletAddressesRepository;
@@ -93,6 +94,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired
     private LicenciaMineriaRepository licenciaMineriaRepository;
+
+    @Autowired
+    private LicenciaRepository licenciaRepository;
 
     @Autowired
     private walletAddressesRepository walletAddressRepository;
@@ -645,14 +649,16 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
                 .activo(true)
                 .saldoAcumulado(0)
-                .usuario(solicitud.getUsuario())
-                .build();
+                .build();   
+        
+        licencia = licenciaRepository.save(licencia);
 
         LicenciaMineria licenciaMineria = LicenciaMineria.builder()
                 .fechaInicio(LocalDateTime.now())
                 .usuario(solicitud.getUsuario())
                 .estado(EstadoLicenciaMineria.INACTIVA)
                 .gananciaActual(BigDecimal.ZERO)
+                .licencia(licencia)
                 .tasaMineria(TipoLicencia.getTasaMineriaByNombre(licencia.getNombre()))
                 .plazo(0)
                 .build();

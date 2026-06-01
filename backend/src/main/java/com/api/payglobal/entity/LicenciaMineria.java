@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,6 +40,7 @@ public class LicenciaMineria {
     private BigDecimal gananciaActual;
 
     @OneToOne
+    @JsonManagedReference
     private Licencia licencia;
 
     private Double tasaMineria;

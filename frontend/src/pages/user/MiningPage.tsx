@@ -3,7 +3,7 @@ import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Walle
 import { useSelector } from 'react-redux';
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
-import { TipoSolicitud } from '../../type/enum';
+import { EstadoLicenciaMineria, TipoSolicitud } from '../../type/enum';
 import { LICENCIAS, type LicenciaMineria } from '../../type/entityTypes';
 import { useMineria } from '../../hooks/useMineria';
 import type { RootState } from '../../store';
@@ -30,6 +30,18 @@ const MiningPage = () => {
   const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario } = useMineria();
   const usuario = useSelector((state: RootState) => state.usuario.usuario);
 
+  const licenciaPrincipal: LicenciaMineria = {
+    id: 0,
+    activa: false,
+    fechaInicio: new Date(),
+    fechaExpiracion: new Date(),
+    estado: EstadoLicenciaMineria.INACTIVA,
+    gananciaActual: 0,
+    licencia: usuario?.licencia || { id: 0, nombre: '', precio: 0, limite: 0, activo: false, fechaCompra: new Date(), saldoAcumulado: 0 },
+    tasaMineria: 0,
+    plazo: 0
+  };
+
   // Estados
   const [selectedPeriod, setSelectedPeriod] = useState(12); // meses
   const [currentEarnings, setCurrentEarnings] = useState(0);
@@ -45,7 +57,7 @@ const MiningPage = () => {
 
   // Licencias disponibles (simuladas basadas en el patrón de la app)
 
-  const [selectedLicense, setSelectedLicense] = useState(null as LicenciaMineria | null);
+  const [selectedLicense, setSelectedLicense] = useState(licenciaPrincipal);
 
   // Calcular interés compuesto
   const calculations = useMemo(() => {
@@ -148,8 +160,8 @@ const MiningPage = () => {
       const licenciaUsuario = usuario?.licencia;
       const licenciaSeleccionada = licenciaUsuario
         ? licenciasUsuario.find((licencia) => licencia.licencia.id === licenciaUsuario.id)
-          ?? licenciasUsuario.find((licencia) => licencia.licencia.nombre === licenciaUsuario.nombre)
-          ?? licenciasUsuario.find((licencia) => licencia.licencia.precio === licenciaUsuario.precio)
+        ?? licenciasUsuario.find((licencia) => licencia.licencia.nombre === licenciaUsuario.nombre)
+        ?? licenciasUsuario.find((licencia) => licencia.licencia.precio === licenciaUsuario.precio)
         : null;
 
       return licenciaSeleccionada ?? licenciasUsuario[0] ?? null;
@@ -313,7 +325,6 @@ const MiningPage = () => {
           </div>
         </div>
 
-
         {loadingLicenciasUsuario ? (
           <div className="text-center py-10">
             <p className="text-white/60">Cargando tus licencias...</p>
@@ -324,6 +335,21 @@ const MiningPage = () => {
           </div>
         ) : licenciasUsuario?.length === 0 ? (
           <div className="text-center py-10">
+            {/* Panel izquierdo: Licencias */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-[#F0973C]">
+                  Selecciona tu Licencia
+                </h3>
+                <button
+                  onClick={handleOpenPurchaseModal}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Comprar Más
+                </button>
+              </div>
+            </div>
             <p className="text-white/60">No tienes licencias de minería. Compra una para comenzar a minar!</p>
           </div>
         ) : (
@@ -366,8 +392,8 @@ const MiningPage = () => {
                     className="flex items-center gap-4 mb-3"
                   >
                     <img
-                      src={getLicenseImage(license.licencia.nombre||"")}
-                      alt={license.licencia.nombre||"licencia"} 
+                      src={getLicenseImage(license.licencia.nombre || "")}
+                      alt={license.licencia.nombre || "licencia"}
                       className="w-16 h-16 object-contain"
                     />
                     <div className="flex-1">
