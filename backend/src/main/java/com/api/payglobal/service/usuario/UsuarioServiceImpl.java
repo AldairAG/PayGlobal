@@ -640,7 +640,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         solicitudRepository.save(solicitud);
 
         BigDecimal precioTotal = solicitud.getMonto()
-                .add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue()))
                 .subtract(BigDecimal.valueOf(cobroPorCompra));
 
         Licencia licencia = Licencia.builder()

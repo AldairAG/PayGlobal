@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft } from 'lucide-react';
+import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft, Zap, Circle, Lightbulb } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
 import { EstadoLicenciaMineria, TipoSolicitud } from '../../type/enum';
@@ -24,10 +26,16 @@ const INTEREST_RATES = {
   P50000: { name: "P50000", value: 50000, rendimientoDiario: 0.03 },
 };
 
+// Opciones de periodo permitidas
+const PERIOD_OPTIONS = [18, 24, 36, 48, 60];
+
 const MiningPage = () => {
 
   //Hooks personalizados para manejar la lógica de minería y licencias
-  const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario } = useMineria();
+  const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario,
+    iniciarMineria, loadingIniciarMineria, errorIniciarMineria,
+
+  } = useMineria();
   const usuario = useSelector((state: RootState) => state.usuario.usuario);
 
   const licenciaPrincipal: LicenciaMineria = {
@@ -43,19 +51,16 @@ const MiningPage = () => {
   };
 
   // Estados
-  const [selectedPeriod, setSelectedPeriod] = useState(12); // meses
+  const [selectedPeriod, setSelectedPeriod] = useState(18); // meses
   const [currentEarnings, setCurrentEarnings] = useState(0);
   const [pickaxePosition, setPickaxePosition] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [miningActive, setMiningActive] = useState(false);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showPurchaseLicenseModal, setShowPurchaseLicenseModal] = useState(false);
   const [licenseToPurchase, setLicenseToPurchase] = useState<{ name: string; value: number } | null>(null);
   const [miningWalletBalance, setMiningWalletBalance] = useState(0);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [transferAmount, setTransferAmount] = useState('');
-
-  // Licencias disponibles (simuladas basadas en el patrón de la app)
 
   const [selectedLicense, setSelectedLicense] = useState(licenciaPrincipal);
 
@@ -75,7 +80,7 @@ const MiningPage = () => {
     }
 
     const principal = selectedLicense.licencia.precio;
-    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 30 || 0.05;
+    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05;
 
     // Fórmula: A = P(1 + r)^t
     const totalAmount = principal * Math.pow(1 + rate, selectedPeriod);
@@ -85,7 +90,8 @@ const MiningPage = () => {
     const totalSeconds = totalDays * 86400; // Segundos totales
     const dailyProfit = totalProfit / totalDays;
     const monthlyProfit = totalProfit / selectedPeriod;
-    const annualProfit = selectedPeriod >= 12 ? totalProfit : (totalProfit / selectedPeriod) * 12;
+    //const annualProfit = selectedPeriod >= 12 ? totalProfit : (totalProfit / selectedPeriod) * 12;
+    const annualProfit = monthlyProfit * 12;
     const profitPerSecond = totalProfit / totalSeconds; // Ganancia por segundo
 
     return {
@@ -100,15 +106,32 @@ const MiningPage = () => {
     };
   }, [selectedLicense, selectedPeriod]);
 
+  const handleIniciarMineria = async () => {
+    if (!selectedLicense) {
+      toast.error('Debes seleccionar una licencia antes de iniciar la minería.');
+      return;
+    }
+    try {
+      await iniciarMineria(selectedLicense.id, selectedPeriod);
+      toast.success('Minería iniciada exitosamente!');
+    } catch {
+      toast.error(errorIniciarMineria);
+    }
+  };
+
   // Reiniciar cuando cambien los parámetros
   useEffect(() => {
     setElapsedSeconds(0);
     setCurrentEarnings(0);
-    setMiningActive(false);
   }, [selectedLicense, selectedPeriod]);
 
   // Animación de ganancias incrementales - cada segundo en tiempo real
   useEffect(() => {
+    // Solo incrementar si la minería está activa
+    if (!selectedLicense?.activa) {
+      return;
+    }
+
     const interval = setInterval(() => {
       setElapsedSeconds(prev => {
         const nextSecond = prev + 1;
@@ -127,10 +150,23 @@ const MiningPage = () => {
         }
         return newValue;
       });
+
+      // Incrementar gananciaActual de la licencia seleccionada
+      setSelectedLicense(prev => {
+        if (!prev) return prev;
+        
+        const newGanancia = prev.gananciaActual + calculations.profitPerSecond;
+        const maxProfit = parseFloat(calculations.totalProfit);
+
+        return {
+          ...prev,
+          gananciaActual: newGanancia >= maxProfit ? maxProfit : newGanancia
+        };
+      });
     }, 1000); // Cada segundo real
 
     return () => clearInterval(interval);
-  }, [calculations]);
+  }, [calculations, selectedLicense?.activa]);
 
   // Animación del pico
   useEffect(() => {
@@ -148,7 +184,6 @@ const MiningPage = () => {
 
   useEffect(() => {
     if (!licenciasUsuario?.length) {
-      setSelectedLicense(null);
       return;
     }
 
@@ -169,19 +204,8 @@ const MiningPage = () => {
   }, [licenciasUsuario, usuario]);
 
   // Progreso actual (0-100%)
-  const progressPercentage = (currentEarnings / parseFloat(calculations.totalProfit)) * 100;
-
-  // Convertir segundos a días, horas, minutos, segundos
-  const formatTime = (seconds: number) => {
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return { days, hours, minutes, seconds: secs };
-  };
-
-  const timeElapsed = formatTime(elapsedSeconds);
-
+  const progressPercentage = (selectedLicense.gananciaActual / parseFloat(calculations.totalProfit)) * 100;
+  
   // Función para abrir el modal de compra
   const handleOpenPurchaseModal = () => {
     setShowPurchaseModal(true);
@@ -213,11 +237,11 @@ const MiningPage = () => {
     if (amount > 0 && amount <= miningWalletBalance) {
       setMiningWalletBalance(prev => prev - amount);
       // Aquí iría la lógica para transferir a wallet staking
-      alert(`Se han transferido $${amount.toFixed(2)} USDT a tu Wallet Staking exitosamente!`);
+      toast.success(`Se han transferido $${amount.toFixed(2)} USDT a tu Wallet Staking exitosamente!`);
       setShowTransferModal(false);
       setTransferAmount('');
     } else {
-      alert('Monto inválido o saldo insuficiente');
+      toast.error('Monto inválido o saldo insuficiente');
     }
   };
 
@@ -432,13 +456,14 @@ const MiningPage = () => {
                 <div className="relative pt-8 pb-4">
                   <input
                     type="range"
-                    min="1"
-                    max="36"
-                    value={selectedPeriod}
-                    onChange={(e) => setSelectedPeriod(parseInt(e.target.value))}
+                    min="0"
+                    max="4"
+                    step="1"
+                    value={PERIOD_OPTIONS.indexOf(selectedPeriod)}
+                    onChange={(e) => setSelectedPeriod(PERIOD_OPTIONS[parseInt(e.target.value)])}
                     className="w-full h-2 rounded-full appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #F0973C 0%, #F0973C ${(selectedPeriod / 36) * 100}%, #1f2937 ${(selectedPeriod / 36) * 100}%, #1f2937 100%)`,
+                      background: `linear-gradient(to right, #F0973C 0%, #F0973C ${(PERIOD_OPTIONS.indexOf(selectedPeriod) / 4) * 100}%, #1f2937 ${(PERIOD_OPTIONS.indexOf(selectedPeriod) / 4) * 100}%, #1f2937 100%)`,
                     }}
                   />
                   <div className="flex justify-between text-xs text-white/50 mt-2">
@@ -485,7 +510,7 @@ const MiningPage = () => {
               </div>
 
               {/* Barra de progreso con animación de pico */}
-              <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-gradient-to-br from-[#F0973C]/5 to-[#69AC95]/5">
+              <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-linear-to-br from-[#F0973C]/5 to-[#69AC95]/5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                     Progreso de Minería
@@ -495,10 +520,7 @@ const MiningPage = () => {
                   </h3>
                   <div className="text-right">
                     <div className="text-sm text-white/60">
-                      ${currentEarnings.toFixed(6)} / ${calculations.totalProfit}
-                    </div>
-                    <div className="text-xs text-white/40">
-                      {timeElapsed.days}d {timeElapsed.hours}h {timeElapsed.minutes}m {timeElapsed.seconds}s
+                      ${selectedLicense.gananciaActual.toFixed(6)} / ${calculations.totalProfit}
                     </div>
                   </div>
                 </div>
@@ -506,44 +528,39 @@ const MiningPage = () => {
                 {/* Botón de activar minería */}
                 <div className="flex gap-2 mb-4">
                   <button
-                    onClick={() => {
-                      if (!selectedLicense) {
-                        alert('❌ Error: Debes seleccionar una licencia antes de activar la minería.');
-                        return;
-                      }
-                      setMiningActive(!miningActive);
-                    }}
-                    className={`flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${miningActive
-                      ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                      : 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
+                    onClick={handleIniciarMineria}
+                    disabled={selectedLicense.activa || loadingIniciarMineria}
+                    className={`flex items-center justify-center gap-2 flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${selectedLicense.activa
+                      ? 'bg-linear-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
+                      : 'bg-linear-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
                       }`}
                   >
-                    {miningActive ? '⚡ MINERÍA ACTIVA' : '⛏️ ACTIVAR MINERÍA'}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCurrentEarnings(0);
-                      setElapsedSeconds(0);
-                      setMiningActive(false);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-gray-700 text-white font-semibold hover:bg-gray-600 transition-all"
-                  >
-                    Reiniciar
+                    {selectedLicense.activa ? (
+                      <>
+                        <Zap className="w-5 h-5" />
+                        MINERÍA ACTIVA
+                      </>
+                    ) : (
+                      <>
+                        <Pickaxe className="w-5 h-5" />
+                        ACTIVAR MINERÍA
+                      </>
+                    )}
                   </button>
                 </div>
 
                 {/* Barra de progreso animada */}
-                <div className="relative h-12 bg-gradient-to-r from-gray-800 to-gray-900 rounded-full overflow-hidden border border-white/10">
+                <div className="relative h-12 bg-linear-to-r from-gray-800 to-gray-900 rounded-full overflow-hidden border border-white/10">
                   {/* Progreso */}
                   <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#F0973C] to-[#69AC95] transition-all duration-1000 ease-out"
+                    className="absolute top-0 left-0 h-full bg-linear-to-r from-[#F0973C] to-[#69AC95] transition-all duration-1000 ease-out"
                     style={{ width: `${Math.min(progressPercentage, 100)}%` }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                   </div>
 
                   {/* Pico animado - solo visible cuando está activo */}
-                  {miningActive && (
+                  {selectedLicense.activa && (
                     <div
                       className="absolute top-1/2 -translate-y-1/2 transition-all duration-100"
                       style={{ left: `${Math.min(progressPercentage, 100)}%` }}
@@ -572,8 +589,18 @@ const MiningPage = () => {
                 <div className="mt-4 p-3 rounded-lg bg-black/30 border border-white/5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-white/50">Estado:</span>
-                    <span className={`text-sm font-bold ${miningActive ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
-                      {miningActive ? '🟢 Minería Activa' : '🟠 Inactiva'}
+                    <span className={`flex items-center gap-2 text-sm font-bold ${selectedLicense.activa ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
+                      {selectedLicense.activa ? (
+                        <>
+                          <Circle className="w-3 h-3 fill-[#69AC95]" />
+                          Minería Activa
+                        </>
+                      ) : (
+                        <>
+                          <Circle className="w-3 h-3 fill-[#F0973C]" />
+                          Inactiva
+                        </>
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-2">
@@ -652,8 +679,11 @@ const MiningPage = () => {
                 </div>
 
                 <div className="mt-4 p-4 rounded-lg bg-[#69AC95]/10 border border-[#69AC95]/20">
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    💡 <span className="font-semibold">Nota:</span> Las ganancias se depositarán automáticamente en tu Wallet de Minería al finalizar el plazo seleccionado. Puedes transferirlas a tu Wallet Staking para generar intereses adicionales.
+                  <p className="flex items-start gap-2 text-xs text-white/60 leading-relaxed">
+                    <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#F0973C]" />
+                    <span>
+                      <span className="font-semibold">Nota:</span> Las ganancias se depositarán automáticamente en tu Wallet de Minería al finalizar el plazo seleccionado. Puedes transferirlas a tu Wallet Staking para generar intereses adicionales.
+                    </span>
                   </p>
                 </div>
               </div>
