@@ -35,8 +35,8 @@ public class tasks {
         }
     }
 
-    //@Scheduled(cron = "0 0 0 1 * *")
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 0 0 1 * *")
+    //@Scheduled(fixedRate = 60000)
     public void mineriaTask() {
         try {
             mineriaService.asignarRendimentoDiario();
@@ -46,6 +46,7 @@ public class tasks {
     }
 
     @Scheduled(cron = "0 0 1 1 * *")
+    //@Scheduled(fixedRate = 60000)
     public void finalizarMineriaTask() {
         try {
             mineriaService.verificarExpiracionLicencias();

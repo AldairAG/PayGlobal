@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.api.payglobal.entity.LicenciaMineria;
+import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.repository.LicenciaMineriaRepository;
+import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
 
 @Service
@@ -24,6 +26,9 @@ public class MineriaServiceImpl implements MineriaService {
 
     @Autowired
     private WalletRepository walletRepository; 
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Override
     @Transactional(readOnly = false)
@@ -52,7 +57,7 @@ public class MineriaServiceImpl implements MineriaService {
 
         // Verificar si el usuario tiene wallet de minería, si no, crearla
         Long usuarioId = mineriaLicencia.getUsuario().getId();
-        Wallet wallet = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_MINERIA.name())
+        Wallet wallet = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_MINERIA)
                 .orElseGet(() -> crearWalletMineria(usuarioId));
 
         wallet.setSaldo(wallet.getSaldo().add(mineriaLicencia.getGananciaActual()));
@@ -98,11 +103,11 @@ public class MineriaServiceImpl implements MineriaService {
     @Override
     public void retirarGanancias(Long usuarioId) {
         // Implementación para permitir a los usuarios retirar sus ganancias acumuladas de la minería
-    	Wallet wallet = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_MINERIA.name())
+    	Wallet wallet = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_MINERIA)
                 .orElseThrow(() -> new RuntimeException("Wallet de minería no encontrada para el usuario con ID: " + usuarioId));
 
         // Lógica para transferir el saldo de la wallet de minería a la wallet de staking del usuario
-    	Wallet walletStaking = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_STAKING.name())
+    	Wallet walletStaking = walletRepository.findByUsuarioIdAndTipo(usuarioId, TipoWallets.WALLET_STAKING)
                 .orElseThrow(() -> new RuntimeException("Wallet de staking no encontrada para el usuario con ID: " + usuarioId));
 
         walletStaking.setSaldo(walletStaking.getSaldo().add(wallet.getSaldo()));
@@ -119,10 +124,13 @@ public class MineriaServiceImpl implements MineriaService {
     }
 
     private Wallet crearWalletMineria(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
         // Implementación para crear una wallet de minería para el usuario
         Wallet wallet = new Wallet();
         wallet.setTipo(TipoWallets.WALLET_MINERIA);
         wallet.setSaldo(BigDecimal.ZERO);
+        wallet.setUsuario(usuario);
         return walletRepository.save(wallet);
     }
     

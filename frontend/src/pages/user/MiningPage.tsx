@@ -1,11 +1,11 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft, Zap, Circle, Lightbulb } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
-import { EstadoLicenciaMineria, TipoSolicitud } from '../../type/enum';
+import { EstadoLicenciaMineria, TipoSolicitud, TipoWallets } from '../../type/enum';
 import { LICENCIAS, type LicenciaMineria } from '../../type/entityTypes';
 import { useMineria } from '../../hooks/useMineria';
 import type { RootState } from '../../store';
@@ -34,8 +34,9 @@ const MiningPage = () => {
   //Hooks personalizados para manejar la lógica de minería y licencias
   const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario,
     iniciarMineria, loadingIniciarMineria, errorIniciarMineria,
-
+    retirarGanancias, loadingRetirarGanancias, errorRetirarGanancias
   } = useMineria();
+
   const usuario = useSelector((state: RootState) => state.usuario.usuario);
 
   const licenciaPrincipal: LicenciaMineria = {
@@ -52,15 +53,11 @@ const MiningPage = () => {
 
   // Estados
   const [selectedPeriod, setSelectedPeriod] = useState(18); // meses
-  const [currentEarnings, setCurrentEarnings] = useState(0);
   const [pickaxePosition, setPickaxePosition] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [showPurchaseLicenseModal, setShowPurchaseLicenseModal] = useState(false);
   const [licenseToPurchase, setLicenseToPurchase] = useState<{ name: string; value: number } | null>(null);
-  const [miningWalletBalance, setMiningWalletBalance] = useState(0);
   const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferAmount, setTransferAmount] = useState('');
 
   const [selectedLicense, setSelectedLicense] = useState(licenciaPrincipal);
 
@@ -115,15 +112,20 @@ const MiningPage = () => {
       await iniciarMineria(selectedLicense.id, selectedPeriod);
       toast.success('Minería iniciada exitosamente!');
     } catch {
-      toast.error(errorIniciarMineria);
+      toast.error(errorIniciarMineria || 'Error al iniciar la minería');
     }
   };
 
   // Reiniciar cuando cambien los parámetros
   useEffect(() => {
-    setElapsedSeconds(0);
-    setCurrentEarnings(0);
-  }, [selectedLicense, selectedPeriod]);
+    setSelectedLicense(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        gananciaActual: 0
+      };
+    });
+  }, [selectedLicense?.id, selectedPeriod]);
 
   // Animación de ganancias incrementales - cada segundo en tiempo real
   useEffect(() => {
@@ -133,24 +135,6 @@ const MiningPage = () => {
     }
 
     const interval = setInterval(() => {
-      setElapsedSeconds(prev => {
-        const nextSecond = prev + 1;
-        if (nextSecond > calculations.totalSeconds) {
-          return calculations.totalSeconds;
-        }
-        return nextSecond;
-      });
-
-      setCurrentEarnings(prev => {
-        const newValue = prev + calculations.profitPerSecond;
-        const maxProfit = parseFloat(calculations.totalProfit);
-
-        if (newValue >= maxProfit) {
-          return maxProfit;
-        }
-        return newValue;
-      });
-
       // Incrementar gananciaActual de la licencia seleccionada
       setSelectedLicense(prev => {
         if (!prev) return prev;
@@ -223,25 +207,16 @@ const MiningPage = () => {
     setLicenseToPurchase(null);
   };
 
-  // Función para recibir ganancias en la wallet de minería al completar el plazo
-  useEffect(() => {
-    if (elapsedSeconds >= calculations.totalSeconds && currentEarnings >= parseFloat(calculations.totalProfit)) {
-      // Transferir ganancias a la wallet de minería
-      setMiningWalletBalance(prev => prev + currentEarnings);
-    }
-  }, [elapsedSeconds, calculations.totalSeconds, currentEarnings, calculations.totalProfit]);
-
   // Función para transferir a wallet staking
-  const handleTransferToStaking = () => {
-    const amount = parseFloat(transferAmount);
-    if (amount > 0 && amount <= miningWalletBalance) {
-      setMiningWalletBalance(prev => prev - amount);
-      // Aquí iría la lógica para transferir a wallet staking
-      toast.success(`Se han transferido $${amount.toFixed(2)} USDT a tu Wallet Staking exitosamente!`);
+  const handleTransferToStaking = async () => {
+    try {
+      await retirarGanancias();
+      toast.success('¡Ganancias transferidas exitosamente a tu wallet de staking!');
       setShowTransferModal(false);
-      setTransferAmount('');
-    } else {
-      toast.error('Monto inválido o saldo insuficiente');
+      // Recargar licencias para actualizar el saldo
+      await obtenerLicenciasUsuario();
+    } catch {
+      toast.error(errorRetirarGanancias || 'Error al transferir las ganancias');
     }
   };
 
@@ -397,7 +372,7 @@ const MiningPage = () => {
               {licenciasUsuario?.map((license, index) => (
                 <div
                   key={license.id}
-                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense && selectedLicense?.licencia?.nombre === license.licencia.nombre
+                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense && selectedLicense?.licencia?.id === license.licencia.id
                     ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
                     : !selectedLicense && index === 0
                       ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
@@ -407,7 +382,7 @@ const MiningPage = () => {
                   {/* Badge de destacado para la primera licencia */}
                   {index === 0 && (
                     <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg">
-                      Recomendada
+                      Principal
                     </div>
                   )}
 
@@ -642,8 +617,8 @@ const MiningPage = () => {
                   </div>
                   <button
                     onClick={() => setShowTransferModal(true)}
-                    disabled={miningWalletBalance <= 0}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${miningWalletBalance > 0
+                    disabled={(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo||0) <= 0}
+                    className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo||0) > 0
                       ? 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 hover:scale-105'
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                       }`}
@@ -657,7 +632,7 @@ const MiningPage = () => {
                 <div className="p-8 rounded-xl bg-gradient-to-br from-[#69AC95]/20 to-[#F0973C]/20 border border-[#69AC95]/30 text-center">
                   <p className="text-sm text-white/60 mb-2">Balance Disponible</p>
                   <p className="text-5xl font-bold text-[#69AC95] mb-1">
-                    ${miningWalletBalance.toFixed(2)}
+                    ${usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo.toLocaleString() || "0.00"}
                   </p>
                   <p className="text-lg text-white/50">USDT</p>
                 </div>
@@ -667,7 +642,7 @@ const MiningPage = () => {
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
                     <p className="text-xs text-white/50 mb-1">Ganancias Actuales</p>
                     <p className="text-xl font-bold text-[#F0973C]">
-                      ${currentEarnings.toFixed(2)}
+                      ${usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo.toLocaleString() || "0.00"}
                     </p>
                   </div>
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
@@ -699,18 +674,13 @@ const MiningPage = () => {
         {showTransferModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
             <div className="relative w-full max-w-md mx-4 p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#69AC95]/30 shadow-2xl shadow-[#69AC95]/20">
-              {/* Botón cerrar */}
               <button
-                onClick={() => {
-                  setShowTransferModal(false);
-                  setTransferAmount('');
-                }}
+                onClick={() => setShowTransferModal(false)}
                 className="absolute top-4 right-4 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5 text-white/70" />
               </button>
 
-              {/* Contenido del modal */}
               <div className="text-center">
                 <div className="flex justify-center mb-4">
                   <div className="p-4 rounded-2xl bg-[#69AC95]/10 border border-[#69AC95]/30">
@@ -719,91 +689,47 @@ const MiningPage = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-white">
-                  Transferir a Wallet Staking
+                  Confirmar Transferencia
                 </h2>
                 <p className="text-white/60 mb-6">
-                  Mueve tus ganancias de minería a staking para generar más rendimientos
+                  Todas tus ganancias de minería serán transferidas a tu wallet de staking
                 </p>
 
-                {/* Balance disponible */}
-                <div className="p-4 rounded-xl bg-black/40 border border-[#69AC95]/20 mb-6">
-                  <p className="text-sm text-white/60 mb-1">Balance Disponible en Wallet Minería</p>
-                  <p className="text-3xl font-bold text-[#69AC95]">
-                    ${miningWalletBalance.toFixed(2)} USDT
-                  </p>
-                </div>
-
-                {/* Input de monto */}
-                <div className="mb-6">
-                  <label className="block text-left text-sm font-semibold text-white/80 mb-2">
-                    Monto a Transferir (USDT)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={transferAmount}
-                      onChange={(e) => setTransferAmount(e.target.value)}
-                      placeholder="0.00"
-                      step="0.01"
-                      min="0"
-                      max={miningWalletBalance}
-                      className="w-full px-4 py-3 rounded-lg bg-black/40 border border-[#69AC95]/30 text-white text-lg font-semibold focus:border-[#69AC95] focus:outline-none focus:ring-2 focus:ring-[#69AC95]/20 transition-all"
-                    />
-                    <button
-                      onClick={() => setTransferAmount(miningWalletBalance.toString())}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 rounded bg-[#69AC95]/20 text-[#69AC95] text-sm font-semibold hover:bg-[#69AC95]/30 transition-colors"
-                    >
-                      Máximo
-                    </button>
-                  </div>
-                </div>
-
-                {/* Información de la transferencia */}
-                <div className="mb-6 p-4 rounded-lg bg-[#F0973C]/10 border border-[#F0973C]/20">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-white/60">Monto a transferir</span>
-                    <span className="font-semibold text-white">
-                      ${parseFloat(transferAmount || '0').toFixed(2)} USDT
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-white/60">Comisión</span>
-                    <span className="font-semibold text-white">$0.00 USDT</span>
-                  </div>
-                  <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-2"></div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-white">Balance restante</span>
-                    <span className="text-xl font-bold text-[#69AC95]">
-                      ${(miningWalletBalance - parseFloat(transferAmount || '0')).toFixed(2)} USDT
+                <div className="p-4 rounded-xl bg-[#69AC95]/5 border border-[#69AC95]/20 mb-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white/70">Saldo a Transferir</span>
+                    <span className="text-2xl font-bold text-[#69AC95]">
+                      ${usuario?.wallets.find(wallet => wallet.tipo === "WALLET_MINERIA")?.saldo || '0.00'} USDT
                     </span>
                   </div>
                 </div>
 
-                {/* Botones de acción */}
                 <div className="flex gap-3">
                   <button
-                    onClick={() => {
-                      setShowTransferModal(false);
-                      setTransferAmount('');
-                    }}
-                    className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
+                    onClick={() => setShowTransferModal(false)}
+                    disabled={loadingRetirarGanancias}
+                    className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleTransferToStaking}
-                    disabled={!transferAmount || parseFloat(transferAmount) <= 0 || parseFloat(transferAmount) > miningWalletBalance}
-                    className={`flex-1 px-6 py-3 rounded-lg font-bold transition-all ${transferAmount && parseFloat(transferAmount) > 0 && parseFloat(transferAmount) <= miningWalletBalance
-                      ? 'bg-gradient-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                      }`}
+                    disabled={loadingRetirarGanancias || !selectedLicense?.gananciaActual || selectedLicense.gananciaActual <= 0}
+                    className="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-[#69AC95] to-[#4a8c75] text-white font-semibold shadow-lg shadow-[#69AC95]/30 hover:shadow-[#69AC95]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Transferir
+                    {loadingRetirarGanancias ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Procesando...
+                      </>
+                    ) : (
+                      'Confirmar Transferencia'
+                    )}
                   </button>
                 </div>
 
                 <p className="mt-4 text-xs text-white/40">
-                  La transferencia se realizará de forma instantánea
+                  La transferencia se realizará de manera inmediata y el saldo aparecerá en tu wallet de staking
                 </p>
               </div>
             </div>

@@ -69,7 +69,8 @@ export const TipoRango = {
 
 export enum TipoWallets {
     WALLET_STAKING = "WALLET_STAKING",
-    WALLET_NETWORK = "WALLET_NETWORK"
+    WALLET_NETWORK = "WALLET_NETWORK",
+    WALLET_MINERIA = "WALLET_MINERIA"
 }
 
 export enum TipoSolicitud {
