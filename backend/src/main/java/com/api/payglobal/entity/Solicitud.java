@@ -35,7 +35,7 @@ public class Solicitud extends Operacion {
     private TipoSolicitud tipoSolicitud;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("usuario-solicitudes")
     private Usuario usuario;
 
 }

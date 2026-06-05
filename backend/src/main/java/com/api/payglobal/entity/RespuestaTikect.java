@@ -38,6 +38,6 @@ public class RespuestaTikect {
 
     @ManyToOne
     @JoinColumn(name = "tiket_soporte_id")
-    @JsonBackReference
+    @JsonBackReference("ticket-respuestas")
     private TiketSoporte tiketSoporte;
 }

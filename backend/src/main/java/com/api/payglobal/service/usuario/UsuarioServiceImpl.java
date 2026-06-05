@@ -627,7 +627,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
-        bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
+        //bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
     }
 
     @Override

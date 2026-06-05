@@ -37,7 +37,7 @@ public class Bono {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @JsonBackReference
+    @JsonBackReference("usuario-bonos")
     private Usuario usuario;
 
 }

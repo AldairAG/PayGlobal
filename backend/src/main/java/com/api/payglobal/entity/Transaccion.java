@@ -37,6 +37,6 @@ public class Transaccion extends Operacion {
     private TipoMetodoPago metodoPago;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("usuario-transacciones")
     private Usuario usuario;
 }

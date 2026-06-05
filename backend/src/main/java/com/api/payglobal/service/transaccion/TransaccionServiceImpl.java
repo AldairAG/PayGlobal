@@ -52,7 +52,6 @@ public class TransaccionServiceImpl implements TransaccionService {
                                 .usuario(usuario)
                                 .build();
 
-                usuario.getTransacciones().add(transaccion);
                 transaccionRepository.save(transaccion);
         }
 

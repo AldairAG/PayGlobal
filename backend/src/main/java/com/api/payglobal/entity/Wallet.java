@@ -34,7 +34,7 @@ public class Wallet {
     private BigDecimal saldo;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("usuario-wallets")
     private Usuario usuario;
 
 }

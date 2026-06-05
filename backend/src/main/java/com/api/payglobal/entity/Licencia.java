@@ -8,9 +8,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Null;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,11 +35,11 @@ public class Licencia {
     private Integer saldoAcumulado;
 
     @OneToOne(mappedBy = "licencia")
-    @JsonBackReference
+    @JsonBackReference("licencia-mineria")
     private LicenciaMineria licenciaMineria;
 
-    @OneToOne
-    @JsonBackReference
-    @Null
+    @OneToOne(optional = true)
+    @JoinColumn(name = "usuario_id", nullable = true)
+    @JsonBackReference("usuario-licencia")
     private Usuario usuario;
 }

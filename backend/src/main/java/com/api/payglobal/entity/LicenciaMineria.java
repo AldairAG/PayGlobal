@@ -40,7 +40,7 @@ public class LicenciaMineria {
     private BigDecimal gananciaActual;
 
     @OneToOne
-    @JsonManagedReference
+    @JsonManagedReference("licencia-mineria")
     private Licencia licencia;
 
     private Double tasaMineria;
