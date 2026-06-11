@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.LicenciaMineria;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
@@ -15,6 +16,7 @@ import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.repository.LicenciaMineriaRepository;
+import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
 
@@ -119,8 +121,17 @@ public class MineriaServiceImpl implements MineriaService {
 
     @Override
     public List<LicenciaMineria> obtenerLicenciasMineriaByUsuarioId(Long usuarioId) {
-        // Implementación para obtener todas las licencias de minería asociadas a un usuario específico
-        return mineriaRepository.findByUsuarioId(usuarioId);
+        // Verificar/crear la licencia de minería principal
+        LicenciaMineria licenciaPrincipal = verificarMineriaParaLicenciaPrincipal(usuarioId);
+        
+        // Obtener todas las licencias de minería del usuario
+        List<LicenciaMineria> licencias = mineriaRepository.findByUsuarioId(usuarioId);
+        
+        // Asegurar que la licencia principal esté en la posición 0
+        licencias.removeIf(l -> l.getId().equals(licenciaPrincipal.getId()));
+        licencias.add(0, licenciaPrincipal);
+        
+        return licencias;
     }
 
     private Wallet crearWalletMineria(Long usuarioId) {
@@ -134,4 +145,26 @@ public class MineriaServiceImpl implements MineriaService {
         return walletRepository.save(wallet);
     }
     
+    private LicenciaMineria verificarMineriaParaLicenciaPrincipal(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuarioId));
+
+        // Buscar si ya existe una licencia de minería asociada a la licencia principal
+        return mineriaRepository.findByLicencia_Id(usuario.getLicencia().getId())
+            .orElseGet(() -> {
+                // Si no existe, crear una nueva licencia de minería
+                LicenciaMineria nuevaLicenciaMineria = LicenciaMineria.builder()
+                    .fechaInicio(LocalDateTime.now())
+                    .usuario(usuario)
+                    .estado(EstadoLicenciaMineria.INACTIVA)
+                    .gananciaActual(BigDecimal.ZERO)
+                    .licencia(usuario.getLicencia())
+                    .tasaMineria(TipoLicencia.getTasaMineriaByNombre(usuario.getLicencia().getNombre()))
+                    .plazo(0)
+                    .activa(false)
+                    .build();
+                
+                return mineriaRepository.save(nuevaLicenciaMineria);
+            });
+    }
 }
