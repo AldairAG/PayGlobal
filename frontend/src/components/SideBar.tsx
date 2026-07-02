@@ -35,7 +35,7 @@ const SideBar = () => {
         { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NEWS_REPORTS, requiresLicense: true },
         /*{ name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA, requiresLicense: true },*/        
         { name: t("sidebar.tools"), icon: <PiCompassToolBold size={22} />, route: ROUTES.USER.TOOLS, requiresLicense: true },
-        { name: "BTC mining loading...", icon: <PiCurrencyBtcDuotone size={22} />, route: ROUTES.USER.MINING, requiresLicense: true, disabled: usuario?.username == "Universo" },
+        { name: "BTC mining loading...", icon: <PiCurrencyBtcDuotone size={22} />, route: ROUTES.USER.MINING, requiresLicense: true, disabled: usuario?.username !== "Universo" },
         { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS, requiresLicense: true },
         { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE, requiresLicense: true },
     ];
