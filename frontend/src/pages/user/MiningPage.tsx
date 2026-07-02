@@ -111,6 +111,7 @@ const MiningPage = () => {
   const [showPurchaseLicenseModal, setShowPurchaseLicenseModal] = useState(false);
   const [licenseToPurchase, setLicenseToPurchase] = useState<{ name: string; value: number } | null>(null);
   const [showTransferModal, setShowTransferModal] = useState(false);
+  const [showActivateMiningModal, setShowActivateMiningModal] = useState(false);
 
   const [selectedLicense, setSelectedLicense] = useState(licenciaPrincipal);
 
@@ -169,9 +170,18 @@ const MiningPage = () => {
     try {
       await iniciarMineria(selectedLicense.id, selectedPeriod);
       toast.success('Minería iniciada exitosamente!');
+      setShowActivateMiningModal(false);
     } catch {
       toast.error(errorIniciarMineria || 'Error al iniciar la minería');
     }
+  };
+
+  const handleOpenActivateMiningModal = () => {
+    if (!selectedLicense) {
+      toast.error('Debes seleccionar una licencia antes de iniciar la minería.');
+      return;
+    }
+    setShowActivateMiningModal(true);
   };
 
   // Reiniciar cuando cambien los parámetros
@@ -675,11 +685,11 @@ const MiningPage = () => {
                 {/* Botón de activar minería */}
                 <div className="flex gap-2 mb-4">
                   <button
-                    onClick={handleIniciarMineria}
+                    onClick={handleOpenActivateMiningModal}
                     disabled={selectedLicense.activa || loadingIniciarMineria}
                     className={`flex items-center justify-center gap-2 flex-1 px-6 py-3 rounded-lg font-bold text-lg transition-all ${selectedLicense.activa
                       ? 'bg-linear-to-r from-[#69AC95] to-[#4d8a73] text-white shadow-lg shadow-[#69AC95]/40 hover:shadow-[#69AC95]/60'
-                      : 'bg-linear-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60'
+                      : 'bg-linear-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 hover:scale-105'
                       }`}
                   >
                     {selectedLicense.activa ? (
@@ -841,6 +851,101 @@ const MiningPage = () => {
         )}
 
 
+
+        {/* Modal de Confirmación de Activar Minería */}
+        {showActivateMiningModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <div className="relative w-full max-w-md mx-4 p-6 rounded-2xl bg-linear-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#F0973C]/30 shadow-2xl shadow-[#F0973C]/20">
+              <button
+                onClick={() => setShowActivateMiningModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 rounded-2xl bg-[#F0973C]/10 border border-[#F0973C]/30">
+                    <Pickaxe className="w-12 h-12 text-[#F0973C]" />
+                  </div>
+                </div>
+
+                <h2 className="text-2xl font-bold mb-2 text-white">
+                  Confirmar Activación de Minería
+                </h2>
+                <p className="text-white/60 mb-6">
+                  ¿Estás seguro de que deseas activar la minería con esta licencia?
+                </p>
+
+                {/* Detalles de la licencia */}
+                <div className="p-4 rounded-xl bg-[#F0973C]/5 border border-[#F0973C]/20 mb-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Licencia</span>
+                    <span className="text-base font-bold text-white">
+                      {selectedLicense?.licencia?.nombre}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Inversión</span>
+                    <span className="text-base font-bold text-[#69AC95]">
+                      ${selectedLicense?.licencia?.precio.toLocaleString()} USDT
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Plazo</span>
+                    <span className="text-base font-bold text-[#F0973C]">
+                      {selectedPeriod} {selectedPeriod === 1 ? 'mes' : 'meses'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Rendimiento diario</span>
+                    <span className="text-base font-bold text-[#F0973C]">
+                      {(INTEREST_RATES[selectedLicense?.licencia?.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100 || 0).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="h-px bg-white/10 my-2" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/70">Ganancia estimada</span>
+                    <span className="text-lg font-bold text-[#69AC95]">
+                      ${calculations.totalProfit} USDT
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowActivateMiningModal(false)}
+                    disabled={loadingIniciarMineria}
+                    className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleIniciarMineria}
+                    disabled={loadingIniciarMineria}
+                    className="flex-1 px-6 py-3 rounded-lg bg-linear-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {loadingIniciarMineria ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Activando...
+                      </>
+                    ) : (
+                      <>
+                        <Pickaxe className="w-4 h-4" />
+                        Confirmar Activación
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs text-white/40">
+                  La minería comenzará inmediatamente y las ganancias se calcularán en tiempo real
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Transferencia a Wallet Staking */}
         {showTransferModal && (
