@@ -79,7 +79,8 @@ const MiningPage = () => {
     const totalDays = selectedPeriod * 30;
 
     const principal = selectedLicense.licencia.precio;
-    const rate = selectedLicense.id==usuario?.licencia.id ? INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 : 0.0077;
+    //const rate = selectedLicense.id==usuario?.licencia.id ? INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 : 0.0077;
+    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 ;
 
     // Fórmula: A = P(1 + r)^t
     const totalAmount = principal * Math.pow(1 + rate, totalDays);
