@@ -80,17 +80,20 @@ const MiningPage = () => {
 
     const principal = selectedLicense.licencia.precio;
     //const rate = selectedLicense.id==usuario?.licencia.id ? INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 : 0.0077;
-    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 ;
+    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05;
+
+    const rendimientoDiario = rate * principal; 
 
     // Fórmula: A = P(1 + r)^t
-    const totalAmount = principal * Math.pow(1 + rate, totalDays);
+    //const totalAmount = principal * Math.pow(1 + rate, totalDays);
+    const totalAmount = rendimientoDiario * totalDays + principal;
     const totalProfit = totalAmount - principal;
 
     const totalSeconds = totalDays * 86400; // Segundos totales
-    const dailyProfit = totalProfit / totalDays;
-    const monthlyProfit = totalProfit / selectedPeriod;
+    const dailyProfit = rendimientoDiario; // Ganancia diaria
+    const monthlyProfit = rendimientoDiario * 30; // Ganancia mensual
     //const annualProfit = selectedPeriod >= 12 ? totalProfit : (totalProfit / selectedPeriod) * 12;
-    const annualProfit = monthlyProfit * 12;
+    const annualProfit = monthlyProfit * 12; // Ganancia anual basada en la ganancia mensual
     const profitPerSecond = totalProfit / totalSeconds; // Ganancia por segundo
 
     return {
@@ -140,7 +143,7 @@ const MiningPage = () => {
       // Incrementar gananciaActual de la licencia seleccionada
       setSelectedLicense(prev => {
         if (!prev) return prev;
-        
+
         const newGanancia = prev.gananciaActual + calculations.profitPerSecond;
         const maxProfit = parseFloat(calculations.totalProfit);
 
@@ -191,7 +194,7 @@ const MiningPage = () => {
 
   // Progreso actual (0-100%)
   const progressPercentage = (selectedLicense.gananciaActual / parseFloat(calculations.totalProfit)) * 100;
-  
+
   // Función para abrir el modal de compra
   const handleOpenPurchaseModal = () => {
     setShowPurchaseModal(true);
@@ -403,7 +406,7 @@ const MiningPage = () => {
                         ${license.licencia.precio.toLocaleString()} USDT
                       </p>
                       <p className="text-xs text-white/50 mt-1">
-                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(0)}% diario
+                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100)}% diario
                       </p>
                     </div>
                     {/* {selectedLicense.licencia.nombre === license.licencia.nombre && (
@@ -619,8 +622,8 @@ const MiningPage = () => {
                   </div>
                   <button
                     onClick={() => setShowTransferModal(true)}
-                    disabled={(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo||0) <= 0}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo||0) > 0
+                    disabled={(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo || 0) <= 0}
+                    className={`flex items-center gap-2 px-5 py-3 rounded-xl font-bold transition-all ${(usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo || 0) > 0
                       ? 'bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white shadow-lg shadow-[#F0973C]/40 hover:shadow-[#F0973C]/60 hover:scale-105'
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                       }`}
