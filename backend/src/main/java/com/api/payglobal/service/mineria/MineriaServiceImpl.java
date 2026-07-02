@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.api.payglobal.entity.Licencia;
 import com.api.payglobal.entity.LicenciaMineria;
 import com.api.payglobal.entity.Usuario;
 import com.api.payglobal.entity.Wallet;
@@ -16,7 +15,6 @@ import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.repository.LicenciaMineriaRepository;
-import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
 

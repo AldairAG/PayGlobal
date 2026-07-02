@@ -76,14 +76,15 @@ const MiningPage = () => {
       };
     }
 
+    const totalDays = selectedPeriod * 30;
+
     const principal = selectedLicense.licencia.precio;
-    const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05;
+    const rate = selectedLicense.id==usuario?.licencia.id ? INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 : 0.0077;
 
     // Fórmula: A = P(1 + r)^t
-    const totalAmount = principal * Math.pow(1 + rate, selectedPeriod);
+    const totalAmount = principal * Math.pow(1 + rate, totalDays);
     const totalProfit = totalAmount - principal;
 
-    const totalDays = selectedPeriod * 30;
     const totalSeconds = totalDays * 86400; // Segundos totales
     const dailyProfit = totalProfit / totalDays;
     const monthlyProfit = totalProfit / selectedPeriod;
@@ -401,7 +402,7 @@ const MiningPage = () => {
                         ${license.licencia.precio.toLocaleString()} USDT
                       </p>
                       <p className="text-xs text-white/50 mt-1">
-                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(0)}% mensual
+                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(0)}% diario
                       </p>
                     </div>
                     {/* {selectedLicense.licencia.nombre === license.licencia.nombre && (
