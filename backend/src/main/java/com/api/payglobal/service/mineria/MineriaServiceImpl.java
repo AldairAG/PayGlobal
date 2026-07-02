@@ -80,10 +80,11 @@ public class MineriaServiceImpl implements MineriaService {
     	List<LicenciaMineria> licenciasActivas = mineriaRepository.findByEstado(EstadoLicenciaMineria.ACTIVA);
         
         for(LicenciaMineria licencia : licenciasActivas) {
-            double rDiaria  = Math.pow(1 + licencia.getTasaMineria().doubleValue(), 1.0 / 30) - 1;
-            double capitalDia = licencia.getLicencia().getPrecio() * Math.pow(1 + rDiaria, 1);
-            BigDecimal gananciaDiaria = new BigDecimal(capitalDia- licencia.getLicencia().getPrecio());   
-            licencia.setGananciaActual(licencia.getGananciaActual().add(gananciaDiaria));
+            //double rDiaria  = Math.pow(1 + licencia.getTasaMineria().doubleValue(), 1.0 / 30) - 1;
+            //double capitalDia = licencia.getLicencia().getPrecio() * Math.pow(1 + rDiaria, 1);
+            //BigDecimal gananciaDiaria = new BigDecimal(capitalDia- licencia.getLicencia().getPrecio());   
+            double rDiaria = licencia.getTasaMineria().doubleValue() * licencia.getLicencia().getPrecio(); // Tasa diaria aproximada
+            licencia.setGananciaActual(licencia.getGananciaActual().add(new BigDecimal(rDiaria)));
             mineriaRepository.save(licencia);
         }
     }
