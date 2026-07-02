@@ -35,6 +35,7 @@ export interface Wallet {
     tipo: TipoWallets;
     codigo: CodigoTipoWallets;
     saldo: number;
+    activa: boolean;
 }
 
 export interface Licencia {

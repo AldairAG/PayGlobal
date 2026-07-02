@@ -46,6 +46,7 @@ public class MineriaServiceImpl implements MineriaService {
         mineriaLicencia.setEstado(EstadoLicenciaMineria.ACTIVA);
         mineriaLicencia.setTasaMineria(TipoLicencia.getTasaMineriaByNombre(mineriaLicencia.getLicencia().getNombre()));
         mineriaLicencia.setGananciaActual(BigDecimal.ZERO);
+        mineriaLicencia.getLicencia().setActivo(false);
 
         mineriaRepository.save(mineriaLicencia);
     }  

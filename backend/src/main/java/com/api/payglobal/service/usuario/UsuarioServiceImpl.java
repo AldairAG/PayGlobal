@@ -372,6 +372,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
+/*         if(usuario.getLicencia() == null || !usuario.getLicencia().getActivo()) {
+            throw new Exception("El usuario no tiene una licencia activa para realizar retiros.");
+        } */
+
         WalletAddress walletAddress = usuario.getWalletAddresses().stream()
                 .filter(wa -> wa.getId().equals(walletAddressId))
                 .findFirst()

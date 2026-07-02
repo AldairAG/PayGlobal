@@ -200,9 +200,10 @@ public class BonoServiceImpl implements BonoService {
                         .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
 
-                // Calcula el ingreso pasivo como el 0.5% del precio de la licencia
-                Double ingresoPasivo = licencia.getPrecio() * 0.005; // 0.5% de ingreso pasivo diario
+                // Calcula el ingreso pasivo como el 0.77% del precio de la licencia
+                Double ingresoPasivo = licencia.getPrecio() * 0.0077; // 0.77% de ingreso pasivo diario
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
+
 
                 // Actualiza el saldo acumulado en la licencia
                 aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
