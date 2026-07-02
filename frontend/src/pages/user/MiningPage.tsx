@@ -381,7 +381,7 @@ const MiningPage = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2 text-[#F0973C]">
-                Mining crypto bitcoin
+                Mining Crypto Bitcoin
               </h2>
               <p className="text-white/70 leading-relaxed">
                 Invierte con tu licencia y observa cómo crece tu capital mediante Mining crypto bitcoin.
@@ -535,7 +535,7 @@ const MiningPage = () => {
                             <p className="text-xs text-white/50">Vencimiento</p>
                           </div>
                           <p className="text-xs font-semibold text-white/80">
-                            {formatDate(license.fechaExpiracion)}
+                            {license.fechaExpiracion ? formatDate(license.fechaExpiracion) : '---'}
                           </p>
                         </div>
                       </div>
