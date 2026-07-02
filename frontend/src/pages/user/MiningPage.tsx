@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft, Zap, Circle, Lightbulb } from 'lucide-react';
+import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft, Zap, Circle, Lightbulb, CheckCircle2, Clock, Hash } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getLicenseImage } from '../../helpers/imgHelpers';
@@ -28,6 +28,59 @@ const INTEREST_RATES = {
 
 // Opciones de periodo permitidas
 const PERIOD_OPTIONS = [18, 24, 36, 48, 60];
+
+// Función determinística para generar ID público desde ID interno
+const generatePublicId = (internalId: number): number => {
+  // Usar un algoritmo de hash simple pero efectivo
+  // Combinar múltiples operaciones para crear un patrón no secuencial
+  let hash = internalId;
+  
+  // Primera mezcla: multiplicar por un primo grande y usar XOR
+  hash = ((hash * 2654435761) ^ (hash >> 16)) & 0xFFFFFFFF;
+  
+  // Segunda mezcla: rotar bits y multiplicar
+  hash = ((hash << 13) | (hash >>> 19)) * 0x5bd1e995;
+  
+  // Tercera mezcla: XOR con desplazamiento
+  hash ^= hash >> 15;
+  
+  // Asegurar que el resultado sea un número de 4 dígitos mínimo
+  return Math.abs(hash % 90000) + 10000;
+};
+
+// Función para calcular días restantes
+const calculateDaysRemaining = (expirationDate: Date): number => {
+  const now = new Date();
+  const expiration = new Date(expirationDate);
+  const diffTime = expiration.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays > 0 ? diffDays : 0;
+};
+
+// Función para formatear fecha
+const formatDate = (date: Date): string => {
+  return new Date(date).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// Función para obtener el color del estado
+const getStatusColor = (estado: EstadoLicenciaMineria, activa: boolean) => {
+  if (activa) return { bg: 'bg-[#69AC95]/20', border: 'border-[#69AC95]/50', text: 'text-[#69AC95]' };
+  if (estado === EstadoLicenciaMineria.ACTIVA) return { bg: 'bg-blue-500/20', border: 'border-blue-500/50', text: 'text-blue-400' };
+  if (estado === EstadoLicenciaMineria.INACTIVA) return { bg: 'bg-gray-500/20', border: 'border-gray-500/50', text: 'text-gray-400' };
+  return { bg: 'bg-red-500/20', border: 'border-red-500/50', text: 'text-red-400' };
+};
+
+// Función para obtener el texto del estado
+const getStatusText = (estado: EstadoLicenciaMineria, activa: boolean) => {
+  if (activa) return 'Minando';
+  if (estado === EstadoLicenciaMineria.ACTIVA) return 'Activa';
+  if (estado === EstadoLicenciaMineria.INACTIVA) return 'Inactiva';
+  return 'Vencida';
+};
 
 const MiningPage = () => {
 
@@ -318,12 +371,12 @@ const MiningPage = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2 text-[#F0973C]">
-                Minería con Interés Compuesto
+                Minería BTC con Licencias
               </h2>
               <p className="text-white/70 leading-relaxed">
-                Invierte con tu licencia y observa cómo crece tu capital mediante interés compuesto.
+                Invierte con tu licencia y observa cómo crece tu capital mediante la mineria BTC.
                 Selecciona el plazo de inversión y la licencia deseada para calcular tus ganancias diarias,
-                mensuales y anuales. El interés se reinvierte automáticamente, maximizando tus retornos a largo plazo.
+                mensuales y anuales. Maximiza tus retornos a largo plazo.
               </p>
             </div>
           </div>
@@ -374,47 +427,161 @@ const MiningPage = () => {
                 </button>
               </div>
 
-              {licenciasUsuario?.map((license, index) => (
-                <div
-                  key={license.id}
-                  className={`group relative cursor-pointer p-4 rounded-xl border-2 transition-all duration-300 ${selectedLicense && selectedLicense?.licencia?.id === license.licencia.id
-                    ? 'border-[#F0973C] bg-[#F0973C]/10 scale-105 shadow-lg shadow-[#F0973C]/20'
-                    : !selectedLicense && index === 0
-                      ? 'border-[#F0973C]/60 bg-[#F0973C]/5 hover:border-[#F0973C] hover:bg-[#F0973C]/10'
-                      : 'border-white/10 bg-white/5 hover:border-[#F0973C]/50 hover:bg-[#F0973C]/5'
-                    }`}
-                >
-                  {/* Badge de destacado para la primera licencia */}
-                  {index === 0 && (
-                    <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg">
-                      Principal
-                    </div>
-                  )}
+              {licenciasUsuario?.map((license, index) => {
+                const publicId = generatePublicId(license.id);
+                const daysRemaining = calculateDaysRemaining(license.fechaExpiracion);
+                const statusColors = getStatusColor(license.estado, license.activa);
+                const statusText = getStatusText(license.estado, license.activa);
+                const isSelected = selectedLicense && selectedLicense?.licencia?.id === license.licencia.id;
 
+                return (
                   <div
+                    key={license.id}
                     onClick={() => setSelectedLicense(license)}
-                    className="flex items-center gap-4 mb-3"
+                    className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden ${
+                      isSelected
+                        ? 'border-[#F0973C] bg-gradient-to-br from-[#F0973C]/15 to-[#F0973C]/5 scale-105 shadow-lg shadow-[#F0973C]/20'
+                        : !selectedLicense && index === 0
+                          ? 'border-[#F0973C]/60 bg-gradient-to-br from-[#F0973C]/10 to-[#F0973C]/5 hover:border-[#F0973C] hover:scale-102'
+                          : 'border-white/10 bg-gradient-to-br from-white/5 to-transparent hover:border-[#F0973C]/50 hover:from-[#F0973C]/5'
+                      }`}
                   >
-                    <img
-                      src={getLicenseImage(license.licencia.nombre || "")}
-                      alt={license.licencia.nombre || "licencia"}
-                      className="w-16 h-16 object-contain"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-bold text-white">{license.licencia.nombre}</h4>
-                      <p className="text-sm text-[#69AC95]">
-                        ${license.licencia.precio.toLocaleString()} USDT
-                      </p>
-                      <p className="text-xs text-white/50 mt-1">
-                        {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100)}% diario
-                      </p>
+                    {/* Badge de destacado para la primera licencia */}
+                    {index === 0 && (
+                      <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg z-10">
+                        Principal
+                      </div>
+                    )}
+
+                    {/* Header con imagen y título */}
+                    <div className="p-4 bg-gradient-to-r from-black/20 to-transparent border-b border-white/5">
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          <img
+                            src={getLicenseImage(license.licencia.nombre || "")}
+                            alt={license.licencia.nombre || "licencia"}
+                            className="w-14 h-14 object-contain"
+                          />
+                          {license.activa && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#69AC95] rounded-full border-2 border-black animate-pulse" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-white text-lg">{license.licencia.nombre}</h4>
+                          <p className="text-sm text-[#69AC95] font-semibold">
+                            ${license.licencia.precio.toLocaleString()} USDT
+                          </p>
+                        </div>
+                        {isSelected && (
+                          <CheckCircle2 className="w-6 h-6 text-[#F0973C] animate-pulse" />
+                        )}
+                      </div>
                     </div>
-                    {/* {selectedLicense.licencia.nombre === license.licencia.nombre && (
-                    <div className="w-3 h-3 rounded-full bg-[#F0973C] animate-pulse" />
-                  )} */}
+
+                    {/* Body con información detallada */}
+                    <div className="p-4 space-y-3">
+                      {/* Estado y rendimiento */}
+                      <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                        <div className="flex items-center gap-2">
+                          <div className={`px-3 py-1 rounded-full ${statusColors.bg} border ${statusColors.border}`}>
+                            <span className={`text-xs font-bold ${statusColors.text} flex items-center gap-1`}>
+                              <Circle className="w-2 h-2 fill-current" />
+                              {statusText}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-white/50">Rendimiento</p>
+                          <p className="text-sm font-bold text-[#F0973C]">
+                            {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(1)}% diario
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* ID de licencia */}
+                      <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/30">
+                        <div className="flex items-center gap-2">
+                          <Hash className="w-4 h-4 text-white/40" />
+                          <span className="text-xs text-white/50">ID Licencia</span>
+                        </div>
+                        <span className="text-sm font-mono font-bold text-white/80">
+                          {publicId}
+                        </span>
+                      </div>
+
+                      {/* Fechas */}
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 rounded-lg bg-black/20 border border-white/5">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Calendar className="w-3 h-3 text-white/40" />
+                            <p className="text-xs text-white/50">Compra</p>
+                          </div>
+                          <p className="text-xs font-semibold text-white/80">
+                            {formatDate(license.fechaInicio)}
+                          </p>
+                        </div>
+                        <div className="p-2 rounded-lg bg-black/20 border border-white/5">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Calendar className="w-3 h-3 text-white/40" />
+                            <p className="text-xs text-white/50">Vencimiento</p>
+                          </div>
+                          <p className="text-xs font-semibold text-white/80">
+                            {formatDate(license.fechaExpiracion)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Días restantes */}
+                      {daysRemaining > 0 && (
+                        <div className={`flex items-center justify-between p-3 rounded-lg ${
+                          daysRemaining <= 7 
+                            ? 'bg-red-500/10 border border-red-500/30' 
+                            : daysRemaining <= 30 
+                              ? 'bg-yellow-500/10 border border-yellow-500/30'
+                              : 'bg-[#69AC95]/10 border border-[#69AC95]/30'
+                        }`}>
+                          <div className="flex items-center gap-2">
+                            <Clock className={`w-4 h-4 ${
+                              daysRemaining <= 7 
+                                ? 'text-red-400' 
+                                : daysRemaining <= 30 
+                                  ? 'text-yellow-400'
+                                  : 'text-[#69AC95]'
+                            }`} />
+                            <span className="text-xs text-white/70">Tiempo restante</span>
+                          </div>
+                          <span className={`text-sm font-bold ${
+                            daysRemaining <= 7 
+                              ? 'text-red-400' 
+                              : daysRemaining <= 30 
+                                ? 'text-yellow-400'
+                                : 'text-[#69AC95]'
+                          }`}>
+                            {daysRemaining} {daysRemaining === 1 ? 'día' : 'días'}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Plazo de la licencia */}
+                      {license.plazo > 0 && (
+                        <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F0973C]/5 border border-[#F0973C]/20">
+                          <span className="text-xs text-white/60">Plazo contratado</span>
+                          <span className="text-sm font-bold text-[#F0973C]">
+                            {license.plazo} {license.plazo === 1 ? 'mes' : 'meses'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer con indicador de selección */}
+                    {isSelected && (
+                      <div className="px-4 pb-3">
+                        <div className="w-full h-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] animate-pulse" />
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Panel derecho: Controles y visualización */}
