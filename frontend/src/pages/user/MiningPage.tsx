@@ -835,7 +835,7 @@ const MiningPage = () => {
                   <p className="flex items-start gap-2 text-xs text-white/60 leading-relaxed">
                     <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#F0973C]" />
                     <span>
-                      <span className="font-semibold">Nota:</span>  Las ganancias diarias de minería son recibidas automáticamente y convertidas a USDT.
+                      <span className="font-semibold">Importante:</span>  Las ganancias diarias de minería son recibidas automáticamente y convertidas a USDT.
                       Una vez finalizado tu plazo establecido podrás disponer y retirarlo a tu Wallet personal.
                     </span>
                   </p>
