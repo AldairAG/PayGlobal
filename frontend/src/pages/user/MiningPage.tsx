@@ -34,16 +34,16 @@ const generatePublicId = (internalId: number): number => {
   // Usar un algoritmo de hash simple pero efectivo
   // Combinar múltiples operaciones para crear un patrón no secuencial
   let hash = internalId;
-  
+
   // Primera mezcla: multiplicar por un primo grande y usar XOR
   hash = ((hash * 2654435761) ^ (hash >> 16)) & 0xFFFFFFFF;
-  
+
   // Segunda mezcla: rotar bits y multiplicar
   hash = ((hash << 13) | (hash >>> 19)) * 0x5bd1e995;
-  
+
   // Tercera mezcla: XOR con desplazamiento
   hash ^= hash >> 15;
-  
+
   // Asegurar que el resultado sea un número de 4 dígitos mínimo
   return Math.abs(hash % 90000) + 10000;
 };
@@ -136,7 +136,7 @@ const MiningPage = () => {
     //const rate = selectedLicense.id==usuario?.licencia.id ? INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05 : 0.0077;
     const rate = INTEREST_RATES[selectedLicense.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario || 0.05;
 
-    const rendimientoDiario = rate * principal; 
+    const rendimientoDiario = rate * principal;
 
     // Fórmula: A = P(1 + r)^t
     //const totalAmount = principal * Math.pow(1 + rate, totalDays);
@@ -381,10 +381,10 @@ const MiningPage = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2 text-[#F0973C]">
-                Minería BTC con Licencias
+                Mining crypto bitcoin
               </h2>
               <p className="text-white/70 leading-relaxed">
-                Invierte con tu licencia y observa cómo crece tu capital mediante la mineria BTC.
+                Invierte con tu licencia y observa cómo crece tu capital mediante Mining crypto bitcoin.
                 Selecciona el plazo de inversión y la licencia deseada para calcular tus ganancias diarias,
                 mensuales y anuales. Maximiza tus retornos a largo plazo.
               </p>
@@ -448,8 +448,7 @@ const MiningPage = () => {
                   <div
                     key={license.id}
                     onClick={() => setSelectedLicense(license)}
-                    className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden ${
-                      isSelected
+                    className={`group relative cursor-pointer rounded-xl border-2 transition-all duration-300 overflow-hidden ${isSelected
                         ? 'border-[#F0973C] bg-gradient-to-br from-[#F0973C]/15 to-[#F0973C]/5 scale-105 shadow-lg shadow-[#F0973C]/20'
                         : !selectedLicense && index === 0
                           ? 'border-[#F0973C]/60 bg-gradient-to-br from-[#F0973C]/10 to-[#F0973C]/5 hover:border-[#F0973C] hover:scale-102'
@@ -543,30 +542,27 @@ const MiningPage = () => {
 
                       {/* Días restantes */}
                       {daysRemaining > 0 && (
-                        <div className={`flex items-center justify-between p-3 rounded-lg ${
-                          daysRemaining <= 7 
-                            ? 'bg-red-500/10 border border-red-500/30' 
-                            : daysRemaining <= 30 
+                        <div className={`flex items-center justify-between p-3 rounded-lg ${daysRemaining <= 7
+                            ? 'bg-red-500/10 border border-red-500/30'
+                            : daysRemaining <= 30
                               ? 'bg-yellow-500/10 border border-yellow-500/30'
                               : 'bg-[#69AC95]/10 border border-[#69AC95]/30'
-                        }`}>
+                          }`}>
                           <div className="flex items-center gap-2">
-                            <Clock className={`w-4 h-4 ${
-                              daysRemaining <= 7 
-                                ? 'text-red-400' 
-                                : daysRemaining <= 30 
+                            <Clock className={`w-4 h-4 ${daysRemaining <= 7
+                                ? 'text-red-400'
+                                : daysRemaining <= 30
                                   ? 'text-yellow-400'
                                   : 'text-[#69AC95]'
-                            }`} />
+                              }`} />
                             <span className="text-xs text-white/70">Tiempo restante</span>
                           </div>
-                          <span className={`text-sm font-bold ${
-                            daysRemaining <= 7 
-                              ? 'text-red-400' 
-                              : daysRemaining <= 30 
+                          <span className={`text-sm font-bold ${daysRemaining <= 7
+                              ? 'text-red-400'
+                              : daysRemaining <= 30
                                 ? 'text-yellow-400'
                                 : 'text-[#69AC95]'
-                          }`}>
+                            }`}>
                             {daysRemaining} {daysRemaining === 1 ? 'día' : 'días'}
                           </span>
                         </div>
@@ -839,7 +835,8 @@ const MiningPage = () => {
                   <p className="flex items-start gap-2 text-xs text-white/60 leading-relaxed">
                     <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#F0973C]" />
                     <span>
-                      <span className="font-semibold">Nota:</span> Las ganancias se depositarán automáticamente en tu Wallet de Minería al finalizar el plazo seleccionado. Puedes transferirlas a tu Wallet Staking para generar intereses adicionales.
+                      <span className="font-semibold">Nota:</span>  Las ganancias diarias de minería son recibidas automáticamente y convertidas a USDT.
+                      Una vez finalizado tu plazo establecido podrás disponer y retirarlo a tu Wallet personal.
                     </span>
                   </p>
                 </div>
