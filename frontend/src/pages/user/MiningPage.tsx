@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, DollarSign, Calendar, Pickaxe, Info, ShoppingCart, X, Wallet, ArrowRightLeft, Zap, Circle, Lightbulb, CheckCircle2, Clock, Hash } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import { getLicenseImage } from '../../helpers/imgHelpers';
 import PurchaseLicenseModal from '../../components/modal/PurchaseLicenseModal';
 import { EstadoLicenciaMineria, TipoSolicitud, TipoWallets } from '../../type/enum';
@@ -75,14 +76,15 @@ const getStatusColor = (estado: EstadoLicenciaMineria, activa: boolean) => {
 };
 
 // Función para obtener el texto del estado
-const getStatusText = (estado: EstadoLicenciaMineria, activa: boolean) => {
-  if (activa) return 'Minando';
-  if (estado === EstadoLicenciaMineria.ACTIVA) return 'Activa';
-  if (estado === EstadoLicenciaMineria.INACTIVA) return 'Inactiva';
-  return 'Vencida';
+const getStatusText = (estado: EstadoLicenciaMineria, activa: boolean, t: (key: string) => string) => {
+  if (activa) return t('mining.status_mining');
+  if (estado === EstadoLicenciaMineria.ACTIVA) return t('mining.status_active');
+  if (estado === EstadoLicenciaMineria.INACTIVA) return t('mining.status_inactive');
+  return t('mining.status_expired');
 };
 
 const MiningPage = () => {
+  const { t } = useTranslation();
 
   //Hooks personalizados para manejar la lógica de minería y licencias
   const { licenciasUsuario, loadingLicenciasUsuario, errorLicenciasUsuario, obtenerLicenciasUsuario,
@@ -164,21 +166,21 @@ const MiningPage = () => {
 
   const handleIniciarMineria = async () => {
     if (!selectedLicense) {
-      toast.error('Debes seleccionar una licencia antes de iniciar la minería.');
+      toast.error(t('mining.select_license_error'));
       return;
     }
     try {
       await iniciarMineria(selectedLicense.id, selectedPeriod);
-      toast.success('Minería iniciada exitosamente!');
+      toast.success(t('mining.mining_started_success'));
       setShowActivateMiningModal(false);
     } catch {
-      toast.error(errorIniciarMineria || 'Error al iniciar la minería');
+      toast.error(errorIniciarMineria || t('mining.mining_start_error'));
     }
   };
 
   const handleOpenActivateMiningModal = () => {
     if (!selectedLicense) {
-      toast.error('Debes seleccionar una licencia antes de iniciar la minería.');
+      toast.error(t('mining.select_license_error'));
       return;
     }
     setShowActivateMiningModal(true);
@@ -279,12 +281,12 @@ const MiningPage = () => {
   const handleTransferToStaking = async () => {
     try {
       await retirarGanancias();
-      toast.success('¡Ganancias transferidas exitosamente a tu wallet de staking!');
+      toast.success(t('mining.transfer_success'));
       setShowTransferModal(false);
       // Recargar licencias para actualizar el saldo
       await obtenerLicenciasUsuario();
     } catch {
-      toast.error(errorRetirarGanancias || 'Error al transferir las ganancias');
+      toast.error(errorRetirarGanancias || t('mining.transfer_error'));
     }
   };
 
@@ -311,10 +313,10 @@ const MiningPage = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-white">
-                  Selecciona una Licencia
+                  {t('mining.select_license_modal_title')}
                 </h2>
                 <p className="text-white/60 mb-6">
-                  Primero elige una licencia existente para continuar con el proceso de compra
+                  {t('mining.select_license_modal_description')}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -333,12 +335,12 @@ const MiningPage = () => {
                         <div>
                           <h3 className="text-lg font-bold text-white">{license.name}</h3>
                           <p className="text-xs text-white/60">
-                            {(INTEREST_RATES[license.name as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100 || 0).toFixed(1)}% diario
+                            {(INTEREST_RATES[license.name as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100 || 0).toFixed(1)}% {t('mining.daily')}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/50">Precio</span>
+                        <span className="text-sm text-white/50">{t('mining.price')}</span>
                         <span className="text-lg font-bold text-[#69AC95]">
                           ${license.value.toLocaleString()} USDT
                         </span>
@@ -351,11 +353,11 @@ const MiningPage = () => {
                   onClick={() => setShowPurchaseModal(false)}
                   className="px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10"
                 >
-                  Cancelar
+                  {t('mining.cancel')}
                 </button>
 
                 <p className="mt-4 text-xs text-white/40">
-                  Al continuar, se abrirá el modal de compra para la licencia seleccionada
+                  {t('mining.modal_continue_message')}
                 </p>
               </div>
             </div>
@@ -381,12 +383,10 @@ const MiningPage = () => {
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2 text-[#F0973C]">
-                Mining Crypto Bitcoin
+                {t('mining.title')}
               </h2>
               <p className="text-white/70 leading-relaxed">
-                Invierte con tu licencia y observa cómo crece tu capital mediante Mining crypto bitcoin.
-                Selecciona el plazo de inversión y la licencia deseada para calcular tus ganancias diarias,
-                mensuales y anuales. Maximiza tus retornos a largo plazo.
+                {t('mining.description')}
               </p>
             </div>
           </div>
@@ -394,11 +394,11 @@ const MiningPage = () => {
 
         {loadingLicenciasUsuario ? (
           <div className="text-center py-10">
-            <p className="text-white/60">Cargando tus licencias...</p>
+            <p className="text-white/60">{t('mining.loading_licenses')}</p>
           </div>
         ) : errorLicenciasUsuario ? (
           <div className="text-center py-10">
-            <p className="text-white/60">Error al cargar tus licencias.</p>
+            <p className="text-white/60">{t('mining.error_loading_licenses')}</p>
           </div>
         ) : licenciasUsuario?.length === 0 ? (
           <div className="text-center py-10">
@@ -406,18 +406,18 @@ const MiningPage = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-[#F0973C]">
-                  Selecciona tu Licencia
+                  {t('mining.select_your_license')}
                 </h3>
                 <button
                   onClick={handleOpenPurchaseModal}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  Comprar Más
+                  {t('mining.buy_more')}
                 </button>
               </div>
             </div>
-            <p className="text-white/60">No tienes licencias de minería. Compra una para comenzar a minar!</p>
+            <p className="text-white/60">{t('mining.no_licenses_message')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
@@ -426,14 +426,14 @@ const MiningPage = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-[#F0973C]">
-                  Selecciona tu Licencia
+                  {t('mining.select_your_license')}
                 </h3>
                 <button
                   onClick={handleOpenPurchaseModal}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-white font-semibold text-sm shadow-lg shadow-[#F0973C]/30 hover:shadow-[#F0973C]/50 transition-all"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  Comprar Más
+                  {t('mining.buy_more')}
                 </button>
               </div>
 
@@ -441,7 +441,7 @@ const MiningPage = () => {
                 const publicId = generatePublicId(license.id);
                 const daysRemaining = calculateDaysRemaining(license.fechaExpiracion);
                 const statusColors = getStatusColor(license.estado, license.activa);
-                const statusText = getStatusText(license.estado, license.activa);
+                const statusText = getStatusText(license.estado, license.activa, t);
                 const isSelected = selectedLicense && selectedLicense?.licencia?.id === license.licencia.id;
 
                 return (
@@ -458,7 +458,7 @@ const MiningPage = () => {
                     {/* Badge de destacado para la primera licencia */}
                     {index === 0 && (
                       <div className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#F0973C] to-[#d67e2a] text-xs font-bold text-white shadow-lg z-10">
-                        Principal
+                        {t('mining.principal')}
                       </div>
                     )}
 
@@ -500,9 +500,9 @@ const MiningPage = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-white/50">Rendimiento</p>
+                          <p className="text-xs text-white/50">{t('mining.performance')}</p>
                           <p className="text-sm font-bold text-[#F0973C]">
-                            {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(1)}% diario
+                            {(INTEREST_RATES[license.licencia.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100).toFixed(1)}% {t('mining.daily')}
                           </p>
                         </div>
                       </div>
@@ -511,7 +511,7 @@ const MiningPage = () => {
                       <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-black/30">
                         <div className="flex items-center gap-2">
                           <Hash className="w-4 h-4 text-white/40" />
-                          <span className="text-xs text-white/50">ID Licencia</span>
+                          <span className="text-xs text-white/50">{t('mining.license_id')}</span>
                         </div>
                         <span className="text-sm font-mono font-bold text-white/80">
                           {publicId}
@@ -523,7 +523,7 @@ const MiningPage = () => {
                         <div className="p-2 rounded-lg bg-black/20 border border-white/5">
                           <div className="flex items-center gap-1 mb-1">
                             <Calendar className="w-3 h-3 text-white/40" />
-                            <p className="text-xs text-white/50">Compra</p>
+                            <p className="text-xs text-white/50">{t('mining.purchase')}</p>
                           </div>
                           <p className="text-xs font-semibold text-white/80">
                             {formatDate(license.fechaInicio)}
@@ -532,7 +532,7 @@ const MiningPage = () => {
                         <div className="p-2 rounded-lg bg-black/20 border border-white/5">
                           <div className="flex items-center gap-1 mb-1">
                             <Calendar className="w-3 h-3 text-white/40" />
-                            <p className="text-xs text-white/50">Vencimiento</p>
+                            <p className="text-xs text-white/50">{t('mining.expiration')}</p>
                           </div>
                           <p className="text-xs font-semibold text-white/80">
                             {license.fechaExpiracion ? formatDate(license.fechaExpiracion) : '---'}
@@ -555,7 +555,7 @@ const MiningPage = () => {
                                   ? 'text-yellow-400'
                                   : 'text-[#69AC95]'
                               }`} />
-                            <span className="text-xs text-white/70">Tiempo restante</span>
+                            <span className="text-xs text-white/70">{t('mining.time_remaining')}</span>
                           </div>
                           <span className={`text-sm font-bold ${daysRemaining <= 7
                               ? 'text-red-400'
@@ -563,7 +563,7 @@ const MiningPage = () => {
                                 ? 'text-yellow-400'
                                 : 'text-[#69AC95]'
                             }`}>
-                            {daysRemaining} {daysRemaining === 1 ? 'día' : 'días'}
+                            {daysRemaining} {daysRemaining === 1 ? t('mining.day') : t('mining.days')}
                           </span>
                         </div>
                       )}
@@ -571,9 +571,9 @@ const MiningPage = () => {
                       {/* Plazo de la licencia */}
                       {license.plazo > 0 && (
                         <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-[#F0973C]/5 border border-[#F0973C]/20">
-                          <span className="text-xs text-white/60">Plazo contratado</span>
+                          <span className="text-xs text-white/60">{t('mining.contracted_period')}</span>
                           <span className="text-sm font-bold text-[#F0973C]">
-                            {license.plazo} {license.plazo === 1 ? 'mes' : 'meses'}
+                            {license.plazo} {license.plazo === 1 ? t('mining.month') : t('mining.months')}
                           </span>
                         </div>
                       )}
@@ -598,10 +598,10 @@ const MiningPage = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                     <Calendar className="w-5 h-5 text-[#69AC95]" />
-                    Selecciona el Plazo
+                    {t('mining.select_period')}
                   </h3>
                   <span className="text-2xl font-bold text-[#F0973C]">
-                    {selectedPeriod} {selectedPeriod === 1 ? 'mes' : 'meses'}
+                    {selectedPeriod} {selectedPeriod === 1 ? t('mining.month') : t('mining.months')}
                   </span>
                 </div>
 
@@ -620,11 +620,11 @@ const MiningPage = () => {
                     }}
                   />
                   <div className="flex justify-between text-xs text-white/50 mt-2">
-                    <span>18 meses</span>
-                    <span>24 meses</span>
-                    <span>36 meses</span>
-                    <span>48 meses</span>
-                    <span>60 meses</span>
+                    <span>{t('mining.months_18')}</span>
+                    <span>{t('mining.months_24')}</span>
+                    <span>{t('mining.months_36')}</span>
+                    <span>{t('mining.months_48')}</span>
+                    <span>{t('mining.months_60')}</span>
                   </div>
                 </div>
               </div>
@@ -635,7 +635,7 @@ const MiningPage = () => {
                   <div className="flex justify-center mb-2">
                     <TrendingUp className="w-6 h-6 text-[#69AC95]" />
                   </div>
-                  <p className="text-sm text-white/60 mb-1">Ganancia Diaria</p>
+                  <p className="text-sm text-white/60 mb-1">{t('mining.daily_profit')}</p>
                   <p className="text-2xl font-bold text-[#69AC95]">
                     ${calculations.dailyProfit}
                   </p>
@@ -645,7 +645,7 @@ const MiningPage = () => {
                   <div className="flex justify-center mb-2">
                     <Calendar className="w-6 h-6 text-[#F0973C]" />
                   </div>
-                  <p className="text-sm text-white/60 mb-1">Ganancia Mensual</p>
+                  <p className="text-sm text-white/60 mb-1">{t('mining.monthly_profit')}</p>
                   <p className="text-2xl font-bold text-[#F0973C]">
                     ${calculations.monthlyProfit}
                   </p>
@@ -655,7 +655,7 @@ const MiningPage = () => {
                   <div className="flex justify-center mb-2">
                     <DollarSign className="w-6 h-6 text-[#69AC95]" />
                   </div>
-                  <p className="text-sm text-white/60 mb-1">Ganancia Anual</p>
+                  <p className="text-sm text-white/60 mb-1">{t('mining.annual_profit')}</p>
                   <p className="text-2xl font-bold text-[#69AC95]">
                     ${calculations.annualProfit}
                   </p>
@@ -666,9 +666,9 @@ const MiningPage = () => {
               <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-linear-to-br from-[#F0973C]/5 to-[#69AC95]/5">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    Progreso de Minería
+                    {t('mining.mining_progress')}
                     <span className="text-xs text-[#69AC95] animate-pulse">
-                      ● En vivo
+                      ● {t('mining.live')}
                     </span>
                   </h3>
                   <div className="text-right">
@@ -691,12 +691,12 @@ const MiningPage = () => {
                     {selectedLicense.activa ? (
                       <>
                         <Zap className="w-5 h-5" />
-                        MINERÍA ACTIVA
+                        {t('mining.mining_active').toUpperCase()}
                       </>
                     ) : (
                       <>
                         <Pickaxe className="w-5 h-5" />
-                        ACTIVAR MINERÍA
+                        {t('mining.activate_mining').toUpperCase()}
                       </>
                     )}
                   </button>
@@ -741,23 +741,23 @@ const MiningPage = () => {
                 {/* Estado de minería */}
                 <div className="mt-4 p-3 rounded-lg bg-black/30 border border-white/5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-white/50">Estado:</span>
+                    <span className="text-xs text-white/50">{t('mining.status')}:</span>
                     <span className={`flex items-center gap-2 text-sm font-bold ${selectedLicense.activa ? 'text-[#69AC95]' : 'text-[#F0973C]'}`}>
                       {selectedLicense.activa ? (
                         <>
                           <Circle className="w-3 h-3 fill-[#69AC95]" />
-                          Minería Activa
+                          {t('mining.mining_active')}
                         </>
                       ) : (
                         <>
                           <Circle className="w-3 h-3 fill-[#F0973C]" />
-                          Inactiva
+                          {t('mining.status_inactive')}
                         </>
                       )}
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-xs text-white/50">Ganancia/segundo:</span>
+                    <span className="text-xs text-white/50">{t('mining.profit_per_second')}:</span>
                     <span className="text-sm font-bold text-[#69AC95]">
                       ${calculations.profitPerSecond.toFixed(8)} USDT
                     </span>
@@ -767,13 +767,13 @@ const MiningPage = () => {
                 {/* Detalles adicionales */}
                 <div className="mt-6 grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                    <p className="text-xs text-white/50 mb-1">Inversión Inicial</p>
+                    <p className="text-xs text-white/50 mb-1">{t('mining.initial_investment')}</p>
                     <p className="text-xl font-bold text-white">
                       ${selectedLicense?.licencia?.precio.toLocaleString()}
                     </p>
                   </div>
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                    <p className="text-xs text-white/50 mb-1">Retorno Total</p>
+                    <p className="text-xs text-white/50 mb-1">{t('mining.total_return')}</p>
                     <p className="text-xl font-bold text-[#69AC95]">
                       ${calculations.totalAmount}
                     </p>
@@ -789,8 +789,8 @@ const MiningPage = () => {
                       <Wallet className="w-6 h-6 text-[#69AC95]" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">Wallet de Minería</h3>
-                      <p className="text-sm text-white/50">Ganancias acumuladas de minería</p>
+                      <h3 className="text-xl font-semibold text-white">{t('mining.mining_wallet')}</h3>
+                      <p className="text-sm text-white/50">{t('mining.accumulated_mining_profits')}</p>
                     </div>
                   </div>
                   <button
@@ -802,13 +802,13 @@ const MiningPage = () => {
                       }`}
                   >
                     <ArrowRightLeft className="w-5 h-5" />
-                    Transferir a Staking
+                    {t('mining.transfer_to_staking')}
                   </button>
                 </div>
 
                 {/* Balance de la wallet */}
                 <div className="p-8 rounded-xl bg-gradient-to-br from-[#69AC95]/20 to-[#F0973C]/20 border border-[#69AC95]/30 text-center">
-                  <p className="text-sm text-white/60 mb-2">Balance Disponible</p>
+                  <p className="text-sm text-white/60 mb-2">{t('mining.available_balance')}</p>
                   <p className="text-5xl font-bold text-[#69AC95] mb-1">
                     ${usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo.toLocaleString() || "0.00"}
                   </p>
@@ -818,13 +818,13 @@ const MiningPage = () => {
                 {/* Información adicional */}
                 <div className="mt-6 grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                    <p className="text-xs text-white/50 mb-1">Ganancias Actuales</p>
+                    <p className="text-xs text-white/50 mb-1">{t('mining.current_profits')}</p>
                     <p className="text-xl font-bold text-[#F0973C]">
                       ${usuario?.wallets?.find(wallet => wallet.tipo === TipoWallets.WALLET_MINERIA)?.saldo.toLocaleString() || "0.00"}
                     </p>
                   </div>
                   <div className="p-4 rounded-xl bg-black/30 border border-white/5">
-                    <p className="text-xs text-white/50 mb-1">Total Esperado</p>
+                    <p className="text-xs text-white/50 mb-1">{t('mining.expected_total')}</p>
                     <p className="text-xl font-bold text-[#69AC95]">
                       ${calculations.totalProfit}
                     </p>
@@ -835,8 +835,7 @@ const MiningPage = () => {
                   <p className="flex items-start gap-2 text-xs text-white/60 leading-relaxed">
                     <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#F0973C]" />
                     <span>
-                      <span className="font-semibold">Importante:</span>  Las ganancias diarias de minería son recibidas automáticamente y convertidas a USDT.
-                      Una vez finalizado tu plazo establecido podrás disponer y retirarlo a tu Wallet personal.
+                      <span className="font-semibold">{t('mining.important')}:</span> {t('mining.important_message')}
                     </span>
                   </p>
                 </div>
@@ -868,41 +867,41 @@ const MiningPage = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-white">
-                  Confirmar Activación de Minería
+                  {t('mining.confirm_mining_activation')}
                 </h2>
                 <p className="text-white/60 mb-6">
-                  ¿Estás seguro de que deseas activar la minería con esta licencia?
+                  {t('mining.confirm_mining_activation_message')}
                 </p>
 
                 {/* Detalles de la licencia */}
                 <div className="p-4 rounded-xl bg-[#F0973C]/5 border border-[#F0973C]/20 mb-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Licencia</span>
+                    <span className="text-sm text-white/70">{t('mining.license')}</span>
                     <span className="text-base font-bold text-white">
                       {selectedLicense?.licencia?.nombre}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Inversión</span>
+                    <span className="text-sm text-white/70">{t('mining.investment')}</span>
                     <span className="text-base font-bold text-[#69AC95]">
                       ${selectedLicense?.licencia?.precio.toLocaleString()} USDT
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Plazo</span>
+                    <span className="text-sm text-white/70">{t('mining.period')}</span>
                     <span className="text-base font-bold text-[#F0973C]">
-                      {selectedPeriod} {selectedPeriod === 1 ? 'mes' : 'meses'}
+                      {selectedPeriod} {selectedPeriod === 1 ? t('mining.month') : t('mining.months')}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Rendimiento diario</span>
+                    <span className="text-sm text-white/70">{t('mining.daily_yield')}</span>
                     <span className="text-base font-bold text-[#F0973C]">
                       {(INTEREST_RATES[selectedLicense?.licencia?.nombre as keyof typeof INTEREST_RATES]?.rendimientoDiario * 100 || 0).toFixed(1)}%
                     </span>
                   </div>
                   <div className="h-px bg-white/10 my-2" />
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/70">Ganancia estimada</span>
+                    <span className="text-sm text-white/70">{t('mining.estimated_profit')}</span>
                     <span className="text-lg font-bold text-[#69AC95]">
                       ${calculations.totalProfit} USDT
                     </span>
@@ -915,7 +914,7 @@ const MiningPage = () => {
                     disabled={loadingIniciarMineria}
                     className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Cancelar
+                    {t('mining.cancel')}
                   </button>
                   <button
                     onClick={handleIniciarMineria}
@@ -925,19 +924,19 @@ const MiningPage = () => {
                     {loadingIniciarMineria ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Activando...
+                        {t('mining.activating')}
                       </>
                     ) : (
                       <>
                         <Pickaxe className="w-4 h-4" />
-                        Confirmar Activación
+                        {t('mining.confirm_activation')}
                       </>
                     )}
                   </button>
                 </div>
 
                 <p className="mt-4 text-xs text-white/40">
-                  La minería comenzará inmediatamente y las ganancias se calcularán en tiempo real
+                  {t('mining.mining_start_message')}
                 </p>
               </div>
             </div>
@@ -963,15 +962,15 @@ const MiningPage = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2 text-white">
-                  Confirmar Transferencia
+                  {t('mining.confirm_transfer')}
                 </h2>
                 <p className="text-white/60 mb-6">
-                  Todas tus ganancias de minería serán transferidas a tu wallet de staking
+                  {t('mining.confirm_transfer_message')}
                 </p>
 
                 <div className="p-4 rounded-xl bg-[#69AC95]/5 border border-[#69AC95]/20 mb-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/70">Saldo a Transferir</span>
+                    <span className="text-white/70">{t('mining.balance_to_transfer')}</span>
                     <span className="text-2xl font-bold text-[#69AC95]">
                       ${usuario?.wallets.find(wallet => wallet.tipo === "WALLET_MINERIA")?.saldo || '0.00'} USDT
                     </span>
@@ -984,7 +983,7 @@ const MiningPage = () => {
                     disabled={loadingRetirarGanancias}
                     className="flex-1 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-semibold transition-all border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Cancelar
+                    {t('mining.cancel')}
                   </button>
                   <button
                     onClick={handleTransferToStaking}
@@ -994,16 +993,16 @@ const MiningPage = () => {
                     {loadingRetirarGanancias ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Procesando...
+                        {t('mining.processing')}
                       </>
                     ) : (
-                      'Confirmar Transferencia'
+                      t('mining.confirm_transfer')
                     )}
                   </button>
                 </div>
 
                 <p className="mt-4 text-xs text-white/40">
-                  La transferencia se realizará de manera inmediata y el saldo aparecerá en tu wallet de staking
+                  {t('mining.transfer_completion_message')}
                 </p>
               </div>
             </div>
