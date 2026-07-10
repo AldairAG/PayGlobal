@@ -37,7 +37,7 @@ const Menu = ({ onClose }: MenuProps) => {
         { name: t("sidebar.withdrawal"), icon: <PiWalletDuotone size={22} />, route: ROUTES.USER.RETIRO, requiresLicense: true },
         /* { name: t("sidebar.internal_transfers"), icon: <PiArrowsLeftRightDuotone size={22} />, route: ROUTES.USER.TRANSFERENCIA_INTERNA, requiresLicense: true }, */
         { name: t("sidebar.news"), icon: <PiBellRingingDuotone size={22} />, route: ROUTES.USER.NEWS_REPORTS, requiresLicense: true },
-        { name: "BTC mining loading...", icon: <PiCurrencyBtcDuotone size={22} />, route: "#", requiresLicense: true, disabled: true },
+        { name: "Mining Crypto Bitcoin", icon: <PiCurrencyBtcDuotone size={22} />, route: "#", requiresLicense: true, disabled: false },
         { name: t("sidebar.user_network"), icon: <PiUsersThreeDuotone size={22} />, route: ROUTES.USER.RED_USUARIOS, requiresLicense: true },
         { name: t("sidebar.support"), icon: <PiHeadsetDuotone size={22} />, route: ROUTES.USER.SOPORTE, requiresLicense: true },
 
