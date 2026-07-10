@@ -662,7 +662,16 @@
         "months_24": "24 months",
         "months_36": "36 months",
         "months_48": "48 months",
-        "months_60": "60 months"
+        "months_60": "60 months",
+        "time_remaining": "Time remaining",
+        "status": "Status",
+        "accumulated_mining_profits": "Accumulated mining profits",
+        "current_profits": "Current Profits",
+        "confirm_mining_activation": "Confirm Mining Activation",
+        "confirm_mining_activation_message": "Are you sure you want to activate mining with this license?",
+        "daily_yield": "Daily yield",
+        "confirm_transfer_message": "All your mining earnings will be transferred to your staking wallet",
+        "transfer_completion_message": "The transfer will be made immediately and the balance will appear in your staking wallet"
     }
 
 }

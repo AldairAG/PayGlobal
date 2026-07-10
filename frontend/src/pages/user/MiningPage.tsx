@@ -187,15 +187,21 @@ const MiningPage = () => {
   };
 
   // Reiniciar cuando cambien los parámetros
-  useEffect(() => {
-    setSelectedLicense(prev => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        gananciaActual: 0
-      };
-    });
-  }, [selectedLicense?.id, selectedPeriod]);
+useEffect(() => {
+  setSelectedLicense(prev => {
+    if (!prev) return prev;
+
+    // Si ya tiene una ganancia mayor a 0, no modificar nada
+    if (prev.gananciaActual > 0) {
+      return prev;
+    }
+
+    return {
+      ...prev,
+      gananciaActual: 0,
+    };
+  });
+}, [selectedLicense?.id, selectedPeriod]);
 
   // Animación de ganancias incrementales - cada segundo en tiempo real
   useEffect(() => {

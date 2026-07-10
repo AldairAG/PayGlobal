@@ -656,7 +656,16 @@
         "months_24": "24 شهرًا",
         "months_36": "36 شهرًا",
         "months_48": "48 شهرًا",
-        "months_60": "60 شهرًا"
+        "months_60": "60 شهرًا",
+        "time_remaining": "الوقت المتبقي",
+        "status": "الحالة",
+        "accumulated_mining_profits": "الأرباح المتراكمة من التعدين",
+        "current_profits": "الأرباح الحالية",
+        "confirm_mining_activation": "تأكيد تفعيل التعدين",
+        "confirm_mining_activation_message": "هل أنت متأكد من أنك تريد تفعيل التعدين بهذه الرخصة؟",
+        "daily_yield": "العائد اليومي",
+        "confirm_transfer_message": "سيتم تحويل جميع أرباح التعدين الخاصة بك إلى محفظة الستاكينغ الخاصة بك",
+        "transfer_completion_message": "سيتم التحويل على الفور وسيظهر الرصيد في محفظة الستاكينغ الخاصة بك"
     }
 
 }

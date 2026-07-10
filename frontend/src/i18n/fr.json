@@ -656,7 +656,16 @@
         "months_24": "24 mois",
         "months_36": "36 mois",
         "months_48": "48 mois",
-        "months_60": "60 mois"
+        "months_60": "60 mois",
+        "time_remaining": "Temps restant",
+        "status": "Statut",
+        "accumulated_mining_profits": "Gains accumulés du minage",
+        "current_profits": "Gains Actuels",
+        "confirm_mining_activation": "Confirmer l'Activation du Minage",
+        "confirm_mining_activation_message": "Êtes-vous sûr de vouloir activer le minage avec cette licence?",
+        "daily_yield": "Rendement quotidien",
+        "confirm_transfer_message": "Tous vos gains de minage seront transférés vers votre portefeuille de staking",
+        "transfer_completion_message": "Le transfert sera effectué immédiatement et le solde apparaîtra dans votre portefeuille de staking"
     }
 
 }

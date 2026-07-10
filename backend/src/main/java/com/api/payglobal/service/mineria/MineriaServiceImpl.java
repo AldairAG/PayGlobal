@@ -71,7 +71,7 @@ public class MineriaServiceImpl implements MineriaService {
         mineriaLicencia.setTasaMineria(null);
         mineriaLicencia.setFechaInicio(null);
         mineriaLicencia.setGananciaActual(BigDecimal.ZERO);
-
+        System.out.println("Licencia ID: " + mineriaLicencia.getId() + " detenida. Ganancia transferida a la wallet de minería del usuario.");
         mineriaRepository.save(mineriaLicencia);
     }
 
@@ -87,6 +87,7 @@ public class MineriaServiceImpl implements MineriaService {
             double rDiaria = licencia.getTasaMineria().doubleValue() * licencia.getLicencia().getPrecio(); // Tasa diaria aproximada
             licencia.setGananciaActual(licencia.getGananciaActual().add(new BigDecimal(rDiaria)));
             mineriaRepository.save(licencia);
+            System.out.println("Licencia ID: " + licencia.getId() + ", Ganancia Actual: " + licencia.getGananciaActual());
         }
     }
 
