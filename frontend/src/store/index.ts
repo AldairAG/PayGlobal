@@ -5,6 +5,7 @@ import walletAddressReducer from './slice/walletAddressSlice';
 import transaccionesReducer from './slice/transaccionesSlice';
 import soporteReducer from './slice/soporteSlice';
 import kycReducer from './slice/kycSlice';
+import mineriaReducer from './slice/mineriaSlice';
 import { apiBase } from '../service/apiBase';
 
 export const store = configureStore({
@@ -15,6 +16,7 @@ export const store = configureStore({
         transacciones: transaccionesReducer,
         soporte: soporteReducer,
         kyc: kycReducer,
+        mineria: mineriaReducer,
     },
 }); 
 // Inicializar el token de apiBase desde sessionStorage al cargar la aplicación

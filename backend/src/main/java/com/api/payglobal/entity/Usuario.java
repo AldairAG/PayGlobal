@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.api.payglobal.entity.enums.RolesUsuario;
 import com.api.payglobal.entity.enums.TipoRango;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -72,36 +73,40 @@ public class Usuario implements UserDetails{
     private String referenciado;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-bonos")
     private List<Bono> bonos;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-transacciones")
     private List<Transaccion> transacciones;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-wallets")
     private List<Wallet> wallets;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-licencia")
     private Licencia licencia;
     
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-tickets")
     private List<TiketSoporte> tiketsSoporte;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-wallet-addresses")
     private List<WalletAddress> walletAddresses;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-solicitudes")
     private List<Solicitud> solicitudes;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("usuario-kyc-files")
     private List<KycFile> kycFiles;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<LicenciaMineria> licenciasMineria;
 
 
     public void addSolicitud(Solicitud solicitud) {

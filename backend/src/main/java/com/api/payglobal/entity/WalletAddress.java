@@ -34,6 +34,6 @@ public class WalletAddress {
     private String nombre;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("usuario-wallet-addresses")
     private Usuario usuario;
 }

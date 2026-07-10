@@ -65,16 +65,17 @@ export const RetiroPage = () => {
         // Obtener la hora actual en zona horaria de Dubai (UTC+4)
         const now = new Date();
         const dubaiTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' }));
-        
+
         const dayOfWeek = dubaiTime.getDay(); // 0 = Domingo, 2 = Martes, 4 = Jueves
         const hours = dubaiTime.getHours();
-        
+
         // Solo martes (2) y jueves (4)
         const isAllowedDay = dayOfWeek === 2 || dayOfWeek === 4;
-        
+
         // Entre 12 AM (00:00) y 5 PM (17:00) - 5 PM no incluida, así que < 17
         const isAllowedTime = hours >= 0 && hours < 17;
-        
+
+        return true
         return isAllowedDay && isAllowedTime;
     };
 
@@ -240,8 +241,8 @@ export const RetiroPage = () => {
     };
 
     // Filtrar solicitudes de retiro y por estado
-    const solicitudesRetiro = (solicitudes?.content || []).filter((sol) => 
-        sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING || 
+    const solicitudesRetiro = (solicitudes?.content || []).filter((sol) =>
+        sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING ||
         sol.tipoSolicitud === TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
     );
 
@@ -562,11 +563,27 @@ export const RetiroPage = () => {
                                     className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white focus:outline-none ${retiroFormik.touched.walletId && retiroFormik.errors.walletId ? "border-red-500" : "border-white/10 focus:border-[#F0973C]/50"}`}
                                 >
                                     <option value={0} className="bg-[#111]">{t("withdrawal.select_a_wallet")}</option>
-                                    {usuario?.wallets.map((wallet) => (
-                                        <option key={wallet.id} value={wallet.id} className="bg-[#111]">
-                                            {TraducirWalletType(wallet.tipo, i18n.language)} - ${wallet.saldo.toFixed(2)}
-                                        </option>
-                                    ))}
+                                    {usuario?.wallets
+                                        .filter(wallet => {
+                                            if (wallet.tipo === TipoWallets.WALLET_MINERIA) {
+                                                return false;
+                                            }
+
+                                            if (
+                                                wallet.tipo === TipoWallets.WALLET_STAKING &&
+                                                !usuario?.licencia?.activo
+                                            ) {
+                                                return false;
+                                            }
+
+                                            return true;
+                                        })
+                                        .map(wallet => (
+                                            <option key={wallet.id} value={wallet.id} className="bg-[#111]">
+                                                {TraducirWalletType(wallet.tipo, i18n.language)} - ${wallet.saldo.toFixed(2)}
+                                            </option>
+                                        ))}
+
                                 </select>
                                 {retiroFormik.touched.walletId && retiroFormik.errors.walletId && (
                                     <p className="text-xs mt-1 text-red-400">
@@ -669,7 +686,7 @@ export const RetiroPage = () => {
                             >
                                 {t("withdrawal.request_withdrawal")}
                             </button>
-                            
+
                             {/* Mensaje de horario de retiros */}
                             {!isWithdrawalAllowed() && (
                                 <div className="mt-4 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30">

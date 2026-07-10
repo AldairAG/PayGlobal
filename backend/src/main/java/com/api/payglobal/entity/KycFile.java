@@ -43,6 +43,6 @@ public class KycFile {
     private String comentarioRechazo;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference("usuario-kyc-files")
     private Usuario usuario;
 }

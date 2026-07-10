@@ -28,6 +28,7 @@ import GestionSoportePage from './pages/admin/GestionSoportePage'
 import RecuperarPassword from './pages/user/RecuperarPassword'
 import NovedadesPage from './pages/user/NovedadesPage'
 import NewsReports from './pages/user/NewReports'
+import MiningPage from './pages/user/MiningPage'
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
               <Route path={ROUTES.USER.RED_USUARIOS} element={<RedUsuarioPage />} />
               <Route path={ROUTES.USER.TOOLS} element={<NovedadesPage />} />
               <Route path={ROUTES.USER.NEWS_REPORTS} element={<NewsReports />} />
+              <Route path={ROUTES.USER.MINING} element={<MiningPage />} />
 
             </Route>
 

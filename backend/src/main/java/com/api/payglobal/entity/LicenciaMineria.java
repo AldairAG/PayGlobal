@@ -1,9 +1,10 @@
 package com.api.payglobal.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import com.api.payglobal.entity.enums.TipoBono;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,33 +12,43 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "bonos")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Bono {
-
+public class LicenciaMineria {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    private boolean activa;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaExpiracion;
 
     @Enumerated(EnumType.STRING)
-    private TipoBono nombre;
-    private BigDecimal acumulado;
+    private EstadoLicenciaMineria estado;
+
+    private BigDecimal gananciaActual;
+
+    @OneToOne
+    @JsonManagedReference("licencia-mineria")
+    private Licencia licencia;
+
+    private Double tasaMineria;
+
+    private Integer plazo; 
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    @JsonBackReference("usuario-bonos")
     private Usuario usuario;
-
 }
+
+

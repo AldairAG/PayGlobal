@@ -45,12 +45,12 @@ public class TiketSoporte {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", unique = false)
-    @JsonBackReference
+    @JsonBackReference("usuario-tickets")
     @JsonIgnore
     private Usuario usuario;
 
     @OneToMany(mappedBy = "tiketSoporte", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("ticket-respuestas")
     private List<RespuestaTikect> respuestaTikect;
 
     
