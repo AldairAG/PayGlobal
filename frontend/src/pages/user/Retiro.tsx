@@ -75,7 +75,6 @@ export const RetiroPage = () => {
         // Entre 12 AM (00:00) y 5 PM (17:00) - 5 PM no incluida, así que < 17
         const isAllowedTime = hours >= 0 && hours < 17;
 
-        return true
         return isAllowedDay && isAllowedTime;
     };
 
