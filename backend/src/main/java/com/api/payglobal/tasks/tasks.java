@@ -15,8 +15,8 @@ public class tasks {
     @Autowired
     private MineriaService mineriaService;
 
-    @Scheduled(cron = "0 0 0 * * MON-FRI")
-    //@Scheduled(fixedRate = 60000)
+    //@Scheduled(cron = "0 0 0 * * MON-FRI")
+    @Scheduled(fixedRate = 60000)
     public void ingresoPasivoTask() {
         try {
             bonoService.ingresoPasivo();

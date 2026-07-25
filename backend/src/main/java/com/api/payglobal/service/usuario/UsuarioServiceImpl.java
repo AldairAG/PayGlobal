@@ -206,7 +206,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .precio(TipoLicencia.P0.getValor())
                 .limite(TipoLicencia.P0.getValor() * 2)
                 .activo(false)
-                .saldoAcumulado(0)
+                .saldoAcumulado(BigDecimal.ZERO)
                 .usuario(usuario)
                 .build();
 
@@ -339,7 +339,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
 
-        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado()) {
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
             precioTotal = precioTotal.subtract(
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
@@ -651,7 +651,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .precio(precioTotal.intValue())
                 .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
                 .activo(true)
-                .saldoAcumulado(0)
+                .saldoAcumulado(BigDecimal.ZERO)
                 .build();   
         
         licencia = licenciaRepository.save(licencia);

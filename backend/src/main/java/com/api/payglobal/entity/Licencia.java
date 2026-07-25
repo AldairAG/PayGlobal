@@ -1,5 +1,6 @@
 package com.api.payglobal.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -32,7 +33,7 @@ public class Licencia {
     private Integer limite;
     private Boolean activo;
     private LocalDate fechaCompra;
-    private Integer saldoAcumulado;
+    private BigDecimal saldoAcumulado;
 
     @OneToOne(mappedBy = "licencia")
     @JsonBackReference("licencia-mineria")

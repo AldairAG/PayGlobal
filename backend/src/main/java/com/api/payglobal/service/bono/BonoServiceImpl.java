@@ -54,16 +54,17 @@ public class BonoServiceImpl implements BonoService {
 
     @Override
     @Transactional
-    public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido, Double precioLicenciaAnterior) throws Exception {
+    public void bonoInscripcion(TipoLicencia tipoLicencia, String usernameReferido, Double precioLicenciaAnterior)
+            throws Exception {
 
         List<UsuarioEnRedResponse> redInversa = uninivelHelper.obtenerRedDeUsuariosInversaRecursiva(usernameReferido, 0,
                 1);
 
         for (UsuarioEnRedResponse usuarioEnRed : redInversa) {
             if (usuarioEnRed.getNivel() == 1) {
-                Double diferencia = (precioLicenciaAnterior == null || precioLicenciaAnterior <= 0) 
-                    ? tipoLicencia.getValor() 
-                    : tipoLicencia.getValor() - precioLicenciaAnterior;
+                Double diferencia = (precioLicenciaAnterior == null || precioLicenciaAnterior <= 0)
+                        ? tipoLicencia.getValor()
+                        : tipoLicencia.getValor() - precioLicenciaAnterior;
                 Double bono = Math.abs(diferencia) * BONO_INSCRIPCION_NIVEL_1;
 
                 // Validar que el usuario tenga licencia activa y no haya superado el límite
@@ -83,7 +84,7 @@ public class BonoServiceImpl implements BonoService {
                     Bono nuevoBono = crearOActualizarBono(usuarioEnRed.getUsername(), TipoBono.BONO_INSCRIPCION,
                             bono);
                     bonoRepository.save(nuevoBono);
-                    
+
                     String descripcion = "Bono de inscripción por registro directo de usuario: " + usernameReferido;
 
                     aumentarSaldoAcumuladoLicencia(usuarioEnRed.getUsername(), bono);
@@ -134,40 +135,40 @@ public class BonoServiceImpl implements BonoService {
         Usuario usuario = usuarioRepository.findByUsername(usernameReferido)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con username: " + usernameReferido));
 
-        //Obtener el volumen de la red del usuario
+        // Obtener el volumen de la red del usuario
 
         Integer volumenRed = obtenerVolumenRed(usernameReferido);
 
-        //Obtener el rango actual del usuario
+        // Obtener el rango actual del usuario
 
         TipoRango rangoActual = usuario.getRango();
 
-        //Determinar el nuevo rango del usuario
+        // Determinar el nuevo rango del usuario
 
-        if(volumenRed > rangoActual.getCapitalNecesario()){
+        if (volumenRed > rangoActual.getCapitalNecesario()) {
             TipoRango nuevoRango = determinarRangoPorVolumen(volumenRed);
-            
+
             // Validar requisitos para calificar al nuevo rango
-            if(nuevoRango.getNumero() > rangoActual.getNumero()) {
+            if (nuevoRango.getNumero() > rangoActual.getNumero()) {
                 // Validación 1: Al menos 5 referidos directos con licencia activa
-                if(!validarRequerimientoReferidosDirectos(usernameReferido)) {
+                if (!validarRequerimientoReferidosDirectos(usernameReferido)) {
                     return; // No cumple con el requisito de referidos directos
                 }
-                
+
                 // Validación 2: Al menos 2 usuarios del rango anterior al nuevo rango
-                if(!validarRequerimientoRangoAnterior(usernameReferido, nuevoRango)) {
+                if (!validarRequerimientoRangoAnterior(usernameReferido, nuevoRango)) {
                     return; // No cumple con el requisito de usuarios en rango anterior
                 }
-                
+
                 // Si pasa todas las validaciones, asignar el nuevo rango
                 usuario.setRango(nuevoRango);
             }
         }
 
-        //Calcular el bono por rango
+        // Calcular el bono por rango
 
-        if(usuario.getRango().getNumero() > rangoActual.getNumero()) {
-            Double bono = usuario.getRango().getBono(); 
+        if (usuario.getRango().getNumero() > rangoActual.getNumero()) {
+            Double bono = usuario.getRango().getBono();
             Wallet wallet = walletRepository.findByUsuario_Username(usernameReferido).stream()
                     .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
                     .findFirst()
@@ -181,11 +182,9 @@ public class BonoServiceImpl implements BonoService {
                     null, null);
         }
 
-        //Guardar cambios
+        // Guardar cambios
         usuarioRepository.save(usuario);
     }
-
- 
 
     @Override
     @Transactional
@@ -193,23 +192,23 @@ public class BonoServiceImpl implements BonoService {
         // Procesa el ingreso pasivo para todas las licencias activas
         licenciaRepository.findByActivoTrue().forEach(licencia -> {
             try {
-                // Obtiene la wallet de comisiones del usuario asociado a la licencia
+                // Obtiene la wallet de staking del usuario asociado a la licencia
                 Wallet wallet = walletRepository.findByUsuario_Username(licencia.getUsuario().getUsername()).stream()
                         .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
                         .findFirst()
-                        .orElseThrow(() -> new Exception("Wallet de comisiones no encontrada para el usuario: "
+                        .orElseThrow(() -> new Exception("Wallet de staking no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
 
                 // Calcula el ingreso pasivo como el 0.77% del precio de la licencia
                 Double ingresoPasivo = licencia.getPrecio() * 0.0077; // 0.77% de ingreso pasivo diario
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
-
                 // Actualiza el saldo acumulado en la licencia
-                aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
+                BigDecimal NuevoSaldoActual = aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
 
                 // Verifica si se alcanzó el límite de la licencia
-                if (nuevoSaldo.compareTo(BigDecimal.valueOf(licencia.getLimite())) >= 0) {
+                if (NuevoSaldoActual
+                        .compareTo(BigDecimal.valueOf(licencia.getLimite())) >= 0) {
                     // Desactiva la licencia al alcanzar el límite
                     licencia.setActivo(false);
                     BigDecimal diferencia = nuevoSaldo.subtract(BigDecimal.valueOf(licencia.getPrecio()));
@@ -236,7 +235,8 @@ public class BonoServiceImpl implements BonoService {
                 // Calcula y distribuye el bono uninivel basado en el rango del usuario
                 bonoUninivel(nuevaLicencia.getUsuario().getUsername(), ingresoPasivo,
                         nuevaLicencia.getUsuario().getRango());
-                System.out.println("Ingreso pasivo procesado para la licencia con ID: " + licencia.getId() + ", Usuario: " + nuevaLicencia.getUsuario().getUsername() + ", Monto: " + ingresoPasivo);
+                System.out.println("Ingreso pasivo procesado para la licencia con ID: " + licencia.getId()
+                        + ", Usuario: " + nuevaLicencia.getUsuario().getUsername() + ", Monto: " + ingresoPasivo);
             } catch (Exception e) {
                 System.out.println("Error procesando ingreso pasivo para la licencia con ID: " + licencia.getId());
                 e.printStackTrace();
@@ -247,7 +247,7 @@ public class BonoServiceImpl implements BonoService {
     @Override
     @Transactional
     public void bonoUninivel(String usernameReferido, Double monto, TipoRango tipoRango) throws Exception {
-        if(tipoRango == null || tipoRango.getNumero() <= 0) {
+        if (tipoRango == null || tipoRango.getNumero() <= 0) {
             return;
         }
 
@@ -358,21 +358,31 @@ public class BonoServiceImpl implements BonoService {
         return bono;
     }
 
-    private void aumentarSaldoAcumuladoLicencia(String username, Double monto) {
-        usuarioRepository.findByUsername(username).ifPresent(usuario -> {
-            if (usuario.getLicencia() != null) {
-                Integer saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
-                        ? usuario.getLicencia().getSaldoAcumulado()
-                        : 0;
-                usuario.getLicencia().setSaldoAcumulado(saldoActual + monto.intValue());
-                licenciaRepository.save(usuario.getLicencia());
-            }
-        });
+    private BigDecimal aumentarSaldoAcumuladoLicencia(String username, Double monto) {
+        Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+        if (usuario == null) {
+            throw new RuntimeException("Usuario no encontrado con username: " + username);
+        }
+
+        if (usuario.getLicencia() != null) {
+            BigDecimal saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
+                    ? usuario.getLicencia().getSaldoAcumulado()
+                    : BigDecimal.ZERO;
+            usuario.getLicencia().setSaldoAcumulado(saldoActual.add(BigDecimal.valueOf(monto)));
+            licenciaRepository.save(usuario.getLicencia());
+            return saldoActual.add(BigDecimal.valueOf(monto));
+        }
+        throw new RuntimeException("Usuario no tiene licencia activa con username: " + username);
     }
 
     /**
-     * Este metodo valida si el ususario puede recibir el bono, es decir, si tiene una licencia activa o no, y si el bono que se le va a asignar no supera el limite de la licencia
-     * si el bono supera el limite de la licencia, se asigna el bono hasta el limite y se desactiva la licencia, si el bono no supera el limite, se asigna el bono normalmente
+     * Este metodo valida si el ususario puede recibir el bono, es decir, si tiene
+     * una licencia activa o no, y si el bono que se le va a asignar no supera el
+     * limite de la licencia
+     * si el bono supera el limite de la licencia, se asigna el bono hasta el limite
+     * y se desactiva la licencia, si el bono no supera el limite, se asigna el bono
+     * normalmente
+     * 
      * @param username el username del usuario a validar
      * @return true si el usuario puede recibir el bono, false en caso contrario
      */
@@ -384,12 +394,12 @@ public class BonoServiceImpl implements BonoService {
             return false;
         }
 
-        Integer saldoAcumulado = usuario.getLicencia().getSaldoAcumulado() != null
+        BigDecimal saldoAcumulado = usuario.getLicencia().getSaldoAcumulado() != null
                 ? usuario.getLicencia().getSaldoAcumulado()
-                : 0;
+                : BigDecimal.ZERO;
 
-        if (saldoAcumulado + monto > usuario.getLicencia().getPrecio()) {
-            usuario.getLicencia().setSaldoAcumulado(usuario.getLicencia().getPrecio());
+        if (saldoAcumulado.add(BigDecimal.valueOf(monto)).doubleValue() > usuario.getLicencia().getPrecio()) {
+            usuario.getLicencia().setSaldoAcumulado(BigDecimal.valueOf(usuario.getLicencia().getPrecio()));
             usuario.getLicencia().setActivo(false);
             licenciaRepository.save(usuario.getLicencia());
             return false;
@@ -399,9 +409,12 @@ public class BonoServiceImpl implements BonoService {
     }
 
     /**
-     * Obtiene la suma de todas las licencias de el total de la red de un usuario hasta el nivel 10
+     * Obtiene la suma de todas las licencias de el total de la red de un usuario
+     * hasta el nivel 10
+     * 
      * @param username
-     * @return volumen total de la red del usuario, es decir, la suma de todas las licencias de su red
+     * @return volumen total de la red del usuario, es decir, la suma de todas las
+     *         licencias de su red
      */
     private Integer obtenerVolumenRed(String username) {
         List<Usuario> redDeUsuario = uninivelHelper.obtenerRedDeUsuario(username);
@@ -436,7 +449,7 @@ public class BonoServiceImpl implements BonoService {
 
         for (Usuario usuario : usuariosConBonoAuto) {
             Integer bonoAuto = usuario.getRango().getBonoAuto();
-            
+
             // Buscar wallet de comisiones del usuario
             Wallet wallet = walletRepository.findByUsuario_Username(usuario.getUsername()).stream()
                     .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
@@ -453,7 +466,7 @@ public class BonoServiceImpl implements BonoService {
 
                 // Registrar transacción
                 String descripcion = "Bono de auto por rango " + usuario.getRango().getNombre();
-                registrarTransaccion(usuario.getUsername(), bonoAuto.doubleValue(), 
+                registrarTransaccion(usuario.getUsername(), bonoAuto.doubleValue(),
                         TipoConceptos.BONO_AUTO, TipoMetodoPago.WALLET_COMISIONES, descripcion);
 
                 crearOActualizarBono(usuario.getUsername(), TipoBono.BONO_AUTO, bonoAuto.doubleValue());
@@ -462,49 +475,55 @@ public class BonoServiceImpl implements BonoService {
     }
 
     /**
-     * Valida que el usuario tenga al menos 5 referidos directos con licencia activa (precio > 0)
+     * Valida que el usuario tenga al menos 5 referidos directos con licencia activa
+     * (precio > 0)
+     * 
      * @param username el username del usuario a validar
-     * @return true si el usuario tiene al menos 5 referidos directos con licencia activa, false en caso contrario
+     * @return true si el usuario tiene al menos 5 referidos directos con licencia
+     *         activa, false en caso contrario
      */
     private Boolean validarRequerimientoReferidosDirectos(String username) {
         List<Usuario> referidosDirectos = usuarioRepository.findByReferenciado(username);
-        
+
         // Contar referidos directos con licencia activa (precio > 0)
         long referidosConLicenciaActiva = referidosDirectos.stream()
                 .filter(usuario -> usuario.getLicencia() != null)
                 .filter(usuario -> usuario.getLicencia().getPrecio() > 0)
                 .count();
-        
+
         return referidosConLicenciaActiva >= 5;
     }
 
     /**
-     * Valida que el usuario tenga al menos 2 usuarios del rango anterior al nuevo rango en su red directa
+     * Valida que el usuario tenga al menos 2 usuarios del rango anterior al nuevo
+     * rango en su red directa
      * Por ejemplo: para subir a rango 2, necesita 2 usuarios de rango 1
-     * @param username el username del usuario a validar
+     * 
+     * @param username   el username del usuario a validar
      * @param nuevoRango el rango al que el usuario quiere calificar
-     * @return true si el usuario tiene al menos 2 usuarios del rango anterior, false en caso contrario
+     * @return true si el usuario tiene al menos 2 usuarios del rango anterior,
+     *         false en caso contrario
      */
     private Boolean validarRequerimientoRangoAnterior(String username, TipoRango nuevoRango) {
-        // Si el nuevo rango es SIN_RANGO o SENIOR_MANAGER (rango 1), no necesita usuarios de rango anterior
+        // Si el nuevo rango es SIN_RANGO o SENIOR_MANAGER (rango 1), no necesita
+        // usuarios de rango anterior
         if (nuevoRango.getNumero() <= 1) {
             return true;
         }
-        
+
         // Obtener el número del rango anterior
         final int numeroRangoAnterior = nuevoRango.getNumero() - 1;
-        
+
         // Obtener todos los usuarios de su red (hasta nivel 10)
         List<Usuario> redDeUsuario = uninivelHelper.obtenerRedDeUsuario(username);
-        
+
         // Contar usuarios que tienen el rango anterior
         long usuariosConRangoAnterior = redDeUsuario.stream()
                 .filter(usuario -> usuario.getRango() != null)
                 .filter(usuario -> usuario.getRango().getNumero() == numeroRangoAnterior)
                 .count();
-        
+
         return usuariosConRangoAnterior >= 2;
     }
 
 }
-
