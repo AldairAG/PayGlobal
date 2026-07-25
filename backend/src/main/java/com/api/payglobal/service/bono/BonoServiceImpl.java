@@ -204,7 +204,8 @@ public class BonoServiceImpl implements BonoService {
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
                 // Actualiza el saldo acumulado en la licencia
-                BigDecimal NuevoSaldoActual = aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(), ingresoPasivo);
+                BigDecimal NuevoSaldoActual = aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(),
+                        ingresoPasivo);
 
                 // Verifica si se alcanzó el límite de la licencia
                 if (NuevoSaldoActual
@@ -214,6 +215,7 @@ public class BonoServiceImpl implements BonoService {
                     BigDecimal diferencia = nuevoSaldo.subtract(BigDecimal.valueOf(licencia.getPrecio()));
                     wallet.setSaldo(wallet.getSaldo().add(diferencia));
                     licenciaRepository.save(licencia);
+                    aumentarSaldoAcumuladoLicencia(licencia.getUsuario().getUsername(),ingresoPasivo);
                     walletRepository.save(wallet);
 
                     // Registra la transacción de ingreso pasivo
@@ -364,11 +366,21 @@ public class BonoServiceImpl implements BonoService {
             throw new RuntimeException("Usuario no encontrado con username: " + username);
         }
 
+        BigDecimal saldoActual=BigDecimal.ZERO;
+
+
         if (usuario.getLicencia() != null) {
-            BigDecimal saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
+
+            saldoActual = usuario.getLicencia().getSaldoAcumulado() != null
                     ? usuario.getLicencia().getSaldoAcumulado()
                     : BigDecimal.ZERO;
-            usuario.getLicencia().setSaldoAcumulado(saldoActual.add(BigDecimal.valueOf(monto)));
+
+            if(saldoActual.compareTo(new BigDecimal(usuario.getLicencia().getLimite())) >= 0) {
+                usuario.getLicencia().setSaldoAcumulado(new BigDecimal(usuario.getLicencia().getLimite()));
+            } else {
+                usuario.getLicencia().setSaldoAcumulado(saldoActual.add(BigDecimal.valueOf(monto)));
+            }
+
             licenciaRepository.save(usuario.getLicencia());
             return saldoActual.add(BigDecimal.valueOf(monto));
         }
