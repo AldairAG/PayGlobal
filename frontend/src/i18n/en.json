@@ -138,7 +138,14 @@
         "copied": "Copied",
         "staking": "Staking Wallet",
         "network": "Network Wallet",
-        "last_30_days": "Last 30 days"
+        "last_30_days": "Last 30 days",
+        "exclusive_offer": "Exclusive offer",
+        "prelaunch_promotion": "PRE-LAUNCH PROMOTION",
+        "prelaunch_promotion_period": "ALL LICENSES PURCHASED DURING JULY AND AUGUST 2026",
+        "prelaunch_promotion_availability": "(WHILE PROMOTIONAL ASSISTANCE IS AVAILABLE)",
+        "offer_table_license": "License",
+        "offer_table_daily_profit": "Daily profit",
+        "offer_table_profit_12_months": "Profit in 12 months"
     },
 
     "licenses": {

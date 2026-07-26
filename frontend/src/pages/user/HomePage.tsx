@@ -11,6 +11,16 @@ import { useTranslation } from 'react-i18next';
 import CryptoTicker from '../../components/CryptoTicker';
 import ForexTicker from '../../components/ForexTicker';
 
+const tablaOfertas = [
+    { licencia: '1,000', diario: '3%', gananciaEn12Meses: '$10,800 USDT' },
+    { licencia: '2,500', diario: '3%', gananciaEn12Meses: '$27,000 USDT' },
+    { licencia: '5,000', diario: '3%', gananciaEn12Meses: '$54,000 USDT' },
+    { licencia: '10,000', diario: '3%', gananciaEn12Meses: '$108,000 USDT' },
+    { licencia: '15,000', diario: '3%', gananciaEn12Meses: '$262,000 USDT' },
+    { licencia: '25,000', diario: '3%', gananciaEn12Meses: '$270,000 USDT' },
+    { licencia: '50,000', diario: '3%', gananciaEn12Meses: '$540,000 USDT' },
+];
+
 const HomePage = () => {
     const { t } = useTranslation();
     const { usuario } = useUsuario();
@@ -234,6 +244,39 @@ const HomePage = () => {
                                 </BarChart>
                             </ResponsiveContainer>
                         )}
+                    </div>
+                </div>
+
+                <div className="p-6 rounded-2xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                    <div className="mb-4">
+                        <h6 className="text-sm font-semibold uppercase tracking-widest text-[#69AC95]">{t('home.exclusive_offer')}</h6>
+                        <h3 className="text-2xl font-bold text-[#F0973C] mt-1">{t('home.prelaunch_promotion')}</h3>
+                        <h4 className="text-sm md:text-base font-semibold text-white/80 mt-2">{t('home.prelaunch_promotion_period')}</h4>
+                        <h5 className="text-xs md:text-sm text-white/60 mt-1">{t('home.prelaunch_promotion_availability')}</h5>
+                    </div>
+
+                    <div className="overflow-x-auto rounded-xl border border-white/10">
+                        <table className="min-w-full bg-[#111]">
+                            <thead>
+                                <tr className="bg-[#69AC95]/20 text-[#F0973C] uppercase text-xs tracking-wider">
+                                    <th className="px-4 py-3 text-left">{t('home.offer_table_license')}</th>
+                                    <th className="px-4 py-3 text-left">{t('home.offer_table_daily_profit')}</th>
+                                    <th className="px-4 py-3 text-left">{t('home.offer_table_profit_12_months')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tablaOfertas.map((oferta, index) => (
+                                    <tr
+                                        key={oferta.licencia}
+                                        className={index % 2 === 0 ? 'bg-white/[0.02] border-t border-white/5' : 'bg-transparent border-t border-white/5'}
+                                    >
+                                        <td className="px-4 py-3 font-semibold text-[#69AC95]">$ {oferta.licencia} USDT</td>
+                                        <td className="px-4 py-3 text-white">{oferta.diario}</td>
+                                        <td className="px-4 py-3 text-white/90">{oferta.gananciaEn12Meses}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

@@ -140,7 +140,14 @@
         "copied": "Copié",
         "staking": "Portefeuille de Staking",
         "network": "Portefeuille de Réseau",
-        "last_30_days": "Derniers 30 jours"
+        "last_30_days": "Derniers 30 jours",
+        "exclusive_offer": "Offre exclusive",
+        "prelaunch_promotion": "PROMOTION DE PRE-LANCEMENT",
+        "prelaunch_promotion_period": "TOUTES LES LICENCES ACHETEES EN JUILLET ET AOUT 2026",
+        "prelaunch_promotion_availability": "(JUSQU'A EPUISEMENT DES ASSISTANCES PROMOTIONNELLES)",
+        "offer_table_license": "Licence",
+        "offer_table_daily_profit": "Gain quotidien",
+        "offer_table_profit_12_months": "Gain en 12 mois"
 
     },
 

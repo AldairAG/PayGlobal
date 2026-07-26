@@ -139,7 +139,14 @@
         "copied": "تم النسخ",
         "staking": "محفظة الستاكينغ",
         "network": "محفظة الشبكة",
-        "last_30_days": "آخر 30 يومًا"
+        "last_30_days": "آخر 30 يومًا",
+        "exclusive_offer": "عرض حصري",
+        "prelaunch_promotion": "عرض ما قبل الإطلاق",
+        "prelaunch_promotion_period": "جميع التراخيص التي تم شراؤها خلال يوليو وأغسطس 2026",
+        "prelaunch_promotion_availability": "(حتى نفاد مقاعد المساعدة الترويجية)",
+        "offer_table_license": "الترخيص",
+        "offer_table_daily_profit": "الربح اليومي",
+        "offer_table_profit_12_months": "الربح خلال 12 شهرًا"
     },
 
     "licenses": {
