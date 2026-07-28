@@ -521,6 +521,21 @@ export const EditarUsuarioPage = () => {
                                         }`}
                                     />
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Ciclo de licencia completados
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={((editedLicencia?.saldoAcumulado|| 0) / (editedLicencia?.limite|| 1) || 0).toFixed(2)}
+                                        disabled={true}
+                                        className={`w-full px-3 py-2 border-2 rounded-lg transition-all ${isEditing
+                                            ? "border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            : "border-gray-300 bg-gray-100 cursor-not-allowed"
+                                        }`}
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -38,9 +38,15 @@ const HomePage = () => {
     const porcentajeCalculo = useMemo(() => {
         return (valor: number, total: number) => {
             if (total === 0) return "0%";
-            const porcentaje = (valor / total) * 100;
+
+            const sobrante = valor / total;
+
+            //subtraer enteros y dejar decimales
+            const sobranteDecimal = sobrante - Math.floor(sobrante);
+            const porcentaje = sobranteDecimal * 100;
             return `${porcentaje.toFixed(2)}%`;
-        };
+        }
+
     }, []);
 
     return (

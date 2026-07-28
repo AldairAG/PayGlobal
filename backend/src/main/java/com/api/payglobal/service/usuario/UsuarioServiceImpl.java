@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -206,7 +207,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .precio(TipoLicencia.P0.getValor())
                 .limite(TipoLicencia.P0.getValor() * 2)
                 .activo(false)
-                .saldoAcumulado(0)
+                .saldoAcumulado(BigDecimal.ZERO)
                 .usuario(usuario)
                 .build();
 
@@ -339,7 +340,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
 
-        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado()) {
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
             precioTotal = precioTotal.subtract(
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
@@ -404,6 +405,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         }
 
+        Wallet wallet = descontarSaldoWallet(usuario, tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING
+                ? TipoWallets.WALLET_STAKING
+                : TipoWallets.WALLET_NETWORK, monto);
+
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
                 .monto(monto)
@@ -416,7 +421,24 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         usuario.addSolicitud(solicitud);
 
+        usuario.setWallets(usuario.getWallets().stream().filter(w -> !w.equals(wallet)).collect(Collectors.toList()));
+
         usuarioRepository.save(usuario);
+    }
+
+    private Wallet descontarSaldoWallet(Usuario usuario, TipoWallets tipoWallet, BigDecimal monto) throws Exception {
+        Wallet wallet = usuario.getWallets().stream()
+                .filter(w -> w.getTipo().equals(tipoWallet))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet de " + tipoWallet.name() + " no encontrada para el usuario con id: " + usuario.getId()));
+
+        if (wallet.getSaldo().compareTo(monto) < 0) {
+            throw new Exception("Fondos insuficientes en la wallet de " + tipoWallet.name());
+        }
+
+        wallet.setSaldo(wallet.getSaldo().subtract(monto));
+        return wallet;
     }
 
     @Override
@@ -631,6 +653,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
+        //TODO: Implementar el bono de rango para la compra de licencia
         //bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
     }
 
@@ -651,7 +674,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .precio(precioTotal.intValue())
                 .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
                 .activo(true)
-                .saldoAcumulado(0)
+                .saldoAcumulado(BigDecimal.ZERO)
                 .build();   
         
         licencia = licenciaRepository.save(licencia);
@@ -815,7 +838,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         transaccionService.procesarTransaccion(
                 solicitud.getUsuario().getId(),
-                (solicitud.getMonto().doubleValue() - (solicitud.getMonto().doubleValue() * .10)), // Aplicar un cargo
+                (solicitud.getMonto().doubleValue()), // Aplicar un cargo
                                                                                                    // del 10% por retiro
                                                                                                    // de fondos
                 TipoConceptos.RETIRO_FONDOS,
