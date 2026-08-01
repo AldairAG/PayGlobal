@@ -55,8 +55,8 @@ public class tasks {
         }
     }
 
-    //Ejecutar a las 12:25 AM todos los días
-    @Scheduled(cron = "0 25 0 * * *")
+    //Ejecutar a las 13:05 horas todos los días
+    @Scheduled(cron = "0 5 13 * * *")
     public void verificarLicenciasInactivasTask() {
         try {
             mineriaService.regularizarRendimientoDiario();;
