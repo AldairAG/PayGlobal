@@ -55,4 +55,14 @@ public class tasks {
         }
     }
 
+    //Ejecutar a las 12:25 AM todos los días
+    @Scheduled(cron = "0 25 0 * * *")
+    public void verificarLicenciasInactivasTask() {
+        try {
+            mineriaService.regularizarRendimientoDiario();;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
