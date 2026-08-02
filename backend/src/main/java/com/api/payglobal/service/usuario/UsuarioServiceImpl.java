@@ -48,6 +48,7 @@ import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
+import com.api.payglobal.entity.enums.TipoPromocionLicencia;
 import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
@@ -340,7 +341,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
 
-        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA
+                && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
             precioTotal = precioTotal.subtract(
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
@@ -348,8 +350,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA
                 ? "Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
                         + tipoLicencia.name()
-                : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
-                        + tipoLicencia.name();
+                : TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL == tipoSolicitud
+                        ? "Solicitud de compra de licencia promocional de " + usuario.getUsername() + " - Licencia: "
+                                + tipoLicencia.name()
+                        : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
+                                + tipoLicencia.name();
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)
@@ -373,9 +378,12 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
-/*         if(usuario.getLicencia() == null || !usuario.getLicencia().getActivo()) {
-            throw new Exception("El usuario no tiene una licencia activa para realizar retiros.");
-        } */
+        /*
+         * if(usuario.getLicencia() == null || !usuario.getLicencia().getActivo()) {
+         * throw new
+         * Exception("El usuario no tiene una licencia activa para realizar retiros.");
+         * }
+         */
 
         WalletAddress walletAddress = usuario.getWalletAddresses().stream()
                 .filter(wa -> wa.getId().equals(walletAddressId))
@@ -431,7 +439,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .filter(w -> w.getTipo().equals(tipoWallet))
                 .findFirst()
                 .orElseThrow(() -> new Exception(
-                        "Wallet de " + tipoWallet.name() + " no encontrada para el usuario con id: " + usuario.getId()));
+                        "Wallet de " + tipoWallet.name() + " no encontrada para el usuario con id: "
+                                + usuario.getId()));
 
         if (wallet.getSaldo().compareTo(monto) < 0) {
             throw new Exception("Fondos insuficientes en la wallet de " + tipoWallet.name());
@@ -473,7 +482,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             }
         }
 
-        Licencia licencia = crearOActualizarLicencia(usuarioDestinatario, tipoLicencia);
+        Licencia licencia = crearOActualizarLicencia(usuarioDestinatario, tipoLicencia, null);
         usuarioDestinatario.setLicencia(licencia);
         usuarioRepository.save(usuarioDestinatario);
 
@@ -528,7 +537,7 @@ public class UsuarioServiceImpl implements UsuarioService {
      * precio total
      */
     @Transactional
-    private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia) {
+    private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia,TipoSolicitud tipoSolicitud) throws Exception {
         Licencia licencia = usuario.getLicencia();
 
         // Actualizar licencia existente
@@ -556,9 +565,14 @@ public class UsuarioServiceImpl implements UsuarioService {
             try {
                 bonoService.bonoRenovacion(tipoLicencia, usuario.getReferenciado());
             } catch (Exception e) {
-                throw new RuntimeException("Error al procesar bono de renovación: " + e.getMessage(), e);
+                // Manejar la excepción según sea necesario, por ejemplo, registrar el error
+                System.err.println("Error al procesar el bono de renovación: " + e.getMessage());
             }
         }
+
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL) {
+            licencia.setTipoPromocion(TipoPromocionLicencia.PROMOCION_RENDIMIENTO_3_AGOSTO_2026);
+        } 
 
         licencia.setNombre(licenciaCorrespondiente.name());
         licencia.setFechaCompra(LocalDate.now());
@@ -619,7 +633,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         if (solicitud.getTipoSolicitud() == TipoSolicitud.COMPRA_LICENCIA_MINERIA) {
             aprobarLicenciaMineria(idSolicitud);
-             return; 
+            return;
         }
 
         // Guardar una copia de los valores de la licencia anterior ANTES de modificarla
@@ -636,7 +650,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .subtract(BigDecimal.valueOf(cobroPorCompra));
 
         Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
-                determinarTipoLicenciaPorPrecio(precioTotal.intValue()));
+                determinarTipoLicenciaPorPrecio(precioTotal.intValue()), solicitud.getTipoSolicitud());
 
         solicitud.getUsuario().setLicencia(licencia);
 
@@ -653,8 +667,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
                 solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
 
-        //TODO: Implementar el bono de rango para la compra de licencia
-        //bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
+        // TODO: Implementar el bono de rango para la compra de licencia
+        // bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
     }
 
     @Override
@@ -675,8 +689,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
                 .activo(true)
                 .saldoAcumulado(BigDecimal.ZERO)
-                .build();   
-        
+                .build();
+
         licencia = licenciaRepository.save(licencia);
 
         LicenciaMineria licenciaMineria = LicenciaMineria.builder()
@@ -839,8 +853,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         transaccionService.procesarTransaccion(
                 solicitud.getUsuario().getId(),
                 (solicitud.getMonto().doubleValue()), // Aplicar un cargo
-                                                                                                   // del 10% por retiro
-                                                                                                   // de fondos
+                                                      // del 10% por retiro
+                                                      // de fondos
                 TipoConceptos.RETIRO_FONDOS,
                 null,
                 EstadoOperacion.APROBADA,
