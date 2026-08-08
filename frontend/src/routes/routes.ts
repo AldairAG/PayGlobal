@@ -7,7 +7,7 @@ export const ROUTES = {
         GESTION_RETIROS: '/admin/gestion-retiros',
         GESTION_KYC: '/admin/gestion-kyc',
         EDITAR_USUARIO: `/admin/editar-usuario`,
-        GESTION_SOPORTE: '/admin/gestion-soporte'
+        GESTION_SOPORTE: '/admin/gestion-soporte',
     },
 
     USER: {
@@ -16,6 +16,7 @@ export const ROUTES = {
         PROFILE: '/c/profile',
         HISTORIAL: '/c/history',
         LICENCIAS: '/c/license',
+        WALLET_PAYGLOBAL: '/c/wallet-payglobal',
         SOPORTE: '/c/support',
         RETIRO: '/c/withdrawal',
         CAMBIO_CONTRASENA: '/c/change-password',

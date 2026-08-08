@@ -39,7 +39,8 @@ export default function PurchaseLicenseModal({
     const [selectedPromoLicenseName, setSelectedPromoLicenseName] = useState<string>(licenseName);
     const [selectedPromoLicenseValue, setSelectedPromoLicenseValue] = useState<number>(licenseValue);
     const [purchaseResult, setPurchaseResult] = useState<"success" | "error" | null>(null);
-    const { solicitarCompraLicencia, usuario, loadingSolicitarCompraLicencia } = useUsuario();
+    const [showPayglobalConfirmModal, setShowPayglobalConfirmModal] = useState(false);
+    const { solicitarCompraLicencia, loadingSolicitarCompraLicencia } = useUsuario();
 
     const handleConfirmPurchase = async () => {
         setPurchaseResult(null);
@@ -130,7 +131,7 @@ export default function PurchaseLicenseModal({
     return (
         <div className="fixed inset-0 flex justify-center items-center z-50 p-4">
             <div className="absolute inset-0 bg-black opacity-80 z-51"></div>
-            <div className="relative bg-[#0d0d0d] border border-yellow-300/20 rounded-[2rem] max-w-4xl w-full z-52 max-h-[90vh] flex flex-col overflow-y-auto shadow-[0_40px_120px_rgba(255,204,79,0.18)]">
+            <div className="relative bg-[#0d0d0d] border border-yellow-300/20 rounded-4xl max-w-4xl w-full z-52 max-h-[90vh] flex flex-col overflow-y-auto shadow-[0_40px_120px_rgba(255,204,79,0.18)]">
 
                 {/* Botón de cerrar */}
                 <button
@@ -250,11 +251,11 @@ export default function PurchaseLicenseModal({
                         )}
 
                         {/* QR / Imagen de la red */}
-                        <div className="flex-1 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                        <div className="flex-1 flex items-center justify-center rounded-xl border border-white/10 bg-white/2 p-4">
                             <img
                                 src={currentWallet.img}
                                 alt={currentWallet.name}
-                                className="w-full max-w-[220px] object-contain rounded-xl"
+                                className="w-full max-w-55 object-contain rounded-xl"
                             />
                         </div>
 
@@ -333,6 +334,15 @@ export default function PurchaseLicenseModal({
                                 </button>
                             </div>
                         </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowPayglobalConfirmModal(true)}
+                                className="w-full rounded-2xl bg-[#69AC95] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
+                            >
+                                Pagar con Wallet PayGlobal
+                            </button>
+                        </div>
 
                     </div>
                 </div>
@@ -399,6 +409,63 @@ export default function PurchaseLicenseModal({
                     </div>
 
                 </div>
+
+                {showPayglobalConfirmModal && (
+                    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/75 px-4 py-6">
+                        <div className="relative w-full max-w-xl rounded-4xl border border-white/10 bg-[#111111] p-6 shadow-[0_35px_120px_rgba(0,0,0,0.5)]">
+                            <button
+                                onClick={() => setShowPayglobalConfirmModal(false)}
+                                className="absolute right-5 top-5 rounded-full border border-white/10 bg-white/5 p-2 text-white transition hover:bg-white/10"
+                            >
+                                ✕
+                            </button>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#69AC95]/15 text-[#69AC95]">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v8m4-4H8" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm uppercase tracking-[0.35em] text-[#69AC95]">Confirmación de pago</p>
+                                        <h2 className="text-2xl font-bold text-white">Pagar con Wallet PayGlobal</h2>
+                                    </div>
+                                </div>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                        <p className="text-sm text-white/50">Licencia</p>
+                                        <p className="mt-2 text-lg font-semibold text-white">{activeLicenseName}</p>
+                                    </div>
+                                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                        <p className="text-sm text-white/50">Monto a pagar</p>
+                                        <p className="mt-2 text-lg font-semibold text-white">${activeLicenseValue} {currentWallet.symbol}</p>
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+                                    <p>Usarás el saldo de tu Wallet PayGlobal para completar esta compra.</p>
+                                    <p className="mt-2 text-white/80">Asegúrate de tener saldo suficiente antes de confirmar.</p>
+                                </div>
+                                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                                    <button
+                                        onClick={() => setShowPayglobalConfirmModal(false)}
+                                        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            setShowPayglobalConfirmModal(false);
+                                            await handleConfirmPurchase();
+                                        }}
+                                        className="rounded-2xl bg-[#69AC95] px-5 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
+                                    >
+                                        Confirmar pago
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

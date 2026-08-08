@@ -29,6 +29,7 @@ import RecuperarPassword from './pages/user/RecuperarPassword'
 import NovedadesPage from './pages/user/NovedadesPage'
 import NewsReports from './pages/user/NewReports'
 import MiningPage from './pages/user/MiningPage'
+import WalletPayglobalPage from './pages/user/WalletPayglobalPage'
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
               <Route path={ROUTES.USER.TOOLS} element={<NovedadesPage />} />
               <Route path={ROUTES.USER.NEWS_REPORTS} element={<NewsReports />} />
               <Route path={ROUTES.USER.MINING} element={<MiningPage />} />
+              <Route path={ROUTES.USER.WALLET_PAYGLOBAL} element={<WalletPayglobalPage />} />
 
             </Route>
 
