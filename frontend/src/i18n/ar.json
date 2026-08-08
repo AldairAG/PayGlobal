@@ -114,7 +114,31 @@
         "menu": "القائمة",
         "tools": "الأدوات"
     },
-    
+
+    "errors": {
+        "username_in_use": "اسم المستخدم مستخدم بالفعل",
+        "email_already_registered": "البريد الإلكتروني مسجل بالفعل",
+        "user_not_found_by_id": "المستخدم غير موجود بالمعرف المقدم",
+        "user_not_found_by_username": "المستخدم المستلم غير موجود",
+        "user_not_found": "المستخدم غير موجود",
+        "wallet_address_not_found": "عنوان المحفظة غير موجود",
+        "wallet_not_found": "المحفظة غير موجودة",
+        "insufficient_funds_in_wallet": "أموال غير كافية في المحفظة {{wallet}}",
+        "withdrawal_request_pending": "لديك بالفعل طلب سحب معلق",
+        "license_required_for_withdrawal": "مطلوب ترخيص نشط لطلب السحب",
+        "request_not_withdrawal_type": "الطلب ليس من نوع السحب",
+        "request_type_required": "يجب تقديم نوع طلب واحد على الأقل",
+        "user_id_required": "معرف المستخدم مطلوب",
+        "security_key_not_set": "لم يحدد المستخدم مفتاح الأمان",
+        "authentication_error": "حدث خطأ أثناء المصادقة",
+        "renewal_bonus_processing_error": "حدث خطأ أثناء معالجة مكافأة التجديد",
+        "license_renewal_higher_package_required": "يتطلب تجديد الترخيص حزمة مساوية أو أعلى من الحالية",
+        "insufficient_funds_for_transfer": "أموال غير كافية للتحويل",
+        "insufficient_funds_for_withdrawal": "أموال غير كافية للسحب",
+        "request_not_found": "الطلب غير موجود",
+        "unknown_error": "خطأ غير معروف"
+    },
+
     "home": {
         "progress_clock": "بروغريسو",
         "maximum_amount": "Max Cap",

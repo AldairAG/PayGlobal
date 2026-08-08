@@ -114,6 +114,30 @@
         "tools": "Tools"
     },
 
+    "errors": {
+        "username_in_use": "Username is already in use",
+        "email_already_registered": "Email is already registered",
+        "user_not_found_by_id": "User not found with the provided ID",
+        "user_not_found_by_username": "Recipient user not found",
+        "user_not_found": "User not found",
+        "wallet_address_not_found": "Wallet address not found",
+        "wallet_not_found": "Wallet not found",
+        "insufficient_funds_in_wallet": "Insufficient funds in wallet {{wallet}}",
+        "withdrawal_request_pending": "You already have a pending withdrawal request",
+        "license_required_for_withdrawal": "An active license is required to request withdrawals",
+        "request_not_withdrawal_type": "The request is not a withdrawal type",
+        "request_type_required": "At least one request type must be provided",
+        "user_id_required": "User ID is required",
+        "security_key_not_set": "User has not set a security key",
+        "authentication_error": "An authentication error occurred",
+        "renewal_bonus_processing_error": "Error processing renewal bonus",
+        "license_renewal_higher_package_required": "License renewal requires a package equal or higher than the current one",
+        "insufficient_funds_for_transfer": "Insufficient funds for transfer",
+        "insufficient_funds_for_withdrawal": "Insufficient funds for withdrawal",
+        "request_not_found": "Request not found",
+        "unknown_error": "Unknown error"
+    },
+
     "home": {
         "progress_clock": "Progress",
         "maximum_amount": "Max Cap",

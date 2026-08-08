@@ -318,7 +318,8 @@ export const useUsuario = () => {
 
     const solicitarRetiro = async (walletAddressId: number, monto: number, tipoSolicitud: string) => {
         try {
-            await dispatch(solicitarRetiroFondosThunk({ walletAddressId, monto, tipoSolicitud }));
+            const response = await dispatch(solicitarRetiroFondosThunk({ walletAddressId, monto, tipoSolicitud })).unwrap();
+            return response;
         } catch (error) {
             console.error('Error al solicitar retiro:', error);
             throw error;

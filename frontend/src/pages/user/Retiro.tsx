@@ -74,7 +74,7 @@ export const RetiroPage = () => {
 
         // Entre 12 AM (00:00) y 5 PM (17:00) - 5 PM no incluida, así que < 17
         const isAllowedTime = hours >= 0 && hours < 17;
-
+return true
         return isAllowedDay && isAllowedTime;
     };
 
@@ -232,6 +232,7 @@ export const RetiroPage = () => {
                 setPendingRetiroData(null);
                 obtenerSolicitudes(); // Recargar solicitudes después de crear una nueva
                 toast.success(t("withdrawal.withdrawal_request_sent"));
+                    
             })
             .catch((error) => {
                 console.error("Error al procesar retiro:", error);

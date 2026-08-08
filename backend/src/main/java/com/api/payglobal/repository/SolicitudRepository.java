@@ -19,4 +19,6 @@ public interface SolicitudRepository extends JpaRepository<Solicitud, Long> {
 
     Page<Solicitud> findByUsuarioId(Long usuarioId, Pageable pageable);
 
+    List<Solicitud> findByUsuarioIdAndEstado(Long usuarioId, EstadoOperacion estado);
+
 }

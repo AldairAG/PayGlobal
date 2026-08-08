@@ -3,6 +3,7 @@ export interface ApiResponse<T> {
     success: boolean;
     message: string;
     data: T;
+    error:string;
 }
 
 // Tipos específicos para web

@@ -5,6 +5,7 @@ import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
+import { translateUsuarioServiceError } from "../../helpers/errorHelpers";
 import { logout } from "./authSlice";
 import type { SolicitudRetiroDTO, UsuarioEnRedResponse } from "../../type/responseType";
 
@@ -206,7 +207,7 @@ export const solicitarCompraLicenciaThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al solicitar compra de licencia";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -223,11 +224,11 @@ export const solicitarRetiroFondosThunk = createAsyncThunk<
             payload.tipoSolicitud
         );
         if (!response.success) {
-            return rejectWithValue(response.message || "Error al solicitar retiro de fondos");
+            return rejectWithValue(response.error || "Error al solicitar retiro de fondos");
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al solicitar retiro de fondos";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -248,7 +249,7 @@ export const comprarLicenciaDelegadaThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al comprar licencia delegada";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -269,7 +270,7 @@ export const transferenciaEntreUsuariosThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error en transferencia entre usuarios";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -286,7 +287,7 @@ export const aprobarCompraLicenciaThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al aprobar compra de licencia";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -303,7 +304,7 @@ export const rechazarSolicitudThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al rechazar solicitud";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -321,7 +322,7 @@ export const obtenerSolicitudesThunk = createAsyncThunk<
         return response;
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener solicitudes pendientes";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -339,7 +340,7 @@ export const obtenerSolicitudesRetiroThunk = createAsyncThunk<
         return response;
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener solicitudes de retiro";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -357,7 +358,7 @@ export const obtenerMisSolicitudesThunk = createAsyncThunk<
         return response;
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener mis solicitudes";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -374,7 +375,7 @@ export const obtenerTodosLosUsuariosThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener usuarios";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -391,7 +392,7 @@ export const obtenerUsuarioPorIdThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener usuario por ID";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -408,7 +409,7 @@ export const obtenerUsuariosEnRedThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener usuarios en red";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -425,7 +426,7 @@ export const subirFotoPerfilThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al subir foto de perfil";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -442,7 +443,7 @@ export const obtenerFotoPerfilThunk = createAsyncThunk<
         }
         return blob;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al obtener foto de perfil";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -459,7 +460,7 @@ export const editarUsuarioAdmin = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al editar usuario (admin)";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -476,7 +477,7 @@ export const eliminarUsuarioPorIdThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al eliminar usuario";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -493,7 +494,7 @@ export const aprobarRetiroFondosThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al aprobar retiro de fondos";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -510,7 +511,7 @@ export const guardarClaveSeguridadThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al guardar clave de seguridad";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -527,7 +528,7 @@ export const verificarClaveSeguridadThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al verificar clave de seguridad";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });
@@ -544,7 +545,7 @@ export const cambiarPasswordAdminThunk = createAsyncThunk<
         }
         return response;
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error al cambiar contraseña";
+        const message = translateUsuarioServiceError(error);
         return rejectWithValue(message);
     }
 });

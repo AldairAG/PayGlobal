@@ -373,6 +373,13 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
+        //Validar que el ususario no tenga una solcitud de retiro pendiente
+        List<Solicitud> solicitudesPendientes = solicitudRepository.findByUsuarioIdAndEstado(idUsuario, EstadoOperacion.PENDIENTE);
+
+        if (!solicitudesPendientes.isEmpty()) {
+            throw new Exception("El usuario ya tiene una solicitud de retiro pendiente. No se puede realizar otra solicitud hasta que la anterior sea procesada.");
+        }
+
 /*         if(usuario.getLicencia() == null || !usuario.getLicencia().getActivo()) {
             throw new Exception("El usuario no tiene una licencia activa para realizar retiros.");
         } */

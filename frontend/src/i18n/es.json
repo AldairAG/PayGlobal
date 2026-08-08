@@ -119,6 +119,30 @@
         "tools": "Herramientas"
     },
 
+    "errors": {
+        "username_in_use": "El nombre de usuario ya está en uso",
+        "email_already_registered": "El email ya está registrado",
+        "user_not_found_by_id": "Usuario no encontrado con ese ID",
+        "user_not_found_by_username": "Usuario no encontrado con ese username",
+        "user_not_found": "Usuario no encontrado",
+        "wallet_address_not_found": "Dirección de wallet no encontrada",
+        "wallet_not_found": "Wallet no encontrada",
+        "insufficient_funds_in_wallet": "Fondos insuficientes en la wallet {{wallet}}",
+        "withdrawal_request_pending": "Ya tienes una solicitud de retiro pendiente",
+        "license_required_for_withdrawal": "Necesitas una licencia activa para solicitar retiros",
+        "request_not_withdrawal_type": "La solicitud no es de tipo retiro de fondos",
+        "request_type_required": "Debe proporcionar al menos un tipo de solicitud",
+        "user_id_required": "El ID de usuario es requerido",
+        "security_key_not_set": "El usuario no ha establecido una clave de seguridad",
+        "authentication_error": "Ocurrió un error durante la autenticación",
+        "renewal_bonus_processing_error": "Error al procesar el bono de renovación",
+        "license_renewal_higher_package_required": "Para renovar la licencia debes adquirir un paquete igual o superior al actual",
+        "insufficient_funds_for_transfer": "Fondos insuficientes para la transferencia",
+        "insufficient_funds_for_withdrawal": "Fondos insuficientes para el retiro",
+        "request_not_found": "Solicitud no encontrada",
+        "unknown_error": "Error desconocido"
+    },
+
     "home": {
         "progress_clock": "Progreso",
         "maximum_amount": "Max Cap",

@@ -116,6 +116,30 @@
 
     },
 
+    "errors": {
+        "username_in_use": "O nome de usuário já está em uso",
+        "email_already_registered": "O email já está registrado",
+        "user_not_found_by_id": "Usuário não encontrado com o ID fornecido",
+        "user_not_found_by_username": "Usuário destinatário não encontrado",
+        "user_not_found": "Usuário não encontrado",
+        "wallet_address_not_found": "Endereço de carteira não encontrado",
+        "wallet_not_found": "Carteira não encontrada",
+        "insufficient_funds_in_wallet": "Fundos insuficientes na carteira {{wallet}}",
+        "withdrawal_request_pending": "Você já tem uma solicitação de saque pendente",
+        "license_required_for_withdrawal": "É necessária uma licença ativa para solicitar saques",
+        "request_not_withdrawal_type": "A solicitação não é do tipo saque",
+        "request_type_required": "Pelo menos um tipo de solicitação deve ser fornecido",
+        "user_id_required": "O ID do usuário é obrigatório",
+        "security_key_not_set": "O usuário não definiu uma chave de segurança",
+        "authentication_error": "Ocorreu um erro de autenticação",
+        "renewal_bonus_processing_error": "Erro ao processar o bônus de renovação",
+        "license_renewal_higher_package_required": "A renovação da licença requer um pacote igual ou superior ao atual",
+        "insufficient_funds_for_transfer": "Fundos insuficientes para transferência",
+        "insufficient_funds_for_withdrawal": "Fundos insuficientes para saque",
+        "request_not_found": "Solicitação não encontrada",
+        "unknown_error": "Erro desconhecido"
+    },
+
     "home": {
         "progress_clock": "Progresso",
         "maximum_amount": "Max Cap",

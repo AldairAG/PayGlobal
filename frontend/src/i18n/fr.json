@@ -116,6 +116,30 @@
 
     },
 
+    "errors": {
+        "username_in_use": "Le nom d'utilisateur est déjà utilisé",
+        "email_already_registered": "L'email est déjà enregistré",
+        "user_not_found_by_id": "Utilisateur introuvable avec l'ID fourni",
+        "user_not_found_by_username": "Utilisateur destinataire introuvable",
+        "user_not_found": "Utilisateur introuvable",
+        "wallet_address_not_found": "Adresse de portefeuille introuvable",
+        "wallet_not_found": "Portefeuille introuvable",
+        "insufficient_funds_in_wallet": "Fonds insuffisants dans le portefeuille {{wallet}}",
+        "withdrawal_request_pending": "Vous avez déjà une demande de retrait en attente",
+        "license_required_for_withdrawal": "Une licence active est requise pour demander des retraits",
+        "request_not_withdrawal_type": "La demande n'est pas de type retrait",
+        "request_type_required": "Au moins un type de demande doit être fourni",
+        "user_id_required": "L'ID utilisateur est requis",
+        "security_key_not_set": "L'utilisateur n'a pas défini de clé de sécurité",
+        "authentication_error": "Une erreur d'authentification est survenue",
+        "renewal_bonus_processing_error": "Erreur lors du traitement du bonus de renouvellement",
+        "license_renewal_higher_package_required": "Le renouvellement de la licence nécessite un package égal ou supérieur au package actuel",
+        "insufficient_funds_for_transfer": "Fonds insuffisants pour le transfert",
+        "insufficient_funds_for_withdrawal": "Fonds insuffisants pour le retrait",
+        "request_not_found": "Demande introuvable",
+        "unknown_error": "Erreur inconnue"
+    },
+
     "home": {
         "progress_clock": "Progrès",
         "maximum_amount": "Max Cap",

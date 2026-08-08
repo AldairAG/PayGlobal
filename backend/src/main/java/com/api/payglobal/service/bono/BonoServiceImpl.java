@@ -200,7 +200,8 @@ public class BonoServiceImpl implements BonoService {
                                 + licencia.getUsuario().getUsername()));
 
                 // Calcula el ingreso pasivo como el 0.77% del precio de la licencia
-                Double ingresoPasivo = licencia.getPrecio() * 0.0077; // 0.77% de ingreso pasivo diario
+                // 0.5% de ingreso pasivo diario
+                Double ingresoPasivo = licencia.getPrecio() * 0.005;
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
                 // Actualiza el saldo acumulado en la licencia

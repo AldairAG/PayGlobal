@@ -352,8 +352,8 @@ class ApiBase {
             if (error.response?.data) {
                 // Error desde el servidor
                 const serverError = error.response.data;
-                if (serverError.message) {
-                    errorMessage = serverError.message;
+                if (serverError.error) {
+                    errorMessage = serverError.error;
                 } else if (typeof serverError === 'string') {
                     errorMessage = serverError;
                 }
