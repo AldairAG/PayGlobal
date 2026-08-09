@@ -17,6 +17,7 @@ import com.api.payglobal.entity.enums.TipoBono;
 import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
+import com.api.payglobal.entity.enums.TipoPromocionLicencia;
 import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoWallets;
 import com.api.payglobal.helpers.UninivelHelper;
@@ -31,6 +32,8 @@ public class BonoServiceImpl implements BonoService {
 
     private final Double BONO_INSCRIPCION_NIVEL_1 = 0.1;
     private final Double BONO_RENOVACION = 0.05;
+
+    private final Double RENDIMIENTO_DIARIO = 0.5/100; // 0.5% de rendimiento diario
 
     private final Double[] BONO_UNINIVEL = { 0.10, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.03 };
 
@@ -198,9 +201,11 @@ public class BonoServiceImpl implements BonoService {
                         .findFirst()
                         .orElseThrow(() -> new Exception("Wallet de staking no encontrada para el usuario: "
                                 + licencia.getUsuario().getUsername()));
+                
+                
 
-                // Calcula el ingreso pasivo como el 0.77% del precio de la licencia
-                Double ingresoPasivo = licencia.getPrecio() * 0.0077; // 0.77% de ingreso pasivo diario
+                // Calcula el ingreso pasivo como el 0.5% del precio de la licencia
+                Double ingresoPasivo = licencia.getPrecio() * asignarRendimientoPorPromocion(licencia.getTipoPromocion()); // 0.5% de ingreso pasivo diario
                 BigDecimal nuevoSaldo = wallet.getSaldo().add(BigDecimal.valueOf(ingresoPasivo));
 
                 // Actualiza el saldo acumulado en la licencia
@@ -244,6 +249,16 @@ public class BonoServiceImpl implements BonoService {
                 e.printStackTrace();
             }
         });
+    }
+
+    private Double asignarRendimientoPorPromocion(TipoPromocionLicencia promocion) {
+        
+        if (promocion == TipoPromocionLicencia.PROMOCION_RENDIMIENTO_3_AGOSTO_2026) {
+            return 0.03; // 3%
+        }
+           
+                return RENDIMIENTO_DIARIO; // 0.5% por defecto
+        
     }
 
     @Override
