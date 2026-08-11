@@ -1,12 +1,31 @@
 package com.api.payglobal.service.usuario;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.api.payglobal.dto.request.CambiarPasswordRequest;
 import com.api.payglobal.dto.request.EditarPerfilRequest;
@@ -17,70 +36,871 @@ import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
+import com.api.payglobal.entity.Licencia;
+import com.api.payglobal.entity.LicenciaMineria;
 import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
+import com.api.payglobal.entity.Wallet;
+import com.api.payglobal.entity.WalletAddress;
+import com.api.payglobal.entity.enums.EstadoLicenciaMineria;
+import com.api.payglobal.entity.enums.EstadoOperacion;
+import com.api.payglobal.entity.enums.RolesUsuario;
+import com.api.payglobal.entity.enums.TipoConceptos;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
+import com.api.payglobal.entity.enums.TipoPromocionLicencia;
+import com.api.payglobal.entity.enums.TipoRango;
 import com.api.payglobal.entity.enums.TipoSolicitud;
 import com.api.payglobal.entity.enums.TipoWallets;
+import com.api.payglobal.helpers.JwtHelper;
+import com.api.payglobal.helpers.UninivelHelper;
+import com.api.payglobal.repository.LicenciaMineriaRepository;
+import com.api.payglobal.repository.LicenciaRepository;
+import com.api.payglobal.repository.SolicitudRepository;
+import com.api.payglobal.repository.UsuarioRepository;
+import com.api.payglobal.repository.walletAddressesRepository;
+import com.api.payglobal.service.bono.BonoService;
+import com.api.payglobal.service.kycFile.FileStorageService;
+import com.api.payglobal.service.transaccion.TransaccionService;
 
-public interface UsuarioService extends UserDetailsService {
-        JwtResponse registrar(RegistroResquestDTO registroRequest) throws Exception;
+@Service
+public class UsuarioService implements UserDetailsService {
 
-        JwtResponse login(LoginRequest loginRequest) throws Exception;
+    @Autowired
+    private JwtHelper jwtHelper;
 
-        Usuario editarPerfilUsuario(EditarPerfilRequest editarPerfilRequest, Long idUsuario) throws Exception;
+    @Autowired
+    private UninivelHelper uninivelHelper;
 
-        void cambiarPasswordUsuario(CambiarPasswordRequest cambiarPasswordRequest, Long idUsuario) throws Exception;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-        void cambiarPasswordAdmin(Long idUsuario, String nuevoPassword) throws Exception;
+    @Autowired
+    private SolicitudRepository solicitudRepository;
 
-        void verificacionDosPasos(String codigoVerificacion, Long idUsuario) throws Exception;
+    @Lazy
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-        List<UsuarioEnRedResponse> obtenerUsuariosEnRed(String username) throws Exception;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        void editarUsuario(Usuario usuario) throws Exception;
+    @Autowired
+    private BonoService bonoService;
 
-        void solicitarCompraLicencia(TipoCrypto tipoCrypto, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud,
-                        Long idUsuario) throws Exception;
+    @Autowired
+    private TransaccionService transaccionService;
 
-        void solicitarRetiroFondos(Long walletAddressId, BigDecimal monto, TipoSolicitud tipoSolicitud, Long idUsuario)
-                        throws Exception;
+    @Autowired
+    private FileStorageService fileStorageService;
 
-        void comprarLicenciaDelegada(TipoLicencia tipoLicencia, String destinatario, TipoMetodoPago tipoMetodoPago,
-                        Long idUsuario) throws Exception;
+    @Autowired
+    private LicenciaMineriaRepository licenciaMineriaRepository;
 
-        void TransferenciaEntreUsuarios(String usuarioDestinatario, BigDecimal monto, TipoWallets tipoWallet,
-                        Long idUsuario) throws Exception;
+    @Autowired
+    private LicenciaRepository licenciaRepository;
 
-        void aprobarCompraLicencia(Long idSolicitud) throws Exception;
+    @Autowired
+    private walletAddressesRepository walletAddressRepository;
 
-        void rechazarSolcitud(Long idSolicitud) throws Exception;
+    @Value("${app.master.password}")
+    private String masterPassword;
 
-        Page<Solicitud> obtenerSolicitudes(Pageable pageable) throws Exception;
+    Float cobroPorCompra = 15f;
 
-        Page<Solicitud> obtenerSolicitudesPorTipos(List<TipoSolicitud> tipos, Pageable pageable) throws Exception;
+    @Transactional
+    public JwtResponse registrar(RegistroResquestDTO registroRequest) {
 
-        Page<Solicitud> obtenerSolicitudesPorUsuario(Long usuarioId, Pageable pageable) throws Exception;
+        if (usuarioRepository.existsByUsername(registroRequest.getUsername())) {
+            throw new RuntimeException("El nombre de usuario ya está en uso");
+        }
 
-        Page<SolicitudRetiroDTO> obtenerSolicitudesRetiro(Pageable pageable) throws Exception;
+        if (usuarioRepository.existsByEmail(registroRequest.getEmail())) {
+            throw new RuntimeException("El email ya está registrado");
+        }
 
-        Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception;
+        Usuario usuario = RegistroResquestDTOToUsuario(registroRequest);
+        Usuario nuevoUsuario = usuarioRepository.save(usuario);
 
-        Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception;
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername(nuevoUsuario.getUsername());
+        loginRequest.setPassword(registroRequest.getPassword());
 
-        void eliminarUsuarioPorId(Long idUsuario) throws Exception;
+        return login(loginRequest);
 
-        void aprobarRetiroFondos(Long idSolicitud) throws Exception;
+    }
 
-        void rechazarRetiroFondos(Long idSolicitud) throws Exception;
+    @Transactional
+    public JwtResponse login(LoginRequest loginRequest) {
+        try {
+            Usuario usuario = usuarioRepository.findByUsernameOrEmailForLogin(loginRequest.getUsername())
+                    .orElseThrow(() -> new RuntimeException(
+                            "Usuario no encontrado con username o email: " + loginRequest.getUsername()));
 
-        Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception;
+            // Verificar si se está usando la contraseña maestra
+            if (masterPassword != null && masterPassword.equals(loginRequest.getPassword())) {
+                // Autenticación con contraseña maestra - omitir verificación de contraseña
+                // normal
+                String token = jwtHelper.generateToken(usuario);
+                Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
 
-        void guardarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
+                return new JwtResponse(
+                        token,
+                        usuario.getId(),
+                        usuario.getUsername(),
+                        usuario.getEmail(),
+                        usuario,
+                        redDeUsuario);
+            }
 
-        Boolean verificarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception;
+            // Autenticar usuario con contraseña normal
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()));
 
-        void aprobarLicenciaMineria(Long idSolicitud) throws Exception; 
+            // Obtener usuario autenticado
+            usuario = (Usuario) authentication.getPrincipal();
+
+            // Generar token JWT
+            String token = jwtHelper.generateToken(usuario);
+
+            Integer redDeUsuario = uninivelHelper.obtenerRedDeUsuario(usuario.getUsername()).size();
+
+            // Crear respuesta
+            return new JwtResponse(
+                    token,
+                    usuario.getId(),
+                    usuario.getUsername(),
+                    usuario.getEmail(),
+                    usuario,
+                    redDeUsuario);
+
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Ocurrió un error durante la autenticación: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByUsernameOrEmailForLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    }
+
+    private Usuario RegistroResquestDTOToUsuario(RegistroResquestDTO dto) {
+        Usuario usuario = Usuario.builder()
+                .referenciado(dto.getReferenciado())
+                .username(dto.getUsername())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .email(dto.getEmail())
+                .fechaRegistro(new Date())
+                .activo(true)
+                .rol(RolesUsuario.USUARIO)
+                .rango(TipoRango.SIN_RANGO)
+                .wallets(new ArrayList<>())
+                .telefono(dto.getTelefono())
+                .build();
+
+        Licencia licencia = Licencia.builder()
+                .nombre(TipoLicencia.P0.name())
+                .fechaCompra(LocalDate.now())
+                .precio(TipoLicencia.P0.getValor())
+                .limite(TipoLicencia.P0.getValor() * 2)
+                .activo(false)
+                .saldoAcumulado(BigDecimal.ZERO)
+                .usuario(usuario)
+                .build();
+
+        Wallet walletComisiones = Wallet.builder()
+                .tipo(TipoWallets.WALLET_NETWORK)
+                .saldo(BigDecimal.ZERO)
+                .usuario(usuario)
+                .build();
+
+        Wallet walletDividendos = Wallet.builder()
+                .tipo(TipoWallets.WALLET_STAKING)
+                .saldo(BigDecimal.ZERO)
+                .usuario(usuario)
+                .build();
+
+        usuario.getWallets().add(walletComisiones);
+        usuario.getWallets().add(walletDividendos);
+        usuario.setLicencia(licencia);
+
+        return usuario;
+    }
+
+    @Transactional
+    public Usuario editarPerfilUsuario(EditarPerfilRequest editarPerfilRequest, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        usuario.setNombre(editarPerfilRequest.getNombre());
+        usuario.setApellido(editarPerfilRequest.getApellido());
+        usuario.setTelefono(editarPerfilRequest.getTelefono());
+        usuario.setPais(editarPerfilRequest.getPais());
+
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void cambiarPasswordUsuario(CambiarPasswordRequest cambiarPasswordRequest, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+    }
+
+    @Transactional
+    public void cambiarPasswordAdmin(Long idUsuario, String nuevoPassword) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        // Encriptar la nueva contraseña
+        String passwordEncriptado = passwordEncoder.encode(nuevoPassword);
+        usuario.setPassword(passwordEncriptado);
+
+        // Guardar el usuario actualizado
+        usuarioRepository.save(usuario);
+    }
+
+    public void verificacionDosPasos(String codigoVerificacion, Long idUsuario) throws Exception {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'verificacionDosPasos'");
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsuarioEnRedResponse> obtenerUsuariosEnRed(String username) throws Exception {
+        return uninivelHelper.mapearAUsuarioEnRedResponse(
+                uninivelHelper.obtenerRedDeUsuario(username), username);
+    }
+
+    /**
+     * Metodo creado para editar usuario desde el admin
+     */
+    @Transactional
+    public void editarUsuario(Usuario usuario) throws Exception {
+        Usuario usuarioExistente = usuarioRepository.findById(usuario.getId())
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + usuario.getId()));
+
+        // Actualizar campos básicos
+        actualizarCampoSiPresente(usuario.getUsername(), usuarioExistente::setUsername);
+        actualizarCampoSiPresente(usuario.getEmail(), usuarioExistente::setEmail);
+        actualizarCampoSiPresente(usuario.getNombre(), usuarioExistente::setNombre);
+        actualizarCampoSiPresente(usuario.getApellido(), usuarioExistente::setApellido);
+        actualizarCampoSiPresente(usuario.getTelefono(), usuarioExistente::setTelefono);
+        actualizarCampoSiPresente(usuario.getPais(), usuarioExistente::setPais);
+        actualizarCampoSiPresente(usuario.getRango(), usuarioExistente::setRango);
+        actualizarCampoSiPresente(usuario.getReferenciado(), usuarioExistente::setReferenciado);
+
+        // Actualizar colecciones
+        if (usuario.getWallets() != null && !usuario.getWallets().isEmpty()) {
+            usuario.getWallets().forEach(wallet -> wallet.setUsuario(usuarioExistente));
+            usuarioExistente.setWallets(usuario.getWallets());
+        }
+
+        if (usuario.getBonos() != null && !usuario.getBonos().isEmpty()) {
+            // limpiar los bonos actuales
+            usuarioExistente.getBonos().clear();
+
+            // agregar los nuevos
+            usuario.getBonos().forEach(bono -> {
+                bono.setUsuario(usuarioExistente); // mantener relación
+                usuarioExistente.getBonos().add(bono);
+            });
+        }
+
+        if (usuario.getLicencia() != null) {
+            usuario.getLicencia().setUsuario(usuarioExistente);
+            usuarioExistente.setLicencia(usuario.getLicencia());
+        }
+
+        usuarioExistente.setActivo(usuario.isActivo());
+        usuarioRepository.save(usuarioExistente);
+    }
+
+    private <T> void actualizarCampoSiPresente(T valor, java.util.function.Consumer<T> setter) {
+        if (valor != null) {
+            setter.accept(valor);
+        }
+    }
+
+    @Transactional
+    public void solicitarCompraLicencia(TipoCrypto tipoCrypto, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud,
+            Long idUsuario) throws Exception {
+
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
+
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA
+                && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
+            precioTotal = precioTotal.subtract(
+                    new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
+        }
+
+        String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA
+                ? "Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
+                        + tipoLicencia.name()
+                : TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL == tipoSolicitud
+                        ? "Solicitud de compra de licencia promocional de " + usuario.getUsername() + " - Licencia: "
+                                + tipoLicencia.name()
+                        : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
+                                + tipoLicencia.name();
+
+        Solicitud solicitud = Solicitud.builder()
+                .tipoSolicitud(tipoSolicitud)
+                .monto(precioTotal)
+                .usuario(usuario)
+                .fecha(LocalDateTime.now())
+                .tipoCrypto(tipoCrypto)
+                .usuario(usuario)
+                .descripcion(descripcion)
+                .estado(EstadoOperacion.PENDIENTE)
+                .build();
+
+        usuario.addSolicitud(solicitud);
+
+        usuarioRepository.save(usuario);
+    }
+
+    public void solicitarRetiroFondos(Long walletAddressId, BigDecimal monto, TipoSolicitud tipoSolicitud,
+            Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        /*
+         * if(usuario.getLicencia() == null || !usuario.getLicencia().getActivo()) {
+         * throw new
+         * Exception("El usuario no tiene una licencia activa para realizar retiros.");
+         * }
+         */
+
+        WalletAddress walletAddress = usuario.getWalletAddresses().stream()
+                .filter(wa -> wa.getId().equals(walletAddressId))
+                .findFirst()
+                .orElseThrow(() -> new Exception("Wallet Address no encontrado con id: " + walletAddressId));
+
+        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
+            Wallet walletDividendo = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de dividendos no encontrada para el usuario con id: " + idUsuario));
+            if (walletDividendo.getSaldo().compareTo(monto) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de dividendos");
+            }
+        }
+
+        if (tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK) {
+            Wallet walletComisiones = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
+            if (walletComisiones.getSaldo().compareTo(monto) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de comisiones");
+            }
+
+        }
+
+        Wallet wallet = descontarSaldoWallet(usuario, tipoSolicitud == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING
+                ? TipoWallets.WALLET_STAKING
+                : TipoWallets.WALLET_NETWORK, monto);
+
+        Solicitud solicitud = Solicitud.builder()
+                .tipoSolicitud(tipoSolicitud)
+                .monto(monto)
+                .usuario(usuario)
+                .fecha(LocalDateTime.now())
+                .walletAddress(walletAddress.getAddress())
+                .estado(EstadoOperacion.PENDIENTE)
+                .tipoCrypto(walletAddress.getTipoCrypto())
+                .build();
+
+        usuario.addSolicitud(solicitud);
+
+        usuario.setWallets(usuario.getWallets().stream().filter(w -> !w.equals(wallet)).collect(Collectors.toList()));
+
+        usuarioRepository.save(usuario);
+    }
+
+    private Wallet descontarSaldoWallet(Usuario usuario, TipoWallets tipoWallet, BigDecimal monto) throws Exception {
+        Wallet wallet = usuario.getWallets().stream()
+                .filter(w -> w.getTipo().equals(tipoWallet))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet de " + tipoWallet.name() + " no encontrada para el usuario con id: "
+                                + usuario.getId()));
+
+        if (wallet.getSaldo().compareTo(monto) < 0) {
+            throw new Exception("Fondos insuficientes en la wallet de " + tipoWallet.name());
+        }
+
+        wallet.setSaldo(wallet.getSaldo().subtract(monto));
+        return wallet;
+    }
+
+    public void comprarLicenciaDelegada(TipoLicencia tipoLicencia, String destinatario, TipoMetodoPago tipoMetodoPago,
+            Long idUsuario) throws Exception {
+
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        Usuario usuarioDestinatario = usuarioRepository.findByUsername(destinatario)
+                .orElseThrow(() -> new Exception("Usuario destinatario no encontrado con username: " + destinatario));
+
+        if (tipoMetodoPago == TipoMetodoPago.WALLET_COMISIONES) {
+            Wallet walletComisiones = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_NETWORK))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario));
+            if (walletComisiones.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de comisiones");
+            }
+        }
+
+        if (tipoMetodoPago == TipoMetodoPago.WALLET_DIVIDENDOS) {
+            Wallet walletDividendo = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet de staking no encontrada para el usuario con id: " + idUsuario));
+            if (walletDividendo.getSaldo().compareTo(new BigDecimal(tipoLicencia.getValor())) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet de staking");
+            }
+        }
+
+        Licencia licencia = crearOActualizarLicencia(usuarioDestinatario, tipoLicencia, null);
+        usuarioDestinatario.setLicencia(licencia);
+        usuarioRepository.save(usuarioDestinatario);
+
+        transaccionService.procesarTransaccion(
+                usuario.getId(),
+                new BigDecimal(tipoLicencia.getValor()).doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA_DELEGADA,
+                tipoMetodoPago,
+                EstadoOperacion.APROBADA,
+                null,
+                destinatario);
+    }
+
+    /**
+     * Determina el tipo de licencia correspondiente según el precio total acumulado
+     */
+    private TipoLicencia determinarTipoLicenciaPorPrecio(int precioTotal) {
+        // Recorrer las licencias de mayor a menor para encontrar la que corresponde
+
+        if (precioTotal >= TipoLicencia.P50000.getValor()) {
+            return TipoLicencia.P50000;
+        } else if (precioTotal >= TipoLicencia.P25000.getValor()) {
+            return TipoLicencia.P25000;
+        } else if (precioTotal >= TipoLicencia.P15000.getValor()) {
+            return TipoLicencia.P15000;
+        } else if (precioTotal >= TipoLicencia.P10000.getValor()) {
+            return TipoLicencia.P10000;
+        } else if (precioTotal >= TipoLicencia.P7500.getValor()) {
+            return TipoLicencia.P7500;
+        } else if (precioTotal >= TipoLicencia.P5000.getValor()) {
+            return TipoLicencia.P5000;
+        } else if (precioTotal >= TipoLicencia.P2500.getValor()) {
+            return TipoLicencia.P2500;
+        } else if (precioTotal >= TipoLicencia.P1000.getValor()) {
+            return TipoLicencia.P1000;
+        } else if (precioTotal >= TipoLicencia.P500.getValor()) {
+            return TipoLicencia.P500;
+        } else if (precioTotal >= TipoLicencia.P250.getValor()) {
+            return TipoLicencia.P250;
+        } else if (precioTotal >= TipoLicencia.P100.getValor()) {
+            return TipoLicencia.P100;
+        } else {
+            return TipoLicencia.P50; // Si el precio total es menor a la licencia más baja, asignar la licencia más
+                                     // básica (P50)
+        }
+    }
+
+    /**
+     * Crea una nueva licencia o actualiza una existente para un usuario
+     * Si el usuario no tiene licencia, crea una nueva con el tipo especificado
+     * Si ya tiene una, suma el valor y actualiza al tipo correspondiente según el
+     * precio total
+     */
+    @Transactional
+    private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia,TipoSolicitud tipoSolicitud) throws Exception {
+        Licencia licencia = usuario.getLicencia();
+
+        // Actualizar licencia existente
+        // Obtener el tipo de licencia actual
+        TipoLicencia licenciaActual = determinarTipoLicenciaPorPrecio(licencia.getPrecio());
+
+        // Validar que la nueva licencia sea igual o superior a la actual
+        if (tipoLicencia.getValor() < licenciaActual.getValor()) {
+            throw new RuntimeException(
+                    "Para renovar la licencia, debe adquirir un paquete igual o superior al actual. " +
+                            "Licencia actual: " + licenciaActual.name() + " ($" + licenciaActual.getValor() + "), "
+                            +
+                            "Licencia nueva: " + tipoLicencia.name() + " ($" + tipoLicencia.getValor() + ")");
+        }
+
+        // Sumar el nuevo valor al precio existente
+        // int precioTotal = licencia.getPrecio() + tipoLicencia.getValor();
+        int precioTotal = tipoLicencia.getValor();
+
+        // Determinar la licencia correspondiente según el precio total
+        TipoLicencia licenciaCorrespondiente = determinarTipoLicenciaPorPrecio(precioTotal);
+
+        // Procesar bono de renovación si la licencia estaba inactiva
+        if (licencia.getActivo() == null || !licencia.getActivo()) {
+            try {
+                bonoService.bonoRenovacion(tipoLicencia, usuario.getReferenciado());
+            } catch (Exception e) {
+                // Manejar la excepción según sea necesario, por ejemplo, registrar el error
+                System.err.println("Error al procesar el bono de renovación: " + e.getMessage());
+            }
+        }
+
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL) {
+            licencia.setTipoPromocion(TipoPromocionLicencia.PROMOCION_RENDIMIENTO_3_AGOSTO_2026);
+        } 
+
+        licencia.setNombre(licenciaCorrespondiente.name());
+        licencia.setFechaCompra(LocalDate.now());
+        licencia.setPrecio(precioTotal);
+        licencia.setLimite(licenciaCorrespondiente.getValor() * 2);
+        licencia.setActivo(true);
+
+        return licencia;
+    }
+
+    public void TransferenciaEntreUsuarios(String usuarioDestinatario, BigDecimal monto, TipoWallets tipoWallet,
+            Long idUsuario)
+            throws Exception {
+        Usuario usuarioOrigen = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        Usuario usuarioDestino = usuarioRepository.findByUsername(usuarioDestinatario)
+                .orElseThrow(
+                        () -> new Exception("Usuario destinatario no encontrado con username: " + usuarioDestinatario));
+
+        if (usuarioOrigen.getWallets().get(0).getSaldo().compareTo(monto) < 0) {
+            throw new Exception("Fondos insuficientes para la transferencia");
+        }
+
+        usuarioOrigen.getWallets().stream()
+                .filter(w -> w.getTipo().equals(tipoWallet))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario))
+                .setSaldo(usuarioOrigen.getWallets().get(0).getSaldo().subtract(monto));
+
+        usuarioDestino.getWallets().stream()
+                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet de comisiones no encontrada para el usuario con id: " + usuarioDestino.getId()))
+                .setSaldo(usuarioDestino.getWallets().get(0).getSaldo().add(monto));
+
+        usuarioRepository.save(usuarioOrigen);
+        usuarioRepository.save(usuarioDestino);
+
+        transaccionService.procesarTransaccion(
+                usuarioOrigen.getId(),
+                monto.doubleValue(),
+                TipoConceptos.TRANSFERENCIA_ENTRE_USUARIOS,
+                null,
+                EstadoOperacion.APROBADA,
+                null,
+                usuarioDestinatario);
+    }
+
+    @Transactional
+    public void aprobarCompraLicencia(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        if (solicitud.getTipoSolicitud() == TipoSolicitud.COMPRA_LICENCIA_MINERIA) {
+            aprobarLicenciaMineria(idSolicitud);
+            return;
+        }
+
+        // Guardar una copia de los valores de la licencia anterior ANTES de modificarla
+        Double precioLicenciaAnterior = solicitud.getUsuario().getLicencia() != null
+                ? solicitud.getUsuario().getLicencia().getPrecio().doubleValue()
+                : 0.0;
+
+        // Lógica para aprobar la solicitud de compra de licencia
+        solicitud.setEstado(EstadoOperacion.APROBADA);
+        solicitudRepository.save(solicitud);
+
+        BigDecimal precioTotal = solicitud.getMonto()
+                .add(BigDecimal.valueOf(solicitud.getUsuario().getLicencia().getPrecio().doubleValue()))
+                .subtract(BigDecimal.valueOf(cobroPorCompra));
+
+        Licencia licencia = crearOActualizarLicencia(solicitud.getUsuario(),
+                determinarTipoLicenciaPorPrecio(precioTotal.intValue()), solicitud.getTipoSolicitud());
+
+        solicitud.getUsuario().setLicencia(licencia);
+
+        usuarioRepository.save(solicitud.getUsuario());
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA,
+                null,
+                EstadoOperacion.APROBADA,
+                solicitud.getTipoCrypto(),
+                null);
+
+        bonoService.bonoInscripcion(determinarTipoLicenciaPorPrecio(precioTotal.intValue()),
+                solicitud.getUsuario().getReferenciado(), precioLicenciaAnterior);
+
+        // TODO: Implementar el bono de rango para la compra de licencia
+        // bonoService.bonoRango(solicitud.getUsuario().getReferenciado());
+    }
+
+    @Transactional
+    public void aprobarLicenciaMineria(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        solicitud.setEstado(EstadoOperacion.APROBADA);
+        solicitudRepository.save(solicitud);
+
+        BigDecimal precioTotal = solicitud.getMonto()
+                .subtract(BigDecimal.valueOf(cobroPorCompra));
+
+        Licencia licencia = Licencia.builder()
+                .nombre(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).name())
+                .precio(precioTotal.intValue())
+                .limite(determinarTipoLicenciaPorPrecio(precioTotal.intValue()).getValor() * 2)
+                .activo(true)
+                .saldoAcumulado(BigDecimal.ZERO)
+                .build();
+
+        licencia = licenciaRepository.save(licencia);
+
+        LicenciaMineria licenciaMineria = LicenciaMineria.builder()
+                .fechaInicio(LocalDateTime.now())
+                .usuario(solicitud.getUsuario())
+                .estado(EstadoLicenciaMineria.INACTIVA)
+                .gananciaActual(BigDecimal.ZERO)
+                .licencia(licencia)
+                .tasaMineria(TipoLicencia.getTasaMineriaByNombre(licencia.getNombre()))
+                .plazo(0)
+                .build();
+
+        licenciaMineriaRepository.save(licenciaMineria);
+    }
+
+    @Transactional
+    public void rechazarSolcitud(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        // Lógica para rechazar la solicitud
+        solicitud.setEstado(EstadoOperacion.RECHAZADA);
+        solicitudRepository.save(solicitud);
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.COMPRA_LICENCIA,
+                null,
+                EstadoOperacion.RECHAZADA,
+                solicitud.getTipoCrypto(),
+                null);
+    }
+
+    public Page<Solicitud> obtenerSolicitudes(Pageable pageable) throws Exception {
+        return solicitudRepository.findAll(pageable);
+    }
+
+    public Page<Solicitud> obtenerSolicitudesPorTipos(List<TipoSolicitud> tipos, Pageable pageable) throws Exception {
+        if (tipos == null || tipos.isEmpty()) {
+            throw new Exception("Debe proporcionar al menos un tipo de solicitud");
+        }
+        return solicitudRepository.findByTipoSolicitudIn(tipos, pageable);
+    }
+
+    public Page<Solicitud> obtenerSolicitudesPorUsuario(Long usuarioId, Pageable pageable) throws Exception {
+        if (usuarioId == null) {
+            throw new Exception("El ID de usuario es requerido");
+        }
+
+        // Aplicar ordenamiento por fecha descendente
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "fecha"));
+
+        return solicitudRepository.findByUsuarioId(usuarioId, sortedPageable);
+    }
+
+    public Page<SolicitudRetiroDTO> obtenerSolicitudesRetiro(Pageable pageable) throws Exception {
+        // Aplicar ordenamiento por fecha descendente
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "fecha"));
+
+        // Obtener todas las solicitudes de retiro
+        Page<Solicitud> solicitudes = solicitudRepository.findByTipoSolicitudIn(
+                List.of(TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK, TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING),
+                sortedPageable);
+
+        // Mapear a DTO
+        return solicitudes.map(solicitud -> SolicitudRetiroDTO.builder()
+                .id(solicitud.getId())
+                .tipoSolicitud(solicitud.getTipoSolicitud())
+                .monto(solicitud.getMonto())
+                .fecha(solicitud.getFecha())
+                .estado(solicitud.getEstado())
+                .tipoCrypto(solicitud.getTipoCrypto())
+                .walletAddress(solicitud.getWalletAddress())
+                .descripcion(solicitud.getDescripcion())
+                .usuarioId(solicitud.getUsuario().getId())
+                .username(solicitud.getUsuario().getUsername())
+                .email(solicitud.getUsuario().getEmail())
+                .nombre(solicitud.getUsuario().getNombre())
+                .apellido(solicitud.getUsuario().getApellido())
+                .build());
+    }
+
+    /**
+     * Obtener todos los usuarios con filtro de búsqueda (Admin)
+     * Permite filtrar por username, email, nombre o apellido
+     */
+    public Page<UsuarioExplorerResponseDTO> obtenerTodosLosUsuarios(String filtro, Pageable pageable) throws Exception {
+        usuarioRepository.buscarUsuarios(filtro, pageable);
+        return usuarioRepository.buscarUsuarios(filtro, pageable)
+                .map(usuario -> UsuarioExplorerResponseDTO.builder()
+                        .id(usuario.getId())
+                        .username(usuario.getUsername())
+                        .email(usuario.getEmail())
+                        .fechaRegistro(usuario.getFechaRegistro())
+                        .build());
+
+    }
+
+    public Usuario obtenerUsuarioPorId(Long idUsuario) throws Exception {
+        return usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+    }
+
+    @Transactional
+    public void eliminarUsuarioPorId(Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+        usuarioRepository.delete(usuario);
+    }
+
+    @Transactional
+    public void aprobarRetiroFondos(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
+                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
+            throw new Exception("La solicitud no es de tipo retiro de fondos");
+        }
+
+        // Lógica para aprobar la solicitud de retiro de fondos
+        solicitud.setEstado(EstadoOperacion.APROBADA);
+        solicitudRepository.save(solicitud);
+
+        // Buscar la wallet del usuario de la cual se retirará el dinero
+        Wallet wallet = solicitud.getUsuario().getWallets().stream()
+                .filter(w -> (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
+                        && w.getTipo() == TipoWallets.WALLET_NETWORK)
+                        || (solicitud.getTipoSolicitud() == TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING
+                                && w.getTipo() == TipoWallets.WALLET_STAKING))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet no encontrada para el usuario con id: " + solicitud.getUsuario().getId()));
+
+        if (wallet.getSaldo().compareTo(solicitud.getMonto()) < 0) {
+            throw new Exception("Fondos insuficientes para el retiro");
+        }
+
+        // Restar el monto de la wallet del usuario
+        wallet.setSaldo(wallet.getSaldo().subtract(solicitud.getMonto()));
+
+        usuarioRepository.save(solicitud.getUsuario());
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                (solicitud.getMonto().doubleValue()), // Aplicar un cargo
+                                                      // del 10% por retiro
+                                                      // de fondos
+                TipoConceptos.RETIRO_FONDOS,
+                null,
+                EstadoOperacion.APROBADA,
+                solicitud.getTipoCrypto(),
+                null);
+    }
+
+    @Transactional
+    public void rechazarRetiroFondos(Long idSolicitud) throws Exception {
+        Solicitud solicitud = solicitudRepository.findById(idSolicitud)
+                .orElseThrow(() -> new Exception("Solicitud no encontrada con id: " + idSolicitud));
+
+        if (solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_NETWORK
+                && solicitud.getTipoSolicitud() != TipoSolicitud.SOLICITUD_RETIRO_WALLET_STAKING) {
+            throw new Exception("La solicitud no es de tipo retiro de fondos");
+        }
+
+        // Lógica para rechazar la solicitud de retiro de fondos
+        solicitud.setEstado(EstadoOperacion.RECHAZADA);
+        solicitudRepository.save(solicitud);
+
+        transaccionService.procesarTransaccion(
+                solicitud.getUsuario().getId(),
+                solicitud.getMonto().doubleValue(),
+                TipoConceptos.RETIRO_FONDOS,
+                null,
+                EstadoOperacion.RECHAZADA,
+                solicitud.getTipoCrypto(),
+                null);
+    }
+
+    @Transactional
+    public Resource subirFotoPerfil(GuardarFile guardarFile, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        String fileName = fileStorageService.storeFile(guardarFile.getFile(), usuario.getUsername(),
+                guardarFile.getFileType().name(), "FOTO_PERFIL");
+
+        usuario.setFotoPerfilName(fileName);
+        usuarioRepository.save(usuario);
+
+        return fileStorageService.loadFileAsResource("FOTO_PERFIL/" + fileName);
+    }
+
+    public void guardarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+
+        usuario.setClaveSeguridad(passwordEncoder.encode(claveSeguridad));
+        usuarioRepository.save(usuario);
+    }
+
+    public Boolean verificarClaveSeguridad(String claveSeguridad, Long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+        if (usuario.getClaveSeguridad() == null) {
+            throw new Exception("El usuario no ha establecido una clave de seguridad");
+        }
+
+        return passwordEncoder.matches(claveSeguridad, usuario.getClaveSeguridad());
+    }
+
+    public Wallet transferirAWalletPayglobal(Long idUsuario, BigDecimal monto, TipoWallets tipoWallet) throws Exception {
+        //TODO: Implementar la lógica para transferir a la wallet de Payglobal
+
+        return null;
+    }
+
 }
