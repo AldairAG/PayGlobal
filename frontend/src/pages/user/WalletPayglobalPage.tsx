@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { PiArrowUpRight, PiBank, PiWarningCircle, PiWalletBold } from "react-icons/pi";
 import { useUsuario } from "../../hooks/usuarioHook";
-import { TipoWallets } from "../../type/enum";
+import { TipoConceptos, TipoWallets } from "../../type/enum";
+import type { SolicitudTransferenciaPayglobalRequest } from "../../type/requestTypes";
+import { useTransacciones } from "../../hooks/useTransacciones";
 
 const formatCurrency = (value: number) => {
     //Agregar usdt al final
@@ -10,11 +12,27 @@ const formatCurrency = (value: number) => {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 2,
-    }).format(value).replace("US$", "") + " USDT"; 
+    }).format(value).replace("US$", "") + " USDT";
 };
 
+const conceptos= [
+    TipoConceptos.TRANSFERENCIA_ENTRE_USUARIOS,
+    TipoConceptos.TRANSFERENCIA_A_WALLET_PAYGLOBAL
+]
+
 const WalletPayglobalPage = () => {
-    const {usuario}=useUsuario()
+    const {
+        usuario,
+        hacerTransferenciaAWalletPayGlobal,
+        loadingTransferenciaAWalletPayGlobal,
+        errorTransferenciaAWalletPayGlobal
+    } = useUsuario()
+
+    const { transacciones, cargarTransacciones,cargando, error } = useTransacciones()
+
+    useEffect(() => {
+        cargarTransacciones(usuario?.id, conceptos, 1, 3,);
+    }, [cargarTransacciones]);
 
     const [stakingTransferAmount, setStakingTransferAmount] = useState(0);
     const [networkTransferAmount, setNetworkTransferAmount] = useState(0);
@@ -50,49 +68,40 @@ const WalletPayglobalPage = () => {
     );
 
     const payglobalBalance = useMemo(() => {
-        const payglobalWallet= usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_PAYGLOBAL);
+        const payglobalWallet = usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_PAYGLOBAL);
         return payglobalWallet ? payglobalWallet.saldo : 0;
     }, [usuario]);
 
-    const stakingBalance=useMemo(() => {
-        const stakingWallet= usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING);
+    const stakingBalance = useMemo(() => {
+        const stakingWallet = usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_STAKING);
         return stakingWallet ? stakingWallet.saldo : 0;
     }, [usuario]);
 
-    const networkBalance=useMemo(() => {
-        const networkWallet= usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK);
+    const networkBalance = useMemo(() => {
+        const networkWallet = usuario?.wallets.find(wallet => wallet.tipo === TipoWallets.WALLET_NETWORK);
         return networkWallet ? networkWallet.saldo : 0;
     }, [usuario]);
 
     const stakingRemaining = useMemo(() => Math.max(0, stakingBalance - stakingTransferAmount), [stakingBalance, stakingTransferAmount]);
     const networkRemaining = useMemo(() => Math.max(0, networkBalance - networkTransferAmount), [networkBalance, networkTransferAmount]);
     const transferAmountNumber = Number(transferAmount);
-    const transferRemaining = useMemo(() => Math.max(0, payglobalBalance - transferAmountNumber), [payglobalBalance, transferAmountNumber]);
 
-    const handleStakingTransfer = () => {
-        if (stakingTransferAmount <= 0 || stakingTransferAmount > stakingBalance) {
-            toast.error("Cantidad inválida para transferencia desde Staking.");
-            return;
-        }
-        setTransactions((prev) => [
-            { id: `${Date.now()}`, date: new Date().toLocaleDateString("es-ES"), type: "Transferencia desde Staking", user: "-", amount: stakingTransferAmount, origin: "Wallet Staking", destination: "PayGlobal", status: "Completada" },
-            ...prev,
-        ]);
-        toast.success("Transferencia desde Staking a PayGlobal completada.");
-        setStakingTransferAmount(0);
-    };
+    const transferRemaining = useMemo(() =>
+        Math.max(0, payglobalBalance - transferAmountNumber),
+        [payglobalBalance, transferAmountNumber]);
 
-    const handleNetworkTransfer = () => {
-        if (networkTransferAmount <= 0 || networkTransferAmount > networkBalance) {
-            toast.error("Cantidad inválida para transferencia desde Network.");
-            return;
+    const handleTransferirAWalletPayGlobal = async (walletTipo: TipoWallets) => {
+        try {
+            const request: SolicitudTransferenciaPayglobalRequest = {
+                tipoWallet: walletTipo,
+                monto: walletTipo === TipoWallets.WALLET_STAKING ? stakingTransferAmount : networkTransferAmount,
+            };
+
+            await hacerTransferenciaAWalletPayGlobal(request);
+            toast.success("Transferencia a Wallet PayGlobal completada.");
+        } catch (error) {
+            toast.error(errorTransferenciaAWalletPayGlobal);
         }
-        setTransactions((prev) => [
-            { id: `${Date.now()}`, date: new Date().toLocaleDateString("es-ES"), type: "Transferencia desde Network", user: "-", amount: networkTransferAmount, origin: "Wallet Network", destination: "PayGlobal", status: "Completada" },
-            ...prev,
-        ]);
-        toast.success("Transferencia desde Network a PayGlobal completada.");
-        setNetworkTransferAmount(0);
     };
 
     const handlePrepareTransfer = (event: React.FormEvent<HTMLFormElement>) => {
@@ -218,7 +227,7 @@ const WalletPayglobalPage = () => {
                                                     Saldo restante: <span className="font-semibold text-white">{formatCurrency(stakingRemaining)}</span>
                                                 </div>
                                                 <button
-                                                    onClick={handleStakingTransfer}
+                                                    onClick={() => handleTransferirAWalletPayGlobal(TipoWallets.WALLET_STAKING)}
                                                     className="w-full rounded-3xl bg-[#69AC95] px-5 py-4 text-base font-semibold text-black transition hover:bg-[#8be2ae] disabled:opacity-50"
                                                 >
                                                     Transferir a PayGlobal
@@ -255,7 +264,7 @@ const WalletPayglobalPage = () => {
                                                     Saldo restante: <span className="font-semibold text-white">{formatCurrency(networkRemaining)}</span>
                                                 </div>
                                                 <button
-                                                    onClick={handleNetworkTransfer}
+                                                    onClick={() => handleTransferirAWalletPayGlobal(TipoWallets.WALLET_NETWORK)}
                                                     className="w-full rounded-3xl bg-[#F0973C] px-5 py-4 text-base font-semibold text-black transition hover:bg-[#e8841f] disabled:opacity-50"
                                                 >
                                                     Transferir a PayGlobal

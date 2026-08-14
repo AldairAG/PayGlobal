@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Solicitud, Usuario } from "../../type/entityTypes";
+import type { Solicitud, Usuario, Wallet } from "../../type/entityTypes";
 import { usuarioService } from "../../service/usuarioService";
-import type { EditarPerfilRequestDTO } from "../../type/requestTypes";
+import type { EditarPerfilRequestDTO, SolicitudTransferenciaPayglobalRequest } from "../../type/requestTypes";
 import type { ApiResponse, Page } from "../../type/apiTypes";
 import type { TipoCrypto, TipoSolicitud, TipoWallets } from "../../type/enum";
 import { saveToSessionStorage, loadFromSessionStorage } from "../../helpers/authHelpers";
@@ -88,6 +88,9 @@ interface UsuarioState {
     loadingCambiarPasswordAdmin: boolean;
     errorCambiarPasswordAdmin: string | null;
 
+    loadingHacerTransferenciaAWalletPayGlobal: boolean;
+    errorHacerTransferenciaAWalletPayGlobal: string | null;
+
 }
 
 // Cargar estado inicial desde sessionStorage
@@ -149,6 +152,8 @@ const loadInitialState = (): UsuarioState => {
         errorVerificarClaveSeguridad: null,
         loadingCambiarPasswordAdmin: false,
         errorCambiarPasswordAdmin: null,
+        loadingHacerTransferenciaAWalletPayGlobal: false,
+        errorHacerTransferenciaAWalletPayGlobal: null,
 
     };
 };
@@ -549,6 +554,22 @@ export const cambiarPasswordAdminThunk = createAsyncThunk<
     }
 });
 
+export const hacerTransferenciaAWalletPayGlobalThunk = createAsyncThunk<
+    ApiResponse<Wallet>,
+    SolicitudTransferenciaPayglobalRequest,
+    { rejectValue: string }
+>("usuario/hacerTransferenciaAWalletPayGlobal", async (request, { rejectWithValue }) => {
+    try {
+        const response = await usuarioService.hacerTransferenciaAWalletPayGlobal(request);
+        if (!response.success) {
+            return rejectWithValue(response.message || "Error al hacer transferencia");
+        }
+        return response;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Error al hacer transferencia";
+        return rejectWithValue(message);
+    }
+});
 
 const usuarioSlice = createSlice({
     name: 'usuario',
@@ -846,6 +867,18 @@ const usuarioSlice = createSlice({
             .addCase(cambiarPasswordAdminThunk.rejected, (state, action) => {
                 state.loadingCambiarPasswordAdmin = false;
                 state.errorCambiarPasswordAdmin = action.payload || "Error al cambiar contraseña";
+            })
+            .addCase(hacerTransferenciaAWalletPayGlobalThunk.pending, (state) => {
+                state.loadingHacerTransferenciaAWalletPayGlobal = true;
+                state.errorHacerTransferenciaAWalletPayGlobal = null;
+            })
+            .addCase(hacerTransferenciaAWalletPayGlobalThunk.fulfilled, (state) => {
+                state.loadingHacerTransferenciaAWalletPayGlobal = false;
+                state.errorHacerTransferenciaAWalletPayGlobal = null;
+            })
+            .addCase(hacerTransferenciaAWalletPayGlobalThunk.rejected, (state, action) => {
+                state.loadingHacerTransferenciaAWalletPayGlobal = false;
+                state.errorHacerTransferenciaAWalletPayGlobal = action.payload || "Error al hacer transferencia a Wallet PayGlobal";
             });
     },
 });

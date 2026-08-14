@@ -545,10 +545,12 @@ public class UsuarioController {
 
     @PostMapping("/transferir-fondos-wallet-payglobal")
     @PreAuthorize("hasRole('USUARIO')")
-    public ResponseEntity<ApiResponseWrapper<Wallet>> transferirFondosWalletPayglobal(@RequestBody TransferirFondosRequest request,
+    public ResponseEntity<ApiResponseWrapper<Wallet>> transferirFondosWalletPayglobal(
+            @RequestBody TransferirFondosRequest request,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            Wallet wallet = usuarioService.transferirAWalletPayglobal(usuario.getId(), request.getMonto(), request.getTipoWallet());
+            Wallet wallet = usuarioService.transferirAWalletPayglobal(usuario.getId(), request.getMonto(),
+                    request.getTipoWallet());
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, wallet, "Fondos transferidos correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

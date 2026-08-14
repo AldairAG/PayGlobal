@@ -59,6 +59,7 @@ import com.api.payglobal.repository.LicenciaMineriaRepository;
 import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
+import com.api.payglobal.repository.WalletRepository;
 import com.api.payglobal.repository.walletAddressesRepository;
 import com.api.payglobal.service.bono.BonoService;
 import com.api.payglobal.service.kycFile.FileStorageService;
@@ -102,7 +103,7 @@ public class UsuarioService implements UserDetailsService {
     private LicenciaRepository licenciaRepository;
 
     @Autowired
-    private walletAddressesRepository walletAddressRepository;
+    private WalletRepository walletRepository;
 
     @Value("${app.master.password}")
     private String masterPassword;
@@ -528,7 +529,8 @@ public class UsuarioService implements UserDetailsService {
      * precio total
      */
     @Transactional
-    private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia,TipoSolicitud tipoSolicitud) throws Exception {
+    private Licencia crearOActualizarLicencia(Usuario usuario, TipoLicencia tipoLicencia, TipoSolicitud tipoSolicitud)
+            throws Exception {
         Licencia licencia = usuario.getLicencia();
 
         // Actualizar licencia existente
@@ -563,7 +565,7 @@ public class UsuarioService implements UserDetailsService {
 
         if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL) {
             licencia.setTipoPromocion(TipoPromocionLicencia.PROMOCION_RENDIMIENTO_3_AGOSTO_2026);
-        } 
+        }
 
         licencia.setNombre(licenciaCorrespondiente.name());
         licencia.setFechaCompra(LocalDate.now());
@@ -897,10 +899,53 @@ public class UsuarioService implements UserDetailsService {
         return passwordEncoder.matches(claveSeguridad, usuario.getClaveSeguridad());
     }
 
-    public Wallet transferirAWalletPayglobal(Long idUsuario, BigDecimal monto, TipoWallets tipoWallet) throws Exception {
-        //TODO: Implementar la lógica para transferir a la wallet de Payglobal
+    @Transactional
+    public Wallet transferirAWalletPayglobal(Long idUsuario, BigDecimal monto, TipoWallets tipoWallet)
+            throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
 
-        return null;
+        Wallet wallet = usuario.getWallets().stream()
+                .filter(w -> w.getTipo().equals(tipoWallet))
+                .findFirst()
+                .orElseThrow(() -> new Exception(
+                        "Wallet de " + tipoWallet.name() + " no encontrada para el usuario con id: " + idUsuario));
+
+        if (wallet.getSaldo().compareTo(monto) < 0) {
+            throw new Exception("Fondos insuficientes en la wallet de " + tipoWallet.name());
+        }
+
+        Wallet walletPayglobal = usuario.getWallets().stream()
+                .filter(w -> w.getTipo() == TipoWallets.WALLET_PAYGLOBAL)
+                .findFirst()
+                .orElseGet(() -> {
+
+                    Wallet nuevaWallet = new Wallet();
+                    nuevaWallet.setTipo(TipoWallets.WALLET_PAYGLOBAL);
+                    nuevaWallet.setSaldo(BigDecimal.ZERO);
+                    nuevaWallet.setUsuario(usuario);
+
+                    return nuevaWallet;
+
+                });
+
+        wallet.setSaldo(wallet.getSaldo().subtract(monto));
+        walletPayglobal.setSaldo(walletPayglobal.getSaldo().add(monto));
+
+        walletRepository.save(wallet);
+        walletRepository.save(walletPayglobal);
+
+        transaccionService.procesarTransaccion(
+                usuario.getId(),
+                monto.doubleValue(),
+                TipoConceptos.TRANSFERENCIA_A_WALLET_PAYGLOBAL,
+                tipoWallet == TipoWallets.WALLET_STAKING ? TipoMetodoPago.WALLET_STAKING : TipoMetodoPago.WALLET_NETWORK,
+                EstadoOperacion.COMPLETADA,
+                null,
+                null);
+
+        return walletPayglobal;
+
     }
 
 }

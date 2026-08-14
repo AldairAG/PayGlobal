@@ -1,4 +1,4 @@
-import type { EstadoOperacion, EstadoTicket, TipoCrypto, TipoKycFile, TipoRechazos } from "./enum";
+import type { EstadoOperacion, EstadoTicket, TipoCrypto, TipoKycFile, TipoRechazos, TipoWallets } from "./enum";
 
 export interface RegistroRequestDTO {
     username: string;
@@ -51,4 +51,9 @@ export interface GuardarClaveSeguridadRequest {
 
 export interface VerificarClaveSeguridadRequest {
     claveSeguridad: number;
+}
+
+export interface SolicitudTransferenciaPayglobalRequest {
+    monto: number;
+    tipoWallet: TipoWallets;
 }

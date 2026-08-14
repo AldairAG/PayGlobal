@@ -3,5 +3,8 @@ package com.api.payglobal.entity.enums;
 public enum TipoMetodoPago {
     TRANSFERENCIA_CRYPTO,
     WALLET_DIVIDENDOS,
-    WALLET_COMISIONES
+    WALLET_COMISIONES,
+    WALLET_PAYGLOBAL,
+    WALLET_STAKING,
+    WALLET_NETWORK,
 }
