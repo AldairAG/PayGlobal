@@ -5,6 +5,7 @@ import { useUsuario } from "../../hooks/usuarioHook";
 import { TipoConceptos, TipoWallets } from "../../type/enum";
 import type { SolicitudTransferenciaPayglobalRequest } from "../../type/requestTypes";
 import { useTransacciones } from "../../hooks/useTransacciones";
+import { formatearFecha, formatearFechaDate } from "../../helpers/formatHelpers"
 
 const formatCurrency = (value: number) => {
     //Agregar usdt al final
@@ -15,24 +16,18 @@ const formatCurrency = (value: number) => {
     }).format(value).replace("US$", "") + " USDT";
 };
 
-const conceptos= [
-    TipoConceptos.TRANSFERENCIA_ENTRE_USUARIOS,
-    TipoConceptos.TRANSFERENCIA_A_WALLET_PAYGLOBAL
-]
-
 const WalletPayglobalPage = () => {
     const {
         usuario,
         hacerTransferenciaAWalletPayGlobal,
         loadingTransferenciaAWalletPayGlobal,
-        errorTransferenciaAWalletPayGlobal
+        errorTransferenciaAWalletPayGlobal,
+        transferenciaEntreUsuarios,
+        loadingTransferenciaEntreUsuarios,
+        errorTransferenciaEntreUsuarios
     } = useUsuario()
 
-    const { transacciones, cargarTransacciones,cargando, error } = useTransacciones()
-
-    useEffect(() => {
-        cargarTransacciones(usuario?.id, conceptos, 1, 3,);
-    }, [cargarTransacciones]);
+    const { transacciones, cargarTransacciones, cargando, error } = useTransacciones()
 
     const [stakingTransferAmount, setStakingTransferAmount] = useState(0);
     const [networkTransferAmount, setNetworkTransferAmount] = useState(0);
@@ -133,18 +128,30 @@ const WalletPayglobalPage = () => {
         if (!transferPreview) return;
         const amount = transferPreview.amount;
         const username = transferPreview.username;
-        setTransactions((prev) => [
-            { id: `${Date.now()}`, date: new Date().toLocaleDateString("es-ES"), type: "Transferencia enviada", user: `@${username}`, amount: -amount, origin: "PayGlobal", destination: `@${username}`, status: "Enviada" },
-            ...prev,
-        ]);
+
+
+        transferenciaEntreUsuarios(username, amount, TipoWallets.WALLET_PAYGLOBAL)
+
+        if (errorTransferenciaEntreUsuarios) {
+            toast.error(errorTransferenciaEntreUsuarios)
+            return
+        }
+        toast.success("Transferencia PayGlobal enviada correctamente.");
+        setTransferPreview(null);
+
         setShowTransferModal(false);
         setTransferUsername("");
         setTransferAmount("");
-        toast.success("Transferencia PayGlobal enviada correctamente.");
-        setTransferPreview(null);
+
     };
 
     const [activeTab, setActiveTab] = useState<"wallet" | "user">("wallet");
+
+    useEffect(() => {
+        const concepto = activeTab == "wallet" ? TipoConceptos.TRANSFERENCIA_A_WALLET_PAYGLOBAL : TipoConceptos.TRANSFERENCIA_ENTRE_USUARIOS;
+
+        cargarTransacciones({ usuarioId: usuario?.id, concepto: concepto, size: 3 });
+    }, [activeTab]);
 
     return (
         <div className="min-h-screen bg-[#000000] text-white px-4 py-6 sm:px-6 lg:px-8">
@@ -281,23 +288,22 @@ const WalletPayglobalPage = () => {
                                                 <p className="text-xs uppercase tracking-[0.35em] text-[#F0973C]">Resumen de movimientos</p>
                                                 <h2 className="mt-3 text-xl font-bold text-white">Historial reciente</h2>
                                             </div>
-                                            <div className="rounded-full bg-[#F0973C]/10 px-3 py-2 text-xs font-semibold text-[#F0973C]">Ver todo</div>
+                                            {/* <div className="rounded-full bg-[#F0973C]/10 px-3 py-2 text-xs font-semibold text-[#F0973C]">Ver todo</div> */}
                                         </div>
                                         <div className="mt-6 space-y-4">
-                                            {walletTransactions.slice(0, 4).map((transaction) => (
+                                            {transacciones.slice(0, 4).map((transaction) => (
                                                 <div key={transaction.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                                                     <div className="flex items-center justify-between gap-3">
                                                         <div>
-                                                            <p className="text-sm font-semibold text-white">{transaction.type}</p>
-                                                            <p className="text-xs text-white/50">{transaction.date} • {transaction.origin} → {transaction.destination}</p>
+                                                            <p className="text-sm font-semibold text-white">{transaction.concepto}</p>
+                                                            <p className="text-xs text-white/50">{formatearFechaDate(new Date(transaction.fecha))} • {transaction.metodoPago} → Wallet Payglobal</p>
                                                         </div>
-                                                        <p className={`text-lg font-bold ${transaction.amount > 0 ? "text-[#69AC95]" : "text-[#F0973C]"}`}>
-                                                            {transaction.amount > 0 ? "+" : ""}{formatCurrency(transaction.amount)}
+                                                        <p className={`text-lg font-bold ${transaction.monto > 0 ? "text-[#69AC95]" : "text-[#F0973C]"}`}>
+                                                            {transaction.monto > 0 ? "+" : ""}{formatCurrency(transaction.monto)}
                                                         </p>
                                                     </div>
                                                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-white/50">
-                                                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Usuario: {transaction.user}</span>
-                                                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Estado: {transaction.status}</span>
+                                                        <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Estado: {transaction.estado}</span>
                                                     </div>
                                                 </div>
                                             ))}

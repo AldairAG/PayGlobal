@@ -60,7 +60,6 @@ import com.api.payglobal.repository.LicenciaRepository;
 import com.api.payglobal.repository.SolicitudRepository;
 import com.api.payglobal.repository.UsuarioRepository;
 import com.api.payglobal.repository.WalletRepository;
-import com.api.payglobal.repository.walletAddressesRepository;
 import com.api.payglobal.service.bono.BonoService;
 import com.api.payglobal.service.kycFile.FileStorageService;
 import com.api.payglobal.service.transaccion.TransaccionService;
@@ -576,37 +575,78 @@ public class UsuarioService implements UserDetailsService {
         return licencia;
     }
 
-    public void TransferenciaEntreUsuarios(String usuarioDestinatario, BigDecimal monto, TipoWallets tipoWallet,
-            Long idUsuario)
-            throws Exception {
-        Usuario usuarioOrigen = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
+    @Transactional
+    public void transferenciaEntreUsuarios(
+            String usuarioDestinatario,
+            BigDecimal monto,
+            Long idUsuario) throws Exception {
 
-        Usuario usuarioDestino = usuarioRepository.findByUsername(usuarioDestinatario)
-                .orElseThrow(
-                        () -> new Exception("Usuario destinatario no encontrado con username: " + usuarioDestinatario));
-
-        if (usuarioOrigen.getWallets().get(0).getSaldo().compareTo(monto) < 0) {
-            throw new Exception("Fondos insuficientes para la transferencia");
+        // 1. Validar el monto
+        if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new Exception("El monto de la transferencia debe ser mayor a cero");
         }
 
-        usuarioOrigen.getWallets().stream()
-                .filter(w -> w.getTipo().equals(tipoWallet))
+        // 2. Obtener usuario origen
+        Usuario usuarioOrigen = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception(
+                        "Usuario no encontrado con id: " + idUsuario));
+
+        // 3. Obtener usuario destinatario
+        Usuario usuarioDestino = usuarioRepository.findByUsername(usuarioDestinatario)
+                .orElseThrow(() -> new Exception(
+                        "Usuario destinatario no encontrado con username: "
+                                + usuarioDestinatario));
+
+        // 4. Evitar transferencias al mismo usuario
+        if (usuarioOrigen.getId().equals(usuarioDestino.getId())) {
+            throw new Exception(
+                    "No puedes realizar una transferencia a tu propio usuario");
+        }
+
+        // 5. Obtener WALLET_PAYGLOBAL del usuario origen
+        Wallet walletOrigen = usuarioOrigen.getWallets()
+                .stream()
+                .filter(wallet -> wallet.getTipo() == TipoWallets.WALLET_PAYGLOBAL)
                 .findFirst()
                 .orElseThrow(() -> new Exception(
-                        "Wallet de comisiones no encontrada para el usuario con id: " + idUsuario))
-                .setSaldo(usuarioOrigen.getWallets().get(0).getSaldo().subtract(monto));
+                        "El usuario origen no tiene una WALLET_PAYGLOBAL"));
 
-        usuarioDestino.getWallets().stream()
-                .filter(w -> w.getTipo().equals(TipoWallets.WALLET_STAKING))
+        // 6. Validar que el usuario tenga saldo suficiente
+        if (walletOrigen.getSaldo().compareTo(monto) < 0) {
+            throw new Exception(
+                    "Fondos insuficientes para realizar la transferencia");
+        }
+
+        // 7. Obtener WALLET_PAYGLOBAL del usuario destino
+        Wallet walletDestino = usuarioDestino.getWallets()
+                .stream()
+                .filter(wallet -> wallet.getTipo() == TipoWallets.WALLET_PAYGLOBAL)
                 .findFirst()
-                .orElseThrow(() -> new Exception(
-                        "Wallet de comisiones no encontrada para el usuario con id: " + usuarioDestino.getId()))
-                .setSaldo(usuarioDestino.getWallets().get(0).getSaldo().add(monto));
+                .orElseGet(() -> {
 
+                    Wallet nuevaWallet = new Wallet();
+                    nuevaWallet.setTipo(TipoWallets.WALLET_PAYGLOBAL);
+                    nuevaWallet.setSaldo(BigDecimal.ZERO);
+                    nuevaWallet.setUsuario(usuarioDestino);
+
+                    return nuevaWallet;
+
+                });
+
+        // 8. Realizar la transferencia
+        // Restar el monto de la wallet del usuario origen
+        walletOrigen.setSaldo(
+                walletOrigen.getSaldo().subtract(monto));
+
+        // Sumar el monto a la wallet del usuario destino
+        walletDestino.setSaldo(
+                walletDestino.getSaldo().add(monto));
+
+        // 9. Guardar los cambios
         usuarioRepository.save(usuarioOrigen);
         usuarioRepository.save(usuarioDestino);
 
+        // 10. Registrar la transacción
         transaccionService.procesarTransaccion(
                 usuarioOrigen.getId(),
                 monto.doubleValue(),
@@ -939,7 +979,8 @@ public class UsuarioService implements UserDetailsService {
                 usuario.getId(),
                 monto.doubleValue(),
                 TipoConceptos.TRANSFERENCIA_A_WALLET_PAYGLOBAL,
-                tipoWallet == TipoWallets.WALLET_STAKING ? TipoMetodoPago.WALLET_STAKING : TipoMetodoPago.WALLET_NETWORK,
+                tipoWallet == TipoWallets.WALLET_STAKING ? TipoMetodoPago.WALLET_STAKING
+                        : TipoMetodoPago.WALLET_NETWORK,
                 EstadoOperacion.COMPLETADA,
                 null,
                 null);

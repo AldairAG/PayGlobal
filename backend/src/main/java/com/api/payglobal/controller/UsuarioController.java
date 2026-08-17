@@ -263,14 +263,14 @@ public class UsuarioController {
      * Transferencia entre usuarios
      */
     @PostMapping("/transferencia")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<String>> transferenciaEntreUsuarios(
             @RequestParam String usuarioDestinatario,
             @RequestParam BigDecimal monto,
             @RequestParam TipoWallets tipoWallet,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            usuarioService.TransferenciaEntreUsuarios(usuarioDestinatario, monto, tipoWallet, usuario.getId());
+            usuarioService.transferenciaEntreUsuarios(usuarioDestinatario, monto, usuario.getId());
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Transferencia realizada correctamente", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

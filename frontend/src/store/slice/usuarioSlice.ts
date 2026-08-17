@@ -875,6 +875,7 @@ const usuarioSlice = createSlice({
             .addCase(hacerTransferenciaAWalletPayGlobalThunk.fulfilled, (state) => {
                 state.loadingHacerTransferenciaAWalletPayGlobal = false;
                 state.errorHacerTransferenciaAWalletPayGlobal = null;
+
             })
             .addCase(hacerTransferenciaAWalletPayGlobalThunk.rejected, (state, action) => {
                 state.loadingHacerTransferenciaAWalletPayGlobal = false;
