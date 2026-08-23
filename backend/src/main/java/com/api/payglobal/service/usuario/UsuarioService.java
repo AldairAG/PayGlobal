@@ -579,7 +579,9 @@ public class UsuarioService implements UserDetailsService {
     public void transferenciaEntreUsuarios(
             String usuarioDestinatario,
             BigDecimal monto,
-            Long idUsuario) throws Exception {
+            Long idUsuario,
+            TipoWallets tipoWalletOrigen
+        ) throws Exception {
 
         // 1. Validar el monto
         if (monto == null || monto.compareTo(BigDecimal.ZERO) <= 0) {
@@ -603,13 +605,13 @@ public class UsuarioService implements UserDetailsService {
                     "No puedes realizar una transferencia a tu propio usuario");
         }
 
-        // 5. Obtener WALLET_PAYGLOBAL del usuario origen
+        // 5. Obtener la wallet de origen segun
         Wallet walletOrigen = usuarioOrigen.getWallets()
                 .stream()
-                .filter(wallet -> wallet.getTipo() == TipoWallets.WALLET_PAYGLOBAL)
+                .filter(wallet -> wallet.getTipo() == tipoWalletOrigen)
                 .findFirst()
                 .orElseThrow(() -> new Exception(
-                        "El usuario origen no tiene una WALLET_PAYGLOBAL"));
+                        "El usuario origen no tiene una " + tipoWalletOrigen.name() + " para realizar la transferencia"));
 
         // 6. Validar que el usuario tenga saldo suficiente
         if (walletOrigen.getSaldo().compareTo(monto) < 0) {
@@ -629,7 +631,7 @@ public class UsuarioService implements UserDetailsService {
                     nuevaWallet.setSaldo(BigDecimal.ZERO);
                     nuevaWallet.setUsuario(usuarioDestino);
 
-                    return nuevaWallet;
+                    return walletRepository.save(nuevaWallet);
 
                 });
 

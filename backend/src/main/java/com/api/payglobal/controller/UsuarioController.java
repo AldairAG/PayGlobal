@@ -270,7 +270,7 @@ public class UsuarioController {
             @RequestParam TipoWallets tipoWallet,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            usuarioService.transferenciaEntreUsuarios(usuarioDestinatario, monto, usuario.getId());
+            usuarioService.transferenciaEntreUsuarios(usuarioDestinatario, monto, usuario.getId(), tipoWallet);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Transferencia realizada correctamente", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
