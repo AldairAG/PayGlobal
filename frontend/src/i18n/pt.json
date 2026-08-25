@@ -112,7 +112,8 @@
         "log_out": "Sair",
         "news": "Novidades / Ferramentas",
         "menu": "Menu",
-        "tools": "Ferramentas"
+        "tools": "Ferramentas",
+        "wallet_payglobal": "Carteira PayGlobal"
 
     },
 
@@ -176,7 +177,19 @@
         "transaction_processed": "Transação processada",
         "transaction_failed": "Transação falhada",
         "transaction_pending": "Aguardando confirmação...",
-        "close": "Comprar"
+        "close": "Comprar",
+        "pay_with_payglobal": "Pagar com Carteira PayGlobal",
+        "confirm_payglobal_purchase_title": "Confirmar Compra com PayGlobal",
+        "confirm_payglobal_purchase_description": "Tem certeza de que deseja comprar esta licença usando o saldo da sua carteira PayGlobal?",
+        "license_to_purchase": "Licença a comprar",
+        "total_cost": "Custo Total",
+        "current_balance": "Saldo Atual",
+        "remaining_balance": "Saldo Restante",
+        "insufficient_balance_warning": "Aviso: Você não tem saldo suficiente em sua carteira PayGlobal para completar esta compra.",
+        "confirm_purchase": "Confirmar Compra",
+        "processing_payglobal_purchase": "Processando compra PayGlobal...",
+        "payglobal_purchase_success": "Compra realizada com sucesso com carteira PayGlobal!",
+        "payglobal_purchase_error": "Erro ao processar compra PayGlobal"
 
     },
 
@@ -675,6 +688,73 @@
         "daily_yield": "Rendimento diário",
         "confirm_transfer_message": "Todos os seus ganhos de mineração serão transferidos para sua carteira de staking",
         "transfer_completion_message": "A transferência será realizada imediatamente e o saldo aparecerá em sua carteira de staking"
+    },
+
+    "wallet_payglobal": {
+        "title": "Carteira PayGlobal",
+        "subtitle": "Gerenciar saldo PayGlobal",
+        "description": "Gerencie seus fundos PayGlobal, transfira entre carteiras, envie saldo para outro usuário e ative licenças usando seu saldo. Lembre-se de que as transferências são irreversíveis e somente entre outro usuário com uma conta PayGlobal ativa. Certifique-se de inserir o nome de usuário do destinatário corretamente.",
+        "available_balance": "Saldo disponível",
+        "operations": "Operações",
+        "select_section": "Selecione uma seção",
+        "section_description": "Alterne entre transferir para PayGlobal e transferir para usuário. Cada guia inclui o histórico associado.",
+        "transfer_to_payglobal": "Transferir para PayGlobal",
+        "transfer_to_user": "Transferir para Usuário",
+        "transfer_from_staking": "Transferir de Staking",
+        "transfer_from_staking_desc": "Envie saldo da sua carteira de staking para PayGlobal.",
+        "transfer_from_network": "Transferir de Network",
+        "transfer_from_network_desc": "Mova o saldo da sua carteira de rede para PayGlobal.",
+        "amount": "Quantia",
+        "remaining_balance": "Saldo restante",
+        "transfer_to_payglobal_button": "Transferir para PayGlobal",
+        "movements_summary": "Resumo de movimentos",
+        "recent_history": "Histórico recente",
+        "no_recent_movements": "Nenhum movimento recente da carteira PayGlobal.",
+        "send_to_user": "Enviar saldo para um usuário",
+        "destination_username": "Nome de usuário de destino",
+        "username_placeholder": "Ex. @usuario123",
+        "amount_to_transfer": "Quantia a transferir",
+        "available_balance_label": "Saldo disponível",
+        "balance_after_transfer": "Saldo após transferência",
+        "review_transfer": "Revisar transferência",
+        "transaction_history": "Histórico de transações",
+        "date": "Data",
+        "movement": "Movimento",
+        "user": "Usuário",
+        "amount_label": "Quantia",
+        "origin_destination": "Origem / Destino",
+        "status": "Estado",
+        "no_user_transactions": "Nenhuma transação de usuário para exibir.",
+        "confirm_transfer_title": "Confirmação de transferência",
+        "review_before_confirm": "Revise antes de confirmar",
+        "destination_user": "Usuário de destino",
+        "amount_to_send": "Quantia a enviar",
+        "source_wallet": "Carteira de origem",
+        "warning": "Aviso:",
+        "warning_text": "As transferências são <strong>irreversíveis</strong> e só podem ser enviadas para outros usuários com uma conta PayGlobal ativa.",
+        "user_to_user_transfer": "Transferência de usuário para usuário com <strong>0% de comissão</strong>.",
+        "cancel": "Cancelar",
+        "confirm_transfer": "Confirmar transferência",
+        "username_required": "O nome de usuário é obrigatório.",
+        "amount_greater_zero": "A quantia deve ser maior que 0.",
+        "insufficient_balance": "Você não pode transferir mais do que o saldo disponível.",
+        "transfer_completed": "Transferência para carteira PayGlobal concluída.",
+        "transfer_sent_successfully": "Transferência PayGlobal enviada com sucesso.",
+        "transfer_error": "Erro ao realizar a transferência",
+        "transaction_types": {
+            "transfer_sent": "Transferência enviada",
+            "transfer_from_staking": "Transferência de Staking",
+            "license_activation": "Ativação de licença",
+            "transfer_from_network": "Transferência de Network",
+            "transfer_received": "Transferência recebida"
+        },
+        "transaction_statuses": {
+            "sent": "Enviada",
+            "completed": "Concluída",
+            "received": "Recebida",
+            "pending": "Pendente",
+            "failed": "Falhou"
+        }
     }
 
 }

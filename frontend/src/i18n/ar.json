@@ -112,7 +112,8 @@
         "log_out": "تسجيل الخروج",
         "news": "الأخبار / الأدوات",
         "menu": "القائمة",
-        "tools": "الأدوات"
+        "tools": "الأدوات",
+        "wallet_payglobal": "محفظة PayGlobal"
     },
     
     "home": {
@@ -174,7 +175,19 @@
         "transaction_processed": "تمت معالجة المعاملة",
         "transaction_failed": "فشلت المعاملة",
         "transaction_pending": "في انتظار التأكيد...",
-        "close": "شراء"
+        "close": "شراء",
+        "pay_with_payglobal": "الدفع بمحفظة PayGlobal",
+        "confirm_payglobal_purchase_title": "تأكيد الشراء بـ PayGlobal",
+        "confirm_payglobal_purchase_description": "هل أنت متأكد من أنك تريد شراء هذا الترخيص باستخدام رصيد محفظة PayGlobal الخاصة بك؟",
+        "license_to_purchase": "الترخيص المراد شراؤه",
+        "total_cost": "التكلفة الإجمالية",
+        "current_balance": "الرصيد الحالي",
+        "remaining_balance": "الرصيد المتبقي",
+        "insufficient_balance_warning": "تحذير: ليس لديك رصيد كافٍ في محفظة PayGlobal الخاصة بك لإكمال هذا الشراء.",
+        "confirm_purchase": "تأكيد الشراء",
+        "processing_payglobal_purchase": "جاري معالجة شراء PayGlobal...",
+        "payglobal_purchase_success": "تم الشراء بنجاح بمحفظة PayGlobal!",
+        "payglobal_purchase_error": "خطأ في معالجة شراء PayGlobal"
 
     },
 
@@ -673,6 +686,73 @@
         "daily_yield": "العائد اليومي",
         "confirm_transfer_message": "سيتم تحويل جميع أرباح التعدين الخاصة بك إلى محفظة الستاكينغ الخاصة بك",
         "transfer_completion_message": "سيتم التحويل على الفور وسيظهر الرصيد في محفظة الستاكينغ الخاصة بك"
+    },
+
+    "wallet_payglobal": {
+        "title": "محفظة PayGlobal",
+        "subtitle": "إدارة رصيد PayGlobal",
+        "description": "إدارة أموال PayGlobal الخاصة بك، التحويل بين المحافظ، إرسال الرصيد إلى مستخدم آخر، وتفعيل التراخيص باستخدام رصيدك. تذكر أن التحويلات غير قابلة للإلغاء وتتم فقط بين مستخدم آخر لديه حساب PayGlobal نشط. تأكد من إدخال اسم المستخدم المستلم بشكل صحيح.",
+        "available_balance": "الرصيد المتاح",
+        "operations": "العمليات",
+        "select_section": "اختر قسماً",
+        "section_description": "التبديل بين التحويل إلى PayGlobal والتحويل إلى المستخدم. يتضمن كل علامة تبويب السجل ذي الصلة.",
+        "transfer_to_payglobal": "التحويل إلى PayGlobal",
+        "transfer_to_user": "التحويل إلى مستخدم",
+        "transfer_from_staking": "التحويل من Staking",
+        "transfer_from_staking_desc": "إرسال الرصيد من محفظة الستاكينغ الخاصة بك إلى PayGlobal.",
+        "transfer_from_network": "التحويل من Network",
+        "transfer_from_network_desc": "نقل الرصيد من محفظة الشبكة الخاصة بك إلى PayGlobal.",
+        "amount": "المبلغ",
+        "remaining_balance": "الرصيد المتبقي",
+        "transfer_to_payglobal_button": "التحويل إلى PayGlobal",
+        "movements_summary": "ملخص الحركات",
+        "recent_history": "السجل الحديث",
+        "no_recent_movements": "لا توجد حركات حديثة لمحفظة PayGlobal.",
+        "send_to_user": "إرسال الرصيد إلى مستخدم",
+        "destination_username": "اسم المستخدم المستلم",
+        "username_placeholder": "مثال. @user123",
+        "amount_to_transfer": "المبلغ المراد تحويله",
+        "available_balance_label": "الرصيد المتاح",
+        "balance_after_transfer": "الرصيد بعد التحويل",
+        "review_transfer": "مراجعة التحويل",
+        "transaction_history": "سجل المعاملات",
+        "date": "التاريخ",
+        "movement": "الحركة",
+        "user": "المستخدم",
+        "amount_label": "المبلغ",
+        "origin_destination": "المصدر / الوجهة",
+        "status": "الحالة",
+        "no_user_transactions": "لا توجد معاملات مستخدم للعرض.",
+        "confirm_transfer_title": "تأكيد التحويل",
+        "review_before_confirm": "راجع قبل التأكيد",
+        "destination_user": "المستخدم المستلم",
+        "amount_to_send": "المبلغ المراد إرساله",
+        "source_wallet": "المحفظة المصدر",
+        "warning": "تحذير:",
+        "warning_text": "التحويلات <strong>غير قابلة للإلغاء</strong> ويمكن إرسالها فقط إلى مستخدمين آخرين لديهم حساب PayGlobal نشط.",
+        "user_to_user_transfer": "تحويل من مستخدم إلى مستخدم بـ <strong>0% عمولة</strong>.",
+        "cancel": "إلغاء",
+        "confirm_transfer": "تأكيد التحويل",
+        "username_required": "اسم المستخدم مطلوب.",
+        "amount_greater_zero": "يجب أن يكون المبلغ أكبر من 0.",
+        "insufficient_balance": "لا يمكنك تحويل أكثر من الرصيد المتاح.",
+        "transfer_completed": "اكتمل التحويل إلى محفظة PayGlobal.",
+        "transfer_sent_successfully": "تم إرسال تحويل PayGlobal بنجاح.",
+        "transfer_error": "خطأ في إجراء التحويل",
+        "transaction_types": {
+            "transfer_sent": "التحويل المرسل",
+            "transfer_from_staking": "التحويل من Staking",
+            "license_activation": "تفعيل الترخيص",
+            "transfer_from_network": "التحويل من Network",
+            "transfer_received": "التحويل المستلم"
+        },
+        "transaction_statuses": {
+            "sent": "مرسل",
+            "completed": "مكتمل",
+            "received": "مستلم",
+            "pending": "قيد الانتظار",
+            "failed": "فشل"
+        }
     }
 
 }

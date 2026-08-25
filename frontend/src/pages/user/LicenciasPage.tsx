@@ -17,7 +17,7 @@ export const LicenciasPage = () => {
     const [selectedLicense, setSelectedLicense] = useState<{
         name: string;
         value: number;
-        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL;
+        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL| TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
         isPromotional?: boolean;
         promoOptions?: Array<{ name: string; value: number }>;
     } | null>(null);

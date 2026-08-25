@@ -332,7 +332,25 @@ public class UsuarioService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new Exception("Usuario no encontrado con id: " + idUsuario));
 
+        // Comprobar que la solicitud nueva no sea inferior a la actual
+        if (tipoLicencia.getValor() < usuario.getLicencia().getPrecio()) {
+            throw new Exception("No se puede solicitar una licencia inferior a la actual.");
+        }
+
         BigDecimal precioTotal = new BigDecimal((tipoLicencia.getValor() + cobroPorCompra));
+
+        if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL) {
+            Wallet walletPayglobal = usuario.getWallets().stream()
+                    .filter(w -> w.getTipo().equals(TipoWallets.WALLET_PAYGLOBAL))
+                    .findFirst()
+                    .orElseThrow(() -> new Exception(
+                            "Wallet PayGlobal no encontrada para el usuario con id: " + idUsuario));
+            if (walletPayglobal.getSaldo().compareTo(precioTotal) < 0) {
+                throw new Exception("Fondos insuficientes en la wallet PayGlobal");
+            }
+            walletPayglobal.setSaldo(walletPayglobal.getSaldo().subtract(precioTotal));
+
+        }
 
         if (tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA
                 && usuario.getLicencia().getLimite() != usuario.getLicencia().getSaldoAcumulado().intValue()) {
@@ -340,14 +358,27 @@ public class UsuarioService implements UserDetailsService {
                     new BigDecimal(usuario.getLicencia() != null ? usuario.getLicencia().getPrecio() : 0));
         }
 
-        String descripcion = tipoSolicitud == TipoSolicitud.COMPRA_LICENCIA_MINERIA
-                ? "Solicitud de compra de licencia de mineria de " + usuario.getUsername() + " - Licencia: "
-                        + tipoLicencia.name()
-                : TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL == tipoSolicitud
-                        ? "Solicitud de compra de licencia promocional de " + usuario.getUsername() + " - Licencia: "
-                                + tipoLicencia.name()
-                        : "Solicitud de compra de licencia de " + usuario.getUsername() + " - Licencia: "
-                                + tipoLicencia.name();
+        String descripcionBase = "Solicitud de compra de licencia";
+        String usuarioDescripcion = usuario.getUsername();
+        String licenciaDescripcion = tipoLicencia.name();
+
+        String descripcion = switch (tipoSolicitud) {
+            case COMPRA_LICENCIA_MINERIA ->
+                descripcionBase + " de mineria de " + usuarioDescripcion
+                        + " - Licencia: " + licenciaDescripcion;
+
+            case COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL ->
+                descripcionBase + " con wallet PayGlobal de " + usuarioDescripcion
+                        + " - Licencia: " + licenciaDescripcion;
+
+            case COMPRA_LICENCIA_PROMOCIONAL ->
+                descripcionBase + " promocional de " + usuarioDescripcion
+                        + " - Licencia: " + licenciaDescripcion;
+
+            default ->
+                descripcionBase + " de " + usuarioDescripcion
+                        + " - Licencia: " + licenciaDescripcion;
+        };
 
         Solicitud solicitud = Solicitud.builder()
                 .tipoSolicitud(tipoSolicitud)

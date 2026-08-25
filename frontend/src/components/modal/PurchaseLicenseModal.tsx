@@ -19,7 +19,7 @@ interface PurchaseLicenseModalProps {
     onClose: () => void;
     licenseName: string;
     licenseValue: number;
-    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA| TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL;
+    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA| TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL| TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
     isPromotional?: boolean;
     promoOptions?: PromoOption[];
 }
@@ -42,9 +42,9 @@ export default function PurchaseLicenseModal({
     const [showPayglobalConfirmModal, setShowPayglobalConfirmModal] = useState(false);
     const { solicitarCompraLicencia, loadingSolicitarCompraLicencia } = useUsuario();
 
-    const handleConfirmPurchase = async () => {
+    const handleConfirmPurchase = async (usePayglobalWallet = false) => {
         setPurchaseResult(null);
-        const promise = solicitarCompraLicencia(selectedCrypto, selectedPromoLicenseName, purchaseType);
+        const promise = solicitarCompraLicencia(selectedCrypto, selectedPromoLicenseName, usePayglobalWallet ? TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL : purchaseType);
         toast.promise(
             promise,
             {
@@ -340,7 +340,7 @@ export default function PurchaseLicenseModal({
                                 onClick={() => setShowPayglobalConfirmModal(true)}
                                 className="w-full rounded-2xl bg-[#69AC95] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
                             >
-                                Pagar con Wallet PayGlobal
+                                {t("licenses.pay_with_payglobal")}
                             </button>
                         </div>
 
@@ -391,7 +391,7 @@ export default function PurchaseLicenseModal({
                     {/* MITAD DERECHA: Botón comprar */}
                     <div className="flex-1 flex items-end">
                         <button
-                            onClick={handleConfirmPurchase}
+                            onClick={() => handleConfirmPurchase()}
                             disabled={loadingSolicitarCompraLicencia || purchaseResult !== null}
                             className={`w-full py-3 px-6 rounded-xl transition-colors font-bold disabled:cursor-not-allowed ${purchaseResult !== null
                                 ? 'bg-white/10 text-white/30'
@@ -427,39 +427,38 @@ export default function PurchaseLicenseModal({
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm uppercase tracking-[0.35em] text-[#69AC95]">Confirmación de pago</p>
-                                        <h2 className="text-2xl font-bold text-white">Pagar con Wallet PayGlobal</h2>
+                                        <p className="text-sm uppercase tracking-[0.35em] text-[#69AC95]">{t("licenses.confirm_payglobal_purchase_title")}</p>
+                                        <h2 className="text-2xl font-bold text-white">{t("licenses.confirm_payglobal_purchase_description")}</h2>
                                     </div>
                                 </div>
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                        <p className="text-sm text-white/50">Licencia</p>
+                                        <p className="text-sm text-white/50">{t("licenses.license_to_purchase")}</p>
                                         <p className="mt-2 text-lg font-semibold text-white">{activeLicenseName}</p>
                                     </div>
                                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                                        <p className="text-sm text-white/50">Monto a pagar</p>
+                                        <p className="text-sm text-white/50">{t("licenses.total_cost")}</p>
                                         <p className="mt-2 text-lg font-semibold text-white">${activeLicenseValue} {currentWallet.symbol}</p>
                                     </div>
                                 </div>
                                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
-                                    <p>Usarás el saldo de tu Wallet PayGlobal para completar esta compra.</p>
-                                    <p className="mt-2 text-white/80">Asegúrate de tener saldo suficiente antes de confirmar.</p>
+                                    <p>{t("licenses.confirm_payglobal_purchase_description")}</p>
                                 </div>
                                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
                                     <button
                                         onClick={() => setShowPayglobalConfirmModal(false)}
                                         className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                                     >
-                                        Cancelar
+                                        {t("wallet_payglobal.cancel")}
                                     </button>
                                     <button
                                         onClick={async () => {
                                             setShowPayglobalConfirmModal(false);
-                                            await handleConfirmPurchase();
+                                            await handleConfirmPurchase(true);
                                         }}
                                         className="rounded-2xl bg-[#69AC95] px-5 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
                                     >
-                                        Confirmar pago
+                                        {t("licenses.confirm_purchase")}
                                     </button>
                                 </div>
                             </div>

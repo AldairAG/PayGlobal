@@ -81,7 +81,8 @@ export const GestionPagosPage = () => {
             sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_MINERIA ||
             sol.tipoSolicitud === TipoSolicitud.TRANFERENCIA_USUARIO ||
             sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO||
-            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL;
+            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL||
+            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
     });
 
     // Aplicar filtros adicionales

@@ -111,7 +111,8 @@
         "log_out": "Log Out",
         "news": "News / Reports",
         "menu": "Menu",
-        "tools": "Tools"
+        "tools": "Tools",
+        "wallet_payglobal": "PayGlobal Wallet"
     },
 
     "home": {
@@ -173,7 +174,19 @@
         "transaction_processed": "Transaction processed",
         "transaction_failed": "Transaction failed",
         "transaction_pending": "Awaiting confirmation...",
-        "close": "Buy"
+        "close": "Buy",
+        "pay_with_payglobal": "Pay with PayGlobal Wallet",
+        "confirm_payglobal_purchase_title": "Confirm PayGlobal purchase",
+        "confirm_payglobal_purchase_description": "Are you sure you want to purchase this license using your PayGlobal Wallet balance?",
+        "license_to_purchase": "License to purchase",
+        "total_cost": "Total cost",
+        "current_balance": "Current balance",
+        "remaining_balance": "Remaining balance",
+        "insufficient_balance_warning": "Warning: You don't have enough balance in your PayGlobal Wallet to complete this purchase.",
+        "confirm_purchase": "Confirm purchase",
+        "processing_payglobal_purchase": "Processing PayGlobal purchase...",
+        "payglobal_purchase_success": "Purchase completed successfully with PayGlobal Wallet!",
+        "payglobal_purchase_error": "Error processing PayGlobal purchase"
     },
 
     "withdrawal": {
@@ -679,6 +692,73 @@
         "daily_yield": "Daily yield",
         "confirm_transfer_message": "All your mining earnings will be transferred to your staking wallet",
         "transfer_completion_message": "The transfer will be made immediately and the balance will appear in your staking wallet"
+    },
+
+    "wallet_payglobal": {
+        "title": "PayGlobal Wallet",
+        "subtitle": "Manage PayGlobal balance",
+        "description": "Manage your PayGlobal funds, transfer between wallets, send balance to another user, and activate licenses using your balance. Remember that transfers are irreversible and only between another user with an active PayGlobal account. Make sure to correctly enter the recipient's username.",
+        "available_balance": "Available balance",
+        "operations": "Operations",
+        "select_section": "Select a section",
+        "section_description": "Switch between transferring to PayGlobal and transferring to user. Each tab includes related history.",
+        "transfer_to_payglobal": "Transfer to PayGlobal",
+        "transfer_to_user": "Transfer to user",
+        "transfer_from_staking": "Transfer from Staking",
+        "transfer_from_staking_desc": "Send balance from your staking wallet to PayGlobal.",
+        "transfer_from_network": "Transfer from Network",
+        "transfer_from_network_desc": "Move balance from your Network wallet to PayGlobal.",
+        "amount": "Amount",
+        "remaining_balance": "Remaining balance",
+        "transfer_to_payglobal_button": "Transfer to PayGlobal",
+        "movements_summary": "Movements summary",
+        "recent_history": "Recent history",
+        "no_recent_movements": "No recent PayGlobal wallet movements.",
+        "send_to_user": "Send balance to user",
+        "destination_username": "Destination username",
+        "username_placeholder": "E.g. @user123",
+        "amount_to_transfer": "Amount to transfer",
+        "available_balance_label": "Available balance",
+        "balance_after_transfer": "Balance after transfer",
+        "review_transfer": "Review transfer",
+        "transaction_history": "Transaction history",
+        "date": "Date",
+        "movement": "Movement",
+        "user": "User",
+        "amount_label": "Amount",
+        "origin_destination": "Origin / Destination",
+        "status": "Status",
+        "no_user_transactions": "No user transactions to display.",
+        "confirm_transfer_title": "Transfer confirmation",
+        "review_before_confirm": "Review before confirming",
+        "destination_user": "Destination user",
+        "amount_to_send": "Amount to send",
+        "source_wallet": "Source wallet",
+        "warning": "Warning:",
+        "warning_text": "Transfers are <strong>irreversible</strong> and can only be sent to other users with an active PayGlobal account.",
+        "user_to_user_transfer": "User to user transfer with <strong>0% commission</strong>.",
+        "cancel": "Cancel",
+        "confirm_transfer": "Confirm transfer",
+        "username_required": "Username is required.",
+        "amount_greater_zero": "Amount must be greater than 0.",
+        "insufficient_balance": "You cannot transfer more than the available balance.",
+        "transfer_completed": "Transfer to PayGlobal Wallet completed.",
+        "transfer_sent_successfully": "PayGlobal transfer sent successfully.",
+        "transfer_error": "Error performing transfer",
+        "transaction_types": {
+            "transfer_sent": "Transfer sent",
+            "transfer_from_staking": "Transfer from Staking",
+            "license_activation": "License activation",
+            "transfer_from_network": "Transfer from Network",
+            "transfer_received": "Transfer received"
+        },
+        "transaction_statuses": {
+            "sent": "Sent",
+            "completed": "Completed",
+            "received": "Received",
+            "pending": "Pending",
+            "failed": "Failed"
+        }
     }
 
 }
