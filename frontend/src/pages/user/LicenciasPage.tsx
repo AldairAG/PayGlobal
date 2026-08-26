@@ -8,6 +8,7 @@ import { TipoSolicitud } from "../../type/enum";
 import { getLicenseImage } from "../../helpers/imgHelpers";
 
 const BACKOFFICE_COMMISSION = 15;
+const showPromotionalLicense = true;
 
 export const LicenciasPage = () => {
     const { t } = useTranslation();
@@ -16,15 +17,20 @@ export const LicenciasPage = () => {
     const [selectedLicense, setSelectedLicense] = useState<{
         name: string;
         value: number;
-        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO;
+        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL| TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
+        isPromotional?: boolean;
+        promoOptions?: Array<{ name: string; value: number }>;
     } | null>(null);
+
+    const promoLicenseOptions = Object.values(LICENCIAS);
+    const defaultPromoOption = promoLicenseOptions[0];
 
     // Obtener el valor de la licencia actual del usuario
     const userLicenseValue = usuario?.licencia?.precio || 0;
 
     // Función para verificar si una licencia está deshabilitada
     const isLicenseDisabled = (licenseValue: number) => {
-        if(licenseValue === userLicenseValue) {
+        if (licenseValue === userLicenseValue) {
             return activarLicenciacConLimiteAlcanzado(); // La licencia actual del usuario siempre está habilitada
         }
 
@@ -38,8 +44,14 @@ export const LicenciasPage = () => {
         return true;
     };
 
-    const handlePurchase = (name: string, value: number, type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO) => {
-        setSelectedLicense({ name, value, type });
+    const handlePurchase = (
+        name: string,
+        value: number,
+        type: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL,
+        isPromotional = false,
+        promoOptions?: Array<{ name: string; value: number }>
+    ) => {
+        setSelectedLicense({ name: name || "P50", value, type, isPromotional, promoOptions });
         setModalOpen(true);
     };
 
@@ -60,6 +72,44 @@ export const LicenciasPage = () => {
                         {t("licenses.choose_the_license_that_best_suits_your_needs")}
                     </p>
                 </div>
+
+                {/* Licencia promocional independiente */}
+                {showPromotionalLicense && defaultPromoOption && (
+                    <div className="mb-8 flex justify-center">
+                        <div className="w-full max-w-4xl rounded-[2rem] border border-yellow-400/20 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/10 p-1 shadow-[0_24px_80px_rgba(240,151,60,0.16)]">
+                            <div className="rounded-[1.8rem] bg-[#090906] border border-white/10 p-6 md:p-8 text-center overflow-hidden">
+                                <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-yellow-300/20 to-transparent blur-2xl" />
+                                <div className="relative">
+                                    <p className="text-sm uppercase tracking-[0.35em] font-semibold text-yellow-300 mb-3">
+                                        {t("licenses.promotional_license")}
+                                    </p>
+                                    <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
+                                        {t("licenses.premium_yield_3_percent_daily")}
+                                    </h2>
+                                    <p className="text-white/60 max-w-2xl mx-auto text-sm md:text-base">
+                                        {t("licenses.promotional_license_description")}
+                                    </p>
+                                    <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-yellow-400/20 bg-yellow-400/10 px-4 py-2 text-sm text-yellow-100">
+                                        <span className="font-semibold">{t("licenses.exclusive")}</span>
+                                        <span className="text-white/50">{t("licenses.premium_selection")}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => handlePurchase(
+                                            "P50",
+                                            defaultPromoOption.value,
+                                            TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL,
+                                            true,
+                                            promoLicenseOptions
+                                        )}
+                                        className="mt-8 inline-flex items-center justify-center rounded-2xl bg-yellow-400 px-6 py-3 text-sm font-bold text-black transition duration-200 hover:bg-yellow-300"
+                                    >
+                                        {t("licenses.open_promotional_offer")}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Grid de licencias */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -182,6 +232,8 @@ export const LicenciasPage = () => {
                     licenseName={selectedLicense.name}
                     licenseValue={selectedLicense.value}
                     purchaseType={selectedLicense.type}
+                    isPromotional={selectedLicense.isPromotional}
+                    promoOptions={selectedLicense.promoOptions}
                 />
             )}
         </div>

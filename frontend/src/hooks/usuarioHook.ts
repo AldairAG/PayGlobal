@@ -2,10 +2,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode';
 import type { AppDispatch, RootState } from '../store';
-import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO } from '../type/requestTypes';
+import type { RegistroRequestDTO, LoginRequestDTO, EditarPerfilRequestDTO, SolicitudTransferenciaPayglobalRequest } from '../type/requestTypes';
 import { logout } from '../store/slice/authSlice';
 import { registro, login as loginThunk } from '../store/slice/authSlice';
-import { obtenerMisSolicitudesThunk, obtenerSolicitudesRetiroThunk, obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk, rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk } from '../store/slice/usuarioSlice';
+import { obtenerMisSolicitudesThunk, obtenerSolicitudesRetiroThunk, obtenerSolicitudesThunk, obtenerTodosLosUsuariosThunk,
+    rechazarSolicitudThunk, setUsuario, solicitarCompraLicenciaThunk, aprobarCompraLicenciaThunk, editarPerfilThunk, 
+    obtenerUsuarioPorIdThunk, obtenerUsuariosEnRedThunk, solicitarRetiroFondosThunk, setUsuarioEnRed, transferenciaEntreUsuariosThunk, 
+    editarUsuarioAdminThunk, setUsuarioSeleccionado, subirFotoPerfilThunk, obtenerFotoPerfilThunk, eliminarUsuarioPorIdThunk, 
+    aprobarRetiroFondosThunk, verificarClaveSeguridadThunk, guardarClaveSeguridadThunk, cambiarPasswordAdminThunk, 
+    hacerTransferenciaAWalletPayGlobalThunk } from '../store/slice/usuarioSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../routes/routes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
@@ -112,6 +117,9 @@ export const useUsuario = () => {
 
     const loadingCambiarPasswordAdmin = useSelector((state: RootState) => state.usuario.loadingCambiarPasswordAdmin);
     const errorCambiarPasswordAdmin = useSelector((state: RootState) => state.usuario.errorCambiarPasswordAdmin);
+
+    const loadingTransferenciaAWalletPayGlobal = useSelector((state: RootState) => state.usuario.loadingHacerTransferenciaAWalletPayGlobal);
+    const errorTransferenciaAWalletPayGlobal = useSelector((state: RootState) => state.usuario.errorHacerTransferenciaAWalletPayGlobal);
 
 
     /**
@@ -427,6 +435,16 @@ export const useUsuario = () => {
         }
     };
 
+    const hacerTransferenciaAWalletPayGlobal = async (request: SolicitudTransferenciaPayglobalRequest) => {
+        try {
+            const result = await dispatch(hacerTransferenciaAWalletPayGlobalThunk(request));
+            return unwrapResult(result);
+        } catch (error) {
+            console.error('Error al hacer transferencia a Wallet PayGlobal:', error);
+            throw error;
+        }
+    };
+
     // Retornar objeto con métodos y estados
     return {
         // Datos del usuario
@@ -544,6 +562,10 @@ export const useUsuario = () => {
         verificarClaveSeguridad,
         loadingVerificarClaveSeguridad,
         errorVerificarClaveSeguridad,
+
+        hacerTransferenciaAWalletPayGlobal,
+        loadingTransferenciaAWalletPayGlobal,
+        errorTransferenciaAWalletPayGlobal,
 
     };
 };

@@ -33,12 +33,14 @@ import com.api.payglobal.dto.request.EditarPerfilRequest;
 import com.api.payglobal.dto.request.GuardarFile;
 import com.api.payglobal.dto.request.LoginRequest;
 import com.api.payglobal.dto.request.RegistroResquestDTO;
+import com.api.payglobal.dto.request.TransferirFondosRequest;
 import com.api.payglobal.dto.response.JwtResponse;
 import com.api.payglobal.dto.response.SolicitudRetiroDTO;
 import com.api.payglobal.dto.response.UsuarioEnRedResponse;
 import com.api.payglobal.dto.response.UsuarioExplorerResponseDTO;
 import com.api.payglobal.entity.Solicitud;
 import com.api.payglobal.entity.Usuario;
+import com.api.payglobal.entity.Wallet;
 import com.api.payglobal.entity.enums.TipoCrypto;
 import com.api.payglobal.entity.enums.TipoLicencia;
 import com.api.payglobal.entity.enums.TipoMetodoPago;
@@ -261,14 +263,14 @@ public class UsuarioController {
      * Transferencia entre usuarios
      */
     @PostMapping("/transferencia")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<String>> transferenciaEntreUsuarios(
             @RequestParam String usuarioDestinatario,
             @RequestParam BigDecimal monto,
             @RequestParam TipoWallets tipoWallet,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            usuarioService.TransferenciaEntreUsuarios(usuarioDestinatario, monto, tipoWallet, usuario.getId());
+            usuarioService.transferenciaEntreUsuarios(usuarioDestinatario, monto, usuario.getId(), tipoWallet);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, "Transferencia realizada correctamente", null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -397,7 +399,7 @@ public class UsuarioController {
                     pageable.getPageNumber(),
                     pageable.getPageSize(),
                     Sort.by(Sort.Direction.DESC, "fechaRegistro"));
-            
+
             Page<UsuarioExplorerResponseDTO> usuarios = usuarioService.obtenerTodosLosUsuarios(filtro, sortedPageable);
             return ResponseEntity.ok(new ApiResponseWrapper<>(true, usuarios,
                     "Usuarios obtenidos correctamente"));
@@ -474,8 +476,9 @@ public class UsuarioController {
     public ResponseEntity<ApiResponseWrapper<String>> subirFotoPerfil(@ModelAttribute GuardarFile guardarFile,
             @AuthenticationPrincipal Usuario usuario) {
         try {
-            Resource resurce= usuarioService.subirFotoPerfil(guardarFile, usuario.getId());
-            return ResponseEntity.ok(new ApiResponseWrapper<>(true, resurce.getFilename(), "Foto de perfil subida correctamente"));
+            Resource resurce = usuarioService.subirFotoPerfil(guardarFile, usuario.getId());
+            return ResponseEntity
+                    .ok(new ApiResponseWrapper<>(true, resurce.getFilename(), "Foto de perfil subida correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
@@ -484,6 +487,7 @@ public class UsuarioController {
 
     /**
      * Endpoint para descargar/visualizar la foto de perfil del usuario
+     * 
      * @param fileName Nombre del archivo
      * @return Archivo como Resource
      */
@@ -491,16 +495,17 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('USUARIO')")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         try {
-            Resource resource = fileStorageService.loadFileAsResource("FOTO_PERFIL/"+fileName);
-            
+            Resource resource = fileStorageService.loadFileAsResource("FOTO_PERFIL/" + fileName);
+
             // Detectar el tipo de contenido basándose en la extensión del archivo
             String contentType = new FileHelper().determineContentType(fileName);
-            
-            // Para archivos visualizables (imágenes y PDFs), usar "inline" en lugar de "attachment"
+
+            // Para archivos visualizables (imágenes y PDFs), usar "inline" en lugar de
+            // "attachment"
             String disposition = contentType.startsWith("image/") || contentType.equals("application/pdf")
                     ? "inline; filename=\"" + resource.getFilename() + "\""
                     : "attachment; filename=\"" + resource.getFilename() + "\"";
-            
+
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
@@ -524,13 +529,29 @@ public class UsuarioController {
         }
     }
 
-     @PostMapping("/verificar-clave-seguridad")
+    @PostMapping("/verificar-clave-seguridad")
     @PreAuthorize("hasRole('USUARIO')")
     public ResponseEntity<ApiResponseWrapper<Boolean>> verificarClaveSeguridad(@RequestParam String claveSeguridad,
             @AuthenticationPrincipal Usuario usuario) {
         try {
             Boolean esValida = usuarioService.verificarClaveSeguridad(claveSeguridad, usuario.getId());
-            return ResponseEntity.ok(new ApiResponseWrapper<>(true, esValida, "Clave de seguridad verificada correctamente"));
+            return ResponseEntity
+                    .ok(new ApiResponseWrapper<>(true, esValida, "Clave de seguridad verificada correctamente"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponseWrapper<>(false, null, e.getMessage()));
+        }
+    }
+
+    @PostMapping("/transferir-fondos-wallet-payglobal")
+    @PreAuthorize("hasRole('USUARIO')")
+    public ResponseEntity<ApiResponseWrapper<Wallet>> transferirFondosWalletPayglobal(
+            @RequestBody TransferirFondosRequest request,
+            @AuthenticationPrincipal Usuario usuario) {
+        try {
+            Wallet wallet = usuarioService.transferirAWalletPayglobal(usuario.getId(), request.getMonto(),
+                    request.getTipoWallet());
+            return ResponseEntity.ok(new ApiResponseWrapper<>(true, wallet, "Fondos transferidos correctamente"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponseWrapper<>(false, null, e.getMessage()));

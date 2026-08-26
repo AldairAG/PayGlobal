@@ -3,9 +3,12 @@ package com.api.payglobal.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.api.payglobal.entity.enums.TipoPromocionLicencia;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,6 +37,8 @@ public class Licencia {
     private Boolean activo;
     private LocalDate fechaCompra;
     private BigDecimal saldoAcumulado;
+    @Enumerated(EnumType.STRING)
+    private TipoPromocionLicencia tipoPromocion;
 
     @OneToOne(mappedBy = "licencia")
     @JsonBackReference("licencia-mineria")

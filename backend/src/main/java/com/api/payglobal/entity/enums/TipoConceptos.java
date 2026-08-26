@@ -13,7 +13,8 @@ public enum TipoConceptos {
     COMPRA_LICENCIA_DELEGADA("Compra de licencia delegada", true),
     COMPRA_LICENCIA("Compra de licencia", false),
     RETIRO_FONDOS("Retiro de fondos", false),
-    TRANSFERENCIA_ENTRE_USUARIOS("Transferencia entre usuarios", true);
+    TRANSFERENCIA_ENTRE_USUARIOS("Transferencia entre usuarios", true),
+    TRANSFERENCIA_A_WALLET_PAYGLOBAL("Transferencia a wallet PayGlobal", false);
 
     private final String texto;
     private final boolean requiereUsername;

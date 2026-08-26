@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { toast } from "react-toastify";
 import { TipoCrypto, TipoSolicitud } from "../../type/enum";
 import { useUsuario } from "../../hooks/usuarioHook";
@@ -9,13 +9,19 @@ import imgETH from "../../assets/ETHEREUM.png";
 import imgSOL from "../../assets/SOLANA.png";
 import imgTRON from "../../assets/TRON.png";
 
+interface PromoOption {
+    name: string;
+    value: number;
+}
 
 interface PurchaseLicenseModalProps {
     open: boolean;
     onClose: () => void;
     licenseName: string;
     licenseValue: number;
-    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA;
+    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA| TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL| TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
+    isPromotional?: boolean;
+    promoOptions?: PromoOption[];
 }
 
 export default function PurchaseLicenseModal({
@@ -23,17 +29,22 @@ export default function PurchaseLicenseModal({
     onClose,
     licenseName,
     licenseValue,
-    purchaseType
+    purchaseType,
+    isPromotional = false,
+    promoOptions = []
 }: PurchaseLicenseModalProps) {
     const { t } = useTranslation();
     const [referredUsername, setReferredUsername] = useState("");
     const [selectedCrypto, setSelectedCrypto] = useState<TipoCrypto>(TipoCrypto.USDT_BEP20);
+    const [selectedPromoLicenseName, setSelectedPromoLicenseName] = useState<string>(licenseName);
+    const [selectedPromoLicenseValue, setSelectedPromoLicenseValue] = useState<number>(licenseValue);
     const [purchaseResult, setPurchaseResult] = useState<"success" | "error" | null>(null);
-    const { solicitarCompraLicencia, usuario, loadingSolicitarCompraLicencia } = useUsuario();
+    const [showPayglobalConfirmModal, setShowPayglobalConfirmModal] = useState(false);
+    const { solicitarCompraLicencia, loadingSolicitarCompraLicencia } = useUsuario();
 
-    const handleConfirmPurchase = async () => {
+    const handleConfirmPurchase = async (usePayglobalWallet = false) => {
         setPurchaseResult(null);
-        const promise = solicitarCompraLicencia(selectedCrypto, licenseName, purchaseType);
+        const promise = solicitarCompraLicencia(selectedCrypto, selectedPromoLicenseName, usePayglobalWallet ? TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL : purchaseType);
         toast.promise(
             promise,
             {
@@ -56,6 +67,12 @@ export default function PurchaseLicenseModal({
             console.error(t("licenses.error_requesting_license_purchase"), error);
             setPurchaseResult("error");
         }
+    };
+
+    const handlePromoSelection = (event: ChangeEvent<HTMLSelectElement>) => {
+        const [name, value] = event.target.value.split("|");
+        setSelectedPromoLicenseName(name);
+        setSelectedPromoLicenseValue(Number(value));
     };
 
     // Wallets diferentes para cada tipo de criptomoneda - esto debería venir del backend
@@ -96,7 +113,13 @@ export default function PurchaseLicenseModal({
 
     const currentWallet = cryptoWallets[selectedCrypto];
     const BACKOFFICE_COMMISSION = 15;
-    const totalAmount = licenseValue + BACKOFFICE_COMMISSION;
+    const activeLicenseName = isPromotional ? selectedPromoLicenseName : licenseName;
+    const activeLicenseValue = isPromotional ? selectedPromoLicenseValue : licenseValue;
+    const totalAmount = activeLicenseValue + BACKOFFICE_COMMISSION;
+    const dailyYield = Number((activeLicenseValue * 0.03).toFixed(2));
+    const productiveDays = 260;
+    const estimatedProfit = Number((dailyYield * productiveDays).toFixed(2));
+    const finalTotal = Number((activeLicenseValue + estimatedProfit).toFixed(2));
 
     if (!open) return null;
 
@@ -108,12 +131,12 @@ export default function PurchaseLicenseModal({
     return (
         <div className="fixed inset-0 flex justify-center items-center z-50 p-4">
             <div className="absolute inset-0 bg-black opacity-80 z-51"></div>
-            <div className="relative bg-[#0d0d0d] border border-white/10 rounded-2xl max-w-3xl w-full z-52 max-h-[90vh] flex flex-col overflow-y-auto">
+            <div className="relative bg-[#0d0d0d] border border-yellow-300/20 rounded-4xl max-w-4xl w-full z-52 max-h-[90vh] flex flex-col overflow-y-auto shadow-[0_40px_120px_rgba(255,204,79,0.18)]">
 
                 {/* Botón de cerrar */}
                 <button
                     onClick={onClose}
-                    aria-label="Cerrar"
+                    aria-label={t("licenses.close")}
                     className="absolute top-4 right-4 text-white/40 hover:text-white z-10 bg-white/5 hover:bg-white/10 rounded-full p-1 transition-colors"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,9 +146,17 @@ export default function PurchaseLicenseModal({
 
                 {/* TÍTULO - full width */}
                 <div className="px-8 pt-8 pb-4 text-center">
-                    <h2 className="text-2xl font-bold text-[#F0973C]">
-                        {t("licenses.purchase_license")}
+                    <p className="text-sm uppercase tracking-[0.32em] font-semibold text-yellow-300 mb-2">
+                        {isPromotional ? t("licenses.premium_offer") : t("licenses.purchase_license")}
+                    </p>
+                    <h2 className="text-3xl md:text-4xl font-black text-white">
+                        {isPromotional ? t("licenses.promotional_license") : t("licenses.purchase_license")}
                     </h2>
+                    {isPromotional && (
+                        <p className="mt-3 text-sm text-white/60 max-w-2xl mx-auto">
+                            {t("licenses.promotional_modal_description")}
+                        </p>
+                    )}
                 </div>
 
                 {/* CUERPO: dos columnas */}
@@ -135,55 +166,96 @@ export default function PurchaseLicenseModal({
                     <div className="md:w-1/2 flex flex-col gap-4 pr-0 md:pr-6">
 
                         {/* Info de licencia */}
-                        <div className="rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 p-4 flex items-center gap-4">
+                        <div className="rounded-2xl border border-yellow-300/20 bg-[#1a170d] p-5 flex items-center gap-4">
                             <img
-                                src={getLicenseImage(licenseName)}
-                                alt={licenseName}
+                                src={getLicenseImage(activeLicenseName)}
+                                alt={activeLicenseName}
                                 className="w-16 h-16 object-contain shrink-0"
                             />
                             <div className="flex-1">
-                                <p className="text-xs text-white/40 mb-2">{licenseName}</p>
-
-                                {purchaseType === TipoSolicitud.COMPRA_LICENCIA_MINERIA ? (
-                                    <>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
-                                            <span className="text-xs font-semibold text-white">${licenseValue} {currentWallet.symbol}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
-                                            <span className="text-xs font-semibold text-[#F0973C]">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
-                                        </div>
-                                        <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
-                                            <span className="text-lg font-black text-[#69AC95]">${totalAmount} {currentWallet.symbol}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs text-white/50">{t("licenses.license_cost")}:</span>
-                                            <span className="text-xs font-semibold text-white">${licenseValue - (usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-xs text-white/50">{t("licenses.backoffice_commission")}:</span>
-                                            <span className="text-xs font-semibold text-[#F0973C]">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
-                                        </div>
-                                        <div className="border-t border-[#69AC95]/20 mt-2 pt-2 flex items-center justify-between">
-                                            <span className="text-xs font-bold text-white">{t("licenses.total_to_deposit")}:</span>
-                                            <span className="text-lg font-black text-[#69AC95]">${totalAmount - (usuario?.licencia?.precio || 0)} {currentWallet.symbol}</span>
-                                        </div>
-                                    </>
-                                )}
+                                <p className="text-xs text-white/40 mb-2">{isPromotional ? t("licenses.promotional_license") : licenseName}</p>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] font-semibold text-yellow-200">
+                                        {t("licenses.three_percent_daily")}
+                                    </span>
+                                    {isPromotional && (
+                                        <span className="text-xs text-white/50">{t("licenses.business_days_only")}</span>
+                                    )}
+                                </div>
+                                <div className="grid gap-2 text-sm text-white/70">
+                                    <div className="flex items-center justify-between">
+                                        <span>{t("licenses.selected_price")}</span>
+                                        <span className="font-semibold text-white">${activeLicenseValue} {currentWallet.symbol}</span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span>{t("licenses.backoffice_commission")}</span>
+                                        <span className="font-semibold text-yellow-300">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
+                                    </div>
+                                    <div className="border-t border-white/10 pt-2 flex items-center justify-between">
+                                        <span className="font-bold text-white">{t("licenses.total_to_deposit")}</span>
+                                        <span className="font-black text-[#69AC95]">${totalAmount} {currentWallet.symbol}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
+                        {/* Promo selector y resumen */}
+                        {isPromotional && promoOptions.length > 0 && (
+                            <div className="rounded-2xl border border-yellow-300/20 bg-[#13100b] p-5 space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
+                                        {t("licenses.choose_promotional_amount")}
+                                    </label>
+                                    <select
+                                        value={`${selectedPromoLicenseName}|${selectedPromoLicenseValue}`}
+                                        onChange={handlePromoSelection}
+                                        className="w-full rounded-2xl border border-white/10 bg-[#0f0f0f] px-4 py-3 text-white outline-none transition focus:border-yellow-300"
+                                    >
+                                        {promoOptions.map((option) => (
+                                            <option key={option.name} value={`${option.name}|${option.value}`}>
+                                                {option.name} — ${option.value} USDT
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <div className="flex items-center justify-between text-sm text-white/60 mb-3">
+                                        <span>{t("licenses.daily_yield")}</span>
+                                        <span className="font-semibold text-white">3%</span>
+                                    </div>
+                                    <div className="grid gap-3 text-sm">
+                                        <div className="flex items-center justify-between">
+                                            <span>{t("licenses.selected_price")}</span>
+                                            <span className="font-semibold text-white">${activeLicenseValue} USDT</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>{t("licenses.daily_yield")}</span>
+                                            <span className="font-semibold text-white">${dailyYield.toFixed(2)} USDT</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>{t("licenses.productive_days")}</span>
+                                            <span className="font-semibold text-white">{productiveDays}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                                            <span>{t("licenses.estimated_profit_12_months")}</span>
+                                            <span className="font-semibold text-yellow-300">${estimatedProfit.toFixed(2)} USDT</span>
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-white/10 pt-3">
+                                            <span className="font-bold">{t("licenses.final_total")}</span>
+                                            <span className="font-bold text-[#69AC95]">${finalTotal.toFixed(2)} USDT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* QR / Imagen de la red */}
-                        <div className="flex-1 flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                        <div className="flex-1 flex items-center justify-center rounded-xl border border-white/10 bg-white/2 p-4">
                             <img
                                 src={currentWallet.img}
                                 alt={currentWallet.name}
-                                className="w-full max-w-[220px] object-contain rounded-xl"
+                                className="w-full max-w-55 object-contain rounded-xl"
                             />
                         </div>
 
@@ -223,7 +295,6 @@ export default function PurchaseLicenseModal({
                                             : 'border-white/10 bg-white/5 text-white/70 hover:border-[#F0973C]/40 hover:bg-[#F0973C]/5'
                                             }`}
                                     >
-                                        {/* Icono doble: USDT + red */}
                                         <div className="relative w-14 h-14">
                                             <img
                                                 src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
@@ -262,6 +333,15 @@ export default function PurchaseLicenseModal({
                                     </svg>
                                 </button>
                             </div>
+                        </div>
+                        <div className="mt-4">
+                            <button
+                                type="button"
+                                onClick={() => setShowPayglobalConfirmModal(true)}
+                                className="w-full rounded-2xl bg-[#69AC95] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
+                            >
+                                {t("licenses.pay_with_payglobal")}
+                            </button>
                         </div>
 
                     </div>
@@ -311,18 +391,80 @@ export default function PurchaseLicenseModal({
                     {/* MITAD DERECHA: Botón comprar */}
                     <div className="flex-1 flex items-end">
                         <button
-                            onClick={handleConfirmPurchase}
+                            onClick={() => handleConfirmPurchase()}
                             disabled={loadingSolicitarCompraLicencia || purchaseResult !== null}
                             className={`w-full py-3 px-6 rounded-xl transition-colors font-bold disabled:cursor-not-allowed ${purchaseResult !== null
                                 ? 'bg-white/10 text-white/30'
                                 : 'bg-[#F0973C] text-black hover:bg-[#F0973C]/90 disabled:opacity-50'
                                 }`}
                         >
-                            {loadingSolicitarCompraLicencia ? t("licenses.processing_purchase") : t("licenses.close")}
+                            {loadingSolicitarCompraLicencia
+                                ? t("licenses.processing_purchase")
+                                : purchaseResult !== null
+                                    ? t("licenses.close")
+                                    : isPromotional
+                                        ? t("licenses.confirm_purchase")
+                                        : t("licenses.close")}
                         </button>
                     </div>
 
                 </div>
+
+                {showPayglobalConfirmModal && (
+                    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/75 px-4 py-6">
+                        <div className="relative w-full max-w-xl rounded-4xl border border-white/10 bg-[#111111] p-6 shadow-[0_35px_120px_rgba(0,0,0,0.5)]">
+                            <button
+                                onClick={() => setShowPayglobalConfirmModal(false)}
+                                className="absolute right-5 top-5 rounded-full border border-white/10 bg-white/5 p-2 text-white transition hover:bg-white/10"
+                            >
+                                ✕
+                            </button>
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#69AC95]/15 text-[#69AC95]">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v8m4-4H8" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm uppercase tracking-[0.35em] text-[#69AC95]">{t("licenses.confirm_payglobal_purchase_title")}</p>
+                                        <h2 className="text-2xl font-bold text-white">{t("licenses.confirm_payglobal_purchase_description")}</h2>
+                                    </div>
+                                </div>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                        <p className="text-sm text-white/50">{t("licenses.license_to_purchase")}</p>
+                                        <p className="mt-2 text-lg font-semibold text-white">{activeLicenseName}</p>
+                                    </div>
+                                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                        <p className="text-sm text-white/50">{t("licenses.total_cost")}</p>
+                                        <p className="mt-2 text-lg font-semibold text-white">${activeLicenseValue} {currentWallet.symbol}</p>
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+                                    <p>{t("licenses.confirm_payglobal_purchase_description")}</p>
+                                </div>
+                                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                                    <button
+                                        onClick={() => setShowPayglobalConfirmModal(false)}
+                                        className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                                    >
+                                        {t("wallet_payglobal.cancel")}
+                                    </button>
+                                    <button
+                                        onClick={async () => {
+                                            setShowPayglobalConfirmModal(false);
+                                            await handleConfirmPurchase(true);
+                                        }}
+                                        className="rounded-2xl bg-[#69AC95] px-5 py-3 text-sm font-semibold text-black transition hover:bg-[#8be2ae]"
+                                    >
+                                        {t("licenses.confirm_purchase")}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

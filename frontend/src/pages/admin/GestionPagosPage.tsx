@@ -80,7 +80,9 @@ export const GestionPagosPage = () => {
         return sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA ||
             sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_MINERIA ||
             sol.tipoSolicitud === TipoSolicitud.TRANFERENCIA_USUARIO ||
-            sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO;
+            sol.tipoSolicitud === TipoSolicitud.PAGO_DELEGADO||
+            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL||
+            sol.tipoSolicitud === TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
     });
 
     // Aplicar filtros adicionales
@@ -195,6 +197,7 @@ export const GestionPagosPage = () => {
                                 <option value={TipoSolicitud.COMPRA_LICENCIA}>Compra de Licencia</option>
                                 <option value={TipoSolicitud.TRANFERENCIA_USUARIO}>Transferencia a Usuario</option>
                                 <option value={TipoSolicitud.PAGO_DELEGADO}>Pago Delegado</option>
+                                <option value={TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL}>Compra de Licencia Promocional</option>
                             </select>
                         </div>
                     </div>

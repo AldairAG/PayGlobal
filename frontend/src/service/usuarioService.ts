@@ -2,8 +2,9 @@ import { api } from './apiBase';
 import type { ApiResponse, Page } from '../type/apiTypes';
 import type {
     EditarPerfilRequestDTO,
+    SolicitudTransferenciaPayglobalRequest,
 } from '../type/requestTypes';
-import type { Solicitud, Usuario } from '../type/entityTypes';
+import type { Solicitud, Usuario, Wallet } from '../type/entityTypes';
 import { TipoCrypto, TipoSolicitud, TipoWallets } from '../type/enum';
 import type { SolicitudRetiroDTO, UsuarioEnRedResponse } from '../type/responseType';
 
@@ -237,6 +238,11 @@ const cambiarPasswordAdmin = async (idUsuario: number, nuevoPassword: string): P
     });
 };
 
+const hacerTransferenciaAWalletPayGlobal = async (request: SolicitudTransferenciaPayglobalRequest): Promise<ApiResponse<Wallet>> => {
+    return api.post<Wallet>(`${BASE_PATH}/transferir-fondos-wallet-payglobal`, request);
+}
+
+
 // Objeto con todas las funciones
 export const usuarioService = {
     editarPerfil,
@@ -262,4 +268,5 @@ export const usuarioService = {
     verificarClaveSeguridad,
     cambiarPasswordAdmin,
     rechazarRetiroFondos,
+    hacerTransferenciaAWalletPayGlobal
 };
