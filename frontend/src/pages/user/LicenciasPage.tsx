@@ -81,17 +81,17 @@ export const LicenciasPage = () => {
                                 <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-yellow-300/20 to-transparent blur-2xl" />
                                 <div className="relative">
                                     <p className="text-sm uppercase tracking-[0.35em] font-semibold text-yellow-300 mb-3">
-                                        Licencia Promocional
+                                        {t("licenses.promotional_license")}
                                     </p>
                                     <h2 className="text-3xl md:text-4xl font-black text-white mb-3">
-                                        Rendimiento Premium 3% Diario
+                                        {t("licenses.premium_yield_3_percent_daily")}
                                     </h2>
                                     <p className="text-white/60 max-w-2xl mx-auto text-sm md:text-base">
-                                        Elige un monto entre nuestras licencias normales y obtén rendimiento extra durante 12 meses en días hábiles.
+                                        {t("licenses.promotional_license_description")}
                                     </p>
                                     <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-yellow-400/20 bg-yellow-400/10 px-4 py-2 text-sm text-yellow-100">
-                                        <span className="font-semibold">Exclusivo</span>
-                                        <span className="text-white/50">Selección premium</span>
+                                        <span className="font-semibold">{t("licenses.exclusive")}</span>
+                                        <span className="text-white/50">{t("licenses.premium_selection")}</span>
                                     </div>
                                     <button
                                         onClick={() => handlePurchase(
@@ -103,7 +103,7 @@ export const LicenciasPage = () => {
                                         )}
                                         className="mt-8 inline-flex items-center justify-center rounded-2xl bg-yellow-400 px-6 py-3 text-sm font-bold text-black transition duration-200 hover:bg-yellow-300"
                                     >
-                                        Abrir oferta promocional
+                                        {t("licenses.open_promotional_offer")}
                                     </button>
                                 </div>
                             </div>

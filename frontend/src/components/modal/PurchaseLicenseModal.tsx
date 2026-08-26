@@ -136,7 +136,7 @@ export default function PurchaseLicenseModal({
                 {/* Botón de cerrar */}
                 <button
                     onClick={onClose}
-                    aria-label="Cerrar"
+                    aria-label={t("licenses.close")}
                     className="absolute top-4 right-4 text-white/40 hover:text-white z-10 bg-white/5 hover:bg-white/10 rounded-full p-1 transition-colors"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,14 +147,14 @@ export default function PurchaseLicenseModal({
                 {/* TÍTULO - full width */}
                 <div className="px-8 pt-8 pb-4 text-center">
                     <p className="text-sm uppercase tracking-[0.32em] font-semibold text-yellow-300 mb-2">
-                        {isPromotional ? "Oferta Premium" : t("licenses.purchase_license")}
+                        {isPromotional ? t("licenses.premium_offer") : t("licenses.purchase_license")}
                     </p>
                     <h2 className="text-3xl md:text-4xl font-black text-white">
-                        {isPromotional ? "Licencia Promocional" : t("licenses.purchase_license")}
+                        {isPromotional ? t("licenses.promotional_license") : t("licenses.purchase_license")}
                     </h2>
                     {isPromotional && (
                         <p className="mt-3 text-sm text-white/60 max-w-2xl mx-auto">
-                            Selecciona un monto y descubre el rendimiento diario del 3% en días hábiles durante 12 meses.
+                            {t("licenses.promotional_modal_description")}
                         </p>
                     )}
                 </div>
@@ -173,26 +173,26 @@ export default function PurchaseLicenseModal({
                                 className="w-16 h-16 object-contain shrink-0"
                             />
                             <div className="flex-1">
-                                <p className="text-xs text-white/40 mb-2">{isPromotional ? "Licencia Promocional" : licenseName}</p>
+                                <p className="text-xs text-white/40 mb-2">{isPromotional ? t("licenses.promotional_license") : licenseName}</p>
                                 <div className="flex items-center gap-2 mb-3">
                                     <span className="rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] font-semibold text-yellow-200">
-                                        3% diario
+                                        {t("licenses.three_percent_daily")}
                                     </span>
                                     {isPromotional && (
-                                        <span className="text-xs text-white/50">Solo días hábiles</span>
+                                        <span className="text-xs text-white/50">{t("licenses.business_days_only")}</span>
                                     )}
                                 </div>
                                 <div className="grid gap-2 text-sm text-white/70">
                                     <div className="flex items-center justify-between">
-                                        <span>Precio seleccionado</span>
+                                        <span>{t("licenses.selected_price")}</span>
                                         <span className="font-semibold text-white">${activeLicenseValue} {currentWallet.symbol}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span>Comisión backoffice</span>
+                                        <span>{t("licenses.backoffice_commission")}</span>
                                         <span className="font-semibold text-yellow-300">+${BACKOFFICE_COMMISSION} {currentWallet.symbol}</span>
                                     </div>
                                     <div className="border-t border-white/10 pt-2 flex items-center justify-between">
-                                        <span className="font-bold text-white">Total a depositar</span>
+                                        <span className="font-bold text-white">{t("licenses.total_to_deposit")}</span>
                                         <span className="font-black text-[#69AC95]">${totalAmount} {currentWallet.symbol}</span>
                                     </div>
                                 </div>
@@ -204,7 +204,7 @@ export default function PurchaseLicenseModal({
                             <div className="rounded-2xl border border-yellow-300/20 bg-[#13100b] p-5 space-y-4">
                                 <div>
                                     <label className="block text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">
-                                        Elige el monto promocional
+                                        {t("licenses.choose_promotional_amount")}
                                     </label>
                                     <select
                                         value={`${selectedPromoLicenseName}|${selectedPromoLicenseValue}`}
@@ -221,28 +221,28 @@ export default function PurchaseLicenseModal({
 
                                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                                     <div className="flex items-center justify-between text-sm text-white/60 mb-3">
-                                        <span>Rendimiento diario</span>
+                                        <span>{t("licenses.daily_yield")}</span>
                                         <span className="font-semibold text-white">3%</span>
                                     </div>
                                     <div className="grid gap-3 text-sm">
                                         <div className="flex items-center justify-between">
-                                            <span>Precio seleccionado</span>
+                                            <span>{t("licenses.selected_price")}</span>
                                             <span className="font-semibold text-white">${activeLicenseValue} USDT</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span>Rendimiento diario</span>
+                                            <span>{t("licenses.daily_yield")}</span>
                                             <span className="font-semibold text-white">${dailyYield.toFixed(2)} USDT</span>
                                         </div>
                                         <div className="flex items-center justify-between">
-                                            <span>Días productivos</span>
+                                            <span>{t("licenses.productive_days")}</span>
                                             <span className="font-semibold text-white">{productiveDays}</span>
                                         </div>
                                         <div className="flex items-center justify-between border-t border-white/10 pt-3">
-                                            <span>Ganancia estimada (12 meses)</span>
+                                            <span>{t("licenses.estimated_profit_12_months")}</span>
                                             <span className="font-semibold text-yellow-300">${estimatedProfit.toFixed(2)} USDT</span>
                                         </div>
                                         <div className="flex items-center justify-between border-t border-white/10 pt-3">
-                                            <span className="font-bold">Total final</span>
+                                            <span className="font-bold">{t("licenses.final_total")}</span>
                                             <span className="font-bold text-[#69AC95]">${finalTotal.toFixed(2)} USDT</span>
                                         </div>
                                     </div>
@@ -403,7 +403,7 @@ export default function PurchaseLicenseModal({
                                 : purchaseResult !== null
                                     ? t("licenses.close")
                                     : isPromotional
-                                        ? "Confirmar compra"
+                                        ? t("licenses.confirm_purchase")
                                         : t("licenses.close")}
                         </button>
                     </div>
