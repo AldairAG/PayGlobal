@@ -38,10 +38,9 @@ export default function LoginPage() {
         validationSchema,
         onSubmit: async (values) => {
             try {
-                //await login({ username: values.username, password: values.password });
-                //toast.success(t("landing.login_success") || "¡Inicio de sesión exitoso!");
-                //formik.resetForm();
-                toast.error(t("landing.login_error") || "No se pudo iniciar sesión. Verifica tus credenciales.");
+                await login({ username: values.username, password: values.password });
+                toast.success(t("landing.login_success") || "¡Inicio de sesión exitoso!");
+                formik.resetForm();
 
             } catch (err) {
                 console.error('Login fallido', err);

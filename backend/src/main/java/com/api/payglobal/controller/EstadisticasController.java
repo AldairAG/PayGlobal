@@ -34,4 +34,5 @@ public class EstadisticasController {
                     new ApiResponseWrapper<>(false, null, "Error al obtener estadísticas: " + e.getMessage()));
         }
     }
+
 }

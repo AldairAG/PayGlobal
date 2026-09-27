@@ -17,6 +17,7 @@ import {
     Pie,
     Cell
 } from 'recharts';
+import { VERSION } from '../../type/Version';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#ff7c7c'];
 
@@ -70,6 +71,7 @@ export const DashboardPage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">Dashboard de Estadísticas</h1>
+                    <p className="text-gray-400 text-sm mt-1">Versión: {VERSION}</p>
                     <p className="text-gray-600 mt-2">Panel de control administrativo</p>
                 </div>
 
