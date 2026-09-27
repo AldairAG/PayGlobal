@@ -19,7 +19,7 @@ interface PurchaseLicenseModalProps {
     onClose: () => void;
     licenseName: string;
     licenseValue: number;
-    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA| TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL| TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
+    purchaseType: TipoSolicitud.COMPRA_LICENCIA | TipoSolicitud.PAGO_DELEGADO | TipoSolicitud.COMPRA_LICENCIA_MINERIA | TipoSolicitud.COMPRA_LICENCIA_PROMOCIONAL | TipoSolicitud.COMPRA_LICENCIA_CON_WALLET_PAYGLOBAL;
     isPromotional?: boolean;
     promoOptions?: PromoOption[];
 }
@@ -174,14 +174,15 @@ export default function PurchaseLicenseModal({
                             />
                             <div className="flex-1">
                                 <p className="text-xs text-white/40 mb-2">{isPromotional ? t("licenses.promotional_license") : licenseName}</p>
-                                <div className="flex items-center gap-2 mb-3">
-                                    <span className="rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] font-semibold text-yellow-200">
-                                        {t("licenses.three_percent_daily")}
-                                    </span>
-                                    {isPromotional && (
+
+                                {isPromotional && (
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <span className="rounded-full border border-yellow-300/30 bg-yellow-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] font-semibold text-yellow-200">
+                                            {t("licenses.three_percent_daily")}
+                                        </span>
                                         <span className="text-xs text-white/50">{t("licenses.business_days_only")}</span>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                                 <div className="grid gap-2 text-sm text-white/70">
                                     <div className="flex items-center justify-between">
                                         <span>{t("licenses.selected_price")}</span>

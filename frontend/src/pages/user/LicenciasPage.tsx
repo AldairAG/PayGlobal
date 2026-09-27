@@ -178,7 +178,7 @@ export const LicenciasPage = () => {
                                 <div className="p-4 space-y-2">
                                     {/* Botón Comprar para mí */}
                                     <button
-                                        onClick={() => !disabled && handlePurchase(license.name, license.value, TipoSolicitud.COMPRA_LICENCIA)}
+                                        onClick={() => !disabled && handlePurchase(license.name, license.value, TipoSolicitud.COMPRA_LICENCIA,false)}
                                         disabled={disabled}
                                         className={`w-full font-bold py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center ${
                                             disabled
