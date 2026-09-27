@@ -24,11 +24,11 @@ const tablaOfertas = [
 const HomePage = () => {
     const { t } = useTranslation();
     const { usuario } = useUsuario();
-    const { 
-        cargarGananciasUltimos30Dias, 
-        gananciasUltimos30Dias, 
-        loadingGanancias30Dias, 
-        errorGanancias30Dias 
+    const {
+        cargarGananciasUltimos30Dias,
+        gananciasUltimos30Dias,
+        loadingGanancias30Dias,
+        errorGanancias30Dias
     } = useTransacciones();
 
     useEffect(() => {
@@ -36,16 +36,22 @@ const HomePage = () => {
     }, []);
 
     const porcentajeCalculo = useMemo(() => {
-        return (valor: number, total: number) => {
-            if (total === 0) return "0%";
 
-            const sobrante = valor / total;
+        if (usuario?.licencia.activo===true) {
 
-            //subtraer enteros y dejar decimales
-            const sobranteDecimal = sobrante - Math.floor(sobrante);
-            const porcentaje = sobranteDecimal * 100;
-            return `${porcentaje.toFixed(2)}%`;
+            return (valor: number, total: number) => {
+                if (total === 0) return "0%";
+
+                const sobrante = valor / total;
+
+                //subtraer enteros y dejar decimales
+                const sobranteDecimal = sobrante - Math.floor(sobrante);
+                const porcentaje = sobranteDecimal * 100;
+                return `${porcentaje.toFixed(2)}%`;
+            }
         }
+
+        return () => "100%";
 
     }, []);
 
@@ -141,7 +147,7 @@ const HomePage = () => {
                         </div>
 
                     </div>
-                    
+
                 </div>
 
                 {/* DATOS DE RED Y RANGO */}
@@ -154,15 +160,15 @@ const HomePage = () => {
 
                         <div className="p-5 rounded-xl border border-[#69AC95]/20 bg-[#69AC95]/5 flex flex-col items-center justify-center">
                             <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm mb-3">{t('home.my_current_rank')}</h3>
-                           
-                                <img
-                                    src={getRankImage(usuario?.rango || "SIN RANGO")}
-                                    alt={usuario?.rango}
-                                    className="w-32 h-32 object-contain drop-shadow-2xl"
-                                />
+
+                            <img
+                                src={getRankImage(usuario?.rango || "SIN RANGO")}
+                                alt={usuario?.rango}
+                                className="w-32 h-32 object-contain drop-shadow-2xl"
+                            />
                         </div>
 
-{/*                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
+                        {/*                         <div className="p-5 rounded-xl border border-[#F0973C]/20 bg-[#F0973C]/5">
                             <h3 className="font-semibold text-lg text-[#F0973C] uppercase tracking-wider text-sm">{t('home.users_on_my_network')}</h3>
                             <p className="mt-2 text-2xl font-bold text-[#69AC95]">{usuarioEnRed || 0} {t('home.affiliates')}</p>
                         </div>
@@ -185,31 +191,31 @@ const HomePage = () => {
                             <p className="text-center text-white/40">{t("home.no_earnings_data_available.")}</p>
                         ) : (
                             <ResponsiveContainer>
-                                <BarChart 
+                                <BarChart
                                     data={gananciasUltimos30Dias}
                                     margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
                                 >
                                     <defs>
                                         <linearGradient id="barGradientHome" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#69AC95" stopOpacity={0.9}/>
-                                            <stop offset="95%" stopColor="#69AC95" stopOpacity={0.3}/>
+                                            <stop offset="5%" stopColor="#69AC95" stopOpacity={0.9} />
+                                            <stop offset="95%" stopColor="#69AC95" stopOpacity={0.3} />
                                         </linearGradient>
                                         <filter id="shadowHome" height="200%">
-                                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                                            <feOffset dx="2" dy="3" result="offsetblur"/>
+                                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                                            <feOffset dx="2" dy="3" result="offsetblur" />
                                             <feComponentTransfer>
-                                                <feFuncA type="linear" slope="0.3"/>
+                                                <feFuncA type="linear" slope="0.3" />
                                             </feComponentTransfer>
                                             <feMerge>
-                                                <feMergeNode/>
-                                                <feMergeNode in="SourceGraphic"/>
+                                                <feMergeNode />
+                                                <feMergeNode in="SourceGraphic" />
                                             </feMerge>
                                         </filter>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis 
-                                        dataKey="fecha" 
-                                        stroke="rgba(255,255,255,0.3)" 
+                                    <XAxis
+                                        dataKey="fecha"
+                                        stroke="rgba(255,255,255,0.3)"
                                         tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
                                         tickFormatter={(value) => {
                                             const fecha = new Date(value);
@@ -219,17 +225,17 @@ const HomePage = () => {
                                         textAnchor="end"
                                         height={70}
                                     />
-                                    <YAxis 
-                                        stroke="rgba(255,255,255,0.3)" 
+                                    <YAxis
+                                        stroke="rgba(255,255,255,0.3)"
                                         tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }}
                                         domain={[0, 'auto']}
                                         tickFormatter={(value) => `$${value.toFixed(2)}`}
                                     />
-                                    <Tooltip 
-                                        contentStyle={{ 
-                                            backgroundColor: '#111', 
-                                            border: '1px solid rgba(105,172,149,0.3)', 
-                                            borderRadius: '12px', 
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: '#111',
+                                            border: '1px solid rgba(105,172,149,0.3)',
+                                            borderRadius: '12px',
                                             color: '#fff',
                                             boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
                                         }}
@@ -240,10 +246,10 @@ const HomePage = () => {
                                         formatter={(value: number | undefined) => value !== undefined ? [`$ ${value.toFixed(2)}`, t("home.earnings")] : ['$ 0.00', t("home.earnings")]}
                                     />
                                     <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.6)', paddingTop: '10px' }} />
-                                    <Bar 
-                                        dataKey="ganancia" 
-                                        name={t("home.earnings")} 
-                                        fill="url(#barGradientHome)" 
+                                    <Bar
+                                        dataKey="ganancia"
+                                        name={t("home.earnings")}
+                                        fill="url(#barGradientHome)"
                                         radius={[8, 8, 0, 0]}
                                         filter="url(#shadowHome)"
                                     />
